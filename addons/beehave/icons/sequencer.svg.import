@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/sequencer.svg-9f36790f9ca2ceae12c1c39021b007ef.stex"
+path="res://.import/sequencer.svg-a7b0e1cc6b00c0067836f9a81d0b2f9b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/behavior_tree/icons/sequencer.svg"
-dest_files=[ "res://.import/sequencer.svg-9f36790f9ca2ceae12c1c39021b007ef.stex" ]
+source_file="res://addons/beehave/icons/sequencer.svg"
+dest_files=[ "res://.import/sequencer.svg-a7b0e1cc6b00c0067836f9a81d0b2f9b.stex" ]
 
 [params]
 

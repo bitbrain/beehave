@@ -1,6 +1,6 @@
-extends BehaviorTree
+extends BeehaveTree
 
-class_name BehaviorTreeNode, "../icons/action.svg"
+class_name BeehaveNode, "../icons/action.svg"
 
 enum { SUCCESS, FAILURE, RUNNING }
 

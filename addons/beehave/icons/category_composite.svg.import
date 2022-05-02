@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/category_composite.svg-76fb5806d6d74dccff8be07f6f2704fe.stex"
+path="res://.import/category_composite.svg-43f66e63a7ccfa5ac8ec6da0583b3246.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/behavior_tree/icons/category_composite.svg"
-dest_files=[ "res://.import/category_composite.svg-76fb5806d6d74dccff8be07f6f2704fe.stex" ]
+source_file="res://addons/beehave/icons/category_composite.svg"
+dest_files=[ "res://.import/category_composite.svg-43f66e63a7ccfa5ac8ec6da0583b3246.stex" ]
 
 [params]
 

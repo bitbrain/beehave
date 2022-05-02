@@ -1,6 +1,6 @@
-extends BehaviorTree
+extends BeehaveTree
 
-class_name BehaviorTreeRoot, "../icons/tree.svg"
+class_name BeehaveRoot, "../icons/tree.svg"
 
 const Blackboard = preload("../blackboard.gd")
 const SUCCESS = 0
@@ -13,7 +13,7 @@ onready var blackboard = Blackboard.new()
 
 func _ready():
 	if self.get_child_count() != 1:
-		print("Behavior Tree error: Root should have one child")
+		push_error("Beehave error: Root should have one child")
 		disable()
 		return
 

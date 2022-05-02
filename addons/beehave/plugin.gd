@@ -2,4 +2,4 @@ tool
 extends EditorPlugin
 
 func _init():
-    print("🐝 Beehave initialized.")
+	print("Beehave initialized!")

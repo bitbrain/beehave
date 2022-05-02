@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/limiter.svg-d492263726e35b27419549219be22a46.stex"
+path="res://.import/limiter.svg-b4c7646605c46f53c5e403fe21d8f584.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/behavior_tree/icons/limiter.svg"
-dest_files=[ "res://.import/limiter.svg-d492263726e35b27419549219be22a46.stex" ]
+source_file="res://addons/beehave/icons/limiter.svg"
+dest_files=[ "res://.import/limiter.svg-b4c7646605c46f53c5e403fe21d8f584.stex" ]
 
 [params]
 

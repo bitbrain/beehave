@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/succeed.svg-2bd5be1a02ff3c6c88ebd8527fa34390.stex"
+path="res://.import/succeed.svg-c70f0a6f3d9b2864e4771942f0762307.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/behavior_tree/icons/succeed.svg"
-dest_files=[ "res://.import/succeed.svg-2bd5be1a02ff3c6c88ebd8527fa34390.stex" ]
+source_file="res://addons/beehave/icons/succeed.svg"
+dest_files=[ "res://.import/succeed.svg-c70f0a6f3d9b2864e4771942f0762307.stex" ]
 
 [params]
 

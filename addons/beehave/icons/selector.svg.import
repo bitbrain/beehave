@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/selector.svg-706cb32e3c8d55901e15c17769537a5c.stex"
+path="res://.import/selector.svg-78bccfc448bd1676b5a29bfde4b08e5b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/behavior_tree/icons/selector.svg"
-dest_files=[ "res://.import/selector.svg-706cb32e3c8d55901e15c17769537a5c.stex" ]
+source_file="res://addons/beehave/icons/selector.svg"
+dest_files=[ "res://.import/selector.svg-78bccfc448bd1676b5a29bfde4b08e5b.stex" ]
 
 [params]
 

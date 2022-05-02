@@ -1,3 +1,3 @@
-extends BehaviorTreeNode
+extends BeehaveNode
 
 class_name Leaf, "../../icons/action.svg"
