@@ -1,2 +1,2 @@
 # behave
-🌳 behaviour tree AI for Godot Engine
+ behaviour tree AI for Godot Engine
