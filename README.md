@@ -29,9 +29,9 @@ class_name IsVisibleCondition
 extends ConditionLeaf
 
 func tick(actor, blackboard):
-	if actor.visible:
+    if actor.visible:
         return SUCCESS
-	return FAILURE
+    return FAILURE
 ```
 
 Actions are **leaf nodes** of type `ActionLeaf`. They can be long running potentially being called across multiple frame executions. In this case return the code `RUNNING` .
