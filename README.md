@@ -1,4 +1,4 @@
-![logo](icon.svg)
+![logo](logo.svg)
 
 🐝 Behaviour Tree addon for Godot Engine!
 
