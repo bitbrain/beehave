@@ -93,6 +93,12 @@ A **inverter** will return `FAILURE` in case its child returns a `SUCCESS` statu
 
 The limiter will execute its child `x` amount of times. When the number of maximum ticks is reached, it will return a `FAILURE` status code.
 
+## Tutorial (Godot 3.5+)
+
+I have recorded this tutorial to show in more depth how to use this addon:
+
+[![tutorial-thumbnail](https://img.youtube.com/vi/n0gVEA1dyPQ/0.jpg)](https://www.youtube.com/watch?v=n0gVEA1dyPQ)
+
 # 🍻 Contributing to this project
 
 This project has been inspired by [the behaviour tree example](https://github.com/viniciusgerevini/godot-behavior-tree-example) of [https://github.com/viniciusgerevini](@viniciusgerevini). In case you want to suggest improvements to this addon or fix issues, feel free to raise a pull request or [raise an issue](https://github.com/bitbrain/beehave/issues)!
