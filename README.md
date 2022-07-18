@@ -95,4 +95,4 @@ The limiter will execute its child `x` amount of times. When the number of maxim
 
 # 🍻 Contributing to this project
 
-This project has been inspired by [the behaviour tree example](https://github.com/viniciusgerevini/godot-behavior-tree-example) of [https://github.com/viniciusgerevini](@viniciusgerevini). In case you want to suggest improvements to this addon or fix issues, feel free to raise a pull request!
+This project has been inspired by [the behaviour tree example](https://github.com/viniciusgerevini/godot-behavior-tree-example) of [https://github.com/viniciusgerevini](@viniciusgerevini). In case you want to suggest improvements to this addon or fix issues, feel free to raise a pull request or [raise an issue](https://github.com/bitbrain/beehave/issues)!
