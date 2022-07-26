@@ -4,7 +4,7 @@
 
 # 🧪 Installation
 
-1. [Download](https://github.com/bitbrain/beehave/archive/refs/heads/main.zip) this repository
+1. [Download for Godot 3.x](https://github.com/bitbrain/beehave/archive/refs/heads/main.zip) or [Download for Godot 4.x](https://github.com/bitbrain/beehave/archive/refs/heads/2.x.zip)
 2. Unpack the `beehave` folder into your `/addons` folder within the Godot project
 3. Enable this addon within the Godot settings: `Project > Project Settings > Plugins`
 
@@ -102,3 +102,7 @@ I have recorded this tutorial to show in more depth how to use this addon:
 # 🍻 Contributing to this project
 
 This project has been inspired by [the behaviour tree example](https://github.com/viniciusgerevini/godot-behavior-tree-example) of [https://github.com/viniciusgerevini](@viniciusgerevini). In case you want to suggest improvements to this addon or fix issues, feel free to raise a pull request or [raise an issue](https://github.com/bitbrain/beehave/issues)!
+
+## Version management
+
+The current `main` branch is aimed for **Godot 3.x** while any **Godot 4.x** features should go into the `2.x` branch. When raising pull requests, make sure to also raise a Godot 4 relevant version against `2.x` if requested.
