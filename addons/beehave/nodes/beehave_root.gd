@@ -2,14 +2,14 @@ extends BeehaveTree
 
 class_name BeehaveRoot, "../icons/tree.svg"
 
-const Blackboard = preload("../blackboard.gd")
+var Blackboard = load("res://addons/beehave/blackboard.gd")
 const SUCCESS = 0
 const FAILURE = 1
 const RUNNING = 2
 
-export (bool) var enabled = true
+@export var enabled : bool = true
 
-onready var blackboard = Blackboard.new()
+@onready var blackboard = Blackboard.new()
 
 func _ready():
 	if self.get_child_count() != 1:
