@@ -1,4 +1,4 @@
-extends Reference
+extends Object
 
 var blackboard = {}
 
@@ -21,4 +21,4 @@ func has(key, blackboard_name = 'default'):
 
 func erase(key, blackboard_name = 'default'):
 	if blackboard.has(blackboard_name):
-		 blackboard[blackboard_name][key] = null
+		blackboard[blackboard_name][key] = null

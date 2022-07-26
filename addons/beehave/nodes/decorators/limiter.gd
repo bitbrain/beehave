@@ -2,9 +2,9 @@ extends Decorator
 
 class_name LimiterDecorator, "../../icons/limiter.svg"
 
-onready var cache_key = 'limiter_%s' % self.get_instance_id()
+@onready var cache_key = 'limiter_%s' % self.get_instance_id()
 
-export (float) var max_count = 0
+@export var max_count : float = 0
 
 func tick(actor, blackboard):
 	var current_count = blackboard.get(cache_key)
