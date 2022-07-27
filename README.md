@@ -105,4 +105,4 @@ This project has been inspired by [the behaviour tree example](https://github.co
 
 ## Version management
 
-The current `main` branch is aimed for **Godot 3.x** while any **Godot 4.x** features should go into the `2.x` branch. When raising pull requests, make sure to also raise a Godot 4 relevant version against `2.x` if requested.
+The current `godot-3.x` branch is aimed for **Godot 3.x** while any **Godot 4.x** features should go into the `godot-4.x` branch. When raising pull requests, make sure to also raise a Godot 4 relevant version against `godot-4.x` if requested.
