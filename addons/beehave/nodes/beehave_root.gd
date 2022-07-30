@@ -16,11 +16,9 @@ func _ready():
 		push_error("Beehave error: Root should have one child")
 		disable()
 		return
+	set_physics_process(enabled)
 
 func _physics_process(delta):
-	if not enabled:
-		return
-
 	blackboard.set("delta", delta)
 
 	var status = self.get_child(0).tick(get_parent(), blackboard)
@@ -52,7 +50,9 @@ func get_last_condition_status():
 
 func enable():
 	self.enabled = true
+	set_physics_process(true)
 
 
 func disable():
 	self.enabled = false
+	set_physics_process(false)
