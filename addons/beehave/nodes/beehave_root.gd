@@ -18,9 +18,6 @@ export (PROCESS_MODE) var process_mode = PROCESS_MODE.PHYSICS_PROCESS
 
 onready var blackboard = Blackboard.new()
 
-signal tick_start
-signal tick_end(status)
-
 func _ready():
 	if self.get_child_count() != 1:
 		push_error("Beehave error: Root should have one child")
