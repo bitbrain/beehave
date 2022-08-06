@@ -27,12 +27,10 @@ func _ready():
 	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
 
 func _process(delta):
-	if process_mode == PROCESS_MODE.IDLE and enabled:
-		tick(delta)
+	tick(delta)
 
 func _physics_process(delta):
-	if process_mode == PROCESS_MODE.PHYSICS_PROCESS:
-		tick(delta)
+	tick(delta)
 
 func tick(delta):
 	blackboard.set("delta", delta)
