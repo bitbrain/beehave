@@ -11,7 +11,7 @@ var last_execution_index = 0
 
 func tick(actor, blackboard):
 	for c in get_children():
-		if c.get_index() < last_execution_index:
+		if not c.enabled or c.get_index() < last_execution_index:
 			continue
 		
 		var response = c.tick(actor, blackboard)

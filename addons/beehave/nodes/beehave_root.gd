@@ -7,18 +7,41 @@ const SUCCESS = 0
 const FAILURE = 1
 const RUNNING = 2
 
-export (bool) var enabled = true
+enum PROCESS_MODE {
+	PHYSICS_PROCESS,
+	IDLE,
+	INPUT
+}
+
+export (PROCESS_MODE) var process_mode = PROCESS_MODE.PHYSICS_PROCESS
 
 onready var blackboard = Blackboard.new()
+
+signal tick_start
+signal tick_end(status)
 
 func _ready():
 	if self.get_child_count() != 1:
 		push_error("Beehave error: Root should have one child")
 		disable()
 		return
-	set_physics_process(enabled)
+	set_process(enabled and process_mode == PROCESS_MODE.IDLE)
+	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
+	set_process_input(enabled and process_mode == PROCESS_MODE.INPUT)
+
+func _process(delta):
+	if process_mode == PROCESS_MODE.IDLE and enabled:
+		tick(delta)
 
 func _physics_process(delta):
+	if process_mode == PROCESS_MODE.PHYSICS_PROCESS:
+		tick(delta)
+
+func _input(event):
+	if process_mode == PROCESS_MODE.INPUT and event.is_action_pressed("tick") and enabled:
+		tick(1.0 / Engine.iterations_per_second)
+
+func tick(delta):
 	blackboard.set("delta", delta)
 
 	var status = self.get_child(0).tick(get_parent(), blackboard)
@@ -50,9 +73,13 @@ func get_last_condition_status():
 
 func enable():
 	self.enabled = true
-	set_physics_process(true)
+	set_process(enabled and process_mode == PROCESS_MODE.IDLE)
+	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
+	set_process_input(enabled and process_mode == PROCESS_MODE.INPUT)
 
 
 func disable():
 	self.enabled = false
-	set_physics_process(false)
+	set_process(enabled and process_mode == PROCESS_MODE.IDLE)
+	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
+	set_process_input(enabled and process_mode == PROCESS_MODE.INPUT)

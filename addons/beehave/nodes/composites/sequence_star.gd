@@ -9,7 +9,7 @@ var successful_index = 0
 
 func tick(actor, blackboard):
 	for c in get_children():
-		if c.get_index() < successful_index:
+		if not c.enabled or c.get_index() < successful_index:
 			continue
 		
 		var response = c.tick(actor, blackboard)
