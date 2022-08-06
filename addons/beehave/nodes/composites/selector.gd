@@ -4,11 +4,8 @@ class_name SelectorComposite, "../../icons/selector.svg"
 
 func tick(actor, blackboard):
 	for c in get_children():
-		if not c.enabled:
-			continue
-		
 		var response = c.tick(actor, blackboard)
-		
+
 		if c is ConditionLeaf:
 			blackboard.set("last_condition", c)
 			blackboard.set("last_condition_status", response)

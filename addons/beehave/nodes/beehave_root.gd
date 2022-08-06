@@ -13,6 +13,7 @@ enum PROCESS_MODE {
 	INPUT
 }
 
+export (bool) var enabled = true
 export (PROCESS_MODE) var process_mode = PROCESS_MODE.PHYSICS_PROCESS
 
 onready var blackboard = Blackboard.new()
@@ -45,20 +46,20 @@ func tick(delta):
 	blackboard.set("delta", delta)
 
 	var status = self.get_child(0).tick(get_parent(), blackboard)
-	
+
 	if status != RUNNING:
 		blackboard.set("running_action", null)
-	
+
 func get_running_action():
 	if blackboard.has("running_action"):
 		return blackboard.get("running_action")
 	return null
-		
+
 func get_last_condition():
 	if blackboard.has("last_condition"):
 		return blackboard.get("last_condition")
 	return null
-	
+
 func get_last_condition_status():
 	if blackboard.has("last_condition_status"):
 		var status = blackboard.get("last_condition_status")
