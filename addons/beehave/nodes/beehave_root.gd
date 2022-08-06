@@ -64,11 +64,11 @@ func get_last_condition_status():
 
 func enable():
 	self.enabled = true
-	set_process(enabled and process_mode == PROCESS_MODE.IDLE)
-	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
+	set_process(process_mode == PROCESS_MODE.IDLE)
+	set_physics_process(process_mode == PROCESS_MODE.PHYSICS_PROCESS)
 
 
 func disable():
 	self.enabled = false
-	set_process(enabled and process_mode == PROCESS_MODE.IDLE)
-	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
+	set_process(self.enabled)
+	set_physics_process(self.enabled)
