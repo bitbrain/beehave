@@ -13,7 +13,7 @@ enum PROCESS_MODE {
 	MANUAL
 }
 
-export (PROCESS_MODE) var process_mode = PROCESS_MODE.PHYSICS_PROCESS
+export (PROCESS_MODE) var process_mode = PROCESS_MODE.PHYSICS_PROCESS setget set_process_mode
 export (bool) var enabled = true
 
 onready var blackboard = Blackboard.new()
@@ -61,14 +61,17 @@ func get_last_condition_status():
 			return "RUNNING"
 	return ""
 
-
 func enable():
 	self.enabled = true
 	set_process(process_mode == PROCESS_MODE.IDLE)
 	set_physics_process(process_mode == PROCESS_MODE.PHYSICS_PROCESS)
 
-
 func disable():
 	self.enabled = false
 	set_process(self.enabled)
 	set_physics_process(self.enabled)
+
+func set_process_mode(value):
+	process_mode = value
+	set_process(process_mode == PROCESS_MODE.IDLE)
+	set_physics_process(process_mode == PROCESS_MODE.PHYSICS_PROCESS)
