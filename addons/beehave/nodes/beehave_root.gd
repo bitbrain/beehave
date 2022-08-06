@@ -10,12 +10,11 @@ const RUNNING = 2
 enum PROCESS_MODE {
 	PHYSICS_PROCESS,
 	IDLE,
-	INPUT,
 	MANUAL
 }
 
-export (bool) var enabled = true
 export (PROCESS_MODE) var process_mode = PROCESS_MODE.PHYSICS_PROCESS
+export (bool) var enabled = true
 
 onready var blackboard = Blackboard.new()
 
@@ -26,7 +25,6 @@ func _ready():
 		return
 	set_process(enabled and process_mode == PROCESS_MODE.IDLE)
 	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
-	set_process_input(enabled and process_mode == PROCESS_MODE.INPUT)
 
 func _process(delta):
 	if process_mode == PROCESS_MODE.IDLE and enabled:
@@ -35,10 +33,6 @@ func _process(delta):
 func _physics_process(delta):
 	if process_mode == PROCESS_MODE.PHYSICS_PROCESS:
 		tick(delta)
-
-func _input(event):
-	if process_mode == PROCESS_MODE.INPUT and event.is_action_pressed("tick") and enabled:
-		tick(1.0 / Engine.iterations_per_second)
 
 func tick(delta):
 	blackboard.set("delta", delta)
@@ -74,11 +68,9 @@ func enable():
 	self.enabled = true
 	set_process(enabled and process_mode == PROCESS_MODE.IDLE)
 	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
-	set_process_input(enabled and process_mode == PROCESS_MODE.INPUT)
 
 
 func disable():
 	self.enabled = false
 	set_process(enabled and process_mode == PROCESS_MODE.IDLE)
 	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
-	set_process_input(enabled and process_mode == PROCESS_MODE.INPUT)
