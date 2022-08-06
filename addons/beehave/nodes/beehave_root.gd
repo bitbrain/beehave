@@ -10,7 +10,8 @@ const RUNNING = 2
 enum PROCESS_MODE {
 	PHYSICS_PROCESS,
 	IDLE,
-	INPUT
+	INPUT,
+	MANUAL
 }
 
 export (bool) var enabled = true
