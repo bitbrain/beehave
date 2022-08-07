@@ -7,13 +7,13 @@ const SUCCESS = 0
 const FAILURE = 1
 const RUNNING = 2
 
-enum PROCESS_MODE {
+enum ProcessMode {
 	PHYSICS_PROCESS,
 	IDLE,
 	MANUAL
 }
 
-export (PROCESS_MODE) var process_mode = PROCESS_MODE.PHYSICS_PROCESS setget set_process_mode
+export (ProcessMode) var process_mode = ProcessMode.PHYSICS_PROCESS setget set_process_mode
 export (bool) var enabled = true
 
 onready var blackboard = Blackboard.new()
@@ -23,8 +23,8 @@ func _ready():
 		push_error("Beehave error: Root should have one child")
 		disable()
 		return
-	set_process(enabled and process_mode == PROCESS_MODE.IDLE)
-	set_physics_process(enabled and process_mode == PROCESS_MODE.PHYSICS_PROCESS)
+	set_process(enabled and process_mode == ProcessMode.IDLE)
+	set_physics_process(enabled and process_mode == ProcessMode.PHYSICS_PROCESS)
 
 func _process(delta):
 	tick(delta)
@@ -63,8 +63,8 @@ func get_last_condition_status():
 
 func enable():
 	self.enabled = true
-	set_process(process_mode == PROCESS_MODE.IDLE)
-	set_physics_process(process_mode == PROCESS_MODE.PHYSICS_PROCESS)
+	set_process(process_mode == ProcessMode.IDLE)
+	set_physics_process(process_mode == ProcessMode.PHYSICS_PROCESS)
 
 func disable():
 	self.enabled = false
@@ -73,5 +73,5 @@ func disable():
 
 func set_process_mode(value):
 	process_mode = value
-	set_process(process_mode == PROCESS_MODE.IDLE)
-	set_physics_process(process_mode == PROCESS_MODE.PHYSICS_PROCESS)
+	set_process(process_mode == ProcessMode.IDLE)
+	set_physics_process(process_mode == ProcessMode.PHYSICS_PROCESS)
