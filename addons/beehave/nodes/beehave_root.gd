@@ -16,6 +16,10 @@ enum ProcessMode {
 export (ProcessMode) var process_mode = ProcessMode.PHYSICS_PROCESS setget set_process_mode
 export (bool) var enabled = true
 
+export (NodePath) var actor_node_path
+
+var actor : Node
+
 onready var blackboard = Blackboard.new()
 
 func _ready():
@@ -23,20 +27,25 @@ func _ready():
 		push_error("Beehave error: Root should have one child")
 		disable()
 		return
+
+	actor = get_parent()
+	if actor_node_path:
+		actor = get_node(actor_node_path)
+
 	set_process(enabled and process_mode == ProcessMode.IDLE)
 	set_physics_process(enabled and process_mode == ProcessMode.PHYSICS_PROCESS)
 
 func _process(delta):
 	tick(delta)
-
+  
 func _physics_process(delta):
 	tick(delta)
 
 func tick(delta):
 	blackboard.set("delta", delta)
 
-	var status = self.get_child(0).tick(get_parent(), blackboard)
-
+	var status = self.get_child(0).tick(actor, blackboard)
+	
 	if status != RUNNING:
 		blackboard.set("running_action", null)
 
