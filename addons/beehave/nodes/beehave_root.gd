@@ -32,8 +32,7 @@ func _ready():
 	if actor_node_path:
 		actor = get_node(actor_node_path)
 
-	set_process(enabled and process_mode == ProcessMode.IDLE)
-	set_physics_process(enabled and process_mode == ProcessMode.PHYSICS_PROCESS)
+	set_process_mode(self.process_mode)
 
 func _process(delta):
 	tick(delta)
@@ -72,8 +71,7 @@ func get_last_condition_status():
 
 func enable():
 	self.enabled = true
-	set_process(process_mode == ProcessMode.IDLE)
-	set_physics_process(process_mode == ProcessMode.PHYSICS_PROCESS)
+	set_process_mode(self.process_mode)
 
 func disable():
 	self.enabled = false
