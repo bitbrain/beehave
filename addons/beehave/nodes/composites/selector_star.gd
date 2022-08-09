@@ -13,9 +13,9 @@ func tick(actor, blackboard):
 	for c in get_children():
 		if c.get_index() < last_execution_index:
 			continue
-		
+
 		var response = c.tick(actor, blackboard)
-		
+
 		if c is ConditionLeaf:
 			blackboard.set("last_condition", c)
 			blackboard.set("last_condition_status", response)
