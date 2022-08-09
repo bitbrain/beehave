@@ -22,6 +22,9 @@ var actor : Node
 
 onready var blackboard = Blackboard.new()
 
+signal tick_start(node)
+signal tick_end(node, status)
+
 func _ready():
 	if self.get_child_count() != 1:
 		push_error("Beehave error: Root should have one child")
@@ -36,17 +39,19 @@ func _ready():
 
 func _process(delta):
 	tick(delta)
-  
+
 func _physics_process(delta):
 	tick(delta)
 
 func tick(delta):
+	emit_signal("tick_start", self)
 	blackboard.set("delta", delta)
 
 	var status = self.get_child(0).tick(actor, blackboard)
-	
+
 	if status != RUNNING:
 		blackboard.set("running_action", null)
+	emit_signal("tick_end", self, status)
 
 func get_running_action():
 	if blackboard.has("running_action"):
