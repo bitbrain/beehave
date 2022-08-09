@@ -7,7 +7,7 @@ class_name SequenceStarComposite, "../../icons/sequencer.svg"
 
 var successful_index = 0
 
-func tick(actor, blackboard):
+func _tick(actor, blackboard):
 	for c in get_children():
 		if c.get_index() < successful_index:
 			continue

@@ -9,7 +9,7 @@ class_name SelectorStarComposite, "../../icons/selector.svg"
 
 var last_execution_index = 0
 
-func tick(actor, blackboard):
+func _tick(actor, blackboard):
 	for c in get_children():
 		if c.get_index() < last_execution_index:
 			continue

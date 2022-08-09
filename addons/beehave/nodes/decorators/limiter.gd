@@ -6,7 +6,7 @@ onready var cache_key = 'limiter_%s' % self.get_instance_id()
 
 export (float) var max_count = 0
 
-func tick(actor, blackboard):
+func _tick(actor, blackboard):
 	var current_count = blackboard.get(cache_key)
 
 	if current_count == null:

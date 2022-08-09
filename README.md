@@ -46,7 +46,7 @@ Conditions are **leaf nodes** of type `ConditionLeaf`. They should be kept simpl
 class_name IsVisibleCondition
 extends ConditionLeaf
 
-func tick(actor, blackboard):
+func _tick(actor, blackboard):
     if actor.visible:
         return SUCCESS
     return FAILURE
@@ -60,7 +60,7 @@ Actions are **leaf nodes** of type `ActionLeaf`. They can be long running potent
 class_name MakeVisibleAction
 extends ActionLeaf
 
-func tick(actor, blackboard):
+func _tick(actor, blackboard):
     if actor.visible:
         return FAILURE
 	actor.visible = true
