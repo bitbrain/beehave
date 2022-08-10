@@ -4,7 +4,7 @@
 # FAILED or SUCCEEDED
 extends Composite
 
-class_name SelectorStarComposite, "../../icons/selector.svg"
+class_name SelectorStarComposite, "../../icons/selector_star.svg"
 
 
 var last_execution_index = 0
