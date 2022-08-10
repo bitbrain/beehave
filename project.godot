@@ -103,9 +103,9 @@ _global_script_class_icons={
 "Leaf": "res://addons/beehave/icons/action.svg",
 "LimiterDecorator": "res://addons/beehave/icons/limiter.svg",
 "SelectorComposite": "res://addons/beehave/icons/selector.svg",
-"SelectorStarComposite": "res://addons/beehave/icons/selector.svg",
+"SelectorStarComposite": "res://addons/beehave/icons/selector_star.svg",
 "SequenceComposite": "res://addons/beehave/icons/sequencer.svg",
-"SequenceStarComposite": "res://addons/beehave/icons/sequencer.svg"
+"SequenceStarComposite": "res://addons/beehave/icons/sequencer_star.svg"
 }
 
 [application]
