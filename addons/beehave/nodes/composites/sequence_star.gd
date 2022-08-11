@@ -3,7 +3,7 @@
 
 extends Composite
 
-class_name SequenceStarComposite, "../../icons/sequencer.svg"
+class_name SequenceStarComposite, "../../icons/sequencer_star.svg"
 
 var successful_index = 0
 
