@@ -22,8 +22,8 @@ var actor : Node
 
 onready var blackboard = Blackboard.new()
 
-signal tick_start(node)
-signal tick_end(node, status)
+signal tick_start(blackboard)
+signal tick_end(blackboard)
 
 func _ready():
 	if self.get_child_count() != 1:
@@ -44,14 +44,14 @@ func _physics_process(delta):
 	tick(delta)
 
 func tick(delta):
-	emit_signal("tick_start", self)
+	emit_signal("tick_start", self.blackboard)
 	blackboard.set("delta", delta)
 
 	var status = self.get_child(0).tick(actor, blackboard)
 
 	if status != RUNNING:
 		blackboard.set("running_action", null)
-	emit_signal("tick_end", self, status)
+	emit_signal("tick_end", self.blackboard)
 
 func get_running_action():
 	if blackboard.has("running_action"):
