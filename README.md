@@ -2,9 +2,19 @@
 
 🐝 Behaviour Tree addon for Godot Engine!
 
+# 🤔 Yet another Behavior Tree addon?
+
+There are already various behavior tree addons for Godot on the asset store, however, for my personal game none of them either worked correctly or they were UI only. I stumbled upon this amazing minimal [behaviour tree example](https://github.com/viniciusgerevini/godot-behavior-tree-example) by [@viniciusgerevini](https://github.com/viniciusgerevini). I decided to fork it and create this addon from it for the following reasons:
+
+- dedicated repo for the addon including Godot 3.x and 4.x support
+- additional features such as a debug view in editor (see [#1](https://github.com/bitbrain/beehave/issues/1))
+- [I am building an RPG](https://www.youtube.com/watch?v=iU-nx2tLVnk) and will have to heavily extend this addon to my needs
+
+If you are looking for a simplistic addon without any extra fluff, Beehave is just right for you!
+
 # 🧪 Installation
 
-1. [Download](https://github.com/bitbrain/beehave/archive/refs/heads/main.zip) this repository
+1. [Download for Godot 3.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-3.x.zip) or [Download for Godot 4.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-4.x.zip)
 2. Unpack the `beehave` folder into your `/addons` folder within the Godot project
 3. Enable this addon within the Godot settings: `Project > Project Settings > Plugins`
 
@@ -19,6 +29,12 @@ Behaviour trees are a modular way to build AI logic for your game. For simple AI
 In a nutshell, a behaviour tree is a Godot Node that can be added as a child to other Godot nodes within the scene tree. It will run its logic every frame tick and modify the parent node accordingly.
 
 In more theoretical terms, a behaviour tree consists of so called **nodes** - each node can be of a different type with different purposes. Those are described further down below in more detail. Every node has a `tick(actor, blackboard)` method that can be used to execute custom logic. When the `tick` function is called, beehave expects a return status of either `SUCCESS`, `RUNNING` or `FAILURE`.
+
+## Tutorial (Godot 3.5+)
+
+I have recorded this tutorial to show in more depth how to use this addon:
+
+[![tutorial-thumbnail](https://img.youtube.com/vi/n0gVEA1dyPQ/0.jpg)](https://www.youtube.com/watch?v=n0gVEA1dyPQ)
 
 ## Actions and Conditions
 
@@ -93,12 +109,10 @@ A **inverter** will return `FAILURE` in case its child returns a `SUCCESS` statu
 
 The limiter will execute its child `x` amount of times. When the number of maximum ticks is reached, it will return a `FAILURE` status code.
 
-## Tutorial (Godot 3.5+)
-
-I have recorded this tutorial to show in more depth how to use this addon:
-
-[![tutorial-thumbnail](https://img.youtube.com/vi/n0gVEA1dyPQ/0.jpg)](https://www.youtube.com/watch?v=n0gVEA1dyPQ)
-
 # 🍻 Contributing to this project
 
-This project has been inspired by [the behaviour tree example](https://github.com/viniciusgerevini/godot-behavior-tree-example) of [https://github.com/viniciusgerevini](@viniciusgerevini). In case you want to suggest improvements to this addon or fix issues, feel free to raise a pull request or [raise an issue](https://github.com/bitbrain/beehave/issues)!
+In case you want to suggest improvements to this addon or fix issues, feel free to raise a pull request or [raise an issue](https://github.com/bitbrain/beehave/issues)!
+
+## Version management
+
+The current `godot-3.x` branch is aimed for **Godot 3.x** while any **Godot 4.x** features should go into the `godot-4.x` branch. When raising pull requests, make sure to also raise a Godot 4 relevant version against `godot-4.x` if requested.
