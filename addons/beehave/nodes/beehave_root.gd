@@ -17,7 +17,7 @@ var actor : Node
 
 func _ready():
 	if self.get_child_count() != 1:
-		push_error("Beehave error: Root should have one child")
+		push_error("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
 		disable()
 		return
 
