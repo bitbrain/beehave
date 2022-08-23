@@ -8,4 +8,4 @@ func tick(action, blackboard):
 		var response = c.tick(action, blackboard)
 		if response == RUNNING:
 			return RUNNING
-		return FAILURE
+	return FAILURE
