@@ -63,7 +63,7 @@ extends ActionLeaf
 func tick(actor, blackboard):
     if actor.visible:
         return FAILURE
-	actor.visible = true
+    actor.visible = true
     return SUCCESS
 ```
 
