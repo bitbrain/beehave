@@ -111,6 +111,10 @@ _global_script_class_icons={
 [application]
 
 config/name="beehave"
+config/description="🐝 Behaviour Tree addon for Godot Engine!"
+boot_splash/image="res://splash.png"
+boot_splash/fullsize=false
+boot_splash/bg_color=Color( 0.141176, 0.141176, 0.141176, 1 )
 config/icon="res://icon.png"
 
 [editor_plugins]
