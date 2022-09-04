@@ -1,6 +1,8 @@
 ![logo](logo.svg)
 
-🐝 Behaviour Tree addon for Godot Engine!
+**🐝 Behaviour Tree addon for Godot Engine!**
+
+![](https://img.shields.io/badge/Godot%20Compatible-3.0%2B-%234385B5) ![](https://img.shields.io/badge/Godot%20Compatible-4.0%2B-%234385B5) [![](https://img.shields.io/discord/785246324793540608.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/CKBuE5djXe)
 
 # 🤔 Yet another Behavior Tree addon?
 
