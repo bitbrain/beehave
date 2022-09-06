@@ -1,0 +1,130 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "Leaf",
+"class": "ActionLeaf",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/leaves/action.gd"
+}, {
+"base": "Decorator",
+"class": "AlwaysFailDecorator",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/decorators/failer.gd"
+}, {
+"base": "Decorator",
+"class": "AlwaysSucceedDecorator",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/decorators/succeeder.gd"
+}, {
+"base": "BeehaveTree",
+"class": "BeehaveNode",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/beehave_node.gd"
+}, {
+"base": "BeehaveTree",
+"class": "BeehaveRoot",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/beehave_root.gd"
+}, {
+"base": "Node",
+"class": "BeehaveTree",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/beehave_tree.gd"
+}, {
+"base": "BeehaveNode",
+"class": "Composite",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/composites/composite.gd"
+}, {
+"base": "Leaf",
+"class": "ConditionLeaf",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/leaves/condition.gd"
+}, {
+"base": "BeehaveNode",
+"class": "Decorator",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/decorators/decorator.gd"
+}, {
+"base": "Decorator",
+"class": "InverterDecorator",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/decorators/inverter.gd"
+}, {
+"base": "BeehaveNode",
+"class": "Leaf",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/leaves/leaf.gd"
+}, {
+"base": "Decorator",
+"class": "LimiterDecorator",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/decorators/limiter.gd"
+}, {
+"base": "Composite",
+"class": "SelectorComposite",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/composites/selector.gd"
+}, {
+"base": "Composite",
+"class": "SelectorStarComposite",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/composites/selector_star.gd"
+}, {
+"base": "Composite",
+"class": "SequenceComposite",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/composites/sequence.gd"
+}, {
+"base": "Composite",
+"class": "SequenceStarComposite",
+"language": "GDScript",
+"path": "res://addons/beehave/nodes/composites/sequence_star.gd"
+} ]
+_global_script_class_icons={
+"ActionLeaf": "res://addons/beehave/icons/action.svg",
+"AlwaysFailDecorator": "res://addons/beehave/icons/fail.svg",
+"AlwaysSucceedDecorator": "res://addons/beehave/icons/succeed.svg",
+"BeehaveNode": "res://addons/beehave/icons/action.svg",
+"BeehaveRoot": "res://addons/beehave/icons/tree.svg",
+"BeehaveTree": "res://addons/beehave/icons/icon.png",
+"Composite": "res://addons/beehave/icons/category_composite.svg",
+"ConditionLeaf": "res://addons/beehave/icons/condition.svg",
+"Decorator": "res://addons/beehave/icons/category_decorator.svg",
+"InverterDecorator": "res://addons/beehave/icons/inverter.svg",
+"Leaf": "res://addons/beehave/icons/action.svg",
+"LimiterDecorator": "res://addons/beehave/icons/limiter.svg",
+"SelectorComposite": "res://addons/beehave/icons/selector.svg",
+"SelectorStarComposite": "res://addons/beehave/icons/selector_star.svg",
+"SequenceComposite": "res://addons/beehave/icons/sequencer.svg",
+"SequenceStarComposite": "res://addons/beehave/icons/sequencer_star.svg"
+}
+
+[application]
+
+config/name="beehave"
+config/description="🐝 Behaviour Tree addon for Godot Engine!"
+boot_splash/image="res://splash.png"
+boot_splash/fullsize=false
+boot_splash/bg_color=Color( 0.141176, 0.141176, 0.141176, 1 )
+config/icon="res://icon.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/beehave/plugin.cfg" )
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[physics]
+
+common/enable_pause_aware_picking=true
