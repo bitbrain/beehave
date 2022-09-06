@@ -2,18 +2,7 @@
 * text=auto eol=lf
 
 # Ignore some files when exporting to a ZIP.
-/.github            export-ignore
-/.gitattributes     export-ignore
-/.gitignore         export-ignore
-/LICENSE            export-ignore
-/CODE_OF_CONDUCT.md export-ignore
-/CONTRIBUTING.md    export-ignore
-/LICENSE.md         export-ignore
-/LICENSE            export-ignore
-/README.md          export-ignore
-/project.godot      export-ignore
-/icon.png           export-ignore
-/icon.svg           export-ignore
-/logo.svg           export-ignore
-/splash.png           export-ignore
-/example.jpg           export-ignore
+# Only include the addons folder when downloading from the Asset Library.
+/**        export-ignore
+/addons    !export-ignore
+/addons/** !export-ignore
