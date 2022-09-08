@@ -1,6 +1,7 @@
 extends Decorator
 
-class_name LimiterDecorator, "../../icons/limiter.svg"
+class_name LimiterDecorator
+@icon("../../icons/limiter.svg")
 
 @onready var cache_key = 'limiter_%s' % self.get_instance_id()
 
