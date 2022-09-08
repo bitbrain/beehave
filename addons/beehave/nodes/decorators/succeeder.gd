@@ -1,6 +1,7 @@
 extends Decorator
 
-class_name AlwaysSucceedDecorator, "../../icons/succeed.svg"
+class_name AlwaysSucceedDecorator
+@icon("../../icons/succeed.svg")
 
 func tick(action, blackboard):
 	for c in get_children():

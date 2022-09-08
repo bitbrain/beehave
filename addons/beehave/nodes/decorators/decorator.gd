@@ -1,6 +1,7 @@
 extends BeehaveNode
 
-class_name Decorator, "../../icons/category_decorator.svg"
+class_name Decorator
+@icon("../../icons/category_decorator.svg")
 
 
 func _ready():

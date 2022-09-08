@@ -1,3 +1,4 @@
 extends BeehaveNode
 
-class_name Leaf, "../../icons/action.svg"
+class_name Leaf
+@icon("../../icons/action.svg")

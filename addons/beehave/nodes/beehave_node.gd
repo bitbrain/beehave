@@ -1,6 +1,7 @@
 extends BeehaveTree
 
-class_name BeehaveNode, "../icons/action.svg"
+class_name BeehaveNode
+@icon("../../icons/action.svg")
 
 enum { SUCCESS, FAILURE, RUNNING }
 

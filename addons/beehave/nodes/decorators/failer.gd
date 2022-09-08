@@ -1,6 +1,7 @@
 extends Decorator
 
-class_name AlwaysFailDecorator, "../../icons/fail.svg"
+class_name AlwaysFailDecorator
+@icon("../../icons/fail.svg")
 
 
 func tick(action, blackboard):

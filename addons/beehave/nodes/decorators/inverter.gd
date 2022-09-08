@@ -1,7 +1,7 @@
 extends Decorator
 
-class_name InverterDecorator, "../../icons/inverter.svg"
-
+class_name InverterDecorator
+@icon("../../icons/inverter.svg")
 
 func tick(action, blackboard):
 	for c in get_children():
