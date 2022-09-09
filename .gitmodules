@@ -1,0 +1,3 @@
+[submodule "godot-tutorials"]
+	path = godot-tutorials
+	url = https://github.com/bitbrain/godot-tutorials
