@@ -1,5 +1,5 @@
 extends Object
-
+class_name Blackboard
 var blackboard = {}
 
 func set(key, value, blackboard_name = 'default'):
