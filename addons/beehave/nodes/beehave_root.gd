@@ -4,9 +4,21 @@ class_name BeehaveRoot
 @icon("../../icons/tree.svg")
 
 var Blackboard = load("res://addons/beehave/blackboard.gd")
+
 const SUCCESS = 0
 const FAILURE = 1
 const RUNNING = 2
+
+enum BeehaveProcessMode {
+	PHYSICS_PROCESS,
+	IDLE,
+	MANUAL
+}
+
+@export var beehave_process_mode: BeehaveProcessMode = BeehaveProcessMode.PHYSICS_PROCESS:
+	set(value):
+		beehave_process_mode = value
+		set_beehive_process_mode(value) 
 
 @export var enabled : bool = true
 
@@ -25,10 +37,16 @@ func _ready():
 	actor = get_parent()
 	if actor_node_path:
 		actor = get_node(actor_node_path)
+		
+	set_beehive_process_mode(self.beehave_process_mode)
 
-	set_physics_process(enabled)
+func _process(delta):
+	tick(delta)
 
 func _physics_process(delta):
+	tick(delta)
+	
+func tick(delta):
 	blackboard.set("delta", delta)
 
 	var status = self.get_child(0).tick(actor, blackboard)
@@ -57,12 +75,15 @@ func get_last_condition_status():
 			return "RUNNING"
 	return ""
 
-
 func enable():
 	self.enabled = true
-	set_physics_process(true)
-
+	set_beehive_process_mode(self.beehave_process_mode)
 
 func disable():
 	self.enabled = false
-	set_physics_process(false)
+	set_process(self.enabled)
+	set_physics_process(self.enabled)
+	
+func set_beehive_process_mode(value):
+	set_process(beehave_process_mode == BeehaveProcessMode.IDLE)
+	set_physics_process(beehave_process_mode == BeehaveProcessMode.PHYSICS_PROCESS)
