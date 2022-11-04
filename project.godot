@@ -39,6 +39,11 @@ _global_script_classes=[{
 "language": &"GDScript",
 "path": "res://addons/beehave/nodes/beehave_tree.gd"
 }, {
+"base": "Object",
+"class": &"Blackboard",
+"language": &"GDScript",
+"path": "res://addons/beehave/blackboard.gd"
+}, {
 "base": "BeehaveNode",
 "class": &"Composite",
 "language": &"GDScript",
@@ -95,7 +100,8 @@ _global_script_class_icons={
 "AlwaysSucceedDecorator": "res://addons/beehave/icons/succeed.svg",
 "BeehaveNode": "res://addons/beehave/icons/action.svg",
 "BeehaveRoot": "res://addons/beehave/icons/tree.svg",
-"BeehaveTree": "",
+"BeehaveTree": "res://addons/beehave/icons/icon.svg",
+"Blackboard": "",
 "Composite": "res://addons/beehave/icons/category_composite.svg",
 "ConditionLeaf": "res://addons/beehave/icons/condition.svg",
 "Decorator": "res://addons/beehave/icons/category_decorator.svg",
@@ -111,7 +117,8 @@ _global_script_class_icons={
 [application]
 
 config/name="Beehave"
-config/features=PackedStringArray("4.0", "Vulkan Clustered")
+config/features=PackedStringArray("4.0")
+boot_splash/image="res://splash.png"
 config/icon="res://icon.png"
 
 [editor_plugins]
