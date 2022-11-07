@@ -1,7 +1,5 @@
-extends BeehaveTree
-
-class_name BeehaveRoot
-@icon("../../icons/tree.svg")
+class_name BeehaveRoot extends BeehaveTree
+@icon("../icons/tree.svg")
 
 var Blackboard = load("res://addons/beehave/blackboard.gd")
 const SUCCESS = 0
