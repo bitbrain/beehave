@@ -119,6 +119,7 @@ _global_script_class_icons={
 config/name="Beehave"
 config/features=PackedStringArray("4.0")
 boot_splash/image="res://splash.png"
+boot_splash/fullsize=false
 config/icon="res://icon.png"
 
 [editor_plugins]
