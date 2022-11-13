@@ -13,5 +13,5 @@ func tick(action, blackboard):
 			return SUCCESS
 
 		if c is Leaf and response == RUNNING:
-			blackboard.set("running_action", c)
+			blackboard.set_value("running_action", c)
 		return RUNNING
