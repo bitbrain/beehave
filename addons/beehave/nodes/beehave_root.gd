@@ -1,11 +1,19 @@
 class_name BeehaveRoot extends BeehaveTree
 @icon("../icons/tree.svg")
 
-const SUCCESS = 0
-const FAILURE = 1
-const RUNNING = 2
 
-@export var enabled : bool = true
+enum {
+	SUCCESS,
+	FAILURE,
+	RUNNING
+}
+
+@export var enabled: bool = true:
+	set(value):
+		enabled = value
+		set_physics_process(enabled)
+	get:
+		return enabled
 
 @export_node_path var actor_node_path : NodePath
 
@@ -13,7 +21,8 @@ var actor : Node
 
 @onready var blackboard: Blackboard = Blackboard.new()
 
-func _ready():
+
+func _ready() -> void:
 	if self.get_child_count() != 1:
 		push_error("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
 		disable()
@@ -25,7 +34,8 @@ func _ready():
 
 	set_physics_process(enabled)
 
-func _physics_process(delta):
+
+func _physics_process(delta: float) -> void:
 	blackboard.set_value("delta", delta)
 
 	var status = self.get_child(0).tick(actor, blackboard)
@@ -33,17 +43,20 @@ func _physics_process(delta):
 	if status != RUNNING:
 		blackboard.set_value("running_action", null)
 
-func get_running_action():
+
+func get_running_action() -> ActionLeaf:
 	if blackboard.has_value("running_action"):
 		return blackboard.get_value("running_action")
 	return null
 
-func get_last_condition():
+
+func get_last_condition() -> void:
 	if blackboard.has_value("last_condition"):
 		return blackboard.get_value("last_condition")
 	return null
 
-func get_last_condition_status():
+
+func get_last_condition_status() -> String:
 	if blackboard.has_value("last_condition_status"):
 		var status = blackboard.get_value("last_condition_status")
 		if status == SUCCESS:
@@ -55,11 +68,9 @@ func get_last_condition_status():
 	return ""
 
 
-func enable():
-	self.enabled = true
-	set_physics_process(true)
+func enable() -> void:
+	enabled = true
 
 
-func disable():
-	self.enabled = false
-	set_physics_process(false)
+func disable() -> void:
+	enabled = false
