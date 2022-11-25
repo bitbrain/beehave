@@ -1,3 +1,7 @@
+## Selector nodes will attempt to execute each of its children until one of
+## them return `SUCCESS`. If all children return `FAILURE`, this node will also
+## return `FAILURE`. This node will attempt to process all its children every
+## single tick, even if one of them is currently `RUNNING` already.
 extends Composite
 
 class_name SelectorComposite

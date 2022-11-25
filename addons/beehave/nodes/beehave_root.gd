@@ -1,3 +1,4 @@
+## Controls the flow of execution of the entire behaviour tree.
 class_name BeehaveRoot extends BeehaveTree
 @icon("../icons/tree.svg")
 

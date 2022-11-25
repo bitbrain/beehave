@@ -1,7 +1,7 @@
-# Special implementation of a selector that will
-# "wait" for running nodes and will not re-attempt
-# to execute previous nodes until that node is either
-# FAILED or SUCCEEDED
+## Selector Star nodes will attempt to execute each of its children until one of
+## them return `SUCCESS`. If all children return `FAILURE`, this node will also
+## return `FAILURE`. This node will skip all previous child nodes that were
+## executed prior, in case one of the children is currently in `RUNNING` state.
 extends Composite
 
 class_name SelectorStarComposite

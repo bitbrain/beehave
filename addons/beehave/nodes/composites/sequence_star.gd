@@ -1,6 +1,8 @@
-# Special implementation of sequencer who will execute
-# successful nodes only once until all nodes were successful
-
+## Sequence Star nodes will attempt to execute all of its children and report
+## `SUCCESS` in case all of the children report a `SUCCESS` status code.
+## If at least one child reports a `FAILURE` status code, this node will also
+## return `FAILURE`. This node will skip all previous child nodes that succeeded
+## prior, in case one of the children is currently in `RUNNING` state
 extends Composite
 
 class_name SequenceStarComposite
