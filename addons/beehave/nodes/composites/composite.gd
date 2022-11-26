@@ -1,3 +1,4 @@
+## A Composite node controls the flow of execution of its children in a specific manner.
 extends BeehaveNode
 
 class_name Composite

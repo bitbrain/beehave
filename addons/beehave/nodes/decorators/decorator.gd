@@ -1,3 +1,5 @@
+## Decorator nodes are used to transform the result received by its child.
+## Must only have one child.
 extends BeehaveNode
 
 class_name Decorator

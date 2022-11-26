@@ -1,3 +1,5 @@
+## The limiter will execute its child `x` amount of times. When the number of
+## maximum ticks is reached, it will return a `FAILURE` status code.
 extends Decorator
 
 class_name LimiterDecorator

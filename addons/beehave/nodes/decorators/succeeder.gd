@@ -1,3 +1,4 @@
+## A succeeder node will always return a `SUCCESS` status code.
 extends Decorator
 
 class_name AlwaysSucceedDecorator

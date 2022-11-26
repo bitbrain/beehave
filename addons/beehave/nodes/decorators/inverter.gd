@@ -1,3 +1,5 @@
+## An inverter will return `FAILURE` in case it's child returns a `SUCCESS` status
+## code or `SUCCESS` in case its child returns a `FAILURE` status code.
 extends Decorator
 
 class_name InverterDecorator
