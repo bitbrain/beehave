@@ -9,7 +9,7 @@ class_name SelectorStarComposite
 
 var last_execution_index = 0
 
-func tick(actor, blackboard):
+func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():
 		if c.get_index() < last_execution_index:
 			continue

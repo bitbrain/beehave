@@ -9,7 +9,7 @@ class_name LimiterDecorator
 
 @export var max_count : float = 0
 
-func tick(actor, blackboard):
+func tick(actor: Node, blackboard: Blackboard) -> int:
 	var current_count = blackboard.get_value(cache_key)
 
 	if current_count == null:
@@ -19,4 +19,4 @@ func tick(actor, blackboard):
 		blackboard.set_value(cache_key, current_count + 1)
 		return self.get_child(0).tick(actor, blackboard)
 	else:
-		return FAILED
+		return FAILURE
