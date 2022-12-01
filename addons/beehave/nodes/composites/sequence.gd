@@ -8,7 +8,7 @@ extends Composite
 class_name SequenceComposite
 @icon("../../icons/sequencer.svg")
 
-func tick(actor, blackboard):
+func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():
 		var response = c.tick(actor, blackboard)
 		

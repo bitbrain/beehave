@@ -7,7 +7,7 @@ extends Composite
 class_name SelectorComposite
 @icon("../../icons/selector.svg")
 
-func tick(actor, blackboard):
+func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():
 		var response = c.tick(actor, blackboard)
 		

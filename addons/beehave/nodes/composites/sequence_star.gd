@@ -10,7 +10,7 @@ class_name SequenceStarComposite
 
 var successful_index = 0
 
-func tick(actor, blackboard):
+func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():
 		if c.get_index() < successful_index:
 			continue

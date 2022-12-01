@@ -3,12 +3,6 @@ class_name BeehaveRoot extends BeehaveTree
 @icon("../icons/tree.svg")
 
 
-enum {
-	SUCCESS,
-	FAILURE,
-	RUNNING
-}
-
 @export var enabled: bool = true:
 	set(value):
 		enabled = value
@@ -51,7 +45,7 @@ func get_running_action() -> ActionLeaf:
 	return null
 
 
-func get_last_condition() -> void:
+func get_last_condition() -> Variant:
 	if blackboard.has_value("last_condition"):
 		return blackboard.get_value("last_condition")
 	return null
