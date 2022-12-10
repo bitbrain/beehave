@@ -119,5 +119,5 @@ The current `godot-3.x` branch is aimed for **Godot 3.x** while any **Godot 4.x*
 
 # 🐝 Credits
 
-- logo designs by [@NathanHoard](https://twitter.com/nathanhoad) & [@StuartDeVille](https://twitter.com/StuartDeVille)
+- logo designs by [@NathanHoad](https://twitter.com/nathanhoad) & [@StuartDeVille](https://twitter.com/StuartDeVille)
 - original addon by [@viniciusgerevini](https://github.com/viniciusgerevini)
