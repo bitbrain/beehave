@@ -117,7 +117,7 @@ In case you want to suggest improvements to this addon or fix issues, feel free 
 
 The current `godot-3.x` branch is aimed for **Godot 3.x** while any **Godot 4.x** features should go into the `godot-4.x` branch. When raising pull requests, make sure to also raise a Godot 4 relevant version against `godot-4.x` if requested.
 
-#  Credits
+# 🐝 Credits
 
-- logo designs by @NathanHoard(https://twitter.com/nathanhoad) & [@StuartDeVille](https://twitter.com/StuartDeVille)
+- logo designs by [@NathanHoard](https://twitter.com/nathanhoad) & [@StuartDeVille](https://twitter.com/StuartDeVille)
 - original addon by [@viniciusgerevini](https://github.com/viniciusgerevini)
