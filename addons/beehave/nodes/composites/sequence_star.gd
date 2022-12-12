@@ -24,8 +24,8 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		if response != SUCCESS:
 			if response == FAILURE:
 				successful_index = 0
-			if c is ActionLeaf and response == RUNNING:
-				blackboard.set_value("running_action", c)
+			else: # RUNNING
+				running_child = c
 			return response
 		else:
 			successful_index += 1
