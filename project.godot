@@ -117,6 +117,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Beehave"
+run/main_scene="res://tests/BeehaveTestScene.tscn"
 config/features=PackedStringArray("4.0")
 boot_splash/image="res://splash.png"
 boot_splash/fullsize=false

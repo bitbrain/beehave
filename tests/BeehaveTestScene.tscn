@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://dkcfgcafwnw3h"]
+
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_root.gd" id="1_as4vk"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_node.gd" id="2_chxav"]
+
+[node name="BeehaveTestScene" type="Node2D"]
+
+[node name="BeehaveRoot" type="Node" parent="."]
+script = ExtResource("1_as4vk")
+
+[node name="BeehaveNode" type="Node" parent="BeehaveRoot"]
+script = ExtResource("2_chxav")
