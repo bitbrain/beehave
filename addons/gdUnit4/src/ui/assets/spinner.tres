@@ -1,0 +1,30 @@
+[gd_resource type="AnimatedTexture" load_steps=9 format=3 uid="uid://ck3p6wmq42arh"]
+
+[ext_resource type="Texture2D" uid="uid://k6tafcfmj7nh" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress7.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://bk7uary1uurve" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress5.svg" id="2"]
+[ext_resource type="Texture2D" uid="uid://cre3u1yoi31wc" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress1.svg" id="3"]
+[ext_resource type="Texture2D" uid="uid://357jyfxexe8n" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress8.svg" id="4"]
+[ext_resource type="Texture2D" uid="uid://b6f3oeyqc8rmv" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress2.svg" id="5"]
+[ext_resource type="Texture2D" uid="uid://r8nlrj4e1u4x" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress6.svg" id="6"]
+[ext_resource type="Texture2D" uid="uid://cipvy0wb2544u" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress3.svg" id="7"]
+[ext_resource type="Texture2D" uid="uid://di1hwc1nhx46e" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress4.svg" id="8"]
+
+[resource]
+frames = 8
+speed_scale = 2.5
+frame_0/texture = ExtResource("3")
+frame_0/duration = 0.2
+frame_1/texture = ExtResource("5")
+frame_1/duration = 0.2
+frame_2/texture = ExtResource("7")
+frame_2/duration = 0.2
+frame_3/texture = ExtResource("8")
+frame_3/duration = 0.2
+frame_4/texture = ExtResource("2")
+frame_4/duration = 0.2
+frame_5/texture = ExtResource("6")
+frame_5/duration = 0.2
+frame_6/texture = ExtResource("1")
+frame_6/duration = 0.2
+frame_7/texture = ExtResource("4")
+frame_7/duration = 0.2
