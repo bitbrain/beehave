@@ -1,4 +1,4 @@
-![logo](logo.svg)
+![logo](assets/logo.svg)
 
 🐝  Behaviour Tree addon for [Godot Engine](https://godotengine.org/).
 
@@ -26,7 +26,7 @@ If you are looking for a simplistic addon without any extra fluff, Beehave is ju
 
 Behaviour trees are a modular way to build AI logic for your game. For simple AI, behaviour trees are definitely overkill, however, for more complex AI interactions, behaviour trees can help you to better manage changes and re-use logic across all NPCs.
 
-![example](example.jpg)
+![example](assets/example.jpg)
 
 ## What is a behaviour tree?
 
