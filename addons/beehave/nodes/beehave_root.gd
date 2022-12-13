@@ -32,16 +32,22 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	blackboard.set_value("delta", delta)
-
 	var status = self.get_child(0).tick(actor, blackboard)
 
-	if status != RUNNING:
-		blackboard.set_value("running_action", null)
+	# Updates the current running action.
+	var running_action = get_running_action() if status == RUNNING else null
+	blackboard.set_value("running_action", running_action)
 
 
 func get_running_action() -> ActionLeaf:
-	if blackboard.has_value("running_action"):
-		return blackboard.get_value("running_action")
+	var node = get_child(0)
+	while node != null:
+		if node is Composite:
+			node = (node as Composite).running_child
+		elif node is ActionLeaf:
+			return node
+	
+	push_error("Beehave error: Could not find running action in tree root '%s'." % name)
 	return null
 
 

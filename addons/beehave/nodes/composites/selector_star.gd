@@ -21,10 +21,10 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 			blackboard.set_value("last_condition_status", response)
 
 		if response != FAILURE:
-			if c is ActionLeaf and response == RUNNING:
-				blackboard.set_value("running_action", c)
 			if response == SUCCESS:
 				last_execution_index = 0
+			else: # RUNNING
+				running_child = c
 			return response
 		else:
 			last_execution_index += 1
