@@ -1,7 +1,6 @@
 ## A succeeder node will always return a `SUCCESS` status code.
-extends Decorator
-
-class_name AlwaysSucceedDecorator
+@tool
+class_name AlwaysSucceedDecorator extends Decorator
 @icon("../../icons/succeed.svg")
 
 

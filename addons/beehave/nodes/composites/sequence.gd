@@ -3,9 +3,8 @@
 ## If at least one child reports a `FAILURE` status code, this node will also
 ## return `FAILURE`. This node will attempt to process all its children every
 ## single tick, even if one of them is currently `RUNNING` already.
-extends Composite
-
-class_name SequenceComposite
+@tool
+class_name SequenceComposite extends Composite
 @icon("../../icons/sequencer.svg")
 
 func tick(actor: Node, blackboard: Blackboard) -> int:

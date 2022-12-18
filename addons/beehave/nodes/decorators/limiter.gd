@@ -1,8 +1,7 @@
 ## The limiter will execute its child `x` amount of times. When the number of
 ## maximum ticks is reached, it will return a `FAILURE` status code.
-extends Decorator
-
-class_name LimiterDecorator
+@tool
+class_name LimiterDecorator extends Decorator
 @icon("../../icons/limiter.svg")
 
 @onready var cache_key = 'limiter_%s' % self.get_instance_id()

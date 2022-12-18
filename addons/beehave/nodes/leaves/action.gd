@@ -2,7 +2,6 @@
 ## Their execution can be long running, potentially being called across multiple
 ## frame executions. In this case, the node should return `RUNNING` until the
 ## action is completed.
-extends Leaf
-
-class_name ActionLeaf
+@tool
+class_name ActionLeaf extends Leaf
 @icon("../../icons/action.svg")
