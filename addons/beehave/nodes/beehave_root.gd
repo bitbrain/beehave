@@ -49,7 +49,7 @@ func _physics_process(delta: float) -> void:
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings: PackedStringArray = super._get_configuration_warnings()
 	
-	if get_children().filter(func(x): return x is BeehaveNode).size() != 1:
+	if get_child_count() != 1:
 		warnings.append("BeehaveRoot should have exactly one child node.")
 	
 	return warnings
