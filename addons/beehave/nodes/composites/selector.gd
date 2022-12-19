@@ -2,9 +2,8 @@
 ## them return `SUCCESS`. If all children return `FAILURE`, this node will also
 ## return `FAILURE`. This node will attempt to process all its children every
 ## single tick, even if one of them is currently `RUNNING` already.
-extends Composite
-
-class_name SelectorComposite
+@tool
+class_name SelectorComposite extends Composite
 @icon("../../icons/selector.svg")
 
 func tick(actor: Node, blackboard: Blackboard) -> int:

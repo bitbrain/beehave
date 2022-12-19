@@ -7,6 +7,7 @@
 
 [node name="BeehaveRoot" type="Node" parent="."]
 script = ExtResource("1_as4vk")
+actor_node_path = NodePath("")
 
 [node name="BeehaveNode" type="Node" parent="BeehaveRoot"]
 script = ExtResource("2_chxav")

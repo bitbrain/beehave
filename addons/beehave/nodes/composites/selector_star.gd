@@ -2,9 +2,8 @@
 ## them return `SUCCESS`. If all children return `FAILURE`, this node will also
 ## return `FAILURE`. This node will skip all previous child nodes that were
 ## executed prior, in case one of the children is currently in `RUNNING` state.
-extends Composite
-
-class_name SelectorStarComposite
+@tool
+class_name SelectorStarComposite extends Composite
 @icon("../../icons/selector_star.svg")
 
 var last_execution_index = 0
