@@ -307,7 +307,7 @@ func tokenize_value(input: String, current: int, token: Token) -> Token:
 	var next := 0
 	var current_token := ""
 	# test for '--', '+-', '*-', '/-', '%-', or at least '-x'
-	var test_for_sign := (token == null or token.is_operator()) and input[current] == "-"
+	var test_for_sign = (token == null or token.is_operator()) and input[current] == "-" as bool
 	while current + next < len(input):
 		var character := input[current + next] as String
 		# if first charater a sign
