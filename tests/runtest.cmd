@@ -16,9 +16,9 @@ IF "%GODOT_TYPE%" == "mono" (
 	ECHO done %errorlevel%
 )
 
-%GODOT_BIN% --no-window -s -d .\..\addons\gdUnit4\bin\GdUnitCmdTool.gd %*
+%GODOT_BIN% --no-window -s -d addons\gdUnit4\bin\GdUnitCmdTool.gd %*
 SET exit_code=%errorlevel%
-%GODOT_BIN% --no-window --quiet -s -d .\..\addons\gdUnit4\bin\GdUnitCopyLog.gd %*
+%GODOT_BIN% --no-window --quiet -s -d addons\gdUnit4\bin\GdUnitCopyLog.gd %*
 
 ECHO %exit_code%
 

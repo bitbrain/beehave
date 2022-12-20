@@ -26,7 +26,7 @@ jobs:
         godot-build: ['']
         godot-version: [4]
 
-    name: "CI on Godot ${{ matrix.godot-build }}v${{ matrix.godot-version }}"
+    name: "🤖 running unit tests ${{ matrix.godot-build }} ${{ matrix.godot-version }}"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     continue-on-error: false
@@ -34,10 +34,10 @@ jobs:
       image: zinefer/godot-ci:${{ matrix.godot-build }}${{ matrix.godot-version }}
 
     steps:
-      - name: "Checkout Repository"
+      - name: "📦 checkout repository"
         uses: actions/checkout@v3
 
-      - name: "Run Unit Tests"
+      - name: "🧪 run unit tests"
         if: ${{ !cancelled() }}
         timeout-minutes: 10
         uses: ./.github/actions/unit-test
@@ -45,13 +45,13 @@ jobs:
           godot-bin: ${{ env.GODOT_BIN }}
           test-includes: "res://tests/"
 
-      - name: "Publish Unit Test Reports"
+      - name: "📚 publish unit test reports"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/publish-test-report
         with:
           report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
 
-      - name: "Upload Unit Test Reports"
+      - name: "🚚 upload unit test reports"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/upload-test-report
         with:
