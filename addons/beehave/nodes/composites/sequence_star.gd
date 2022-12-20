@@ -3,9 +3,8 @@
 ## If at least one child reports a `FAILURE` status code, this node will also
 ## return `FAILURE`. This node will skip all previous child nodes that succeeded
 ## prior, in case one of the children is currently in `RUNNING` state
-extends Composite
-
-class_name SequenceStarComposite
+@tool
+class_name SequenceStarComposite extends Composite
 @icon("../../icons/sequencer_star.svg")
 
 var successful_index = 0

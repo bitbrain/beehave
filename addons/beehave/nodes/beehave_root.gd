@@ -1,4 +1,5 @@
 ## Controls the flow of execution of the entire behaviour tree.
+@tool
 class_name BeehaveRoot extends BeehaveTree
 @icon("../icons/tree.svg")
 
@@ -18,6 +19,9 @@ var actor : Node
 
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
+	
 	if self.get_child_count() != 1:
 		push_error("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
 		disable()
@@ -31,12 +35,24 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+	
 	blackboard.set_value("delta", delta)
 	var status = self.get_child(0).tick(actor, blackboard)
 
 	# Updates the current running action.
 	var running_action = get_running_action() if status == RUNNING else null
 	blackboard.set_value("running_action", running_action)
+
+
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings: PackedStringArray = super._get_configuration_warnings()
+	
+	if get_child_count() != 1:
+		warnings.append("BeehaveRoot should have exactly one child node.")
+	
+	return warnings
 
 
 func get_running_action() -> ActionLeaf:

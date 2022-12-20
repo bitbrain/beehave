@@ -1,7 +1,6 @@
 ## A Failer node will always return a `FAILURE` status code.
-extends Decorator
-
-class_name AlwaysFailDecorator
+@tool
+class_name AlwaysFailDecorator extends Decorator
 @icon("../../icons/fail.svg")
 
 

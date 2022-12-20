@@ -47,10 +47,9 @@ Conditions are **leaf nodes** of type `ConditionLeaf`. They should be kept simpl
 **1. Example Condition code: IsVisibleCondition.gd**
 
 ```gdscript
-class_name IsVisibleCondition
-extends ConditionLeaf
+class_name IsVisibleCondition extends ConditionLeaf
 
-func tick(actor, blackboard):
+func tick(actor:Node, blackboard:Blackboard) -> int:
     if actor.visible:
         return SUCCESS
     return FAILURE
@@ -61,10 +60,9 @@ Actions are **leaf nodes** of type `ActionLeaf`. They can be long running potent
 **2. Example Condition code: MakeVisibleAction.gd**
 
 ```gdscript
-class_name MakeVisibleAction
-extends ActionLeaf
+class_name MakeVisibleAction extends ActionLeaf
 
-func tick(actor, blackboard):
+func tick(actor:Node, blackboard:Blackboard) -> int:
     if actor.visible:
         return FAILURE
     actor.visible = true
