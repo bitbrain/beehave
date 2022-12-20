@@ -37,6 +37,22 @@ jobs:
       - name: "📦 checkout repository"
         uses: actions/checkout@v3
 
+      - name: "setup .NET"
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
+      - name: "compile C#"
+        run: |
+          ${{ env.GODOT_BIN }} --headless project.godot --build-solutions --quit --no-window
+
+      - name: "update Project"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 1
+        continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
+        run: |
+          ${{ env.GODOT_BIN }} --headless -e --path . -s res://addons/gdUnit4/src/core/scan_project.gd --no-window
+
       - name: "🧪 run unit tests"
         if: ${{ !cancelled() }}
         timeout-minutes: 10
