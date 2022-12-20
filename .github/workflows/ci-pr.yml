@@ -1,0 +1,61 @@
+name: ci-pr
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.jpg'
+      - '**.png'
+      - '**.md'
+    branches:
+      - 'godot-4.x'
+  workflow_dispatch:
+
+env:
+  GODOT_BIN: "/usr/local/bin/godot"
+
+concurrency:
+  group: ci-pr-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+
+  unit-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        godot-build: ['']
+        godot-version: [4.0]
+
+    name: "CI on Godot ${{ matrix.godot-build }}v${{ matrix.godot-version }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: false
+    container:
+      image: barichello/godot-ci:${{ matrix.godot-build }}${{ matrix.godot-version }}
+
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+          submodules: 'recursive'
+
+      - name: "Run Unit Tests"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 10
+        uses: ./.github/actions/unit-test
+        with:
+          godot-bin: ${{ env.GODOT_BIN }}
+          test-includes: "res://addons/beehave/test/"
+
+      - name: "Publish Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/publish-test-report
+        with:
+          report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
+
+      - name: "Upload Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/upload-test-report
+        with:
+          report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
