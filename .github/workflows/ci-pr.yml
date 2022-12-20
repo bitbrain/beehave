@@ -36,9 +36,6 @@ jobs:
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v3
-        with:
-          lfs: true
-          submodules: 'recursive'
 
       - name: "Run Unit Tests"
         if: ${{ !cancelled() }}
@@ -46,7 +43,7 @@ jobs:
         uses: ./.github/actions/unit-test
         with:
           godot-bin: ${{ env.GODOT_BIN }}
-          test-includes: "res://addons/beehave/test/"
+          test-includes: "res://tests/"
 
       - name: "Publish Unit Test Reports"
         if: ${{ !cancelled() }}
