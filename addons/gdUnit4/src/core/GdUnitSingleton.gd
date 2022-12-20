@@ -14,7 +14,7 @@ static func get_singleton(name: String) -> Object:
 	return singleton
 
 static func add_singleton(name: String, path: String) -> Object:
-	var singleton :Object = load(path).instantiate()
+	var singleton :Object = load(path).new()
 	if singleton.has_method("set_name"):
 		singleton.set_name(name)
 	add_value(name, singleton)
