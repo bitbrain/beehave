@@ -6,6 +6,7 @@
 /**                  export-ignore
 /addons              !export-ignore
 /addons/**           !export-ignore
+/addons/gdUnit4      export-ignore
 
 # Also include script templates.
 /script_templates    !export-ignore
