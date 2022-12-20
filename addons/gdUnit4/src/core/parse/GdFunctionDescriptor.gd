@@ -146,7 +146,7 @@ static func _extract_args(method_descriptor :Dictionary) -> Array[GdFunctionArgu
 		var arg :Dictionary = arguments.pop_back()
 		var arg_name := _argument_name(arg)
 		var arg_type := _argument_type(arg)
-		var arg_default := GdFunctionArgument.UNDEFINED
+		var arg_default = GdFunctionArgument.UNDEFINED as Variant
 		if not defaults.is_empty():
 			arg_default = _argument_default_value(arg, defaults.pop_back())
 		args.push_front(GdFunctionArgument.new(arg_name, arg_type, arg_default))
