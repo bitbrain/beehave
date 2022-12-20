@@ -24,14 +24,14 @@ jobs:
       fail-fast: false
       matrix:
         godot-build: ['']
-        godot-version: [4.0]
+        godot-version: [4]
 
     name: "CI on Godot ${{ matrix.godot-build }}v${{ matrix.godot-version }}"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     continue-on-error: false
     container:
-      image: barichello/godot-ci:${{ matrix.godot-build }}${{ matrix.godot-version }}
+      image: zinefer/godot-ci:${{ matrix.godot-build }}${{ matrix.godot-version }}
 
     steps:
       - name: "Checkout Repository"
