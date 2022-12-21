@@ -1,7 +1,7 @@
 ## A succeeder node will always return a `SUCCESS` status code.
 @tool
 class_name AlwaysSucceedDecorator extends Decorator
-@icon("../../icons/succeed.svg")
+@icon("../../icons/succeeder.svg")
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:

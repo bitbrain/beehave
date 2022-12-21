@@ -2,7 +2,6 @@
 ## `RUNNING` when ticked.
 @tool
 class_name BeehaveNode extends BeehaveTree
-@icon("../icons/action.svg")
 
 ## Executes this node and returns a status code.
 ## This method must be overwritten.

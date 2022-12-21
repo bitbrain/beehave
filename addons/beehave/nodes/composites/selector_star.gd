@@ -4,7 +4,7 @@
 ## executed prior, in case one of the children is currently in `RUNNING` state.
 @tool
 class_name SelectorStarComposite extends Composite
-@icon("../../icons/selector_star.svg")
+@icon("../../icons/selector_reactive.svg")
 
 var last_execution_index = 0
 

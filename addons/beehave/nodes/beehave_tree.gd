@@ -1,7 +1,7 @@
 ## Base class for all parts of the behaviour tree.
 @tool
 class_name BeehaveTree extends Node
-@icon("../icons/icon.svg")
+@icon("../icons/category_bt.svg")
 
 
 enum {

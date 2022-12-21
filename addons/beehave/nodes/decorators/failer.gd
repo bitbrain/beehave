@@ -1,7 +1,7 @@
 ## A Failer node will always return a `FAILURE` status code.
 @tool
 class_name AlwaysFailDecorator extends Decorator
-@icon("../../icons/fail.svg")
+@icon("../../icons/failer.svg")
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
