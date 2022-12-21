@@ -119,6 +119,17 @@ The limiter will execute its child `x` amount of times. When the number of maxim
 
 In case you want to suggest improvements to this addon or fix issues, feel free to raise a pull request or [raise an issue](https://github.com/bitbrain/beehave/issues)!
 
+## 🐝 Adding a new node
+
+In case you want to introduce a new node, feel free to [raise a pull request](https://github.com/bitbrain/beehave/compare). Check the issues tab for any discussions on new nodes, as it is a great place to gather feedback before you spend time on implementing it. Ensure to also introduce an icon for your node that is following the colour scheme:
+
+- Utility nodes: `#C689FF`
+- Leafs: `#FFB649`
+- Decorators: `#46C0E1`
+- Composites: `#40D29F`
+
+Also ensure to update the `README.md` file with the documentation of the newly introduced node.
+
 ## Version management
 
 The current `godot-3.x` branch is aimed for **Godot 3.x** while any **Godot 4.x** features should go into the `godot-4.x` branch. When raising pull requests, make sure to also raise a Godot 4 relevant version against `godot-4.x` if requested.
