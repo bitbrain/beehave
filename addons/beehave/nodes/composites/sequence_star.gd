@@ -5,7 +5,7 @@
 ## prior, in case one of the children is currently in `RUNNING` state
 @tool
 class_name SequenceStarComposite extends Composite
-@icon("../../icons/sequencer_star.svg")
+@icon("../../icons/sequence_reactive.svg")
 
 var successful_index = 0
 

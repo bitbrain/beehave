@@ -5,7 +5,7 @@
 ## single tick, even if one of them is currently `RUNNING` already.
 @tool
 class_name SequenceComposite extends Composite
-@icon("../../icons/sequencer.svg")
+@icon("../../icons/sequence.svg")
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():

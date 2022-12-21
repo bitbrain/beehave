@@ -96,22 +96,22 @@ _global_script_classes=[{
 }]
 _global_script_class_icons={
 "ActionLeaf": "res://addons/beehave/icons/action.svg",
-"AlwaysFailDecorator": "res://addons/beehave/icons/fail.svg",
-"AlwaysSucceedDecorator": "res://addons/beehave/icons/succeed.svg",
-"BeehaveNode": "res://addons/beehave/icons/action.svg",
+"AlwaysFailDecorator": "res://addons/beehave/icons/failer.svg",
+"AlwaysSucceedDecorator": "res://addons/beehave/icons/succeeder.svg",
+"BeehaveNode": "",
 "BeehaveRoot": "res://addons/beehave/icons/tree.svg",
-"BeehaveTree": "res://addons/beehave/icons/icon.svg",
+"BeehaveTree": "res://addons/beehave/icons/category_bt.svg",
 "Blackboard": "",
 "Composite": "res://addons/beehave/icons/category_composite.svg",
 "ConditionLeaf": "res://addons/beehave/icons/condition.svg",
 "Decorator": "res://addons/beehave/icons/category_decorator.svg",
 "InverterDecorator": "res://addons/beehave/icons/inverter.svg",
-"Leaf": "res://addons/beehave/icons/action.svg",
+"Leaf": "res://addons/beehave/icons/category_leaf.svg",
 "LimiterDecorator": "res://addons/beehave/icons/limiter.svg",
 "SelectorComposite": "res://addons/beehave/icons/selector.svg",
-"SelectorStarComposite": "res://addons/beehave/icons/selector_star.svg",
-"SequenceComposite": "res://addons/beehave/icons/sequencer.svg",
-"SequenceStarComposite": "res://addons/beehave/icons/sequencer_star.svg"
+"SelectorStarComposite": "res://addons/beehave/icons/selector_reactive.svg",
+"SequenceComposite": "res://addons/beehave/icons/sequence.svg",
+"SequenceStarComposite": "res://addons/beehave/icons/sequence_reactive.svg"
 }
 
 [application]
