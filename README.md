@@ -46,7 +46,7 @@ I have recorded this tutorial to show in more depth how to use this addon:
 
 ## ![icon](addons/beehave/icons/category_leaf.svg) Actions and Conditions
 
-Conditions are **leaf nodes** of type `ConditionLeaf`. They should be kept simple and either return `SUCCESS` or `FAILURE` depending on a single condition. Avoid creating conditions that check multiple things as it will become more difficult to reuse these nodes.
+Conditions are **leaf nodes** of type ![icon](addons/beehave/icons/condition.svg) `ConditionLeaf`. They should be kept simple and either return `SUCCESS` or `FAILURE` depending on a single condition. Avoid creating conditions that check multiple things as it will become more difficult to reuse these nodes.
 
 **1. Example Condition code: IsVisibleCondition.gd**
 
@@ -83,7 +83,7 @@ In order to create logic flows based on conditions and actions, we need to _comp
 
 **Selector** nodes will attempt to execute each of its children and reports `SUCCESS` status code in case one of the children reports a `SUCCESS` status code. In case all children report a `FAILURE` status code, this node will also return `FAILURE` status code. This node will attempt to process all its children every single tick, even if one of them is currently `RUNNING` already.
 
-### ![icon](addons/beehave/icons/selector_reactive.svg) Selector Star
+### ![icon](addons/beehave/icons/selector_reactive.svg) Selector Star (Selector Reactive)
 
 The **Selector Star** node is similar to the **Selector**, however, it will skip all previous child nodes that were executed prior, in case one of the children is currently in `RUNNING` state. A usecase for this is if you want to ensure that only one action is executed at a time, regardless of for long it runs.
 
@@ -91,7 +91,7 @@ The **Selector Star** node is similar to the **Selector**, however, it will skip
 
 **Sequence** nodes will attempt to execute all of its children and reports `SUCCESS` status code in case all of the children report a `SUCCESS` status code. In case at least one child reports a `FAILURE` status code, this node will also return `FAILURE` status code. This node will attempt to process all its children every single tick, even if one of them is currently `RUNNING` already.
 
-### ![icon](addons/beehave/icons/sequence_reactive.svg) Sequence Star
+### ![icon](addons/beehave/icons/sequence_reactive.svg) Sequence Star (Sequence Reactive)
 
 The **Sequence Star** node is similar to the **Sequence**, however, it will skip all previous child nodes that succeeded prior, in case one of the children is currently in `RUNNING` state. A usecase for this is if you want to ensure that only one action is executed at a time, regardless of for long it runs.
 
