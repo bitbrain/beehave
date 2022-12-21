@@ -28,7 +28,7 @@ If you are looking for a simplistic addon without any extra fluff, Beehave is ju
 
 Behaviour trees are a modular way to build AI logic for your game. For simple AI, behaviour trees are definitely overkill, however, for more complex AI interactions, behaviour trees can help you to better manage changes and re-use logic across all NPCs.
 
-![example](assets/example.jpg)
+![example](assets/example.png)
 
 ## What is a behaviour tree?
 
@@ -36,15 +36,17 @@ In a nutshell, a behaviour tree is a Godot Node that can be added as a child to 
 
 In more theoretical terms, a behaviour tree consists of so called **nodes** - each node can be of a different type with different purposes. Those are described further down below in more detail. Every node has a `tick(actor, blackboard)` method that can be used to execute custom logic. When the `tick` function is called, beehave expects a return status of either `SUCCESS`, `RUNNING` or `FAILURE`.
 
+In **Beehave**, every behaviour tree is of type ![icon](addons/beehave/icons/tree.svg) `BeehaveTree`. Attach that node to any node to any other node you want to apply the behaviour tree to.
+
 ## Tutorial (Godot 3.5+)
 
 I have recorded this tutorial to show in more depth how to use this addon:
 
 [![tutorial-thumbnail](https://img.youtube.com/vi/n0gVEA1dyPQ/0.jpg)](https://www.youtube.com/watch?v=n0gVEA1dyPQ)
 
-## Actions and Conditions
+## ![icon](addons/beehave/icons/category_leaf.svg) Actions and Conditions
 
-Conditions are **leaf nodes** of type `ConditionLeaf`. They should be kept simple and either return `SUCCESS` or `FAILURE` depending on a single condition. Avoid creating conditions that check multiple things as it will become more difficult to reuse these nodes.
+Conditions are **leaf nodes** of type ![icon](addons/beehave/icons/condition.svg) `ConditionLeaf`. They should be kept simple and either return `SUCCESS` or `FAILURE` depending on a single condition. Avoid creating conditions that check multiple things as it will become more difficult to reuse these nodes.
 
 **1. Example Condition code: IsVisibleCondition.gd**
 
@@ -57,7 +59,7 @@ func tick(actor:Node, blackboard:Blackboard) -> int:
     return FAILURE
 ```
 
-Actions are **leaf nodes** of type `ActionLeaf`. They can be long running potentially being called across multiple frame executions. In this case return the code `RUNNING` .
+Actions are **leaf nodes** of type ![icon](addons/beehave/icons/action.svg) `ActionLeaf`. They can be long running potentially being called across multiple frame executions. In this case return the code `RUNNING` .
 
 **2. Example Condition code: MakeVisibleAction.gd**
 
@@ -71,51 +73,62 @@ func tick(actor:Node, blackboard:Blackboard) -> int:
     return SUCCESS
 ```
 
-The **blackboard** is an object that can be used to store and access data between multiple nodes.
+The ![icon](addons/beehave/icons/blackboard.svg) `Blackboard` is an object that can be used to store and access data between multiple nodes.
 
-## Composites
+## ![icon](addons/beehave/icons/category_leaf.svg) Composites
 
 In order to create logic flows based on conditions and actions, we need to _compose_ them through so called **composites**. A composite is a node that executes its children in a particular manner as described below.
 
-### Selector
+### ![icon](addons/beehave/icons/selector.svg) Selector
 
 **Selector** nodes will attempt to execute each of its children and reports `SUCCESS` status code in case one of the children reports a `SUCCESS` status code. In case all children report a `FAILURE` status code, this node will also return `FAILURE` status code. This node will attempt to process all its children every single tick, even if one of them is currently `RUNNING` already.
 
-### Selector Star
+### ![icon](addons/beehave/icons/selector_reactive.svg) Selector Star (Selector Reactive)
 
 The **Selector Star** node is similar to the **Selector**, however, it will skip all previous child nodes that were executed prior, in case one of the children is currently in `RUNNING` state. A usecase for this is if you want to ensure that only one action is executed at a time, regardless of for long it runs.
 
-### Sequence
+### ![icon](addons/beehave/icons/sequence.svg) Sequence
 
 **Sequence** nodes will attempt to execute all of its children and reports `SUCCESS` status code in case all of the children report a `SUCCESS` status code. In case at least one child reports a `FAILURE` status code, this node will also return `FAILURE` status code. This node will attempt to process all its children every single tick, even if one of them is currently `RUNNING` already.
 
-### Sequence Star
+### ![icon](addons/beehave/icons/sequence_reactive.svg) Sequence Star (Sequence Reactive)
 
 The **Sequence Star** node is similar to the **Sequence**, however, it will skip all previous child nodes that succeeded prior, in case one of the children is currently in `RUNNING` state. A usecase for this is if you want to ensure that only one action is executed at a time, regardless of for long it runs.
 
-## Decorators
+## ![icon](addons/beehave/icons/category_leaf.svg) Decorators
 
 **Decorators** are nodes that can be used in combination with any other node described above.
 
-### Failer
+### ![icon](addons/beehave/icons/failer.svg) Failer
 
 A **failer** node will always return a `FAILURE` status code.
 
-### Succeeder
+### ![icon](addons/beehave/icons/succeeder.svg) Succeeder
 
 A **succeeder** node will always return a `SUCCESS` status code.
 
-### Inverter
+### ![icon](addons/beehave/icons/inverter.svg) Inverter
 
 A **inverter** will return `FAILURE` in case its child returns a `SUCCESS` status code or `SUCCESS` in case its child returns a `FAILURE` status code.
 
-### Limiter
+### ![icon](addons/beehave/icons/limiter.svg)  Limiter
 
 The limiter will execute its child `x` amount of times. When the number of maximum ticks is reached, it will return a `FAILURE` status code.
 
 # 🍻 Contributing to this project
 
 In case you want to suggest improvements to this addon or fix issues, feel free to raise a pull request or [raise an issue](https://github.com/bitbrain/beehave/issues)!
+
+## 🐝 Adding a new node
+
+In case you want to introduce a new node, feel free to [raise a pull request](https://github.com/bitbrain/beehave/compare). Check the issues tab for any discussions on new nodes, as it is a great place to gather feedback before you spend time on implementing it. Ensure to also introduce an icon for your node that is following the colour scheme:
+
+- Utility nodes: `#C689FF`
+- Leafs: `#FFB649`
+- Decorators: `#46C0E1`
+- Composites: `#40D29F`
+
+Also ensure to update the `README.md` file with the documentation of the newly introduced node.
 
 ## Version management
 
@@ -125,3 +138,4 @@ The current `godot-3.x` branch is aimed for **Godot 3.x** while any **Godot 4.x*
 
 - logo designs by [@NathanHoad](https://twitter.com/nathanhoad) & [@StuartDeVille](https://twitter.com/StuartDeVille)
 - original addon by [@viniciusgerevini](https://github.com/viniciusgerevini)
+- icon design by [@lostptr](https://github.com/lostptr)
