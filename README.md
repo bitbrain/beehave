@@ -6,6 +6,8 @@
 
 ![](https://img.shields.io/badge/Godot%20Compatible-4.0%2B-%234385B5) ![](https://img.shields.io/badge/Godot%20Compatible-3.0%2B-%234385B5) [![](https://img.shields.io/discord/785246324793540608.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/CKBuE5djXe)
 
+> ⚠ **Disclaimer: Godot 4 is not released yet. As a result, the version for Godot 4 may be unstable to use and the API may change. Please keep using [the stable 3.x branch](https://github.com/bitbrain/beehave/tree/godot-3.x) if you do not want to have breaking changes in your game.**
+
 # 🤔 Yet another Behavior Tree addon?
 
 There are already various behavior tree addons for Godot on the asset store, however, for my personal game none of them either worked correctly or they were UI only. I stumbled upon this amazing minimal [behaviour tree example](https://github.com/viniciusgerevini/godot-behavior-tree-example) by [@viniciusgerevini](https://github.com/viniciusgerevini). I decided to fork it and create this addon from it for the following reasons:
