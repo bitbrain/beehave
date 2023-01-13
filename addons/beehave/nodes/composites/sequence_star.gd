@@ -35,3 +35,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	else:
 		successful_index = 0
 		return FAILURE
+		
+func interrupt(actor: Node, blackboard: Blackboard) -> void:
+	successful_index = 0
+	super(actor, blackboard)

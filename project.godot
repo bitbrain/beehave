@@ -80,6 +80,11 @@ _global_script_classes=[{
 "path": "res://addons/beehave/nodes/composites/selector.gd"
 }, {
 "base": "Composite",
+"class": &"SelectorRandomComposite",
+"language": &"GDScript",
+"path": "res://addons/beehave/nodes/composites/selector_random.gd"
+}, {
+"base": "Composite",
 "class": &"SelectorStarComposite",
 "language": &"GDScript",
 "path": "res://addons/beehave/nodes/composites/selector_star.gd"
@@ -88,6 +93,11 @@ _global_script_classes=[{
 "class": &"SequenceComposite",
 "language": &"GDScript",
 "path": "res://addons/beehave/nodes/composites/sequence.gd"
+}, {
+"base": "Composite",
+"class": &"SequenceRandomComposite",
+"language": &"GDScript",
+"path": "res://addons/beehave/nodes/composites/sequence_random.gd"
 }, {
 "base": "Composite",
 "class": &"SequenceStarComposite",
@@ -109,8 +119,10 @@ _global_script_class_icons={
 "Leaf": "res://addons/beehave/icons/category_leaf.svg",
 "LimiterDecorator": "res://addons/beehave/icons/limiter.svg",
 "SelectorComposite": "res://addons/beehave/icons/selector.svg",
+"SelectorRandomComposite": "res://addons/beehave/icons/selector_random.svg",
 "SelectorStarComposite": "res://addons/beehave/icons/selector_reactive.svg",
 "SequenceComposite": "res://addons/beehave/icons/sequence.svg",
+"SequenceRandomComposite": "res://addons/beehave/icons/sequence_random.svg",
 "SequenceStarComposite": "res://addons/beehave/icons/sequence_reactive.svg"
 }
 
