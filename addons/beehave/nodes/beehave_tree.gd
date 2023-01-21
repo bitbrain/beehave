@@ -18,10 +18,9 @@ enum {
 		return enabled
 
 @export_node_path var actor_node_path : NodePath
+@export var blackboard:Blackboard
 
 var actor : Node
-
-@onready var blackboard: Blackboard = Blackboard.new()
 
 
 func _ready() -> void:
@@ -32,6 +31,9 @@ func _ready() -> void:
 		push_error("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
 		disable()
 		return
+		
+	if not blackboard:
+		blackboard = Blackboard.new()
 
 	actor = get_parent()
 	if actor_node_path:

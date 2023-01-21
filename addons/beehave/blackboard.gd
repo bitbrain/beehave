@@ -1,6 +1,7 @@
 ## The blackboard is an object that can be used to store and access data between
 ## multiple nodes of the behaviour tree.
-class_name Blackboard extends RefCounted
+@icon("icons/blackboard.svg")
+class_name Blackboard extends Node
 
 var blackboard: Dictionary = {}
 
