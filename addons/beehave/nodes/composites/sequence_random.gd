@@ -26,8 +26,8 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		var response = c.tick(actor, blackboard)
 		
 		if c is ConditionLeaf:
-			blackboard.set_value("last_condition", c)
-			blackboard.set_value("last_condition_status", response)
+			blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
+			blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
 		
 		if response == RUNNING:
 			running_child = c
