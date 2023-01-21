@@ -3,5 +3,5 @@
 ## frame executions. In this case, the node should return `RUNNING` until the
 ## action is completed.
 @tool
-class_name ActionLeaf extends Leaf
 @icon("../../icons/action.svg")
+class_name ActionLeaf extends Leaf

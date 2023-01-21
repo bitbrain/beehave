@@ -1,7 +1,7 @@
 ## Base class for all leaf nodes of the tree.
 @tool
-class_name Leaf extends BeehaveNode
 @icon("../../icons/category_leaf.svg")
+class_name Leaf extends BeehaveNode
 
 
 func _get_configuration_warnings() -> PackedStringArray:

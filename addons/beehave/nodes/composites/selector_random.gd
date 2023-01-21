@@ -2,8 +2,8 @@
 ## [code]SelectorStar[/code] would, with the exception that the children 
 ## will be executed in a random order.
 @tool
-class_name SelectorRandomComposite extends Composite
 @icon("../../icons/selector_random.svg")
+class_name SelectorRandomComposite extends Composite
 
 
 ## A shuffled list of the children that will be executed in reverse order. 

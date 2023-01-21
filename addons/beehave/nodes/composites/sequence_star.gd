@@ -4,8 +4,8 @@
 ## return `FAILURE`. This node will skip all previous child nodes that succeeded
 ## prior, in case one of the children is currently in `RUNNING` state
 @tool
-class_name SequenceStarComposite extends Composite
 @icon("../../icons/sequence_reactive.svg")
+class_name SequenceStarComposite extends Composite
 
 var successful_index = 0
 

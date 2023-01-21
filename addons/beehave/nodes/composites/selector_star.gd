@@ -3,8 +3,8 @@
 ## return `FAILURE`. This node will skip all previous child nodes that were
 ## executed prior, in case one of the children is currently in `RUNNING` state.
 @tool
-class_name SelectorStarComposite extends Composite
 @icon("../../icons/selector_reactive.svg")
+class_name SelectorStarComposite extends Composite
 
 var last_execution_index = 0
 

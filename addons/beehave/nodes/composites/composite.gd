@@ -1,7 +1,7 @@
 ## A Composite node controls the flow of execution of its children in a specific manner.
 @tool
-class_name Composite extends BeehaveNode
 @icon("../../icons/category_composite.svg")
+class_name Composite extends BeehaveNode
 
 
 var running_child: BeehaveNode = null
