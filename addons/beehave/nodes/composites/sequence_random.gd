@@ -2,8 +2,8 @@
 ## [code]SequenceStar[/code] would, with the exception that the children 
 ## will be executed in a random order.
 @tool
-class_name SequenceRandomComposite extends Composite
 @icon("../../icons/sequence_random.svg")
+class_name SequenceRandomComposite extends Composite
 
 
 ## Whether the sequence should start where it left off after a previous failure.

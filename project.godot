@@ -8,124 +8,6 @@
 
 config_version=5
 
-_global_script_classes=[{
-"base": "Leaf",
-"class": &"ActionLeaf",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/leaves/action.gd"
-}, {
-"base": "Decorator",
-"class": &"AlwaysFailDecorator",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/decorators/failer.gd"
-}, {
-"base": "Decorator",
-"class": &"AlwaysSucceedDecorator",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/decorators/succeeder.gd"
-}, {
-"base": "BeehaveTree",
-"class": &"BeehaveNode",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/beehave_node.gd"
-}, {
-"base": "BeehaveTree",
-"class": &"BeehaveRoot",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/beehave_root.gd"
-}, {
-"base": "Node",
-"class": &"BeehaveTree",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/beehave_tree.gd"
-}, {
-"base": "RefCounted",
-"class": &"Blackboard",
-"language": &"GDScript",
-"path": "res://addons/beehave/blackboard.gd"
-}, {
-"base": "BeehaveNode",
-"class": &"Composite",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/composites/composite.gd"
-}, {
-"base": "Leaf",
-"class": &"ConditionLeaf",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/leaves/condition.gd"
-}, {
-"base": "BeehaveNode",
-"class": &"Decorator",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/decorators/decorator.gd"
-}, {
-"base": "Decorator",
-"class": &"InverterDecorator",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/decorators/inverter.gd"
-}, {
-"base": "BeehaveNode",
-"class": &"Leaf",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/leaves/leaf.gd"
-}, {
-"base": "Decorator",
-"class": &"LimiterDecorator",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/decorators/limiter.gd"
-}, {
-"base": "Composite",
-"class": &"SelectorComposite",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/composites/selector.gd"
-}, {
-"base": "Composite",
-"class": &"SelectorRandomComposite",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/composites/selector_random.gd"
-}, {
-"base": "Composite",
-"class": &"SelectorStarComposite",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/composites/selector_star.gd"
-}, {
-"base": "Composite",
-"class": &"SequenceComposite",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/composites/sequence.gd"
-}, {
-"base": "Composite",
-"class": &"SequenceRandomComposite",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/composites/sequence_random.gd"
-}, {
-"base": "Composite",
-"class": &"SequenceStarComposite",
-"language": &"GDScript",
-"path": "res://addons/beehave/nodes/composites/sequence_star.gd"
-}]
-_global_script_class_icons={
-"ActionLeaf": "res://addons/beehave/icons/action.svg",
-"AlwaysFailDecorator": "res://addons/beehave/icons/failer.svg",
-"AlwaysSucceedDecorator": "res://addons/beehave/icons/succeeder.svg",
-"BeehaveNode": "",
-"BeehaveRoot": "res://addons/beehave/icons/tree.svg",
-"BeehaveTree": "res://addons/beehave/icons/category_bt.svg",
-"Blackboard": "",
-"Composite": "res://addons/beehave/icons/category_composite.svg",
-"ConditionLeaf": "res://addons/beehave/icons/condition.svg",
-"Decorator": "res://addons/beehave/icons/category_decorator.svg",
-"InverterDecorator": "res://addons/beehave/icons/inverter.svg",
-"Leaf": "res://addons/beehave/icons/category_leaf.svg",
-"LimiterDecorator": "res://addons/beehave/icons/limiter.svg",
-"SelectorComposite": "res://addons/beehave/icons/selector.svg",
-"SelectorRandomComposite": "res://addons/beehave/icons/selector_random.svg",
-"SelectorStarComposite": "res://addons/beehave/icons/selector_reactive.svg",
-"SequenceComposite": "res://addons/beehave/icons/sequence.svg",
-"SequenceRandomComposite": "res://addons/beehave/icons/sequence_random.svg",
-"SequenceStarComposite": "res://addons/beehave/icons/sequence_reactive.svg"
-}
-
 [application]
 
 config/name="Beehave"
@@ -134,6 +16,10 @@ config/features=PackedStringArray("4.0")
 boot_splash/image="res://splash.png"
 boot_splash/fullsize=false
 config/icon="res://icon.png"
+
+[editor]
+
+export/convert_text_resources_to_binary=true
 
 [editor_plugins]
 

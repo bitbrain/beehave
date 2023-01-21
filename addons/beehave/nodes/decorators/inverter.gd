@@ -1,8 +1,8 @@
 ## An inverter will return `FAILURE` in case it's child returns a `SUCCESS` status
 ## code or `SUCCESS` in case its child returns a `FAILURE` status code.
 @tool
-class_name InverterDecorator extends Decorator
 @icon("../../icons/inverter.svg")
+class_name InverterDecorator extends Decorator
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():

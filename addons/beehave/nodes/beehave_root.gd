@@ -1,7 +1,7 @@
 ## Controls the flow of execution of the entire behaviour tree.
 @tool
-class_name BeehaveRoot extends BeehaveTree
 @icon("../icons/tree.svg")
+class_name BeehaveRoot extends BeehaveTree
 
 
 @export var enabled: bool = true:
