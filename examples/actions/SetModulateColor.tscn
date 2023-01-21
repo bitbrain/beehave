@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3msbcyat8v0n"]
+
+[ext_resource type="Script" path="res://examples/actions/SetModulateColor.gd" id="1_6tkm0"]
+
+[node name="SetModulateColor" type="Node"]
+script = ExtResource("1_6tkm0")

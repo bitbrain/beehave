@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dgbwmcsll3o7t"]
+
+[ext_resource type="Script" path="res://examples/conditions/HasNegativePosition.gd" id="1_ywwxv"]
+
+[node name="HasNegativePosition" type="Node"]
+script = ExtResource("1_ywwxv")
