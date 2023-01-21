@@ -80,13 +80,13 @@ func get_running_action() -> ActionLeaf:
 
 func get_last_condition() -> Variant:
 	if blackboard.has_value("last_condition", str(actor.get_instance_id())):
-		return blackboard.get_value("last_condition", str(actor.get_instance_id()))
+		return blackboard.get_value("last_condition", null, str(actor.get_instance_id()))
 	return null
 
 
 func get_last_condition_status() -> String:
 	if blackboard.has_value("last_condition_status", str(actor.get_instance_id())):
-		var status = blackboard.get_value("last_condition_status", str(actor.get_instance_id()))
+		var status = blackboard.get_value("last_condition_status", null, str(actor.get_instance_id()))
 		if status == SUCCESS:
 			return "SUCCESS"
 		elif status == FAILURE:
