@@ -46,12 +46,12 @@ func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	
-	blackboard.set_value("delta", delta)
+	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
 	var status = self.get_child(0).tick(actor, blackboard)
 
 	# Updates the current running action.
 	var running_action = get_running_action() if status == RUNNING else null
-	blackboard.set_value("running_action", running_action)
+	blackboard.set_value("running_action", running_action, str(actor.get_instance_id()))
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -79,14 +79,14 @@ func get_running_action() -> ActionLeaf:
 
 
 func get_last_condition() -> Variant:
-	if blackboard.has_value("last_condition"):
-		return blackboard.get_value("last_condition")
+	if blackboard.has_value("last_condition", str(actor.get_instance_id())):
+		return blackboard.get_value("last_condition", str(actor.get_instance_id()))
 	return null
 
 
 func get_last_condition_status() -> String:
-	if blackboard.has_value("last_condition_status"):
-		var status = blackboard.get_value("last_condition_status")
+	if blackboard.has_value("last_condition_status", str(actor.get_instance_id())):
+		var status = blackboard.get_value("last_condition_status", str(actor.get_instance_id()))
 		if status == SUCCESS:
 			return "SUCCESS"
 		elif status == FAILURE:
