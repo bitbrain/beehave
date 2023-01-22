@@ -13,8 +13,9 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		if response == FAILURE:
 			return SUCCESS
 
-		if c is Leaf and response == RUNNING:
+		if c is ActionLeaf:
 			blackboard.set_value("running_action", c, str(actor.get_instance_id()))
+			
 		return RUNNING
 	
 	# Decorators must have a child. This should be unreachable code.

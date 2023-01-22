@@ -24,6 +24,8 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				last_execution_index = 0
 			else: # RUNNING
 				running_child = c
+				if c is ActionLeaf:
+					blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 			return response
 		else:
 			last_execution_index += 1

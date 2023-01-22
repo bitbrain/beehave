@@ -1,8 +1,28 @@
 extends ActionLeaf
 
-@export var modulate_color:Color
+@export var modulate_color:Color = Color.WHITE
+@export var interpolation_time:float = 3.0
+
+var current_color
+var tween
 
 func tick(actor: Node, _blackboard: Blackboard) -> int:
-	actor.modulate = modulate_color
-	return SUCCESS
+	
+	if current_color != modulate_color and actor.modulate != modulate_color:
+		if tween != null:
+			tween.stop()
+		current_color = modulate_color
+		tween = create_tween()\
+		.set_ease(Tween.EASE_IN_OUT)\
+		.set_trans(Tween.TRANS_CUBIC)
+		tween.tween_property(actor, "modulate", current_color, interpolation_time)\
+		.finished.connect(_finished)
+		
+	if current_color != null:
+		return RUNNING
+	else:
+		return SUCCESS
 
+func _finished() -> void:
+	current_color = null
+	tween = null
