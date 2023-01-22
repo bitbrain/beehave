@@ -52,7 +52,6 @@ script = ExtResource("4_o25g4")
 modulate_color = Color(0, 0, 1, 1)
 
 [node name="SetModulateColor" parent="Sprite2D/BeehaveTree/SelectorComposite" instance=ExtResource("6_5pvqg")]
-modulate_color = Color(1, 1, 1, 1)
 
 [node name="Camera2D" type="Camera2D" parent="Sprite2D"]
 
@@ -89,14 +88,20 @@ script = ExtResource("4_o25g4")
 modulate_color = Color(0, 0, 1, 1)
 
 [node name="SetModulateColor" parent="AnotherSprite/AnotherTree/SelectorComposite" instance=ExtResource("6_5pvqg")]
-modulate_color = Color(1, 1, 1, 1)
 
 [node name="Camera2D" type="Camera2D" parent="AnotherSprite"]
 current = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="Label" type="Label" parent="CanvasLayer"]
-unique_name_in_owner = true
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
 offset_right = 40.0
-offset_bottom = 23.0
+offset_bottom = 40.0
+
+[node name="ConditionLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ActionLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2

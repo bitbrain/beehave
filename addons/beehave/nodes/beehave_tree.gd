@@ -49,9 +49,10 @@ func _physics_process(delta: float) -> void:
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
 	var status = self.get_child(0).tick(actor, blackboard)
 
-	# Updates the current running action.
-	var running_action = get_running_action() if status == RUNNING else null
-	blackboard.set_value("running_action", running_action, str(actor.get_instance_id()))
+	# Clear running action if nothing is running
+	if status != RUNNING:
+		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
+	
 
 
 func _get_configuration_warnings() -> PackedStringArray:
@@ -67,21 +68,11 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func get_running_action() -> ActionLeaf:
-	var node = get_child(0)
-	while node != null:
-		if node is Composite:
-			node = (node as Composite).running_child
-		elif node is ActionLeaf:
-			return node
-	
-	push_error("Beehave error: Could not find running action in tree root '%s'." % name)
-	return null
+	return blackboard.get_value("running_action", null, str(actor.get_instance_id()))
 
 
-func get_last_condition() -> Variant:
-	if blackboard.has_value("last_condition", str(actor.get_instance_id())):
-		return blackboard.get_value("last_condition", null, str(actor.get_instance_id()))
-	return null
+func get_last_condition() -> ConditionLeaf:
+	return blackboard.get_value("last_condition", null, str(actor.get_instance_id()))
 
 
 func get_last_condition_status() -> String:

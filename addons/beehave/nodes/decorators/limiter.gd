@@ -16,6 +16,10 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 	if current_count <= max_count:
 		blackboard.set_value(cache_key, current_count + 1, str(actor.get_instance_id()))
-		return self.get_child(0).tick(actor, blackboard)
+		var child = self.get_child(0)
+		var response = child.tick(actor, blackboard)
+		if child is ActionLeaf and response == RUNNING:
+			blackboard.set_value("running_action", child, str(actor.get_instance_id()))
+		return response
 	else:
 		return FAILURE

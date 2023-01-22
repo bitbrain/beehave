@@ -2,7 +2,8 @@ extends Node2D
 
 @onready var sprite := $Sprite2D
 @onready var tree := %BeehaveTree
-@onready var label := %Label
+@onready var condition_label := %ConditionLabel
+@onready var action_label := %ActionLabel
 
 
 func _process(delta:float) -> void:
@@ -19,4 +20,11 @@ func _process(delta:float) -> void:
 		sprite.position.y += 200 * delta
 	
 	if tree.get_last_condition():
-		label.text = str(tree.get_last_condition(), " -> ", tree.get_last_condition_status())
+		condition_label.text = str(tree.get_last_condition(), " -> ", tree.get_last_condition_status())
+	else:
+		condition_label.text = "no condition"
+		
+	if tree.get_running_action():
+		action_label.text = str(tree.get_running_action(), " -> RUNNING")
+	else:
+		action_label.text = "no running action"
