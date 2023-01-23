@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Beehave"
-run/main_scene="res://tests/BeehaveTestScene.tscn"
+run/main_scene="res://examples/BeehaveTestScene.tscn"
 config/features=PackedStringArray("4.0")
 boot_splash/image="res://splash.png"
 boot_splash/fullsize=false
@@ -23,7 +23,7 @@ export/convert_text_resources_to_binary=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/beehave/plugin.cfg")
+enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/gdUnit4/plugin.cfg")
 
 [input]
 

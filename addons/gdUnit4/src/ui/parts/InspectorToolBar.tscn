@@ -1,0 +1,98 @@
+[gd_scene load_steps=2 format=3 uid="uid://dx7xy4dgi3wwb"]
+
+[ext_resource type="Script" path="res://addons/gdUnit4/src/ui/parts/InspectorToolBar.gd" id="3"]
+
+[node name="ToolBar" type="HBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+size_flags_vertical = 3
+script = ExtResource("3")
+
+[node name="Tools" type="HBoxContainer" parent="."]
+layout_mode = 2
+offset_right = 85.0
+offset_bottom = 648.0
+grow_horizontal = 0
+
+[node name="VSeparator2" type="VSeparator" parent="Tools"]
+layout_mode = 2
+offset_right = 4.0
+offset_bottom = 648.0
+size_flags_horizontal = 3
+size_flags_vertical = 9
+
+[node name="help" type="Button" parent="Tools"]
+layout_mode = 2
+offset_left = 8.0
+offset_right = 16.0
+offset_bottom = 648.0
+
+[node name="tool" type="Button" parent="Tools"]
+layout_mode = 2
+offset_left = 20.0
+offset_right = 28.0
+offset_bottom = 648.0
+tooltip_text = "GdUnit3 Tools"
+
+[node name="VSeparator" type="VSeparator" parent="Tools"]
+layout_mode = 2
+offset_left = 32.0
+offset_right = 36.0
+offset_bottom = 648.0
+
+[node name="run" type="Button" parent="Tools"]
+use_parent_material = true
+layout_mode = 2
+offset_left = 40.0
+offset_right = 48.0
+offset_bottom = 648.0
+tooltip_text = "Rerun unit tests"
+
+[node name="debug" type="Button" parent="Tools"]
+use_parent_material = true
+layout_mode = 2
+offset_left = 52.0
+offset_right = 60.0
+offset_bottom = 648.0
+tooltip_text = "Rerun unit tests (Debug)"
+
+[node name="stop" type="Button" parent="Tools"]
+use_parent_material = true
+layout_mode = 2
+offset_left = 64.0
+offset_right = 72.0
+offset_bottom = 648.0
+tooltip_text = "Stops runing unit tests"
+disabled = true
+
+[node name="VSeparator3" type="VSeparator" parent="Tools"]
+layout_mode = 2
+offset_left = 76.0
+offset_right = 80.0
+offset_bottom = 648.0
+
+[node name="CenterContainer" type="MarginContainer" parent="Tools"]
+use_parent_material = true
+layout_mode = 2
+offset_left = 84.0
+offset_right = 85.0
+offset_bottom = 648.0
+size_flags_horizontal = 3
+
+[node name="version" type="Label" parent="Tools/CenterContainer"]
+use_parent_material = true
+layout_mode = 2
+offset_right = 1.0
+offset_bottom = 648.0
+grow_horizontal = 0
+size_flags_horizontal = 3
+size_flags_vertical = 13
+
+[connection signal="pressed" from="Tools/help" to="." method="_on_wiki_pressed"]
+[connection signal="pressed" from="Tools/tool" to="." method="_on_btn_tool_pressed"]
+[connection signal="pressed" from="Tools/run" to="." method="_on_run_pressed" binds= [false]]
+[connection signal="pressed" from="Tools/debug" to="." method="_on_run_pressed" binds= [true]]
+[connection signal="pressed" from="Tools/stop" to="." method="_on_stop_pressed"]

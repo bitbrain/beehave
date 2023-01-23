@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="12"
+   height="12"
+   version="1.1"
+   id="svg6"
+   sodipodi:docname="failed_icon.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1527"
+     inkscape:window-height="1058"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="22.96875"
+     inkscape:cx="9.6521245"
+     inkscape:cy="12.517006"
+     inkscape:window-x="219"
+     inkscape:window-y="7"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg6"
+     inkscape:document-rotation="0"
+     inkscape:pagecheckerboard="true" />
+  <path
+     d="M 6,0 C 2.6862855,0 0,2.6862856 0,6.0000003 0,9.3137145 2.6862855,12 6,12 9.3137138,12 12,9.3137145 12,6.0000003 12,2.6862856 9.3137138,0 6,0 Z M 3.5759145,2.3638286 6,4.7879142 8.4240855,2.3638286 9.636171,3.5759144 7.2120855,6.0000003 9.636171,8.4240863 8.4240855,9.6361717 6,7.2120858 3.5759145,9.6361717 2.3638283,8.4240863 4.7879145,6.0000003 2.3638283,3.5759144 Z"
+     fill="#ff5d5d"
+     id="path79"
+     style="fill:#ff0000;stroke-width:0.857145" />
+</svg>
