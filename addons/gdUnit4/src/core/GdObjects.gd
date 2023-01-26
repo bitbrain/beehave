@@ -127,6 +127,7 @@ const NOTIFICATION_AS_STRING_MAPPINGS := {
 	}
 }
 
+
 static func equals_sorted(obj_a :Array, obj_b :Array, case_sensitive :bool = false ) -> bool:
 	var a := obj_a.duplicate()
 	var b := obj_b.duplicate()
@@ -134,8 +135,10 @@ static func equals_sorted(obj_a :Array, obj_b :Array, case_sensitive :bool = fal
 	b.sort()
 	return equals(a, b, case_sensitive)
 
+
 static func equals(obj_a, obj_b, case_sensitive :bool = false, deep_check :bool = true ) -> bool:
 	return _equals(obj_a, obj_b, case_sensitive, deep_check, [], 0)
+
 
 static func _equals(obj_a, obj_b, case_sensitive :bool, deep_check :bool, deep_stack, stack_depth :int ) -> bool:
 	var type_a := typeof(obj_a)
@@ -146,8 +149,8 @@ static func _equals(obj_a, obj_b, case_sensitive :bool, deep_check :bool, deep_s
 		return false
 	
 	stack_depth += 1
-	# is different types (don't match TYPE_STRING_NAME vs TYPE_STRING)
-	if type_a != TYPE_STRING_NAME and type_b != TYPE_STRING_NAME and type_a != type_b:
+	# fast fail is different types
+	if not _is_type_equivalent(type_a, type_b):
 		return false
 	# is same instance
 	if obj_a == obj_b:
@@ -308,10 +311,24 @@ static func is_type_array(type :int) -> bool:
 			return true
 	return false
 
-static func is_engine_type(value) -> bool:
+
+static func _is_type_equivalent(type_a, type_b) -> bool:
+	# don't test for TYPE_STRING_NAME equivalenz
+	if type_a == TYPE_STRING_NAME or type_b == TYPE_STRING_NAME:
+		return true
+	if GdUnitSettings.is_strict_number_type_compare():
+		return type_a == type_b
+	return (
+		(type_a == TYPE_FLOAT and type_b == TYPE_INT)
+		or (type_a == TYPE_INT and type_b == TYPE_FLOAT)
+		or type_a == type_b)
+
+
+static func is_engine_type(value :Variant) -> bool:
 	if value is GDScript or value is ScriptExtension:
 		return false
 	return str(value).contains("GDScriptNativeClass")
+
 
 static func is_type(value :Variant) -> bool:
 	# is an build-in type
@@ -338,7 +355,7 @@ static func is_same(left, right) -> bool:
 	return equals(left, right)
 
 static func is_object(value) -> bool:
-	return value != null and typeof(value) == TYPE_OBJECT
+	return typeof(value) == TYPE_OBJECT
 
 static func is_script(value) -> bool:
 	return is_object(value) and value is Script
@@ -377,14 +394,9 @@ static func is_gd_testsuite(script :Script) -> bool:
 				stack.push_back(base)
 	return false
 
-static func is_instance(value) -> bool:
+static func is_instance(value :Variant) -> bool:
 	if not is_instance_valid(value) or is_native_class(value):
 		return false
-	#var is_script = is_script(value)
-	#if is_script and value.script != null:
-	#	prints("script",value)
-	#	return true
-	# is engine script instances?
 	if is_script(value) and value.get_instance_base_type() == "":
 		return true
 	if is_scene(value):

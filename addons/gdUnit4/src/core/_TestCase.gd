@@ -184,8 +184,8 @@ func test_parameter_index() -> int:
 func test_case_names() -> PackedStringArray:
 	var test_case_names :=  PackedStringArray()
 	var test_name = get_name()
-	for input_values in _test_parameters:
-		test_case_names.append("%s %s" % [test_name, str(input_values)])
+	for index in _test_parameters.size():
+		test_case_names.append("%s:%d %s" % [test_name, index, str(_test_parameters[index])])
 	return test_case_names
 
 

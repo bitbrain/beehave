@@ -41,6 +41,8 @@ func is_error() -> bool:
 	return _type == TERMINATED or _type == INTERUPTED or _type == ABORT
 
 func _to_string():
+	if _line_number == -1:
+		return "[color=green]line [/color][color=aqua]<n/a>:[/color] %s" % [_message]
 	return "[color=green]line [/color][color=aqua]%d:[/color] %s" % [_line_number, _message]
 
 func serialize() -> Dictionary:

@@ -185,33 +185,25 @@ static func prints_verbose(message :String) -> void:
 		print_debug(message)
 
 
-static func free_instance(instance :Variant) -> void:
+static func free_instance(instance :Variant) -> bool:
 	# is instance already freed?
-	if not is_instance_valid(instance) or str(instance).contains("GDScriptNativeClass"):
-		return
-	# needs to manually exculde JavaClass
-	# see https://github.com/godotengine/godot/issues/44932
-	if not(instance is JavaClass):
-		if not instance is RefCounted:
-			release_double(instance)
-			release_connections(instance)
-			if instance is Timer:
-				instance.stop()
-				#instance.queue_free()
-				instance.call_deferred("free")
-				return
-			instance.free()
-		else:
-			instance.notification(Object.NOTIFICATION_PREDELETE)
-			release_double(instance)
+	if not is_instance_valid(instance) or ClassDB.class_get_property(instance, "new"):
+		return false
+	
+	release_double(instance)
+	if instance is RefCounted:
+		instance.notification(Object.NOTIFICATION_PREDELETE)
+		return true
+	else:
+		release_connections(instance)
+		if instance is Timer:
+			instance.stop()
+			#instance.queue_free()
+			instance.call_deferred("free")
+			return true
+		instance.free()
+		return !is_instance_valid(instance)
 
-#static func release_connections(instance :Object):
-#	for connection in instance.get_incoming_connections():
-#		var signal_name = connection["signal_name"]
-#		var source = connection["source"]
-#		var method = connection["method_name"]
-#		if source == instance:
-#			source.disconnect(signal_name,Callable(instance,method))
 
 static func release_connections(instance :Object):
 	if is_instance_valid(instance):
@@ -225,8 +217,9 @@ static func release_connections(instance :Object):
 			if instance.has_signal(signal_.get_name()) and instance.is_connected(signal_.get_name(), callable_):
 				instance.disconnect(signal_.get_name(), callable_)
 
+
 # if instance an mock or spy we need manually freeing the self reference
-static func release_double(instance :Object):
+static func release_double(instance :Object) -> void:
 	if instance.has_method("__release_double"):
 		instance.call("__release_double")
 
