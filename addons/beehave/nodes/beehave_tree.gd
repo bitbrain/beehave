@@ -51,6 +51,13 @@ func _ready() -> void:
 	set_physics_process(enabled)
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		var blackboard_ref := weakref(blackboard)
+		if blackboard_ref.get_ref():
+			blackboard.free()
+
+
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
