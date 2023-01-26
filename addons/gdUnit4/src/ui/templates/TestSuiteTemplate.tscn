@@ -1,0 +1,197 @@
+[gd_scene load_steps=2 format=3 uid="uid://dte0m2endcgtu"]
+
+[ext_resource type="Script" path="res://addons/gdUnit4/src/ui/templates/TestSuiteTemplate.gd" id="1"]
+
+[node name="TestSuiteTemplate" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+offset_right = 1152.0
+offset_bottom = 648.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="sub_category" type="Panel" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+offset_right = 1152.0
+offset_bottom = 30.0
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/sub_category"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_right = 4.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Test Suite Template
+"
+
+[node name="EdiorLayout" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+offset_top = 34.0
+offset_right = 1152.0
+offset_bottom = 613.0
+size_flags_vertical = 3
+
+[node name="Editor" type="CodeEdit" parent="VBoxContainer/EdiorLayout"]
+layout_mode = 2
+offset_right = 1152.0
+offset_bottom = 579.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "# GdUnit generated TestSuite
+class_name ${suite_class_name}
+extends GdUnitTestSuite
+@warning_ignore(unused_parameter)
+@warning_ignore(return_value_discarded)
+
+# TestSuite generated from
+const __source = '${source_resource_path}'
+"
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/EdiorLayout/Editor"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -31.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/EdiorLayout/Editor/MarginContainer"]
+layout_mode = 2
+offset_right = 1152.0
+offset_bottom = 31.0
+size_flags_vertical = 8
+alignment = 2
+
+[node name="Tags" type="Button" parent="VBoxContainer/EdiorLayout/Editor/MarginContainer/HBoxContainer"]
+layout_mode = 2
+offset_left = 842.0
+offset_right = 971.0
+offset_bottom = 31.0
+tooltip_text = "Shows supported tags."
+text = "Supported Tags"
+
+[node name="SelectType" type="OptionButton" parent="VBoxContainer/EdiorLayout/Editor/MarginContainer/HBoxContainer"]
+layout_mode = 2
+offset_left = 975.0
+offset_right = 1152.0
+offset_bottom = 31.0
+tooltip_text = "Select the script type specific template."
+item_count = 2
+selected = 0
+popup/item_0/text = "GD - GDScript"
+popup/item_0/id = 1000
+popup/item_1/text = "C# - CSharpScript"
+popup/item_1/id = 2000
+
+[node name="Panel" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+offset_top = 617.0
+offset_right = 1152.0
+offset_bottom = 648.0
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Panel"]
+layout_mode = 2
+offset_right = 1152.0
+offset_bottom = 31.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+
+[node name="Restore" type="Button" parent="VBoxContainer/Panel/HBoxContainer"]
+layout_mode = 2
+offset_left = 1036.0
+offset_right = 1104.0
+offset_bottom = 31.0
+text = "Restore"
+
+[node name="Save" type="Button" parent="VBoxContainer/Panel/HBoxContainer"]
+layout_mode = 2
+offset_left = 1108.0
+offset_right = 1152.0
+offset_bottom = 31.0
+disabled = true
+text = "Save"
+
+[node name="Tags" type="PopupPanel" parent="."]
+size = Vector2i(300, 100)
+unresizable = false
+content_scale_aspect = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="Tags"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -856.0
+offset_bottom = -552.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextEdit" type="CodeEdit" parent="Tags/MarginContainer"]
+layout_mode = 2
+offset_right = 292.0
+offset_bottom = 92.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "
+GdScript Tags are replaced when the test-suite is created.
+
+# The class name of the test-suite, formed from the source script.
+${suite_class_name}
+# is used to build the test suite class name
+	class_name ${suite_class_name}
+	extends GdUnitTestSuite
+
+
+# The class name in pascal case, formed from the source script.
+${source_class}
+	# can be used to create the class e.g. for source 'MyClass'
+	var my_test_class := ${source_class}.new()
+	# will be result in
+	var my_test_class := MyClass.new()
+
+# The class as variable name in snake case, formed from the source script.
+${source_var}
+	# Can be used to build the variable name e.g. for source 'MyClass'
+	var ${source_var} := ${source_class}.new()
+	# will be result in
+	var my_class := MyClass.new()
+
+# The full resource path from which the file was created.
+${source_resource_path}
+	# Can be used to load the script in your test
+	var my_script := load(${source_resource_path})
+	# will be result in
+	var my_script := load(\"res://folder/my_class.gd\")
+"
+editable = false
+context_menu_enabled = false
+shortcut_keys_enabled = false
+virtual_keyboard_enabled = false
+
+[connection signal="text_changed" from="VBoxContainer/EdiorLayout/Editor" to="." method="_on_Editor_text_changed"]
+[connection signal="pressed" from="VBoxContainer/EdiorLayout/Editor/MarginContainer/HBoxContainer/Tags" to="." method="_on_Tags_pressed"]
+[connection signal="item_selected" from="VBoxContainer/EdiorLayout/Editor/MarginContainer/HBoxContainer/SelectType" to="." method="_on_SelectType_item_selected"]
+[connection signal="pressed" from="VBoxContainer/Panel/HBoxContainer/Restore" to="." method="_on_Restore_pressed"]
+[connection signal="pressed" from="VBoxContainer/Panel/HBoxContainer/Save" to="." method="_on_Save_pressed"]

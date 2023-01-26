@@ -127,6 +127,17 @@ The limiter will execute its child `x` amount of times. When the number of maxim
 
 In case you want to suggest improvements to this addon or fix issues, feel free to raise a pull request or [raise an issue](https://github.com/bitbrain/beehave/issues)!
 
+## 🧪 Unit testing
+
+This project is using [gdUnit](https://github.com/MikeSchulze/gdUnit4) to ensure code quality. Every pull request that introduces new changes such as nodes or additional methods has to also provide some unit tests inside the `test/` folder. Ensure that your test is in the correct folder:
+
+- `test/nodes/decorators` contains decorator node tests
+- `test/nodes/composites` contains composite node tests
+- `test/` contains generic tests for beehave
+- `test/actions` contains test actions used within tests
+
+You can run the unit tests by right-clicking the `test` folder and selecting `Run tests`.
+
 ## 🐝 Adding a new node
 
 In case you want to introduce a new node, feel free to [raise a pull request](https://github.com/bitbrain/beehave/compare). Check the issues tab for any discussions on new nodes, as it is a great place to gather feedback before you spend time on implementing it. Ensure to also introduce an icon for your node that is following the colour scheme:

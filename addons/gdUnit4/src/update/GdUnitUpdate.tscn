@@ -1,0 +1,68 @@
+[gd_scene load_steps=4 format=3 uid="uid://2eahgaw88y6q"]
+
+[ext_resource type="Script" path="res://addons/gdUnit4/src/update/GdUnitUpdate.gd" id="1"]
+
+[sub_resource type="Gradient" id="Gradient_p52or"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_d6nsq"]
+gradient = SubResource("Gradient_p52or")
+
+[node name="GdUnitUpdate" type="ConfirmationDialog"]
+title = "Update GdUnit4 to new version"
+size = Vector2i(800, 177)
+visible = true
+transient = false
+always_on_top = true
+popup_window = true
+extend_to_title = true
+ok_button_text = "Update"
+dialog_hide_on_ok = false
+dialog_close_on_escape = false
+script = ExtResource("1")
+
+[node name="UpdateProgress" type="PanelContainer" parent="."]
+process_mode = 3
+custom_minimum_size = Vector2(600, 120)
+layout_direction = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -360.0
+offset_bottom = -520.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Progress" type="TextureRect" parent="UpdateProgress"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = SubResource("GradientTexture2D_d6nsq")
+ignore_texture_size = true
+
+[node name="bar" type="ProgressBar" parent="UpdateProgress/Progress"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+rounded = true
+
+[node name="label" type="Label" parent="UpdateProgress/Progress"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+vertical_alignment = 2
+
+[connection signal="confirmed" from="." to="." method="_on_confirmed"]

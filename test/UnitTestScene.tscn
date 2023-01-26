@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://dqnib72baus51"]
+
+[ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="1_27ukk"]
+[ext_resource type="Script" path="res://test/UnitTestScene.gd" id="1_embiv"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="2_phgmn"]
+
+[node name="UnitTestScene" type="Node2D"]
+script = ExtResource("1_embiv")
+
+[node name="Blackboard" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("1_27ukk")
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="BeehaveTree" type="Node" parent="Node2D"]
+unique_name_in_owner = true
+script = ExtResource("2_phgmn")
+actor_node_path = NodePath("")

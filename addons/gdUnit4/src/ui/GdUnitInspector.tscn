@@ -1,0 +1,93 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://addons/gdUnit4/src/ui/parts/InspectorToolBar.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/gdUnit4/src/ui/parts/InspectorProgressBar.tscn" type="PackedScene" id=2]
+[ext_resource path="res://addons/gdUnit4/src/ui/parts/InspectorStatusBar.tscn" type="PackedScene" id=3]
+[ext_resource path="res://addons/gdUnit4/src/ui/parts/InspectorMonitor.tscn" type="PackedScene" id=4]
+[ext_resource path="res://addons/gdUnit4/src/ui/GdUnitInspector.gd" type="Script" id=5]
+[ext_resource path="res://addons/gdUnit4/src/ui/parts/InspectorTreePanel.tscn" type="PackedScene" id=7]
+
+[node name="GdUnit" type="Panel"]
+use_parent_material = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+minimum_size = Vector2( 220, 0 )
+clip_contents = true
+focus_mode = 2
+size_flags_horizontal = 11
+size_flags_vertical = 3
+script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+use_parent_material = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+clip_contents = true
+size_flags_vertical = 11
+custom_constants/separation = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Header" type="VBoxContainer" parent="VBoxContainer"]
+use_parent_material = true
+offset_right = 1024.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+clip_contents = true
+size_flags_horizontal = 9
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ToolBar" parent="VBoxContainer/Header" instance=ExtResource( 1 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 1024.0
+offset_bottom = 24.0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+
+[node name="ProgressBar" parent="VBoxContainer/Header" instance=ExtResource( 2 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_top = 28.0
+offset_right = 1024.0
+offset_bottom = 48.0
+size_flags_horizontal = 5
+
+[node name="StatusBar" parent="VBoxContainer/Header" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_top = 52.0
+offset_right = 1024.0
+offset_bottom = 90.0
+size_flags_horizontal = 11
+
+[node name="MainPanel" parent="VBoxContainer" instance=ExtResource( 7 )]
+offset_top = 90.0
+clip_contents = true
+size_flags_horizontal = 3
+
+[node name="Monitor" parent="VBoxContainer" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_top = 564.0
+offset_right = 1024.0
+offset_bottom = 600.0
+
+[connection signal="gdunit_runner_start" from="." to="VBoxContainer/Header/ToolBar" method="_on_GdUnit_gdunit_runner_start"]
+[connection signal="gdunit_runner_start" from="." to="VBoxContainer/MainPanel" method="_on_GdUnit_gdunit_runner_start"]
+[connection signal="gdunit_runner_stop" from="." to="VBoxContainer/Header/ToolBar" method="_on_GdUnit_gdunit_runner_stop"]
+[connection signal="gdunit_runner_stop" from="." to="VBoxContainer/MainPanel" method="_on_GdUnit_gdunit_runner_stop"]
+[connection signal="run_pressed" from="VBoxContainer/Header/ToolBar" to="." method="_on_ToolBar_run_pressed"]
+[connection signal="stop_pressed" from="VBoxContainer/Header/ToolBar" to="." method="_on_ToolBar_stop_pressed"]
+[connection signal="failure_next" from="VBoxContainer/Header/StatusBar" to="VBoxContainer/MainPanel" method="_on_StatusBar_failure_next"]
+[connection signal="failure_prevous" from="VBoxContainer/Header/StatusBar" to="VBoxContainer/MainPanel" method="_on_StatusBar_failure_prevous"]
+[connection signal="run_testcase" from="VBoxContainer/MainPanel" to="." method="_on_MainPanel_run_testcase"]
+[connection signal="run_testsuite" from="VBoxContainer/MainPanel" to="." method="_on_MainPanel_run_testsuite"]
+[connection signal="jump_to_orphan_nodes" from="VBoxContainer/Monitor" to="VBoxContainer/MainPanel" method="_on_Monitor_jump_to_orphan_nodes"]

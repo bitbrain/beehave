@@ -70,7 +70,7 @@ func _physics_process(delta: float) -> void:
 	
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var warnings: PackedStringArray = super._get_configuration_warnings()
+	var warnings:PackedStringArray = []
 	
 	if get_children().any(func(x): return not (x is BeehaveNode)):
 		warnings.append("All children of this node should inherit from BeehaveNode class.")
