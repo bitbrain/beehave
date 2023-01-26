@@ -22,6 +22,8 @@ enum {
 
 var actor : Node
 
+var _process_time_metric_name : String
+var _process_time_metric_value : float = 0.0
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
@@ -38,6 +40,13 @@ func _ready() -> void:
 	actor = get_parent()
 	if actor_node_path:
 		actor = get_node(actor_node_path)
+		
+	# Get the name of the parent node name for metric
+	var parent_name = actor.name
+	_process_time_metric_name = "beehave/%s-%s/process_time" % [parent_name, get_instance_id()]
+	
+	# Register custom metric to the engine
+	Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
 
 	set_physics_process(enabled)
 
@@ -45,6 +54,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
+		
+	# Start timing for metric
+	var start_time = Time.get_ticks_usec()
 	
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
 	var status = self.get_child(0).tick(actor, blackboard)
@@ -53,7 +65,9 @@ func _physics_process(delta: float) -> void:
 	if status != RUNNING:
 		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
 	
-
+	# Check the cost for this frame and save it for metric report
+	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
+	
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings:PackedStringArray = []
@@ -93,3 +107,13 @@ func enable() -> void:
 
 func disable() -> void:
 	self.enabled = false
+
+
+func _exit_tree() -> void:
+	# Remove tree metric from the engine
+	Performance.remove_custom_monitor(_process_time_metric_name)
+
+
+# Called by the engine to profile this tree
+func _get_process_time_metric_value() -> float:
+	return _process_time_metric_value
