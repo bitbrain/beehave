@@ -7,6 +7,10 @@ class_name InverterDecorator extends Decorator
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():
 		var response = c.tick(actor, blackboard)
+		
+		if c is ConditionLeaf:
+			blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
+			blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
 
 		if response == SUCCESS:
 			return FAILURE
