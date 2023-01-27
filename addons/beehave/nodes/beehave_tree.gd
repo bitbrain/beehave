@@ -9,11 +9,19 @@ enum {
 	RUNNING
 }
 
+signal tree_enabled
+signal tree_disabled
 
 @export var enabled: bool = true:
 	set(value):
 		enabled = value
 		set_physics_process(enabled)
+		
+		if value:
+			tree_enabled.emit()
+		else:
+			tree_disabled.emit()
+	
 	get:
 		return enabled
 
@@ -43,10 +51,11 @@ func _ready() -> void:
 		
 	# Get the name of the parent node name for metric
 	var parent_name = actor.name
-	_process_time_metric_name = "beehave/%s-%s/process_time" % [parent_name, get_instance_id()]
+	_process_time_metric_name = "beehave/%s-%s-process_time" % [parent_name, get_instance_id()]
 	
 	# Register custom metric to the engine
 	Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
+	BeehaveGlobalMetrics.register_tree(self)
 
 	set_physics_process(enabled)
 
@@ -119,6 +128,7 @@ func disable() -> void:
 func _exit_tree() -> void:
 	# Remove tree metric from the engine
 	Performance.remove_custom_monitor(_process_time_metric_name)
+	BeehaveGlobalMetrics.register_tree(self)
 
 
 # Called by the engine to profile this tree
