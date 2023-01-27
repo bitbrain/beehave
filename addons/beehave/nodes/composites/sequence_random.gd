@@ -10,10 +10,23 @@ class_name SequenceRandomComposite extends Composite
 @export var resume_on_failure: bool = false
 ## Whether the sequence should start where it left off after a previous interruption.
 @export var resume_on_interrupt: bool = false
+## Sets a predicable seed
+@export var random_seed:int = 0:
+	set(rs):
+		random_seed = rs
+		if random_seed != 0:
+			seed(random_seed)
+		else:
+			randomize()
 
 ## A shuffled list of the children that will be executed in reverse order. 
 var _children_bag: Array[Node] = []
 var c: Node
+
+
+func _ready() -> void:
+	if random_seed == 0:
+		randomize()
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:

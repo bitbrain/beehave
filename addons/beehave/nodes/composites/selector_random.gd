@@ -5,11 +5,23 @@
 @icon("../../icons/selector_random.svg")
 class_name SelectorRandomComposite extends Composite
 
+## Sets a predicable seed
+@export var random_seed:int = 0:
+	set(rs):
+		random_seed = rs
+		if random_seed != 0:
+			seed(random_seed)
+		else:
+			randomize()
+
 
 ## A shuffled list of the children that will be executed in reverse order. 
 var _children_bag: Array[Node] = []
 var c: Node
 
+func _ready() -> void:
+	if random_seed == 0:
+		randomize()
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	if _children_bag.is_empty():
