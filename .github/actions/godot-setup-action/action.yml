@@ -1,0 +1,17 @@
+name: Setting up Godot Engine
+description: Downloads Godot Engine and sets it up in your action.
+
+inputs:
+  version:
+    description: 'The version to download, e.g. 4.0'
+    required: true
+  prerelease_version:
+    description: 'The pre-release version to download, e.g. beta16'
+    required: false
+
+outputs:
+  godot_binary: "The full path of your downloaded Godot binary"
+
+runs:
+  using: "docker"
+  image: "Dockerfile"

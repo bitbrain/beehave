@@ -32,7 +32,7 @@ jobs:
 
       - name: "🤖 setup Godot Engine"
         id: setup-godot
-        uses: bitbrain/godot-setup-action@main
+        uses: ./.github/actions/godot-setup-action
         with:
           version: "4.0"
           prerelease_version: "beta16"
