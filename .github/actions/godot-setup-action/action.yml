@@ -10,7 +10,8 @@ inputs:
     required: false
 
 outputs:
-  godot_binary: "The full path of your downloaded Godot binary"
+  godot_binary:
+    description: 'The version to download, e.g. 4.0'
 
 runs:
   using: "docker"
