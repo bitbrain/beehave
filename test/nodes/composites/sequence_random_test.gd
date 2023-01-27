@@ -1,15 +1,16 @@
 # GdUnit generated TestSuite
-class_name SequenceStarTest
+class_name SequenceRandomTest
 extends GdUnitTestSuite
 @warning_ignore("unused_parameter")
 @warning_ignore("return_value_discarded")
 
 # TestSuite generated from
-const __source = "res://addons/beehave/nodes/composites/sequence_star.gd"
+const __source = "res://addons/beehave/nodes/composites/sequence_random.gd"
 const __count_up_action = "res://test/actions/count_up_action.gd"
 const __blackboard = "res://addons/beehave/blackboard.gd"
+const RANDOM_SEED = 123
 
-var sequence:SequenceStarComposite
+var sequence:SequenceRandomComposite
 var action1:ActionLeaf
 var action2:ActionLeaf
 var actor:Node
@@ -24,44 +25,34 @@ func before_test() -> void:
 	actor = auto_free(Node2D.new())
 	blackboard = auto_free(load(__blackboard).new())
 
-func test_always_exexuting_all_successful_nodes() -> void:
+func test_always_executing_first_successful_node() -> void:
+	sequence.random_seed = RANDOM_SEED
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
 	assert_that(action1.count).is_equal(2)
 	assert_that(action2.count).is_equal(2)
 	
-func test_never_execute_second_when_first_is_failing() -> void:
+func test_execute_second_when_first_is_failing() -> void:
+	sequence.random_seed = RANDOM_SEED
 	action1.status = BeehaveNode.FAILURE
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
 	assert_that(action1.count).is_equal(2)
-	assert_that(action2.count).is_equal(0)
+	assert_that(action2.count).is_equal(1)
 	
-func test_keeps_running_child_until_success() -> void:
-	action2.status = BeehaveNode.RUNNING
-	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
-	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
-	assert_that(action1.count).is_equal(1)
-	assert_that(action2.count).is_equal(2)
-	action2.status = BeehaveNode.SUCCESS
+func test_random_even_execution() -> void:
+	sequence.random_seed = RANDOM_SEED
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
 	assert_that(action1.count).is_equal(1)
-	assert_that(action2.count).is_equal(3)
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
-	assert_that(action1.count).is_equal(2)
-	assert_that(action2.count).is_equal(4)
-	
-func test_keeps_running_child_until_failure() -> void:
-	action2.status = BeehaveNode.RUNNING
-	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
-	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
-	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(2)
+	
+func test_return_failure_of_none_is_succeeding() -> void:
+	sequence.random_seed = RANDOM_SEED
+	action1.status = BeehaveNode.FAILURE
 	action2.status = BeehaveNode.FAILURE
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
 	assert_that(action1.count).is_equal(1)
-	assert_that(action2.count).is_equal(3)
-	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
-	assert_that(action1.count).is_equal(2)
-	assert_that(action2.count).is_equal(4)
+	assert_that(action2.count).is_equal(0)
+	
 	

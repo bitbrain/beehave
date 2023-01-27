@@ -184,7 +184,7 @@ func PublishEvent(data) -> void:
 # task_args: optional task arugments as Dictionary key:value
 #
 # returns a Result with state SUCCESS or ERROR
-@rpc(any_peer, call_local) func sync_rpc_id(peer_id :int, task_name :String, task_args :Array = Array()) -> Result:
+@rpc("any_peer", "call_local") func sync_rpc_id(peer_id :int, task_name :String, task_args :Array = Array()) -> Result:
 	rpc_id(peer_id, "sync_rpc_id_request",  { GdUnitTask.TASK_NAME: task_name, GdUnitTask.TASK_ARGS: task_args})
 	# wait until the responce is received
 	await self.sync_rpc_id_result_received
@@ -196,11 +196,11 @@ func PublishEvent(data) -> void:
 # task_name: the name of remote task to execute
 # task_args: optional task arugments as Dictionary key:value
 #
-@rpc(any_peer, call_local) func async_rpc_id(peer_id :int, task_name :String, task_args :Array = Array()) -> void:
+@rpc("any_peer", "call_local") func async_rpc_id(peer_id :int, task_name :String, task_args :Array = Array()) -> void:
 	rpc_id(peer_id, "async_rpc_id_request",  { GdUnitTask.TASK_NAME: task_name, GdUnitTask.TASK_ARGS: task_args})
 
 # responce the result form 'sync_rpc_id'
-@rpc(any_peer) func sync_rpc_id_request_response(value :Dictionary):
+@rpc("any_peer", "call_local") func sync_rpc_id_request_response(value :Dictionary):
 	_result = Result.deserialize(value)
 	# emit signal result successfully received
 	emit_signal("sync_rpc_id_result_received")
