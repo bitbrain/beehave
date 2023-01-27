@@ -1,0 +1,59 @@
+name: ci-pr
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.jpg'
+      - '**.png'
+      - '**.md'
+    branches:
+      - 'godot-4.x'
+  workflow_dispatch:
+
+concurrency:
+  group: ci-pr-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+
+  unit-test:
+    strategy:
+      fail-fast: false
+
+    name: "🤖 running unit tests on Godot ${{ matrix.godot-build }} ${{ matrix.godot-version }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: false
+
+    steps:
+      - name: "📦 checkout repository"
+        uses: actions/checkout@v3
+
+      - name: "🤖 setup Godot Engine"
+        id: setup-godot
+        uses: bitbrain/godot-setup-action@main
+        with:
+          version: "4.0"
+          prerelease_version: "beta16"
+
+      - name: "update Project"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 1
+        continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
+        run: |
+           ${{ steps.setup-godot.outputs.godot_binary }} --headless -e --path . -s res://addons/gdUnit4/src/core/scan_project.gd --no-window
+      - name: "🧪 run unit tests"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 10
+        uses: ./.github/actions/unit-test
+        with:
+          godot-bin: ${{ steps.setup-godot.outputs.godot_binary }}
+          test-includes: "res://test/"
+
+      - name: "📚 publish unit test reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/publish-test-report
+
+      - name: "🚚 upload unit test reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/upload-test-report
