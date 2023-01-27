@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 GODOT_URL=http://downloads.tuxfamily.org/godotengine/$INPUT_VERSION
 GODOT_BINARY=Godot_v$INPUT_VERSION-${INPUT_PRERELEASE_VERSION}_linux.x86_64
