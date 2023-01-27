@@ -8,6 +8,7 @@ on:
       - '**.md'
     branches:
       - 'godot-4.x'
+      - 'gdunit-github-action'
   workflow_dispatch:
 
 concurrency:
