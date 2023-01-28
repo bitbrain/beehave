@@ -12,6 +12,6 @@ else
     curl $GODOT_URL/$INPUT_PRERELEASE_VERSION/$GODOT_BINARY.zip > $GODOT_BINARY.zip
 fi
 
-unzip $GODOT_BINARY.zip && rm $GODOT_BINARY.zip
+unzip $GODOT_BINARY.zip && rm $GODOT_BINARY.zip && chmod +x $GODOT_BINARY
 
-echo "::set-output godot_binary=$GODOT_BINARY"
+echo "godot_binary=$GODOT_BINARY" >> $GITHUB_OUTPUT
