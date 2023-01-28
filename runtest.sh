@@ -10,5 +10,5 @@ fi
 #$GODOT_BIN --no-window -s -d ./addons/gdUnit4/bin/GdUnitCmdTool.gd $*
 $GODOT_BIN -s -d ./addons/gdUnit4/bin/GdUnitCmdTool.gd $*
 exit_code=$?
-$GODOT_BIN --no-window --quiet -s -d ./addons/gdUnit4/bin/GdUnitCopyLog.gd $* > /dev/null
+$GODOT_BIN --headless --quiet -s -d ./addons/gdUnit4/bin/GdUnitCopyLog.gd $* > /dev/null
 exit $exit_code
