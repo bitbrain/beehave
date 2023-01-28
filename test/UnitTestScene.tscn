@@ -49,10 +49,8 @@ script = ExtResource("5_thhls")
 
 [node name="ValueReachedCondition" type="Node" parent="AnotherNode/BeehaveTree/SequenceComposite/ValueNotReached"]
 script = ExtResource("5_rc0ra")
-limit = 4
 
-[node name="SharedCountUpAction1" type="Node" parent="AnotherNode/BeehaveTree/SequenceComposite"]
-unique_name_in_owner = true
+[node name="CountUpAction" type="Node" parent="AnotherNode/BeehaveTree/SequenceComposite"]
 script = ExtResource("6_brhwp")
 
 [node name="ThirdNode" type="Node2D" parent="."]
@@ -70,8 +68,6 @@ script = ExtResource("5_thhls")
 
 [node name="ValueReachedCondition" type="Node" parent="ThirdNode/BeehaveTree/SequenceComposite/ValueNotReached"]
 script = ExtResource("5_rc0ra")
-limit = 4
 
-[node name="SharedCountUpAction2" type="Node" parent="ThirdNode/BeehaveTree/SequenceComposite"]
-unique_name_in_owner = true
+[node name="CountUpAction" type="Node" parent="ThirdNode/BeehaveTree/SequenceComposite"]
 script = ExtResource("6_brhwp")

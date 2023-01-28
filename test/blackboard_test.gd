@@ -42,12 +42,3 @@ func test_get_default() -> void:
 	blackboard.set_value("my-key", 123)
 	assert_that(blackboard.get_value("my-key2", 234)).is_equal(234)
 	
-func test_blackboard_shared_between_trees() -> void:
-	var scene = auto_free(load("res://test/UnitTestScene.tscn").instantiate())
-	var runner = scene_runner(scene)
-	
-	await runner.simulate_frames(10)
-	
-	assert_that(scene.blackboard.get_value("custom_value")).is_equal(4)
-	assert_that(scene.blackboard.get_value("custom_value")).is_equal(4)
-	assert_that(scene.blackboard.keys().size()).is_equal(3)
