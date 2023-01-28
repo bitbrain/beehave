@@ -16,13 +16,15 @@ func tick(actor: Node, _blackboard: Blackboard) -> int:
 		.set_ease(Tween.EASE_IN_OUT)\
 		.set_trans(Tween.TRANS_CUBIC)
 		tween.tween_property(actor, "modulate", current_color, interpolation_time)\
-		.finished.connect(_finished)
+		.finished.connect(_finished.bind(actor))
 		
 	if current_color != null:
 		return RUNNING
 	else:
 		return SUCCESS
 
-func _finished() -> void:
+func _finished(actor: Node) -> void:
 	current_color = null
 	tween = null
+	if actor is ColorChangingSprite:
+		actor.color_changed.emit()
