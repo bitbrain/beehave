@@ -15,4 +15,4 @@ runs:
       env:
         GODOT_BIN: ${{ inputs.godot-bin }}
       shell: bash
-      run: ./test/runtest.sh --add ${{ inputs.test-includes }} --continue
+      run: chmod +x ./test/runtest.sh && ./test/runtest.sh --add ${{ inputs.test-includes }} --continue
