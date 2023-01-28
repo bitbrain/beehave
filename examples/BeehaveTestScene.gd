@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var sprite := $Sprite2D
+@onready var sprite := $ColorChangingSprite
 @onready var tree := %BeehaveTree
 @onready var condition_label := %ConditionLabel
 @onready var action_label := %ActionLabel

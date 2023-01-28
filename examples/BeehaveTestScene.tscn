@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://y24m3r3eydsu"]
+[gd_scene load_steps=12 format=3 uid="uid://y24m3r3eydsu"]
 
 [ext_resource type="Script" path="res://examples/BeehaveTestScene.gd" id="1_s45or"]
-[ext_resource type="Texture2D" uid="uid://by8x5mhtpqtsy" path="res://splash.png" id="2_yf6a3"]
+[ext_resource type="Texture2D" uid="uid://bphl1evimyk6u" path="res://splash.png" id="2_yf6a3"]
+[ext_resource type="Script" path="res://examples/ColorChangingSprite.gd" id="3_4a21r"]
 [ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="3_hid2l"]
 [ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector.gd" id="4_8ftoq"]
 [ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="5_ifctq"]
@@ -22,38 +23,39 @@ position = Vector2(32, 46)
 scale = Vector2(2.63487, 2.57664)
 texture = ExtResource("2_yf6a3")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="ColorChangingSprite" type="Sprite2D" parent="."]
 scale = Vector2(0.1, 0.1)
 texture = SubResource("CompressedTexture2D_atdvc")
+script = ExtResource("3_4a21r")
 
-[node name="BeehaveTree" type="Node" parent="Sprite2D" node_paths=PackedStringArray("blackboard")]
+[node name="BeehaveTree" type="Node" parent="ColorChangingSprite" node_paths=PackedStringArray("blackboard")]
 unique_name_in_owner = true
 script = ExtResource("3_hid2l")
 actor_node_path = NodePath("")
 blackboard = NodePath("../../Blackboard")
 
-[node name="SelectorComposite" type="Node" parent="Sprite2D/BeehaveTree"]
+[node name="SelectorComposite" type="Node" parent="ColorChangingSprite/BeehaveTree"]
 script = ExtResource("4_8ftoq")
 
-[node name="SequenceComposite" type="Node" parent="Sprite2D/BeehaveTree/SelectorComposite"]
+[node name="SequenceComposite" type="Node" parent="ColorChangingSprite/BeehaveTree/SelectorComposite"]
 script = ExtResource("5_ifctq")
 
-[node name="HasPositivePosition" parent="Sprite2D/BeehaveTree/SelectorComposite/SequenceComposite" instance=ExtResource("6_7qx5k")]
+[node name="HasPositivePosition" parent="ColorChangingSprite/BeehaveTree/SelectorComposite/SequenceComposite" instance=ExtResource("6_7qx5k")]
 
-[node name="SetModulateColor" parent="Sprite2D/BeehaveTree/SelectorComposite/SequenceComposite" instance=ExtResource("7_b4xjm")]
+[node name="SetModulateColor" parent="ColorChangingSprite/BeehaveTree/SelectorComposite/SequenceComposite" instance=ExtResource("7_b4xjm")]
 modulate_color = Color(1, 0, 0, 1)
 
-[node name="SequenceComposite2" type="Node" parent="Sprite2D/BeehaveTree/SelectorComposite"]
+[node name="SequenceComposite2" type="Node" parent="ColorChangingSprite/BeehaveTree/SelectorComposite"]
 script = ExtResource("5_ifctq")
 
-[node name="HasNegativePosition" parent="Sprite2D/BeehaveTree/SelectorComposite/SequenceComposite2" instance=ExtResource("8_dorjh")]
+[node name="HasNegativePosition" parent="ColorChangingSprite/BeehaveTree/SelectorComposite/SequenceComposite2" instance=ExtResource("8_dorjh")]
 
-[node name="SetModulateColor" parent="Sprite2D/BeehaveTree/SelectorComposite/SequenceComposite2" instance=ExtResource("7_b4xjm")]
+[node name="SetModulateColor" parent="ColorChangingSprite/BeehaveTree/SelectorComposite/SequenceComposite2" instance=ExtResource("7_b4xjm")]
 modulate_color = Color(0, 0, 1, 1)
 
-[node name="SetModulateColor" parent="Sprite2D/BeehaveTree/SelectorComposite" instance=ExtResource("7_b4xjm")]
+[node name="SetModulateColor" parent="ColorChangingSprite/BeehaveTree/SelectorComposite" instance=ExtResource("7_b4xjm")]
 
-[node name="Camera2D" type="Camera2D" parent="Sprite2D"]
+[node name="Camera2D" type="Camera2D" parent="ColorChangingSprite"]
 
 [node name="Blackboard" type="Node" parent="."]
 script = ExtResource("9_k8008")
