@@ -20,6 +20,7 @@ signal tree_disabled
 		if value:
 			tree_enabled.emit()
 		else:
+			interrupt()
 			tree_disabled.emit()
 	
 	get:
@@ -29,6 +30,7 @@ signal tree_disabled
 @export var blackboard:Blackboard
 
 var actor : Node
+var status : int = -1
 
 var _process_time_metric_name : String
 var _process_time_metric_value : float = 0.0
@@ -75,7 +77,7 @@ func _physics_process(delta: float) -> void:
 	var start_time = Time.get_ticks_usec()
 	
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
-	var status = self.get_child(0).tick(actor, blackboard)
+	status = self.get_child(0).tick(actor, blackboard)
 
 	# Clear running action if nothing is running
 	if status != RUNNING:
@@ -115,6 +117,10 @@ func get_last_condition_status() -> String:
 		else:
 			return "RUNNING"
 	return ""
+	
+## interrupts this tree if anything was running
+func interrupt() -> void:
+	self.get_child(0).interrupt(actor, blackboard)
 
 
 func enable() -> void:
