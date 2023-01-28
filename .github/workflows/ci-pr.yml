@@ -42,7 +42,7 @@ jobs:
         timeout-minutes: 1
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
         run: |
-           ${{ steps.setup-godot.outputs.godot_binary }} --headless -e --path . -s res://addons/gdUnit4/src/core/scan_project.gd
+           ${{ steps.setup-godot.outputs.godot_binary }} --headless -e --path . -s res://addons/gdUnit4/src/core/scan_project.gd --quit
       - name: "🧪 run unit tests"
         if: ${{ !cancelled() }}
         timeout-minutes: 10
