@@ -14,4 +14,4 @@ fi
 
 unzip $GODOT_BINARY.zip && rm $GODOT_BINARY.zip && chmod +x $GODOT_BINARY
 
-echo "godot_binary=$GODOT_BINARY" >> $GITHUB_OUTPUT
+echo "godot_binary=./$GODOT_BINARY" >> $GITHUB_OUTPUT
