@@ -77,15 +77,26 @@ func _physics_process(delta: float) -> void:
 	var start_time = Time.get_ticks_usec()
 	
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
-	status = self.get_child(0).tick(actor, blackboard)
-
-	# Clear running action if nothing is running
-	if status != RUNNING:
-		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
+	
+	tick()
 	
 	# Check the cost for this frame and save it for metric report
 	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
+
+
+func tick() -> int:
+	if status == -1:
+		self.get_child(0).enter(actor, blackboard)
 	
+	status = self.get_child(0).tick(actor, blackboard)
+	
+	# Clear running action if nothing is running
+	if status != RUNNING:
+		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
+		self.get_child(0).exit(actor, blackboard)
+	
+	return status
+
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings:PackedStringArray = []

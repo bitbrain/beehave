@@ -18,6 +18,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	
 	return warnings
 
+
 ## Executes this node and returns a status code.
 ## This method must be overwritten.
 func tick(actor: Node, blackboard: Blackboard) -> int:
@@ -26,4 +27,15 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 ## Called when this node needs to be interrupted before it can return FAILURE or SUCCESS.
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
+	pass
+
+
+## Called before the first time it ticks by the parent.
+func enter(actor: Node, blackboard: Blackboard) -> void:
+	pass
+
+
+## Called after the last time it ticks and returns 
+## [code]SUCCESS[/code] or [code]FAILURE[/code].
+func exit(actor: Node, blackboard: Blackboard) -> void:
 	pass

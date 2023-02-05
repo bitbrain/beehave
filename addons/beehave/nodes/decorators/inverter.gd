@@ -4,23 +4,31 @@
 @icon("../../icons/inverter.svg")
 class_name InverterDecorator extends Decorator
 
+
 func tick(actor: Node, blackboard: Blackboard) -> int:
-	for c in get_children():
-		var response = c.tick(actor, blackboard)
-		
-		if c is ConditionLeaf:
-			blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
-			blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
-
-		if response == SUCCESS:
-			return FAILURE
-		if response == FAILURE:
-			return SUCCESS
-
-		if c is ActionLeaf:
-			blackboard.set_value("running_action", c, str(actor.get_instance_id()))
-			
-		return RUNNING
+	var c = get_child(0)
 	
-	# Decorators must have a child. This should be unreachable code.
-	return FAILURE
+	if c != running_child:
+		c.enter(actor, blackboard)
+
+	var response = c.tick(actor, blackboard)
+
+	if c is ConditionLeaf:
+		blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
+		blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
+
+	match response:
+		SUCCESS:
+			c.exit(actor, blackboard)
+			return FAILURE
+		FAILURE:
+			c.exit(actor, blackboard)
+			return SUCCESS
+		RUNNING:
+			running_child = c
+			if c is ActionLeaf:
+				blackboard.set_value("running_action", c, str(actor.get_instance_id()))
+			return RUNNING
+		_:
+			push_error("This should be unreachable")
+			return -1

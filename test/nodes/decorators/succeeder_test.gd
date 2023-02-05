@@ -6,10 +6,29 @@ extends GdUnitTestSuite
 
 # TestSuite generated from
 const __source = "res://addons/beehave/nodes/decorators/succeeder.gd"
-const __failer = "res://addons/beehave/nodes/decorators/failer.gd"
+const __action = "res://test/actions/count_up_action.gd"
+const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
+const __blackboard = "res://addons/beehave/blackboard.gd"
+
+var tree: BeehaveTree
+var action: ActionLeaf
+
+
+func before_test() -> void:
+	tree = auto_free(load(__tree).new())
+	action = auto_free(load(__action).new())
+	var succeeder = auto_free(load(__source).new())
+	
+	var actor = auto_free(Node2D.new())
+	var blackboard = auto_free(load(__blackboard).new())
+	
+	tree.add_child(succeeder)
+	succeeder.add_child(action)
+	
+	tree.actor = actor
+	tree.blackboard = blackboard
+
 
 func test_tick() -> void:
-	var node = auto_free(load(__source).new())
-	node.add_child(auto_free(load(__failer).new()))
-	assert_that(node.tick(null, null)).is_equal(BeehaveNode.SUCCESS)
-	
+	action.status = BeehaveNode.FAILURE
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
