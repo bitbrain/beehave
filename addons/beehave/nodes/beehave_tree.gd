@@ -120,7 +120,8 @@ func get_last_condition_status() -> String:
 	
 ## interrupts this tree if anything was running
 func interrupt() -> void:
-	self.get_child(0).interrupt(actor, blackboard)
+	if self.get_child_count() != 0:
+		self.get_child(0).interrupt(actor, blackboard)
 
 
 func enable() -> void:
