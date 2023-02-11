@@ -27,7 +27,7 @@ signal tree_disabled
 		return enabled
 
 @export_node_path var actor_node_path : NodePath
-@export var blackboard:Blackboard
+@export var blackboard:Blackboard = Blackboard.new()
 
 var actor : Node
 var status : int = -1
@@ -43,9 +43,6 @@ func _ready() -> void:
 		push_error("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
 		disable()
 		return
-		
-	if not blackboard:
-		blackboard = Blackboard.new()
 
 	actor = get_parent()
 	if actor_node_path:
