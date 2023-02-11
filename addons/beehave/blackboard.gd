@@ -6,7 +6,9 @@ class_name Blackboard extends Node
 var blackboard: Dictionary = {}
 
 func keys() -> Array[String]:
-	return blackboard.keys().duplicate()
+	var keys: Array[String]
+	keys.assign(blackboard.keys().duplicate())
+	return keys
 
 
 func set_value(key: Variant, value: Variant, blackboard_name: String = 'default') -> void:
