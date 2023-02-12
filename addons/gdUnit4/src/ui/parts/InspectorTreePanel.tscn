@@ -43,7 +43,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 11
 focus_mode = 2
 bbcode_enabled = true
-fit_content_height = true
 selection_enabled = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="report"]
@@ -91,7 +90,6 @@ text = "Run Test"
 switch_on_hover = true
 
 [connection signal="item_activated" from="Panel/Tree" to="." method="_on_Tree_item_activated"]
-[connection signal="item_double_clicked" from="Panel/Tree" to="." method="_on_Tree_item_double_clicked"]
 [connection signal="item_mouse_selected" from="Panel/Tree" to="." method="_on_tree_item_mouse_selected"]
 [connection signal="item_selected" from="Panel/Tree" to="." method="_on_Tree_item_selected"]
 [connection signal="focus_exited" from="contextMenu" to="." method="_on_contextMenu_focus_exited"]

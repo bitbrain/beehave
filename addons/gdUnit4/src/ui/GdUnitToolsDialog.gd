@@ -56,14 +56,14 @@ func setup_common_properties(properties_parent :Node, property_category) -> void
 		label.custom_minimum_size = Vector2(_font_size * 20, 0)
 		grid.add_child(label)
 		min_size += label.size.x
-		
+
 		# property reset btn
 		var reset_btn :Button = _properties_template.get_child(1).duplicate()
 		reset_btn.icon = _get_btn_icon("Reload")
 		reset_btn.disabled = property.value() == property.default()
 		grid.add_child(reset_btn)
 		min_size += reset_btn.size.x
-		
+
 		# property type specific input element
 		var input :Node = _create_input_element(property, reset_btn)
 		input.custom_minimum_size = Vector2(_font_size * 15, 0)
@@ -91,7 +91,7 @@ func _create_input_element(property: GdUnitProperty, reset_btn :Button) -> Node:
 		options.connect("item_selected", Callable(self, "_on_option_selected").bind(property, reset_btn))
 		options.select(property.value())
 		return options
-	if property.type() == TYPE_BOOL: 
+	if property.type() == TYPE_BOOL:
 		var check_btn := CheckButton.new()
 		check_btn.connect("toggled", Callable(self, "_on_property_text_changed").bind(property, reset_btn))
 		check_btn.button_pressed = property.value()
@@ -149,14 +149,13 @@ func _install_examples() -> void:
 
 func rescan(update_scripts :bool = false) -> void:
 	await get_tree().idle_frame
-	var plugin := EditorPlugin.new()
+	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 	var fs := plugin.get_editor_interface().get_resource_filesystem()
 	fs.scan_sources()
 	while fs.is_scanning():
 		await get_tree().create_timer(1).timeout
 	if update_scripts:
 		plugin.get_editor_interface().get_resource_filesystem().update_script_classes()
-	plugin.free()
 
 
 func _on_btn_report_bug_pressed():

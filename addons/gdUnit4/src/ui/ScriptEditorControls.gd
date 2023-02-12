@@ -106,7 +106,7 @@ static func edit_script(script_path :String, line_number :int = -1):
 # Register the given context menu to the current script editor
 # Is called when the plugin is activated
 # The active script is connected to the ScriptEditorContextMenuHandler
-static func register_context_menu(menu :Array) -> void:
+static func register_context_menu(menu :Array[GdUnitContextMenuItem]) -> void:
 	script_editor().editor_script_changed.connect(ScriptEditorContextMenuHandler.create(menu).bind(script_editor()))
 
 
