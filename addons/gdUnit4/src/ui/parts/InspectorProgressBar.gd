@@ -8,11 +8,7 @@ extends ProgressBar
 func _ready():
 	GdUnitSignals.instance().gdunit_event.connect(Callable(self, "_on_gdunit_event"))
 	style.bg_color = Color.DARK_GREEN
-	#var plugin := EditorPlugin.new()
-	#var settings := plugin.get_editor_interface().get_editor_settings()
-	#var font_size = settings.get_setting("interface/editor/main_font_size")
-	#bar.minimum_size.y = font_size + 4 * plugin.get_editor_interface().get_editor_scale()
-	#plugin.free()
+
 
 func progress_init(max_value :int) -> void:
 	bar.value = 0

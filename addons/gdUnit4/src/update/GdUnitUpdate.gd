@@ -8,7 +8,6 @@ extends ConfirmationDialog
 
 
 var _debug_mode := false
-var _plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 
 
 func init_progress(max_value : int) -> void:
@@ -65,7 +64,8 @@ func run_update() -> void:
 func rescan() -> void:
 	await get_tree().process_frame
 	prints("Rescan Project")
-	var fs := _plugin.get_editor_interface().get_resource_filesystem()
+	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
+	var fs := plugin.get_editor_interface().get_resource_filesystem()
 	fs.scan_sources()
 	fs.update_script_classes()
 	fs.scan()
@@ -76,7 +76,8 @@ func rescan() -> void:
 
 func restart_godot() -> void:
 	prints("Force restart Godot")
-	_plugin.get_editor_interface().restart_editor(true)
+	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
+	plugin.get_editor_interface().restart_editor(true)
 
 
 static func enable_gdUnit() -> void:
@@ -90,7 +91,8 @@ static func enable_gdUnit() -> void:
 
 
 func disable_gdUnit() -> void:
-	_plugin.get_editor_interface().set_plugin_enabled("gdUnit4", false)
+	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
+	plugin.get_editor_interface().set_plugin_enabled("gdUnit4", false)
 
 
 const GDUNIT_TEMP := "user://tmp"

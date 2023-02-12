@@ -44,7 +44,7 @@ func self_test() -> GdUnitRunnerConfig:
 
 func add_test_suite(resource_path :String) -> GdUnitRunnerConfig:
 	var to_execute := to_execute()
-	to_execute[resource_path] = to_execute.get(resource_path, Array())
+	to_execute[resource_path] = to_execute.get(resource_path, PackedStringArray())
 	return self
 
 
@@ -56,7 +56,7 @@ func add_test_suites(resource_paths :PackedStringArray) -> GdUnitRunnerConfig:
 
 func add_test_case(resource_path :String, test_name :StringName, test_param_index :int = -1) -> GdUnitRunnerConfig:
 	var to_execute := to_execute()
-	var test_cases :Array[StringName] = to_execute.get(resource_path, [])
+	var test_cases :PackedStringArray = to_execute.get(resource_path, PackedStringArray())
 	if test_param_index != -1:
 		test_cases.append("%s:%d" % [test_name, test_param_index])
 	else:
@@ -75,7 +75,7 @@ func skip_test_suite(value :StringName) -> GdUnitRunnerConfig:
 		parts.pop_front()
 	parts[0] = GdUnitTools.make_qualified_path(parts[0])
 	match parts.size():
-		1: skipped()[parts[0]] = Array()
+		1: skipped()[parts[0]] = PackedStringArray()
 		2: skip_test_case(parts[0], parts[1])
 	return self
 
@@ -88,18 +88,18 @@ func skip_test_suites(resource_paths :PackedStringArray) -> GdUnitRunnerConfig:
 
 func skip_test_case(resource_path :String, test_name :StringName) -> GdUnitRunnerConfig:
 	var to_ignore := skipped()
-	var test_cases :Array[StringName] = to_ignore.get(resource_path, [])
+	var test_cases :PackedStringArray = to_ignore.get(resource_path, PackedStringArray())
 	test_cases.append(test_name)
 	to_ignore[resource_path] = test_cases
 	return self
 
 
 func to_execute() -> Dictionary:
-	return _config.get(INCLUDED, {"res://" : []})
+	return _config.get(INCLUDED, {"res://" : PackedStringArray()})
 
 
 func skipped() -> Dictionary:
-	return _config.get(SKIPPED, Array())
+	return _config.get(SKIPPED, PackedStringArray())
 
 
 func save(path :String = CONFIG_FILE) -> Result:
