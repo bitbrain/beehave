@@ -8,6 +8,7 @@ const DEFAULT_TIMEOUT := -1
 const ARGUMENT_TIMEOUT := "timeout"
 
 var _iterations: int = 1
+var _current_iteration :int = -1
 var _seed: int
 var _fuzzers: Array[GdFunctionArgument] = []
 var _test_parameters := Array()
@@ -22,6 +23,7 @@ var _interupted :bool = false
 var _timeout :int
 var _default_timeout :int
 var _monitor := GodotGdErrorMonitor.new()
+var _report :GdUnitReport = null
 
 
 func _init():
@@ -43,6 +45,7 @@ func configure(name: String, line_number: int, script_path: String, timeout :int
 
 
 func execute(test_parameter := Array(), iteration := 0):
+	_current_iteration = iteration - 1
 	if iteration == 0:
 		set_timeout()
 	_monitor.start()
@@ -54,7 +57,9 @@ func execute(test_parameter := Array(), iteration := 0):
 	await completed
 	_monitor.stop()
 	for report in _monitor.reports():
-		GdUnitAssertImpl.new(get_parent(), null).send_report(report)
+		if report.is_error():
+			_report = report
+			_interupted = true
 
 
 func dispose():
@@ -86,6 +91,10 @@ func set_timeout():
 
 
 func _test_case_timeout():
+	if has_fuzzer():
+		_report = GdUnitReport.new().create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.fuzzer_interuped(_current_iteration, "timedout"))
+	else:
+		_report = GdUnitReport.new().create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.test_timeout(timeout()))
 	_interupted = true
 	completed.emit()
 
@@ -119,8 +128,8 @@ func is_skipped() -> bool:
 	return _skipped
 
 
-func error() -> String:
-	return _error
+func report() -> GdUnitReport:
+	return _report
 
 
 func line_number() -> int:

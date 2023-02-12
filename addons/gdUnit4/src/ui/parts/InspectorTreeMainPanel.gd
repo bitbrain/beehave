@@ -225,7 +225,7 @@ func set_state_failed(item :TreeItem) -> void:
 func set_state_error(item :TreeItem) -> void:
 	item.set_meta(META_GDUNIT_STATE, STATE.ERROR)
 	item.set_custom_color(0, Color.DARK_RED)
-	item.set_suffix(0, "timeout! " + item.get_suffix(0))
+	item.set_suffix(0, item.get_suffix(0))
 	item.set_icon(0, ICON_TEST_ERROR)
 	item.collapsed = false
 
@@ -520,10 +520,6 @@ func _on_Tree_item_activated() -> void:
 	editor_interface.get_file_system_dock().navigate_to_path(resource_path)
 	editor_interface.edit_resource(resource)
 	editor_interface.get_script_editor().goto_line(line_number-1)
-
-
-func _on_Tree_item_double_clicked() -> void:
-	_on_Tree_item_activated()
 
 
 ################################################################################

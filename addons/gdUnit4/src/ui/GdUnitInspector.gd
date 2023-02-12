@@ -28,7 +28,7 @@ func _ready():
 	GdUnitSignals.instance().gdunit_client_connected.connect(Callable(self, "_on_client_connected"))
 	GdUnitSignals.instance().gdunit_client_disconnected.connect(Callable(self, "_on_client_disconnected"))
 	GdUnitSignals.instance().gdunit_event.connect(Callable(self, "_on_event"))
-	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin") as EditorPlugin
+	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 	_editor_interface = plugin.get_editor_interface()
 	if Engine.is_editor_hint():
 		_getEditorThemes(_editor_interface)
@@ -55,7 +55,7 @@ func _process(_delta):
 	_check_test_run_stopped_manually()
 
 
-# is checking if the user has press the editor stop scene 
+# is checking if the user has press the editor stop scene
 func _check_test_run_stopped_manually():
 	if _is_test_running_but_stop_pressed():
 		if GdUnitSettings.is_verbose_assert_warnings():
@@ -96,7 +96,7 @@ func add_file_system_dock_context_menu() -> void:
 		return !_runButton.disabled
 	var run_test := func run_test(resource_paths :PackedStringArray, debug :bool):
 		run_test_suites(resource_paths, debug)
-	var menu := [
+	var menu :Array[GdUnitContextMenuItem] = [
 		GdUnitContextMenuItem.new(GdUnitContextMenuItem.MENU_ID.TEST_RUN, "Run Tests", is_test_suite.bind(true), is_enabled, run_test.bind(false)),
 		GdUnitContextMenuItem.new(GdUnitContextMenuItem.MENU_ID.TEST_DEBUG, "Debug Tests", is_test_suite.bind(true), is_enabled, run_test.bind(true)),
 	]
@@ -132,8 +132,8 @@ func add_script_editor_context_menu():
 			return
 		var info := result.value() as Dictionary
 		ScriptEditorControls.edit_script(info.get("path"), info.get("line"))
-	
-	var menu := [
+
+	var menu :Array[GdUnitContextMenuItem] = [
 		GdUnitContextMenuItem.new(GdUnitContextMenuItem.MENU_ID.TEST_RUN, "Run Tests", is_test_suite.bind(true), is_enabled, run_test.bind(false)),
 		GdUnitContextMenuItem.new(GdUnitContextMenuItem.MENU_ID.TEST_DEBUG, "Debug Tests", is_test_suite.bind(true), is_enabled, run_test.bind(true)),
 		GdUnitContextMenuItem.new(GdUnitContextMenuItem.MENU_ID.CREATE_TEST, "Create Test", is_test_suite.bind(false), is_enabled, create_test)
@@ -169,7 +169,7 @@ func _gdUnit_run(debug :bool) -> void:
 	# don't start is already running
 	if _is_running:
 		return
-	
+
 	grab_focus()
 	show()
 	# save current selected excution config

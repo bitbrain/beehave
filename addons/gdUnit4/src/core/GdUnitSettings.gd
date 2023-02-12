@@ -164,7 +164,7 @@ static func is_log_enabled() -> bool:
 
 
 static func list_settings(category :String) -> Array[GdUnitProperty]:
-	var settings := Array()
+	var settings :Array[GdUnitProperty] = []
 	for property in ProjectSettings.get_property_list():
 		var property_name :String = property["name"]
 		if property_name.begins_with(category):

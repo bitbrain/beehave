@@ -180,6 +180,14 @@ static func max_length(left, right) -> int:
 	return rs if ls < rs else ls
 
 
+static func to_regex(pattern :String) -> RegEx:
+	var regex := RegEx.new()
+	var err := regex.compile(pattern)
+	if err != OK:
+		push_error("Can't compiling regx '%s'.\n ERROR: %s" % [pattern, GdUnitTools.error_as_string(err)])
+	return regex
+
+
 static func prints_verbose(message :String) -> void:
 	if OS.is_stdout_verbose():
 		print_debug(message)

@@ -104,7 +104,7 @@ func load_test_suits() -> Array:
 	var test_suites := Array()
 	var _scanner := GdUnitTestSuiteScanner.new()
 	for resource_path in to_execute.keys():
-		var selected_tests :Array[StringName] = to_execute.get(resource_path)
+		var selected_tests :PackedStringArray = to_execute.get(resource_path)
 		var scaned_suites := _scanner.scan(resource_path)
 		_filter_test_case(scaned_suites, selected_tests)
 		test_suites += scaned_suites
@@ -120,7 +120,7 @@ func gdUnitInit() -> void:
 		send_test_suite(test_suite)
 
 
-func _filter_test_case(test_suites :Array, included_tests :Array[StringName]) -> void:
+func _filter_test_case(test_suites :Array, included_tests :PackedStringArray) -> void:
 	if included_tests.is_empty():
 		return
 	for test_suite in test_suites:
@@ -128,7 +128,7 @@ func _filter_test_case(test_suites :Array, included_tests :Array[StringName]) ->
 			_do_filter_test_case(test_suite, test_case, included_tests)
 
 
-func _do_filter_test_case(test_suite :Node, test_case :Node, included_tests :Array[StringName]) -> void:
+func _do_filter_test_case(test_suite :Node, test_case :Node, included_tests :PackedStringArray) -> void:
 	for included_test in included_tests:
 		var test_meta :PackedStringArray = included_test.split(":")
 		var test_name := test_meta[0]
@@ -166,82 +166,3 @@ func _on_gdunit_event(event :GdUnitEvent):
 func PublishEvent(data) -> void:
 	var event := GdUnitEvent.new().deserialize(data.AsDictionary())
 	_client.rpc_send(RPCGdUnitEvent.of(event))
-
-#func get_last_push_error() -> Result:
-#	return await sync_rpc_id(1, "GdUnitPushErrorHandler:get_last_error").completed
-
-#func get_list_push_error(from_id :int, to_id :int) -> Result:
-#	return await sync_rpc_id(1, "GdUnitPushErrorHandler:list_errors", [from_id, to_id]).completed
-
-#func clear_push_errors() -> Result:
-#	return async_rpc_id(1, "GdUnitPushErrorHandler:clear_error_list")
-
-
-# sends an syncronized rpc call to <peer_id> and waits until a response is received
-#
-# peer_id: the id to send 1 for server and >1 for clients
-# task_name: the name of remote task to execute
-# task_args: optional task arugments as Dictionary key:value
-#
-# returns a Result with state SUCCESS or ERROR
-@rpc("any_peer", "call_local") func sync_rpc_id(peer_id :int, task_name :String, task_args :Array = Array()) -> Result:
-	rpc_id(peer_id, "sync_rpc_id_request",  { GdUnitTask.TASK_NAME: task_name, GdUnitTask.TASK_ARGS: task_args})
-	# wait until the responce is received
-	await self.sync_rpc_id_result_received
-	return _result
-
-# sends an asyncronized rpc call to <peer_id> and returns without status
-#
-# peer_id: the id to send 1 for server and >1 for clients
-# task_name: the name of remote task to execute
-# task_args: optional task arugments as Dictionary key:value
-#
-@rpc("any_peer", "call_local") func async_rpc_id(peer_id :int, task_name :String, task_args :Array = Array()) -> void:
-	rpc_id(peer_id, "async_rpc_id_request",  { GdUnitTask.TASK_NAME: task_name, GdUnitTask.TASK_ARGS: task_args})
-
-# responce the result form 'sync_rpc_id'
-@rpc("any_peer", "call_local") func sync_rpc_id_request_response(value :Dictionary):
-	_result = Result.deserialize(value)
-	# emit signal result successfully received
-	emit_signal("sync_rpc_id_result_received")
-
-
-
-# !!! Use only in a debug scenario !!!
-# If the main thread is blocked for a longer time the
-# network connection is closed by a timeout.
-# We have to poll regularly to send a sign of life to the server.
-#
-# debugging is broken when using threads!!!!
-# https://github.com/godotengine/godot/issues/42901
-func enable_manuall_polling() -> void:
-	prints("enable_manuall_polling", self, get_tree())
-	var poller = PollTread.new()
-	add_child(poller)
-	poller.start(get_tree())
-
-
-class PollTread extends Node:
-	var _poll_thread:Thread = Thread.new()
-
-	func start(scene_tree :SceneTree):
-		scene_tree.set_multiplayer_poll_enabled(false)
-		var error = _poll_thread.start(Callable(self,"_poll").bind(scene_tree.multiplayer),Thread.PRIORITY_LOW)
-		if error != OK:
-			push_error("faild to run network poll thread")
-			_poll_thread = null
-
-	func _poll(multiplayer :MultiplayerAPI) -> void:
-		while true:
-			#await get_tree().create_timer(0.1).timeout
-
-			prints("poll network", self, multiplayer, multiplayer.network_peer.get_connection_status())
-			multiplayer.poll()
-
-		#var time:LocalTime = LocalTime.now()
-		#while true:
-		#	# poll every 3s to hold the connection to the server
-		#	if time.elapsed_since_ms() > 200:
-		#		multiplayer.poll()
-		#		#prints("poll network", self, multiplayer, multiplayer.network_peer.get_connection_status())
-		#		time = LocalTime.now()
