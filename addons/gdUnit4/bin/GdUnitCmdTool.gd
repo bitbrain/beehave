@@ -103,7 +103,7 @@ class CLIRunner extends Node:
 		_executor.fail_fast(false)
 
 	func run_self_test() -> void:
-		_console.prints_color("Run GdUnit3 self tests.", Color.DEEP_SKY_BLUE)
+		_console.prints_color("Run GdUnit4 self tests.", Color.DEEP_SKY_BLUE)
 		disable_fail_fast()
 		_runner_config.self_test()
 
@@ -111,7 +111,7 @@ class CLIRunner extends Node:
 		_console.prints_color("Godot %s" % Engine.get_version_info().get("string"), Color.DARK_SALMON)
 		var config = ConfigFile.new()
 		config.load('addons/gdUnit4/plugin.cfg')
-		_console.prints_color("GdUnit3 %s" % config.get_value('plugin', 'version'), Color.DARK_SALMON)
+		_console.prints_color("GdUnit4 %s" % config.get_value('plugin', 'version'), Color.DARK_SALMON)
 		get_tree().quit(RETURN_SUCCESS)
 
 	func show_options(show_advanced :bool = false) -> void:
@@ -147,7 +147,7 @@ class CLIRunner extends Node:
 
 	func gdUnitInit() -> void:
 		_console.prints_color("----------------------------------------------------------------------------------------------", Color.DARK_SALMON)
-		_console.prints_color(" GdUnit3 Comandline Tool", Color.DARK_SALMON)
+		_console.prints_color(" GdUnit4 Comandline Tool", Color.DARK_SALMON)
 		_console.new_line()
 		
 		var cmd_parser := CmdArgumentParser.new(_cmd_options, "GdUnitCmdTool.gd")

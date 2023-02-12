@@ -29,18 +29,23 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Header" type="PanelContainer" parent="VBoxContainer"]
-use_parent_material = true
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
-size_flags_horizontal = 3
+auto_translate = false
+localize_numeral_system = false
+mouse_filter = 2
 
 [node name="header_title" type="RichTextLabel" parent="VBoxContainer/Header"]
-use_parent_material = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+auto_translate = false
+localize_numeral_system = false
+mouse_filter = 2
 bbcode_enabled = true
-fit_content_height = true
 scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
 
 [node name="Console" type="ScrollContainer" parent="VBoxContainer"]
 layout_mode = 2

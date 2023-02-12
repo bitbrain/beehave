@@ -84,7 +84,7 @@ func is_not_same(expected) -> GdUnitObjectAssert:
 
 # Verifies that the current value is an instance of the given type.
 func is_instanceof(type :Object) -> GdUnitObjectAssert:
-	var current :Variant = __current()
+	var current :Object = __current()
 	if not GdObjects.is_instanceof(current, type):
 		var result_expected: = GdObjects.extract_class_name(type)
 		var result_current: = GdObjects.extract_class_name(current)

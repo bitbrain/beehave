@@ -8,7 +8,7 @@ func _init():
 		add_value(build_in_type, AnyBuildInTypeArgumentMatcher.new(build_in_type))
 	add_value(TYPE_ANY, AnyArgumentMatcher.new())
 
-static func to_matcher(arguments :Array) -> ChainedArgumentMatcher:
+static func to_matcher(arguments :Array, auto_deep_check_mode := false) -> ChainedArgumentMatcher:
 	var matchers := Array()
 	for arg in arguments:
 		# argument is already a matcher
@@ -16,7 +16,7 @@ static func to_matcher(arguments :Array) -> ChainedArgumentMatcher:
 			matchers.append(arg)
 		else:
 			# pass argument into equals matcher
-			matchers.append(EqualsArgumentMatcher.new(arg))
+			matchers.append(EqualsArgumentMatcher.new(arg, auto_deep_check_mode))
 	return ChainedArgumentMatcher.new(matchers)
 
 static func any() -> GdUnitArgumentMatcher:

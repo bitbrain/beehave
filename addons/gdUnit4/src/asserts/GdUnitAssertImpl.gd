@@ -18,6 +18,9 @@ static func _get_line_number() -> int:
 		return -1
 	for stack_info in stack_trace:
 		var function :String = stack_info.get("function")
+		# we catch helper asserts to skip over to return the correct line number
+		if function.begins_with("assert_"):
+			continue
 		var source :String = stack_info.get("source")
 		if source.is_empty() \
 			or source.begins_with("user://") \

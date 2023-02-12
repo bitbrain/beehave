@@ -143,9 +143,10 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, test_case_nam
 		_report_collector.push_front(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
 			.create(GdUnitReport.WARN, test_case.line_number(), GdAssertMessages.orphan_detected_on_test(execution_orphan_nodes)))
 	
+	var is_error := false
 	if test_case.is_interupted() and not test_case.is_expect_interupted():
-		_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
-				.create(GdUnitReport.INTERUPTED, test_case.line_number(), "Test timed out after %s" % LocalTime.elapsed(test_case.timeout())))
+		_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, test_case.report())
+		is_error = true
 	
 	set_stage(STAGE_TEST_CASE_AFTER)
 	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.TESTCASE)
@@ -161,7 +162,6 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, test_case_nam
 			.create(GdUnitReport.WARN, test_case.line_number(), GdAssertMessages.orphan_detected_on_test_setup(test_setup_orphan_nodes)))
 	
 	var reports := _report_collector.get_reports(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
-	var is_error :bool = test_case.is_interupted() and not test_case.is_expect_interupted()
 	var error_count := _report_collector.count_errors(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER) if is_error else 0
 	var failure_count := _report_collector.count_failures(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 	var is_warning := _report_collector.has_warnings(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
@@ -217,8 +217,6 @@ func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCa
 		
 		if test_case.is_interupted():
 			is_failure = true
-			_report_collector.add_report(STAGE_TEST_CASE_EXECUTE, GdUnitReport.new() \
-					.create(GdUnitReport.INTERUPTED, test_case.line_number(), GdAssertMessages.fuzzer_interuped(iteration, "timedout")))
 		
 		# call after_test for each iteration
 		await test_after(test_suite, test_case, test_case.get_name(), iteration==test_case.iterations()-1 or is_failure)
@@ -348,7 +346,7 @@ func dispose_timers(test_suite :GdUnitTestSuite):
 static func create_fuzzers(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Array[Fuzzer]:
 	if not test_case.has_fuzzer():
 		return Array()
-	var fuzzers :Array[Fuzzer]= Array()
+	var fuzzers :Array[Fuzzer] = []
 	for fuzzer_arg in test_case.fuzzer_arguments():
 		var fuzzer := FuzzerTool.create_fuzzer(test_suite.get_script(), fuzzer_arg)
 		fuzzer._iteration_index = 0
