@@ -64,7 +64,8 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 
 
 func _get_reversed_indexes() -> Array[int]:
-	var reversed = range(_children_bag.size())
+	var reversed: Array[int]
+	reversed.assign(range(_children_bag.size()))
 	reversed.reverse()
 	return reversed
 

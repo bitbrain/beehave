@@ -117,12 +117,11 @@ func rescan() -> void:
 	await get_tree().process_frame
 	if Engine.is_editor_hint():
 		prints("Rescan Project")
-		var plugin := EditorPlugin.new()
+		var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 		var fs := plugin.get_editor_interface().get_resource_filesystem()
 		fs.scan()
 		while fs.is_scanning():
 			await get_tree().create_timer(.2).timeout
-		plugin.free()
 
 
 func _on_update_pressed():
