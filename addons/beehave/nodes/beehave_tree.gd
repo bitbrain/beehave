@@ -40,7 +40,7 @@ func _ready() -> void:
 		return
 	
 	if self.get_child_count() != 1:
-		push_error("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
+		push_warning("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
 		disable()
 		return
 		
@@ -131,7 +131,10 @@ func get_last_condition_status() -> String:
 	
 ## interrupts this tree if anything was running
 func interrupt() -> void:
-	self.get_child(0).interrupt(actor, blackboard)
+	if self.get_child_count() != 0:
+		var first_child = self.get_child(0)
+		if "interrupt" in first_child:
+			first_child.interrupt(actor, blackboard)
 
 
 func enable() -> void:
@@ -143,9 +146,10 @@ func disable() -> void:
 
 
 func _exit_tree() -> void:
-	# Remove tree metric from the engine
-	Performance.remove_custom_monitor(_process_time_metric_name)
-	BeehaveGlobalMetrics.register_tree(self)
+	if _process_time_metric_name != '':
+		# Remove tree metric from the engine
+		Performance.remove_custom_monitor(_process_time_metric_name)
+		BeehaveGlobalMetrics.unregister_tree(self)
 
 
 # Called by the engine to profile this tree
