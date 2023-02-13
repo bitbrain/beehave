@@ -31,11 +31,11 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 
 
 ## Called before the first time it ticks by the parent.
-func enter(actor: Node, blackboard: Blackboard) -> void:
+func before_run(actor: Node, blackboard: Blackboard) -> void:
 	pass
 
 
-## Called after the last time it ticks and returns 
+## Called after the last time it ticks and returns
 ## [code]SUCCESS[/code] or [code]FAILURE[/code].
-func exit(actor: Node, blackboard: Blackboard) -> void:
+func after_run(actor: Node, blackboard: Blackboard) -> void:
 	pass

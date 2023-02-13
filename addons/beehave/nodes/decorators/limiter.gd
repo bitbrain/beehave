@@ -13,7 +13,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	var current_count = blackboard.get_value(cache_key, 0, str(actor.get_instance_id()))
 
 	if current_count == 0:
-		child.enter(actor, blackboard)
+		child.before_run(actor, blackboard)
 
 	if current_count < max_count:
 		blackboard.set_value(cache_key, current_count + 1, str(actor.get_instance_id()))
@@ -29,5 +29,5 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 		return response
 	else:
-		child.exit(actor, blackboard)
+		child.after_run(actor, blackboard)
 		return FAILURE

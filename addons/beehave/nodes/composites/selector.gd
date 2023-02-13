@@ -9,7 +9,7 @@ class_name SelectorComposite extends Composite
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():
 		if c != running_child:
-			c.enter(actor, blackboard)
+			c.before_run(actor, blackboard)
 		
 		var response = c.tick(actor, blackboard)
 		
@@ -21,10 +21,10 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 			SUCCESS:
 				# Interrupt any child that was RUNNING before.
 				interrupt(actor, blackboard)
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 				return SUCCESS
 			FAILURE:
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 			RUNNING:
 				running_child = c
 				if c is ActionLeaf:

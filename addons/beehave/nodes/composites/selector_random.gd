@@ -32,7 +32,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		c = _children_bag[i]
 		
 		if c != running_child:
-			c.enter(actor, blackboard)
+			c.before_run(actor, blackboard)
 
 		var response = c.tick(actor, blackboard)
 		
@@ -43,11 +43,11 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		match response:
 			SUCCESS:
 				_children_bag.erase(c)
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 				return SUCCESS
 			FAILURE:
 				_children_bag.erase(c)
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 			RUNNING:
 				running_child = c
 				if c is ActionLeaf:
@@ -57,12 +57,12 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	return FAILURE
 
 
-func exit(actor: Node, blackboard: Blackboard) -> void:
+func after_run(actor: Node, blackboard: Blackboard) -> void:
 	_reset()
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	exit(actor, blackboard)
+	after_run(actor, blackboard)
 	super(actor, blackboard)
 
 

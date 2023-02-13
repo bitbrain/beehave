@@ -86,14 +86,14 @@ func _physics_process(delta: float) -> void:
 
 func tick() -> int:
 	if status == -1:
-		self.get_child(0).enter(actor, blackboard)
+		self.get_child(0).before_run(actor, blackboard)
 	
 	status = self.get_child(0).tick(actor, blackboard)
 	
 	# Clear running action if nothing is running
 	if status != RUNNING:
 		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
-		self.get_child(0).exit(actor, blackboard)
+		self.get_child(0).after_run(actor, blackboard)
 	
 	return status
 

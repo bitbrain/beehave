@@ -15,7 +15,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 			continue
 		
 		if c != running_child:
-			c.enter(actor, blackboard)
+			c.before_run(actor, blackboard)
 		
 		var response = c.tick(actor, blackboard)
 		
@@ -25,11 +25,11 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 		match response:
 			SUCCESS:
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 				return SUCCESS
 			FAILURE:
 				last_execution_index += 1
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 			RUNNING:
 				running_child = c
 				if c is ActionLeaf:
@@ -39,10 +39,10 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	return FAILURE
 
 
-func exit(actor: Node, blackboard: Blackboard) -> void:
+func after_run(actor: Node, blackboard: Blackboard) -> void:
 	last_execution_index = 0
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	exit(actor, blackboard)
+	after_run(actor, blackboard)
 	super(actor, blackboard)

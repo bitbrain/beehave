@@ -9,7 +9,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	var c = get_child(0)
 	
 	if c != running_child:
-		c.enter(actor, blackboard)
+		c.before_run(actor, blackboard)
 
 	var response = c.tick(actor, blackboard)
 
@@ -19,10 +19,10 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 	match response:
 		SUCCESS:
-			c.exit(actor, blackboard)
+			c.after_run(actor, blackboard)
 			return FAILURE
 		FAILURE:
-			c.exit(actor, blackboard)
+			c.after_run(actor, blackboard)
 			return SUCCESS
 		RUNNING:
 			running_child = c

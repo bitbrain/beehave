@@ -4,16 +4,16 @@ extends ActionLeaf
 @export_enum("Success", "Failure") var final_result: int = 0
 @export var running_frame_count: int = 0
 
-signal entered(actor, blackboard)
-signal exited(actor, blackboard)
+signal started_running(actor, blackboard)
+signal stopped_running(actor, blackboard)
 signal interrupted(actor, blackboard)
 
 var tick_count: int = 0
 
 
-func enter(actor: Node, blackboard: Blackboard) -> void:
+func before_run(actor: Node, blackboard: Blackboard) -> void:
 	tick_count = 0
-	entered.emit(actor, blackboard)
+	started_running.emit(actor, blackboard)
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
@@ -28,6 +28,6 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 	interrupted.emit(actor, blackboard)
 
 
-func exit(actor: Node, blackboard: Blackboard) -> void:
+func after_run(actor: Node, blackboard: Blackboard) -> void:
 	tick_count = 0
-	exited.emit(actor, blackboard)
+	stopped_running.emit(actor, blackboard)

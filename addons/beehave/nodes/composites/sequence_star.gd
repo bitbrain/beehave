@@ -17,7 +17,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 			continue
 		
 		if c != running_child:
-			c.enter(actor, blackboard)
+			c.before_run(actor, blackboard)
 		
 		var response = c.tick(actor, blackboard)
 		
@@ -28,9 +28,9 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		match response:
 			SUCCESS:
 				successful_index += 1
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 			FAILURE:
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 				return FAILURE
 			RUNNING:
 				running_child = c
@@ -41,10 +41,10 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	return SUCCESS
 
 
-func exit(actor: Node, blackboard: Blackboard) -> void:
+func after_run(actor: Node, blackboard: Blackboard) -> void:
 	successful_index = 0
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	exit(actor, blackboard)
+	after_run(actor, blackboard)
 	super(actor, blackboard)

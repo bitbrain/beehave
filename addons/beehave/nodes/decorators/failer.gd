@@ -8,7 +8,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	var c = get_child(0)
 	
 	if c != running_child:
-		c.enter(actor, blackboard)
+		c.before_run(actor, blackboard)
 
 	var response = c.tick(actor, blackboard)
 
@@ -22,5 +22,5 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 			blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 		return RUNNING
 	else:
-		c.exit(actor, blackboard)
+		c.after_run(actor, blackboard)
 		return FAILURE

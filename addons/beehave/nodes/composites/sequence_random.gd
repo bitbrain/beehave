@@ -38,7 +38,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		c = _children_bag[i]
 		
 		if c != running_child:
-			c.enter(actor, blackboard)
+			c.before_run(actor, blackboard)
 		
 		var response = c.tick(actor, blackboard)
 		
@@ -49,10 +49,10 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		match response:
 			SUCCESS:
 				_children_bag.erase(c)
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 			FAILURE:
 				_children_bag.erase(c)
-				c.exit(actor, blackboard)
+				c.after_run(actor, blackboard)
 				return FAILURE
 			RUNNING:
 				running_child = c
@@ -63,7 +63,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	return SUCCESS
 
 
-func exit(actor: Node, blackboard: Blackboard) -> void:
+func after_run(actor: Node, blackboard: Blackboard) -> void:
 	if not resume_on_failure:
 		_reset()
 

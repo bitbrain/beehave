@@ -1,7 +1,8 @@
-class_name EnterExitTest
+class_name BeforeAfterRunTest
 extends GdUnitTestSuite
 @warning_ignore("unused_parameter")
 @warning_ignore("return_value_discarded")
+
 
 const __mock_action = "res://test/actions/mock_action.gd"
 const __succedeer = "res://addons/beehave/nodes/decorators/succeeder.gd"
@@ -26,15 +27,15 @@ func before_test() -> void:
 	tree.blackboard = blackboard
 
 
-func test_action_enter_exit() -> void:
-	var enter_callback = func (actor, blackboard):
+func test_action_after_run() -> void:
+	var before_run_callback = func (actor, blackboard):
 		blackboard.set_value("entered", true)
 	
-	var exit_callback = func (actor, blackboard):
+	var after_run_callback = func (actor, blackboard):
 		blackboard.set_value("exited", true)
 	
-	action.entered.connect(enter_callback)
-	action.exited.connect(exit_callback)
+	action.started_running.connect(before_run_callback)
+	action.stopped_running.connect(after_run_callback)
 	action.running_frame_count = 1
 	
 	assert_bool(tree.blackboard.get_value("entered", false), false)
@@ -47,4 +48,3 @@ func test_action_enter_exit() -> void:
 	assert_int(tree.tick()).is_equal(BeehaveNode.SUCCESS)
 	assert_bool(tree.blackboard.get_value("entered", false), true)
 	assert_bool(tree.blackboard.get_value("exited", false), true)
-	
