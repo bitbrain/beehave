@@ -40,7 +40,7 @@ func _ready() -> void:
 		return
 	
 	if self.get_child_count() != 1:
-		push_error("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
+		push_warning("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
 		disable()
 		return
 		
@@ -146,9 +146,10 @@ func disable() -> void:
 
 
 func _exit_tree() -> void:
-	# Remove tree metric from the engine
-	Performance.remove_custom_monitor(_process_time_metric_name)
-	BeehaveGlobalMetrics.register_tree(self)
+	if _process_time_metric_name != '':
+		# Remove tree metric from the engine
+		Performance.remove_custom_monitor(_process_time_metric_name)
+		BeehaveGlobalMetrics.unregister_tree(self)
 
 
 # Called by the engine to profile this tree
