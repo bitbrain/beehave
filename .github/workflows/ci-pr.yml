@@ -53,8 +53,8 @@ jobs:
 
       - name: "📚 publish unit test reports"
         if: ${{ !cancelled() }}
-        uses: ./.github/actions/publish-test-report
+        uses: ./.github/actions/publish_test_report
 
       - name: "🚚 upload unit test reports"
         if: ${{ !cancelled() }}
-        uses: ./.github/actions/upload-test-report
+        uses: ./.github/actions/upload_test_report
