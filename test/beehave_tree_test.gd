@@ -59,7 +59,7 @@ func test_interrupt_running_action() -> void:
 	scene.count_up_action.status = BeehaveNode.RUNNING
 	scene.beehave_tree._physics_process(1.0)
 	scene.beehave_tree._physics_process(1.0)
-	assert_that(scene.beehave_tree.internal_blackboard.get_value("custom_value")).is_equal(2)
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(2)
 	scene.beehave_tree.interrupt()
-	assert_that(scene.beehave_tree.internal_blackboard.get_value("custom_value")).is_equal(0)
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(0)
 	assert_that(scene.count_up_action.status).is_equal(BeehaveNode.FAILURE)

@@ -30,28 +30,35 @@ signal tree_disabled
 @export var blackboard:Blackboard:
 	set(b):
 		blackboard = b
-		if blackboard and internal_blackboard:
-			remove_child(internal_blackboard)
-			internal_blackboard.free()
-			internal_blackboard = null
-		elif not blackboard and not internal_blackboard:
-			internal_blackboard = Blackboard.new()
-			add_child(internal_blackboard)
+		if blackboard and _internal_blackboard:
+			remove_child(_internal_blackboard)
+			_internal_blackboard.free()
+			_internal_blackboard = null
+		elif not blackboard and not _internal_blackboard:
+			_internal_blackboard = Blackboard.new()
+			add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
+	get:
+		return blackboard if blackboard else _internal_blackboard
 
 var actor : Node
 var status : int = -1
-var internal_blackboard: Blackboard
 
+var _internal_blackboard: Blackboard
 var _process_time_metric_name : String
 var _process_time_metric_value : float = 0.0
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
+	
+	if self.get_child_count() > 0 and not self.get_child(0) is BeehaveNode:
+		push_warning("Beehave error: Root %s should have only one child of type BeehaveNode (NodePath: %s)" % [self.name, self.get_path()])
+		disable()
+		return
 		
 	if not blackboard:
-		internal_blackboard = Blackboard.new()
-		add_child(internal_blackboard)
+		_internal_blackboard = Blackboard.new()
+		add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
 
 	actor = get_parent()
 	if actor_node_path:
@@ -75,15 +82,15 @@ func _physics_process(delta: float) -> void:
 	# Start timing for metric
 	var start_time = Time.get_ticks_usec()
 	
-	_get_current_blackboard().set_value("delta", delta, str(actor.get_instance_id()))
+	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
 	
 	for child in get_children():
 		if child is BeehaveNode:
-			status = child.tick(actor, _get_current_blackboard())
+			status = child.tick(actor, blackboard)
 
 	# Clear running action if nothing is running
 	if status != RUNNING:
-		_get_current_blackboard().set_value("running_action", null, str(actor.get_instance_id()))
+		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
 	
 	# Check the cost for this frame and save it for metric report
 	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
@@ -102,16 +109,16 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func get_running_action() -> ActionLeaf:
-	return _get_current_blackboard().get_value("running_action", null, str(actor.get_instance_id()))
+	return blackboard.get_value("running_action", null, str(actor.get_instance_id()))
 
 
 func get_last_condition() -> ConditionLeaf:
-	return _get_current_blackboard().get_value("last_condition", null, str(actor.get_instance_id()))
+	return blackboard.get_value("last_condition", null, str(actor.get_instance_id()))
 
 
 func get_last_condition_status() -> String:
-	if _get_current_blackboard().has_value("last_condition_status", str(actor.get_instance_id())):
-		var status = _get_current_blackboard().get_value("last_condition_status", null, str(actor.get_instance_id()))
+	if blackboard.has_value("last_condition_status", str(actor.get_instance_id())):
+		var status = blackboard.get_value("last_condition_status", null, str(actor.get_instance_id()))
 		if status == SUCCESS:
 			return "SUCCESS"
 		elif status == FAILURE:
@@ -125,7 +132,7 @@ func interrupt() -> void:
 	if self.get_child_count() != 0:
 		var first_child = self.get_child(0)
 		if "interrupt" in first_child:
-			first_child.interrupt(actor, _get_current_blackboard())
+			first_child.interrupt(actor, blackboard)
 
 
 func enable() -> void:
@@ -146,7 +153,3 @@ func _exit_tree() -> void:
 # Called by the engine to profile this tree
 func _get_process_time_metric_value() -> float:
 	return _process_time_metric_value
-	
-
-func _get_current_blackboard() -> Blackboard:
-	return blackboard if blackboard else internal_blackboard
