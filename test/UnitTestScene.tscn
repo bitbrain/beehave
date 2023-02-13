@@ -20,7 +20,6 @@ script = ExtResource("1_27ukk")
 [node name="BeehaveTree" type="Node" parent="Node2D"]
 unique_name_in_owner = true
 script = ExtResource("2_phgmn")
-actor_node_path = NodePath("")
 
 [node name="SequenceComposite" type="Node" parent="Node2D/BeehaveTree"]
 script = ExtResource("4_px6t4")
