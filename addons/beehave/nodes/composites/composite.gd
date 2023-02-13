@@ -12,7 +12,7 @@ func _ready():
 		return
 	
 	if self.get_child_count() < 1:
-		push_error("BehaviorTree Error: Composite %s should have at least one child (NodePath: %s)" % [self.name, self.get_path()])
+		push_warning("BehaviorTree Error: Composite %s should have at least one child (NodePath: %s)" % [self.name, self.get_path()])
 
 
 func _get_configuration_warnings() -> PackedStringArray:
