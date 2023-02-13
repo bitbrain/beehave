@@ -76,3 +76,30 @@ limit = 4
 [node name="SharedCountUpAction2" type="Node" parent="ThirdNode/BeehaveTree/SequenceComposite"]
 unique_name_in_owner = true
 script = ExtResource("6_brhwp")
+
+[node name="EmptyTree" type="Node2D" parent="."]
+
+[node name="BeehaveTree" type="Node" parent="EmptyTree" node_paths=PackedStringArray("blackboard")]
+script = ExtResource("2_phgmn")
+blackboard = NodePath("")
+
+[node name="OnlyOneActionTree" type="Node2D" parent="."]
+
+[node name="BeehaveTree" type="Node" parent="OnlyOneActionTree" node_paths=PackedStringArray("blackboard")]
+script = ExtResource("2_phgmn")
+enabled = false
+actor_node_path = NodePath("..")
+blackboard = NodePath("")
+
+[node name="CountUpAction" type="Node" parent="OnlyOneActionTree/BeehaveTree"]
+script = ExtResource("6_brhwp")
+
+[node name="DeactivatedTree" type="Node2D" parent="."]
+
+[node name="BeehaveTree" type="Node" parent="DeactivatedTree" node_paths=PackedStringArray("blackboard")]
+script = ExtResource("2_phgmn")
+actor_node_path = NodePath("..")
+blackboard = NodePath("")
+
+[node name="CountUpAction" type="Node" parent="DeactivatedTree/BeehaveTree"]
+script = ExtResource("6_brhwp")
