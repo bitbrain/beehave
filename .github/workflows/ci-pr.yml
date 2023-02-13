@@ -35,7 +35,7 @@ jobs:
         uses: bitbrain/godot-setup-action@main
         with:
           version: "4.0"
-          prerelease_version: "beta16"
+          prerelease_version: "rc1"
 
       - name: "update Project"
         if: ${{ !cancelled() }}
