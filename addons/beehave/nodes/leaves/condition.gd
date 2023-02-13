@@ -3,3 +3,9 @@
 @tool
 @icon("../../icons/condition.svg")
 class_name ConditionLeaf extends Leaf
+
+
+func get_class_name() -> Array[StringName]:
+	var classes := super()
+	classes.push_back(&"ConditionLeaf")
+	return classes
