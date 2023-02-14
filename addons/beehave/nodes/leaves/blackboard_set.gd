@@ -9,7 +9,7 @@ class_name BlackboardSetAction extends ActionLeaf
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
-	var result: Variant = expression.execute()
+	var result: Variant = expression.execute([], blackboard)
 	if expression.has_execute_failed():
 		return FAILURE
 	blackboard.set(key, result)
