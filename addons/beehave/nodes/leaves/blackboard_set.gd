@@ -1,3 +1,4 @@
+@tool
 class_name BlackboardSetAction extends ActionLeaf
 
 
@@ -5,13 +6,13 @@ class_name BlackboardSetAction extends ActionLeaf
 @export var value: String = ""
 
 
-@onready var expression: Expression = parse_expression(value)
+@onready var _expression: Expression = parse_expression(value)
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
-	var result: Variant = expression.execute([], blackboard)
-	if expression.has_execute_failed():
+	var result: Variant = _expression.execute([], blackboard)
+	if _expression.has_execute_failed():
 		return FAILURE
-	blackboard.set(key, result)
+	blackboard.set_value(key, result)
 	return SUCCESS
 

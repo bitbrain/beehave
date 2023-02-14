@@ -1,3 +1,4 @@
+@tool
 class_name BlackboardCompareCondition extends ConditionLeaf
 
 
@@ -16,13 +17,13 @@ enum Operators {
 @export var right_operand: String = ""
 
 
-@onready var left_expression: Expression = parse_expression(left_operand)
-@onready var right_expression: Expression = parse_expression(right_operand)
+@onready var _left_expression: Expression = parse_expression(left_operand)
+@onready var _right_expression: Expression = parse_expression(right_operand)
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
-	var left: Variant = left_expression.execute([], blackboard)
-	var right: Variant = right_expression.execute([], blackboard)
+	var left: Variant = _left_expression.execute([], blackboard)
+	var right: Variant = _right_expression.execute([], blackboard)
 	
 	var result: bool = false
 	
