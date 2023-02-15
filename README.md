@@ -36,6 +36,8 @@ In a nutshell, a behaviour tree is a Godot Node that can be added as a child to 
 
 In more theoretical terms, a behaviour tree consists of so called **nodes** - each node can be of a different type with different purposes. Those are described further down below in more detail. Every node has a `tick(actor, blackboard)` method that can be used to execute custom logic. When the `tick` function is called, beehave expects a return status of either `SUCCESS`, `RUNNING` or `FAILURE`.
 
+Nodes also have a `before_run(actor, blackboard)` and `after_run(actor, blackboard)` methods. Those are useful when there is a need to setup or clean up resources before or after the node has finished processing. Before the first `tick`, `before_run` will be called. After a `tick` has returned `SUCCESS` or `FAILURE`, the `after_run` will be called. If that node ticks again later on, `before_run` will be called yet again and so on.
+
 In **Beehave**, every behaviour tree is of type ![icon](addons/beehave/icons/tree.svg) `BeehaveTree`. Attach that node to any node to any other node you want to apply the behaviour tree to.
 
 ## Tutorial (Godot 3.5+)
@@ -61,7 +63,7 @@ func tick(actor:Node, blackboard:Blackboard) -> int:
 
 Actions are **leaf nodes** of type ![icon](addons/beehave/icons/action.svg) `ActionLeaf`. They can be long running potentially being called across multiple frame executions. In this case return the code `RUNNING` .
 
-**2. Example Condition code: MakeVisibleAction.gd**
+**2. Example Action code: MakeVisibleAction.gd**
 
 ```gdscript
 class_name MakeVisibleAction extends ActionLeaf
