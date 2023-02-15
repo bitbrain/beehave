@@ -23,7 +23,18 @@ enum Operators {
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var left: Variant = _left_expression.execute([], blackboard)
+	
+	assert(
+		not _left_expression.has_execute_failed(),
+		"[BlackboardCompareCondition] Expression execution failed in node: `%s`! Source: `%s`" % [name, left_operand]
+	)
+	
 	var right: Variant = _right_expression.execute([], blackboard)
+	
+	assert(
+		not _right_expression.has_execute_failed(),
+		"[BlackboardCompareCondition] Expression execution failed in node: `%s`! Source: `%s`" % [name, right_operand]
+	)
 	
 	var result: bool = false
 	

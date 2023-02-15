@@ -16,6 +16,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func parse_expression(source: String) -> Expression:
+	if Engine.is_editor_hint(): # don't parse when in the editor
+		return null
+	
 	var result: Expression = Expression.new()
 	var error: int = result.parse(source)
 	assert(

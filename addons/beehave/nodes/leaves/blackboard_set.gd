@@ -11,8 +11,12 @@ class_name BlackboardSetAction extends ActionLeaf
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var result: Variant = _expression.execute([], blackboard)
-	if _expression.has_execute_failed():
-		return FAILURE
+	
+	assert(
+		not _expression.has_execute_failed(),
+		"[BlackboardSetAction] Expression execution failed in node: `%s`! Source: `%s`" % [name, value]
+	)
+	
 	blackboard.set_value(key, result)
 	return SUCCESS
 
