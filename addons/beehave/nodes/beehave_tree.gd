@@ -27,11 +27,23 @@ signal tree_disabled
 		return enabled
 
 @export_node_path var actor_node_path : NodePath
-@export var blackboard:Blackboard
+@export var blackboard:Blackboard:
+	set(b):
+		blackboard = b
+		if blackboard and _internal_blackboard:
+			remove_child(_internal_blackboard)
+			_internal_blackboard.free()
+			_internal_blackboard = null
+		elif not blackboard and not _internal_blackboard:
+			_internal_blackboard = Blackboard.new()
+			add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
+	get:
+		return blackboard if blackboard else _internal_blackboard
 
 var actor : Node
 var status : int = -1
 
+var _internal_blackboard: Blackboard
 var _process_time_metric_name : String
 var _process_time_metric_value : float = 0.0
 
@@ -39,13 +51,14 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	
-	if self.get_child_count() != 1:
-		push_warning("Beehave error: Root %s should have one child (NodePath: %s)" % [self.name, self.get_path()])
+	if self.get_child_count() > 0 and not self.get_child(0) is BeehaveNode:
+		push_warning("Beehave error: Root %s should have only one child of type BeehaveNode (NodePath: %s)" % [self.name, self.get_path()])
 		disable()
 		return
 		
 	if not blackboard:
-		blackboard = Blackboard.new()
+		_internal_blackboard = Blackboard.new()
+		add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
 
 	actor = get_parent()
 	if actor_node_path:
@@ -62,13 +75,6 @@ func _ready() -> void:
 	set_physics_process(enabled)
 
 
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_PREDELETE:
-		var blackboard_ref := weakref(blackboard)
-		if blackboard_ref.get_ref():
-			blackboard.free()
-
-
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
@@ -78,11 +84,11 @@ func _physics_process(delta: float) -> void:
 	
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
 	
-	tick()
+  if self.get_child_count() == 1:
+		tick()
 	
 	# Check the cost for this frame and save it for metric report
 	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
-
 
 func tick() -> int:
 	if status == -1:
