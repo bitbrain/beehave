@@ -5,6 +5,9 @@
 class_name Decorator extends BeehaveNode
 
 
+var running_child: BeehaveNode = null
+
+
 func _ready():
 	if Engine.is_editor_hint():
 		return
@@ -20,3 +23,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 		warnings.append("Decorator should have exactly one child node.")
 	
 	return warnings
+
+
+func interrupt(actor: Node, blackboard: Blackboard) -> void:
+	if running_child != null:
+		running_child.interrupt(actor, blackboard)
+		running_child = null

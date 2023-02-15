@@ -11,7 +11,7 @@ class_name SequenceRandomComposite extends Composite
 ## Whether the sequence should start where it left off after a previous interruption.
 @export var resume_on_interrupt: bool = false
 ## Sets a predicable seed
-@export var random_seed:int = 0:
+@export var random_seed: int = 0:
 	set(rs):
 		random_seed = rs
 		if random_seed != 0:
@@ -36,25 +36,36 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	# We need to traverse the array in reverse since we will be manipulating it.
 	for i in _get_reversed_indexes():
 		c = _children_bag[i]
+		
+		if c != running_child:
+			c.before_run(actor, blackboard)
+		
 		var response = c.tick(actor, blackboard)
 		
 		if c is ConditionLeaf:
 			blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
 			blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
 		
-		if response == RUNNING:
-			running_child = c
-			if c is ActionLeaf:
-				blackboard.set_value("running_action", c, str(actor.get_instance_id()))
-		else:
-			_children_bag.erase(c)
-		
-		if response != SUCCESS:
-			if not resume_on_failure and response == FAILURE:
-				_reset()
-			return response
+		match response:
+			SUCCESS:
+				_children_bag.erase(c)
+				c.after_run(actor, blackboard)
+			FAILURE:
+				_children_bag.erase(c)
+				c.after_run(actor, blackboard)
+				return FAILURE
+			RUNNING:
+				running_child = c
+				if c is ActionLeaf:
+					blackboard.set_value("running_action", c, str(actor.get_instance_id()))
+				return RUNNING
 
 	return SUCCESS
+
+
+func after_run(actor: Node, blackboard: Blackboard) -> void:
+	if not resume_on_failure:
+		_reset()
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:

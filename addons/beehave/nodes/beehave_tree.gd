@@ -84,17 +84,25 @@ func _physics_process(delta: float) -> void:
 	
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
 	
-	for child in get_children():
-		if child is BeehaveNode:
-			status = child.tick(actor, blackboard)
-
-	# Clear running action if nothing is running
-	if status != RUNNING:
-		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
+	if self.get_child_count() == 1:
+		tick()
 	
 	# Check the cost for this frame and save it for metric report
 	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
+
+func tick() -> int:
+	if status == -1:
+		self.get_child(0).before_run(actor, blackboard)
 	
+	status = self.get_child(0).tick(actor, blackboard)
+	
+	# Clear running action if nothing is running
+	if status != RUNNING:
+		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
+		self.get_child(0).after_run(actor, blackboard)
+	
+	return status
+
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings:PackedStringArray = []

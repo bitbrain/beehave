@@ -10,6 +10,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	blackboard.set_value(key, count)
 	return status
 
+
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
 	count = 0
 	blackboard.set_value(key, count)
