@@ -30,7 +30,8 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				successful_index += 1
 				c.after_run(actor, blackboard)
 			FAILURE:
-				_reset()
+				# Interrupt any child that was RUNNING before.
+				interrupt(actor, blackboard)
 				c.after_run(actor, blackboard)
 				return FAILURE
 			RUNNING:
@@ -38,7 +39,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				if c is ActionLeaf:
 					blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 				return RUNNING
-	
+	_reset()
 	return SUCCESS
 
 

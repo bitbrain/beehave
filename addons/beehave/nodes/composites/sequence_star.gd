@@ -37,7 +37,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				if c is ActionLeaf:
 					blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 				return RUNNING
-	
+	_reset()
 	return SUCCESS
 
 
