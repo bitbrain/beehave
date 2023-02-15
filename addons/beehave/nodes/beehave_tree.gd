@@ -84,7 +84,7 @@ func _physics_process(delta: float) -> void:
 	
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
 	
-  if self.get_child_count() == 1:
+	if self.get_child_count() == 1:
 		tick()
 	
 	# Check the cost for this frame and save it for metric report
