@@ -1,11 +1,11 @@
-## Sequence nodes will attempt to execute all of its children and report
+## Sequence Star nodes will attempt to execute all of its children and report
 ## `SUCCESS` in case all of the children report a `SUCCESS` status code.
 ## If at least one child reports a `FAILURE` status code, this node will also
-## return `FAILURE`. This node will attempt to process all its children every
-## single tick, even if one of them is currently `RUNNING` already.
+## return `FAILURE`. This node will skip all previous child nodes that succeeded
+## prior, in case one of the children is currently in `RUNNING` state
 @tool
-@icon("../../icons/sequence.svg")
-class_name SequenceComposite extends Composite
+@icon("../../icons/sequence_reactive.svg")
+class_name SequenceReactiveComposite extends Composite
 
 
 var successful_index: int = 0
@@ -34,6 +34,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				c.after_run(actor, blackboard)
 				return FAILURE
 			RUNNING:
+				_reset()
 				running_child = c
 				if c is ActionLeaf:
 					blackboard.set_value("running_action", c, str(actor.get_instance_id()))

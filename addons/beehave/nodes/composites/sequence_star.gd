@@ -42,9 +42,12 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 
 func after_run(actor: Node, blackboard: Blackboard) -> void:
-	successful_index = 0
+	_reset()
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	after_run(actor, blackboard)
+	_reset()
 	super(actor, blackboard)
+	
+func _reset() -> void:
+	successful_index = 0

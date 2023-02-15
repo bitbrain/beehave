@@ -27,8 +27,8 @@ func before_test() -> void:
 func test_always_exexuting_all_successful_nodes() -> void:
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
-	assert_that(action1.count).is_equal(2)
-	assert_that(action2.count).is_equal(2)
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(1)
 	
 func test_never_execute_second_when_first_is_failing() -> void:
 	action1.status = BeehaveNode.FAILURE
