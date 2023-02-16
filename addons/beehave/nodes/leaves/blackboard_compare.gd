@@ -1,3 +1,6 @@
+## Compares two values using the specified comparison operator.
+## Returns [code]FAILURE[/code] if any of the expression fails or the
+## comparison operation returns [code]false[/code], otherwise it returns [code]SUCCESS[/code].
 @tool
 class_name BlackboardCompareCondition extends ConditionLeaf
 
@@ -12,29 +15,28 @@ enum Operators {
 }
 
 
-@export var left_operand: String = ""
+## Expression represetning left operand.
+@export_placeholder(EXPRESSION_PLACEHOLDER) var left_operand: String = ""
+## Comparison operator.
 @export_enum("==", "!=", ">", "<", ">=", "<=") var operator: int = 0
-@export var right_operand: String = ""
+## Expression represetning right operand.
+@export_placeholder(EXPRESSION_PLACEHOLDER) var right_operand: String = ""
 
 
-@onready var _left_expression: Expression = parse_expression(left_operand)
-@onready var _right_expression: Expression = parse_expression(right_operand)
+@onready var _left_expression: Expression = _parse_expression(left_operand)
+@onready var _right_expression: Expression = _parse_expression(right_operand)
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var left: Variant = _left_expression.execute([], blackboard)
 	
-	assert(
-		not _left_expression.has_execute_failed(),
-		"[BlackboardCompareCondition] Expression execution failed in node: `%s`! Source: `%s`" % [name, left_operand]
-	)
+	if _left_expression.has_execute_failed():
+		return FAILURE
 	
 	var right: Variant = _right_expression.execute([], blackboard)
 	
-	assert(
-		not _right_expression.has_execute_failed(),
-		"[BlackboardCompareCondition] Expression execution failed in node: `%s`! Source: `%s`" % [name, right_operand]
-	)
+	if _right_expression.has_execute_failed():
+		return FAILURE
 	
 	var result: bool = false
 	
@@ -48,3 +50,6 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	
 	return SUCCESS if result else FAILURE
 
+
+func _get_expression_sources() -> Array[String]:
+	return [left_operand, right_operand]
