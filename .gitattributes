@@ -4,8 +4,8 @@
 # Ignore some files when exporting to a ZIP.
 # Only include the addons folder when downloading from the Asset Library.
 /**                  export-ignore
-/addons              !export-ignore
-/addons/**           !export-ignore
+/addons/beehave      !export-ignore
+/addons/beehave/**   !export-ignore
 
 # Also include script templates.
 /script_templates    !export-ignore
