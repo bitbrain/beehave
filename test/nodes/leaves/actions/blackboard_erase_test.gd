@@ -22,14 +22,22 @@ func before_test() -> void:
 	blackboard_erase.key = "\"%s\"" % [KEY]
 	actor = null
 	blackboard = auto_free(load(__blackboard).new())
-	runner = scene_runner(blackboard_erase)
 
 
 func test_erase_existing_key() -> void:
 	blackboard.set_value(KEY, 0)
+	
+	runner = scene_runner(blackboard_erase)
 	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
 
 
 func test_erase_non_existing_key() -> void:
+	runner = scene_runner(blackboard_erase)
 	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
 
+
+func test_invalid_key_expression() -> void:
+	blackboard_erase.key = "this is invalid!!!"
+	
+	runner = scene_runner(blackboard_erase)
+	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)

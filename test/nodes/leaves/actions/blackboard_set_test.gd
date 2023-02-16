@@ -54,3 +54,14 @@ func test_set_vector3() -> void:
 	assert_bool(blackboard.has_value(KEY)).is_true()
 	assert_that(blackboard.get_value(KEY)).is_equal(Vector3(0,0,0))
 
+
+func test_invalid_key_expression() -> void:
+	blackboard_set.key = "this is invalid!!!"
+	var runner: GdUnitSceneRunner = scene_runner(blackboard_set)
+	assert_that(blackboard_set.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
+
+
+func test_invalid_value_expression() -> void:
+	blackboard_set.value = "this is invalid!!!"
+	var runner: GdUnitSceneRunner = scene_runner(blackboard_set)
+	assert_that(blackboard_set.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)

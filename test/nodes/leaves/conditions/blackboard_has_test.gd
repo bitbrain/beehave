@@ -38,3 +38,8 @@ func test_key_exists_but_value_null() -> void:
 
 func test_key_does_not_exist() -> void:
 	assert_that(blackboard_has.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
+
+
+func test_invalid_key_expression() -> void:
+	blackboard_has.key = "this is invalid!!!"
+	assert_that(blackboard_has.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)

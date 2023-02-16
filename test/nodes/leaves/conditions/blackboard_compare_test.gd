@@ -75,3 +75,21 @@ func test_blackboard_access() -> void:
 	
 	runner = scene_runner(blackboard_compare)
 	assert_that(blackboard_compare.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
+
+
+func test_invalid_left_operand_expression() -> void:
+	blackboard_compare.left_operand = "this is invalid!!!"
+	blackboard_compare.operator = BlackboardCompareCondition.Operators.EQUAL
+	blackboard_compare.right_operand = "1"
+	
+	runner = scene_runner(blackboard_compare)
+	assert_that(blackboard_compare.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
+
+
+func test_invalid_right_operand_expression() -> void:
+	blackboard_compare.left_operand = "1"
+	blackboard_compare.operator = BlackboardCompareCondition.Operators.EQUAL
+	blackboard_compare.right_operand = "this is invalid!!!"
+	
+	runner = scene_runner(blackboard_compare)
+	assert_that(blackboard_compare.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
