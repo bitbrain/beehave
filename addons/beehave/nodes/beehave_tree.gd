@@ -16,13 +16,13 @@ signal tree_disabled
 	set(value):
 		enabled = value
 		set_physics_process(enabled)
-		
+
 		if value:
 			tree_enabled.emit()
 		else:
 			interrupt()
 			tree_disabled.emit()
-	
+
 	get:
 		return enabled
 
@@ -50,12 +50,12 @@ var _process_time_metric_value : float = 0.0
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
-	
+
 	if self.get_child_count() > 0 and not self.get_child(0) is BeehaveNode:
 		push_warning("Beehave error: Root %s should have only one child of type BeehaveNode (NodePath: %s)" % [self.name, self.get_path()])
 		disable()
 		return
-		
+
 	if not blackboard:
 		_internal_blackboard = Blackboard.new()
 		add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
@@ -63,48 +63,66 @@ func _ready() -> void:
 	actor = get_parent()
 	if actor_node_path:
 		actor = get_node(actor_node_path)
-		
+
 	# Get the name of the parent node name for metric
 	var parent_name = actor.name
 	_process_time_metric_name = "beehave/%s-%s-process_time" % [parent_name, get_instance_id()]
-	
+
 	# Register custom metric to the engine
 	Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
 	BeehaveGlobalMetrics.register_tree(self)
 
 	set_physics_process(enabled)
 
+	BeehaveEditorDebugger.register_tree(_get_debugger_data(self))
+
 
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
-		
+
 	# Start timing for metric
 	var start_time = Time.get_ticks_usec()
-	
+
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
-	
-	for child in get_children():
-		if child is BeehaveNode:
-			status = child.tick(actor, blackboard)
+
+	BeehaveEditorDebugger.process_begin(get_instance_id())
+
+	if self.get_child_count() == 1:
+		tick()
+
+	BeehaveEditorDebugger.process_end(get_instance_id())
+
+	# Check the cost for this frame and save it for metric report
+	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
+
+
+func tick() -> int:
+	var child := self.get_child(0)
+	if status == -1:
+		child.before_run(actor, blackboard)
+
+	status = child.tick(actor, blackboard)
+	BeehaveEditorDebugger.process_tick(child.get_instance_id(), status)
+	BeehaveEditorDebugger.process_tick(get_instance_id(), status)
 
 	# Clear running action if nothing is running
 	if status != RUNNING:
 		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
-	
-	# Check the cost for this frame and save it for metric report
-	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
-	
+		child.after_run(actor, blackboard)
+
+	return status
+
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings:PackedStringArray = []
-	
+
 	if get_children().any(func(x): return not (x is BeehaveNode)):
 		warnings.append("All children of this node should inherit from BeehaveNode class.")
-		
+
 	if get_child_count() != 1:
 		warnings.append("BeehaveTree should have exactly one child node.")
-	
+
 	return warnings
 
 
@@ -126,7 +144,7 @@ func get_last_condition_status() -> String:
 		else:
 			return "RUNNING"
 	return ""
-	
+
 ## interrupts this tree if anything was running
 func interrupt() -> void:
 	if self.get_child_count() != 0:
@@ -149,7 +167,26 @@ func _exit_tree() -> void:
 		Performance.remove_custom_monitor(_process_time_metric_name)
 		BeehaveGlobalMetrics.unregister_tree(self)
 
+	BeehaveEditorDebugger.unregister_tree(get_instance_id())
+
 
 # Called by the engine to profile this tree
 func _get_process_time_metric_value() -> float:
 	return _process_time_metric_value
+
+
+func _get_debugger_data(node: Node) -> Dictionary:
+	if not node is BeehaveTree and not node is BeehaveNode:
+		return {}
+	var data := { path = node.get_path(), name = node.name, type = node.get_class_name(), id = str(node.get_instance_id()) }
+	if node.get_child_count() > 0:
+		data.children = []
+	for child in node.get_children():
+		var child_data := _get_debugger_data(child)
+		if not child_data.is_empty():
+			data.children.push_back(child_data)
+	return data
+
+
+func get_class_name() -> Array[StringName]:
+	return [&"BeehaveTree"]

@@ -9,11 +9,11 @@ const __source = "res://addons/beehave/nodes/composites/sequence.gd"
 const __count_up_action = "res://test/actions/count_up_action.gd"
 const __blackboard = "res://addons/beehave/blackboard.gd"
 
-var sequence:SequenceComposite
-var action1:ActionLeaf
-var action2:ActionLeaf
-var actor:Node
-var blackboard:Blackboard
+var sequence: SequenceComposite
+var action1: ActionLeaf
+var action2: ActionLeaf
+var actor: Node
+var blackboard: Blackboard
 
 func before_test() -> void:
 	sequence = auto_free(load(__source).new())

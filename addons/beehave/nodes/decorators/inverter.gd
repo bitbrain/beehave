@@ -4,23 +4,38 @@
 @icon("../../icons/inverter.svg")
 class_name InverterDecorator extends Decorator
 
+
 func tick(actor: Node, blackboard: Blackboard) -> int:
-	for c in get_children():
-		var response = c.tick(actor, blackboard)
-		
-		if c is ConditionLeaf:
-			blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
-			blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
+	var c = get_child(0)
 
-		if response == SUCCESS:
+	if c != running_child:
+		c.before_run(actor, blackboard)
+
+	var response = c.tick(actor, blackboard)
+	BeehaveEditorDebugger.process_tick(c.get_instance_id(), response)
+
+	if c is ConditionLeaf:
+		blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
+		blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
+
+	match response:
+		SUCCESS:
+			c.after_run(actor, blackboard)
 			return FAILURE
-		if response == FAILURE:
+		FAILURE:
+			c.after_run(actor, blackboard)
 			return SUCCESS
+		RUNNING:
+			running_child = c
+			if c is ActionLeaf:
+				blackboard.set_value("running_action", c, str(actor.get_instance_id()))
+			return RUNNING
+		_:
+			push_error("This should be unreachable")
+			return -1
 
-		if c is ActionLeaf:
-			blackboard.set_value("running_action", c, str(actor.get_instance_id()))
-			
-		return RUNNING
-	
-	# Decorators must have a child. This should be unreachable code.
-	return FAILURE
+
+func get_class_name() -> Array[StringName]:
+	var classes := super()
+	classes.push_back(&"InverterDecorator")
+	return classes
