@@ -1,0 +1,40 @@
+name: publish-wiki
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.gd'
+      - '**.tscn'
+      - '**.import'
+    branches:
+      - 'godot-4.x'
+      - 'generate-wiki-docs'
+  workflow_dispatch:
+
+concurrency:
+  group: publish-wiki-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+
+  unit-test:
+    strategy:
+      fail-fast: false
+
+    name: "📚 publishing latest wiki version"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: false
+
+    steps:
+      - name: "📦 checkout repository"
+        uses: actions/checkout@v3
+        run: |
+        git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+        git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+
+      - uses: tool3/docsify-action@master
+        with:
+          github_token: ${{ secrets.GP_TOKEN }}
+          branch: gh-pages
+          dir: .
