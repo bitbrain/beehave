@@ -6,7 +6,9 @@
 
 ![](https://img.shields.io/badge/Godot%20Compatible-4.0%2B-%234385B5) ![](https://img.shields.io/badge/Godot%20Compatible-3.0%2B-%234385B5) [![](https://img.shields.io/discord/785246324793540608.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/CKBuE5djXe) [![](https://img.shields.io/badge/%20%F0%9F%90%9D%20swag!%20-shop.bitbra.in-blueviolet)](https://shop.bitbra.in)
 
-Beehave is an addon for [Godot Engine](https://godotengine.org) that allows you to build resilient AI systems with behaviour trees. Regardless if you want to build NPC behavior, your next boss battle or other more complex setups - this addon is right for you!
+Beehave is a powerful addon for Godot Engine that enables you to create robust AI systems using behavior trees. With Beehave, you can easily design complex NPC behaviors, build challenging boss battles, and create other advanced setups with ease.
+
+Using behavior trees, Beehave makes it simple to create highly adaptive AI that responds to changes in the game world and overcomes unexpected obstacles. Whether you're a beginner or an experienced developer, Beehave is the perfect tool to take your game AI to the next level.
 
 > ⚠ **Disclaimer: Godot 4 is not released yet. As a result, the version for Godot 4 may be unstable to use and the API may change. Please keep using [the stable 3.x branch](https://github.com/bitbrain/beehave/tree/godot-3.x) if you do not want to have breaking changes in your game.**
 
