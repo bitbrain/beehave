@@ -8,7 +8,7 @@ In a nutshell, a behaviour tree is a Godot Node that can be added as a child to 
 
 In more theoretical terms, a behaviour tree consists of so called **nodes** - each node can be of a different type with different purposes. Those are described further down below in more detail. Every node has a `tick(actor, blackboard)` method that can be used to execute custom logic. When the `tick` function is called, beehave expects a return status of either `SUCCESS`, `RUNNING` or `FAILURE`.
 
-In **Beehave**, every behaviour tree is of type ![icon](addons/beehave/icons/tree.svg) `BeehaveTree`. Attach that node to any node to any other node you want to apply the behaviour tree to.
+In **Beehave**, every behaviour tree is of type `BeehaveTree`. Attach that node to any node to any other node you want to apply the behaviour tree to.
 
 ## Tutorial (Godot 3.5+)
 
