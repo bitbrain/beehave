@@ -16,10 +16,16 @@ enum Operators {
 
 
 ## Expression represetning left operand.
+## This value can be any valid GDScript expression.
+## In order to use the existing blackboard keys for comparison,
+## use get_value("key_name") e.g. get_value("direction").length()
 @export_placeholder(EXPRESSION_PLACEHOLDER) var left_operand: String = ""
 ## Comparison operator.
 @export_enum("==", "!=", ">", "<", ">=", "<=") var operator: int = 0
 ## Expression represetning right operand.
+## This value can be any valid GDScript expression.
+## In order to use the existing blackboard keys for comparison,
+## use get_value("key_name") e.g. get_value("direction").length()
 @export_placeholder(EXPRESSION_PLACEHOLDER) var right_operand: String = ""
 
 
