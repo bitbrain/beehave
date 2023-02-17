@@ -1,4 +1,4 @@
 * [🐝 Getting started](/)
-* [📦 Installation](/install.md)
+* [📚 Learn](/learn.md)
 * [🍯 Features](/install.md)
 * [🍻 Contribute](/contribute.md)
