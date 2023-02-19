@@ -74,7 +74,7 @@ func _ready() -> void:
 
 	set_physics_process(enabled)
 
-	BeehaveEditorDebugger.register_tree(_get_debugger_data(self))
+	BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
 
 func _physics_process(delta: float) -> void:
@@ -86,12 +86,12 @@ func _physics_process(delta: float) -> void:
 
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
 
-	BeehaveEditorDebugger.process_begin(get_instance_id())
+	BeehaveDebuggerMessages.process_begin(get_instance_id())
 
 	if self.get_child_count() == 1:
 		tick()
 
-	BeehaveEditorDebugger.process_end(get_instance_id())
+	BeehaveDebuggerMessages.process_end(get_instance_id())
 
 	# Check the cost for this frame and save it for metric report
 	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
@@ -103,8 +103,8 @@ func tick() -> int:
 		child.before_run(actor, blackboard)
 
 	status = child.tick(actor, blackboard)
-	BeehaveEditorDebugger.process_tick(child.get_instance_id(), status)
-	BeehaveEditorDebugger.process_tick(get_instance_id(), status)
+	BeehaveDebuggerMessages.process_tick(child.get_instance_id(), status)
+	BeehaveDebuggerMessages.process_tick(get_instance_id(), status)
 
 	# Clear running action if nothing is running
 	if status != RUNNING:
@@ -167,7 +167,7 @@ func _exit_tree() -> void:
 		Performance.remove_custom_monitor(_process_time_metric_name)
 		BeehaveGlobalMetrics.unregister_tree(self)
 
-	BeehaveEditorDebugger.unregister_tree(get_instance_id())
+	BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
 
 # Called by the engine to profile this tree
