@@ -1,6 +1,6 @@
 ![logo](assets/logo.svg)
 
-🐝  Behaviour Tree addon for [Godot Engine](https://godotengine.org/).
+🐝  Behavior Tree addon for [Godot Engine](https://godotengine.org/).
 
 ---
 
@@ -8,17 +8,17 @@
 
 **[Beehave](https://bitbra.in/beehave) is a powerful addon for Godot Engine that enables you to create robust AI systems using behavior trees.** With Beehave, you can easily design complex NPC behaviors, build challenging boss battles, and create other advanced setups with ease.
 
-Using behavior trees, Beehave makes it simple to create highly adaptive AI that responds to changes in the game world and overcomes unexpected obstacles. Whether you're a beginner or an experienced developer, Beehave is the perfect tool to take your game AI to the next level.
+Using behavior trees, Beehave makes it simple to create highly adaptive AI that responds to changes in the game world and overcomes unexpected obstacles. Whether you are a beginner or an experienced developer, Beehave is the perfect tool to take your game AI to the next level.
 
 > ⚠ **Disclaimer: Godot 4 is not released yet. As a result, the version for Godot 4 may be unstable to use and the API may change. Please keep using [the stable 3.x branch](https://github.com/bitbrain/beehave/tree/godot-3.x) if you do not want to have breaking changes in your game.**
 
 # 🐝 Features
 
-**🤖 Node based - build behaviour trees within your scene tree**
+**🤖 Node based - build behavior trees within your scene tree**
 
-**🐛 Debug view - a dedicated debug view to analyse your behaviour at runtime**
+**🐛 Debug view - a dedicated debug view to analyze your behavior at runtime**
 
-**🚗 Performance - built-in monitors to track performance of your behaviour trees**
+**🚗 Performance - built-in monitors to track performance of your behavior trees**
 
 **🍯 Active community - used by hundreds of game developers**
 
@@ -32,7 +32,7 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 # 📚 Getting started
 
-Behaviour trees are a modular way to build AI logic for your game. For simple AI, behaviour trees are definitely overkill, however, for more complex AI interactions, behaviour trees can help you to better manage changes and re-use logic across all NPCs.
+Behavior trees are a modular way to build AI logic for your game. For simple AI, behaviour trees are definitely overkill, however, for more complex AI interactions, behaviour trees can help you to better manage changes and re-use logic across all NPCs.
 
 ![example](assets/example.png)
 
@@ -40,7 +40,7 @@ Behaviour trees are a modular way to build AI logic for your game. For simple AI
 
 ## Tutorial (Godot 3.5+)
 
-I have recorded this tutorial to show in more depth how to use this addon:
+[bitbrain](https://youtube.com/@bitbraindev) recorded this tutorial to show in more depth how to use this addon:
 
 [![tutorial-thumbnail](https://img.youtube.com/vi/n0gVEA1dyPQ/0.jpg)](https://www.youtube.com/watch?v=n0gVEA1dyPQ)
 
