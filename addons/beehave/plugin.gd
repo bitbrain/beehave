@@ -1,6 +1,7 @@
 @tool
 extends EditorPlugin
 
+const BeehaveEditorDebugger := preload("debug/debugger.gd")
 var editor_debugger: BeehaveEditorDebugger
 var frames: RefCounted
 
