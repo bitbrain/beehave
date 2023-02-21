@@ -19,6 +19,16 @@ func wait_func(source :Object, func_name :String, args := [], expeced := GdUnitA
 func set_mouse_pos(pos :Vector2) -> GdUnitSceneRunner:
 	return self
 
+# Gets the current mouse position of the current viewport
+func get_mouse_position() -> Vector2:
+	return Vector2.ZERO
+
+
+# Gets the current global mouse position of the current window
+func get_global_mouse_position() -> Vector2:
+	return Vector2.ZERO
+
+
 # Simulates that a key has been pressed
 # key_code : the key code e.g. 'KEY_ENTER'
 # shift_pressed : false by default set to true if simmulate shift is press
@@ -40,20 +50,25 @@ func simulate_key_press(key_code :int, shift_pressed := false, ctrl_pressed := f
 func simulate_key_release(key_code :int, shift_pressed := false, ctrl_pressed := false) -> GdUnitSceneRunner:
 	return self
 
-# Simulates a mouse moved to relative position by given speed
-# relative: The mouse position relative to the previous position (position at the last frame).
+# Simulates a mouse moved to final position
+# pos: The final mouse position
+func simulate_mouse_move(pos :Vector2) -> GdUnitSceneRunner:
+	return self
+
+# Simulates a mouse move to the relative coordinates (offset)
+# relative: The relative position, e.g. the mouse position offset
 # speed : The mouse speed in pixels per second.‚
-func simulate_mouse_move(relative :Vector2, speed :Vector2 = Vector2.ONE) -> GdUnitSceneRunner:
+func simulate_mouse_move_relative(relative :Vector2, speed :Vector2 = Vector2.ONE) -> GdUnitSceneRunner:
 	return self
 
 # Simulates a mouse button pressed
 # buttonIndex: The mouse button identifier, one of the ButtonList button or button wheel constants.
-func simulate_mouse_button_pressed(buttonIndex :int) -> GdUnitSceneRunner:
+func simulate_mouse_button_pressed(buttonIndex :int, double_click := false) -> GdUnitSceneRunner:
 	return self
 
 # Simulates a mouse button press (holding)
 # buttonIndex: The mouse button identifier, one of the ButtonList button or button wheel constants.
-func simulate_mouse_button_press(buttonIndex :int) -> GdUnitSceneRunner:
+func simulate_mouse_button_press(buttonIndex :int, double_click := false) -> GdUnitSceneRunner:
 	return self
 
 # Simulates a mouse button released

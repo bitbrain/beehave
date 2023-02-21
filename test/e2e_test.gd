@@ -11,7 +11,7 @@ func create_scene() -> Node2D:
 	return auto_free(load(__source).instantiate())
 	
 
-func test_changing_to_all_colours() -> void:
+func test_changing_to_all_colors() -> void:
 	var scene = create_scene()
 	var runner := scene_runner(scene)
 	# speed up the test

@@ -1,0 +1,91 @@
+name: beehave-ci
+
+on:
+  push:
+    branches:
+      - "godot-4.x"
+  pull_request:
+    paths-ignore:
+      - '**.jpg'
+      - '**.png'
+      - '**.md'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-test:
+    name: "🤖 unit tests on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    continue-on-error: false
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04]
+        godot-version: ['4.0']
+        godot-status-version: ['rc2']
+        include:
+          - os: ubuntu-22.04
+            name: Godot 🐧 Linux Build
+            godot-bin-name: 'linux.x86_64'
+            godot-executable_path: '~/godot-linux/godot'
+            godot-cache-path: '~/godot-linux'
+            godot-mono: false
+            install-opengl: true
+
+    steps:
+      - name: "📦 Checkout Beehave Repository"
+        uses: actions/checkout@v3
+
+      - name: "🤖 Install Godot ${{ matrix.godot-version }}"
+        uses: ./.github/actions/godot-install
+        with:
+          godot-version: ${{ matrix.godot-version }}
+          godot-status-version: ${{ matrix.godot-status-version }}
+          godot-bin-name: ${{ matrix.godot-bin-name }}
+          godot-cache-path: ${{ matrix.godot-cache-path }}
+
+      - name: "🖥️ Install OpenGL Drivers"
+        if: ${{ matrix.install-opengl && !cancelled() }}
+        shell: bash
+        run: |
+          sudo apt-get -y update
+          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          export DISPLAY=:99
+          sudo apt-get install cmake pkg-config
+          sudo apt-get install mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev
+          sudo apt-get install libglew-dev libglfw3-dev libglm-dev
+          sudo apt-get install libao-dev libmpg123-dev
+          glxinfo | grep OpenGL
+
+      - name: "♻️ Update Godot project cache"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 1
+        continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
+        shell: bash
+        run: |
+          ${{ matrix.godot-executable_path }} --version
+          ${{ matrix.godot-executable_path }} -e --path . -s res://addons/gdUnit4/bin/ProjectScanner.gd --headless
+
+      - name: "🧪 Run Unit Tests"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 10
+        uses: ./.github/actions/unit-test
+        with:
+          godot-bin: ${{ matrix.godot-executable_path }}
+          test-includes: "res://test/"
+
+      - name: "📚 Publish Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/publish-test-report
+        with:
+          report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
+
+      - name: "🎉 Upload Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/upload-test-report
+        with:
+          report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}

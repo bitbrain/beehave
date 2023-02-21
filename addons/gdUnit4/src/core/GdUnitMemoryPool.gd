@@ -21,7 +21,15 @@ var _monitors := {
 
 
 class MemoryStore extends RefCounted:
-	var _store :Array[Variant] = Array()
+	var _store :Array[Variant] = []
+	
+	
+	func _notification(what):
+		if what == NOTIFICATION_PREDELETE:
+			while not _store.is_empty():
+				var value := _store.pop_front()
+				GdUnitTools.free_instance(value)
+	
 	
 	static func pool(pool :POOL) -> MemoryStore:
 		var pool_name :String = POOL.keys()[pool]
@@ -41,10 +49,8 @@ class MemoryStore extends RefCounted:
 	
 	
 	static func release(pool :POOL) -> void:
-		var mp := pool(pool)
-		while not mp._store.is_empty():
-			var value := mp._store.pop_front()
-			GdUnitTools.free_instance(value)
+		var pool_name :String = POOL.keys()[pool]
+		GdUnitSingleton.unregister(pool_name)
 
 
 var _current :POOL

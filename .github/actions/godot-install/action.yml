@@ -1,0 +1,61 @@
+name: install-godot-binary
+description: "Installs the Godot Runtime"
+
+inputs:
+  godot-version:
+    description: "The Godot engine version"
+    required: true
+  godot-status-version:
+    description: "The Godot engine status version"
+    required: true
+  godot-bin-name:
+    required: true
+  godot-cache-path:
+    required: true
+
+
+runs:
+  using: composite
+  steps:
+
+    - name: "Cache Godot Binary Download"
+      uses: actions/cache@v3
+      id: godot-cache-binary
+      with:
+        path: ${{ inputs.godot-cache-path }}
+        key: ${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}
+        restore-keys: |
+          ${{ runner.OS }}-Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}
+
+    - name: "Install Linux Godot ${{ inputs.godot-version }}"
+      if: steps.godot-cache-binary.outputs.cache-hit != 'true'
+      env:
+        GODOT_PACKAGE : Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}.zip
+        GODOT_BIN : Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}
+      continue-on-error: false
+      shell: bash
+      run: |
+        mkdir -p ${{ inputs.godot-cache-path }}
+        chmod 770 ${{ inputs.godot-cache-path }}
+        DIR="$HOME/.config/godot"
+        if [ ! -d "$DIR" ]; then
+          mkdir -p "$DIR"
+          chmod 770 "$DIR"
+        fi
+        wget https://downloads.tuxfamily.org/godotengine/${{ inputs.godot-version }}/${{ inputs.godot-status-version }}/${{ env.GODOT_PACKAGE }} -P ${{ inputs.godot-cache-path }}
+        unzip ${{ inputs.godot-cache-path }}/${{ env.GODOT_PACKAGE }} -d ${{ inputs.godot-cache-path }}
+        if ${{runner.OS == 'Linux'}}; then
+          echo "Run linux part"
+          mv ${{ inputs.godot-cache-path }}/${{ env.GODOT_BIN }} ${{ inputs.godot-cache-path }}/godot
+          chmod u+x ${{ inputs.godot-cache-path }}/godot
+          ${{ inputs.godot-cache-path }}/godot --version
+          echo "${{ inputs.godot-cache-path }}/godot"
+        else
+          echo "Run windows part"
+          pwd
+          mv ${{ inputs.godot-cache-path }}/${{ env.GODOT_BIN }} ${{ inputs.godot-cache-path }}/godot.exe
+          chmod u+x ${{ inputs.godot-cache-path }}/godot.exe
+          ${{ inputs.godot-cache-path }}/godot.exe --version
+          echo "${{ inputs.godot-cache-path }}/godot.exe"
+        fi
+        ls -lsR ${{ inputs.godot-cache-path }}
