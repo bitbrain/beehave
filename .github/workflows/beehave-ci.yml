@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - "godot-4.x"
+    paths-ignore:
+      - '**.jpg'
+      - '**.png'
+      - '**.svg'
+      - '**.md'
   pull_request:
     paths-ignore:
       - '**.jpg'
       - '**.png'
+      - '**.svg'
       - '**.md'
   workflow_dispatch:
 
