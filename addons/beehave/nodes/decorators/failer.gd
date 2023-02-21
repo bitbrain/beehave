@@ -6,11 +6,12 @@ class_name AlwaysFailDecorator extends Decorator
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var c = get_child(0)
-	
+
 	if c != running_child:
 		c.before_run(actor, blackboard)
 
 	var response = c.tick(actor, blackboard)
+	BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
 
 	if c is ConditionLeaf:
 		blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
@@ -24,3 +25,9 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	else:
 		c.after_run(actor, blackboard)
 		return FAILURE
+
+
+func get_class_name() -> Array[StringName]:
+	var classes := super()
+	classes.push_back(&"AlwaysFailDecorator")
+	return classes

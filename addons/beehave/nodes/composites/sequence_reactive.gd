@@ -44,10 +44,6 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	return SUCCESS
 
 
-func after_run(actor: Node, blackboard: Blackboard) -> void:
-	_reset()
-
-
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
 	_reset()
 	super(actor, blackboard)

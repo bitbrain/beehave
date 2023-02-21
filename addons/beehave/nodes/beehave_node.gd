@@ -1,4 +1,4 @@
-## A node in the behaviour tree. Every node must return `SUCCESS`, `FAILURE` or
+## A node in the behavior tree. Every node must return `SUCCESS`, `FAILURE` or
 ## `RUNNING` when ticked.
 @tool
 class_name BeehaveNode extends Node
@@ -12,10 +12,10 @@ enum {
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings: PackedStringArray = []
-	
+
 	if get_children().any(func(x): return not (x is BeehaveNode)):
 		warnings.append("All children of this node should inherit from BeehaveNode class.")
-	
+
 	return warnings
 
 
@@ -39,3 +39,7 @@ func before_run(actor: Node, blackboard: Blackboard) -> void:
 ## [code]SUCCESS[/code] or [code]FAILURE[/code].
 func after_run(actor: Node, blackboard: Blackboard) -> void:
 	pass
+
+
+func get_class_name() -> Array[StringName]:
+	return [&"BeehaveNode"]

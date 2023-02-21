@@ -1,0 +1,24 @@
+name: publish-test-report
+description: "Publishes the GdUnit test results"
+
+inputs:
+  report-name:
+    description: "Name of the check run which will be created."
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+    - name: 'Fixing the dubious git 128 error'
+      shell: bash
+      run: |
+        git config --global --add safe.directory '*'
+
+    - name: 'Publish Test Results'
+      uses: dorny/test-reporter@v1.6.0
+      with:
+        name: test_report_${{ inputs.report-name }}
+        path: 'reports/**/results.xml'
+        reporter: java-junit
+        fail-on-error: 'false'

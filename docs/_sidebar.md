@@ -1,0 +1,12 @@
+* [🐝 Getting started](/)
+* [📚 Learn](/learn.md)
+* 📗 Manual
+    * [Blackboard](/blackboard.md)
+    * [Leaf Nodes](/leaf_nodes.md)
+        * [Action Leaf](/action_leaf.md)
+        * [Condition Leaf](/condition_leaf.md)
+    * [Composites](/composites.md)
+        * [Selector](/selector.md)
+        * [Sequence](/sequence.md)
+    * [Decorators](/decorators.md) 
+* [🍻 Contribute](/contribute.md)
