@@ -13,9 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
   unit-test:
-    name: "Unit tests on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
+    name: "🤖 unit tests on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     continue-on-error: false
@@ -35,13 +34,10 @@ jobs:
             install-opengl: true
 
     steps:
-      - name: "Checkout GdUnit Repository"
+      - name: "📦 Checkout Beehave Repository"
         uses: actions/checkout@v3
-        with:
-          lfs: true
-          submodules: 'recursive'
 
-      - name: "Install Godot ${{ matrix.godot-version }}"
+      - name: "🤖 Install Godot ${{ matrix.godot-version }}"
         uses: ./.github/actions/godot-install
         with:
           godot-version: ${{ matrix.godot-version }}
@@ -49,7 +45,7 @@ jobs:
           godot-bin-name: ${{ matrix.godot-bin-name }}
           godot-cache-path: ${{ matrix.godot-cache-path }}
 
-      - name: "Install OpenGl Drivers"
+      - name: "🖥️ Install OpenGL Drivers"
         if: ${{ matrix.install-opengl && !cancelled() }}
         shell: bash
         run: |
@@ -62,7 +58,7 @@ jobs:
           sudo apt-get install libao-dev libmpg123-dev
           glxinfo | grep OpenGL
 
-      - name: "Update Godot project cache"
+      - name: "♻️ Update Godot project cache"
         if: ${{ !cancelled() }}
         timeout-minutes: 1
         continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
@@ -71,7 +67,7 @@ jobs:
           ${{ matrix.godot-executable_path }} --version
           ${{ matrix.godot-executable_path }} -e --path . -s res://addons/gdUnit4/bin/ProjectScanner.gd --headless
 
-      - name: "Run Unit Tests"
+      - name: "🧪 Run Unit Tests"
         if: ${{ !cancelled() }}
         timeout-minutes: 10
         uses: ./.github/actions/unit-test
@@ -79,13 +75,13 @@ jobs:
           godot-bin: ${{ matrix.godot-executable_path }}
           test-includes: "res:/test/"
 
-      - name: "Publish Unit Test Reports"
+      - name: "📚 Publish Unit Test Reports"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/publish-test-report
         with:
           report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
 
-      - name: "Upload Unit Test Reports"
+      - name: "🎉 Upload Unit Test Reports"
         if: ${{ !cancelled() }}
         uses: ./.github/actions/upload-test-report
         with:
