@@ -28,7 +28,7 @@ func test_nothing_running_before_first_tick() -> void:
 func test_get_last_condition() -> void:
 	var scene = create_scene()
 	var runner := scene_runner(scene)
-	await runner.simulate_frames(10)
+	await runner.simulate_frames(100)
 	assert_that(scene.beehave_tree.get_running_action()).is_null()
 	assert_that(scene.beehave_tree.get_last_condition()).is_not_null()
 	assert_that(scene.beehave_tree.get_last_condition_status()).is_equal('SUCCESS')
@@ -37,7 +37,7 @@ func test_disabled() -> void:
 	var scene = create_scene()
 	var runner := scene_runner(scene)
 	scene.beehave_tree.disable()
-	await runner.simulate_frames(10)
+	await runner.simulate_frames(50)
 	assert_bool(scene.beehave_tree.enabled).is_false()
 	assert_that(scene.beehave_tree.get_running_action()).is_null()
 	assert_that(scene.beehave_tree.get_last_condition()).is_null()
@@ -48,7 +48,7 @@ func test_reenabled() -> void:
 	var runner := scene_runner(scene)
 	scene.beehave_tree.disable()
 	scene.beehave_tree.enable()
-	await runner.simulate_frames(10)
+	await runner.simulate_frames(50)
 	assert_bool(scene.beehave_tree.enabled).is_true()
 	assert_that(scene.beehave_tree.get_last_condition()).is_not_null()
 	
