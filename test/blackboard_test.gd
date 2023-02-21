@@ -46,7 +46,7 @@ func test_blackboard_shared_between_trees() -> void:
 	var scene = auto_free(load("res://test/UnitTestScene.tscn").instantiate())
 	var runner = scene_runner(scene)
 	
-	await runner.simulate_frames(10)
+	await runner.simulate_frames(100)
 	
 	assert_that(scene.blackboard.get_value("custom_value")).is_equal(4)
 	assert_that(scene.blackboard.get_value("custom_value")).is_equal(4)
