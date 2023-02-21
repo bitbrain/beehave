@@ -137,6 +137,14 @@ func fix_value_types():
 	# fix float value to int json stores all numbers as float
 	var server_port :int = _config.get(SERVER_PORT, -1)
 	_config[SERVER_PORT] = server_port
+	convert_Array_to_PackedStringArray(_config[INCLUDED])
+	convert_Array_to_PackedStringArray(_config[SKIPPED])
+
+
+func convert_Array_to_PackedStringArray(data :Dictionary):
+	for key in data.keys():
+		var values :Array = data[key]
+		data[key] = PackedStringArray(values)
 
 
 func _to_string() -> String:

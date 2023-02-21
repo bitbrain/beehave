@@ -190,7 +190,7 @@ static func to_regex(pattern :String) -> RegEx:
 
 static func prints_verbose(message :String) -> void:
 	if OS.is_stdout_verbose():
-		print_debug(message)
+		prints(message)
 
 
 static func free_instance(instance :Variant) -> bool:

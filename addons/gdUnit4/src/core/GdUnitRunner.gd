@@ -2,6 +2,8 @@ extends Node
 
 signal sync_rpc_id_result_received
 
+const GdUnitExecutor = preload("res://addons/gdUnit4/src/core/GdUnitExecutor.gd")
+
 @onready var _client :GdUnitTcpClient = $GdUnitTcpClient
 @onready var _executor :GdUnitExecutor = $GdUnitExecutor
 

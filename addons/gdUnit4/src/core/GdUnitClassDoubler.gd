@@ -99,7 +99,7 @@ static func double_functions(instance :Object, clazz_name :String, clazz_path :P
 			#prints("no virtual func implemented",clazz_name, func_descriptor.name() )
 			continue
 		functions.append(func_descriptor.name())
-		doubled_source += func_doubler.double(func_descriptor)
+		doubled_source.append_array(func_doubler.double(func_descriptor))
 	return doubled_source
 
 
