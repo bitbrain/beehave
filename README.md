@@ -32,7 +32,7 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 # 📚 Getting started
 
-Behavior trees are a modular way to build AI logic for your game. For simple AI, behaviour trees are definitely overkill, however, for more complex AI interactions, behaviour trees can help you to better manage changes and re-use logic across all NPCs.
+Behavior trees are a modular way to build AI logic for your game. For simple AI, behavior trees are definitely overkill, however, for more complex AI interactions, behavior trees can help you to better manage changes and re-use logic across all NPCs.
 
 ![example](assets/example.png)
 
