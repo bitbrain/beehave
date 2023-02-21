@@ -59,7 +59,7 @@ func fire_test_skipped(test_suite :GdUnitTestSuite, test_case :_TestCase):
 		GdUnitEvent.SKIPPED: true,
 		GdUnitEvent.SKIPPED_COUNT: 1,
 	}
-	var report := GdUnitReport.new().create(GdUnitReport.WARN, test_case.line_number(), "Test skipped %s" % test_case.error())
+	var report := GdUnitReport.new().create(GdUnitReport.SKIPPED, test_case.line_number(), GdAssertMessages.test_skipped(test_case.skip_info()))
 	fire_event(GdUnitEvent.new()\
 		.test_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, [report]))
 

@@ -127,8 +127,12 @@ func _parse_and_add_test_cases(test_suite, script :GDScript, test_case_names :Pa
 			var iterations := Fuzzer.ITERATION_DEFAULT_COUNT
 			var seed_value := -1
 			var fuzzers :Array[GdFunctionArgument] = []
+			var test := _TestCase.new()
+			
+			_validate_argument(fd, test)
 			for arg in fd.args():
 				var fa := arg as GdFunctionArgument
+				# verify argument is allowed
 				# is test using fuzzers?
 				if fa.type() == GdObjects.TYPE_FUZZER:
 					fuzzers.append(fa)
@@ -144,7 +148,7 @@ func _parse_and_add_test_cases(test_suite, script :GDScript, test_case_names :Pa
 						#	push_error("Invalid test case arguemnt found. ", fa)
 					continue
 			# create new test
-			var test := _TestCase.new().configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value)
+			test.configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value)
 			test_suite.add_child(test)
 			# is parameterized test?
 			if fd.is_parameterized():
@@ -153,6 +157,17 @@ func _parse_and_add_test_cases(test_suite, script :GDScript, test_case_names :Pa
 				if not error.is_empty():
 					test.skip(true, error)
 				test.set_test_parameters(test_paramaters)
+
+
+const TEST_CASE_ARGUMENTS = [_TestCase.ARGUMENT_TIMEOUT, Fuzzer.ARGUMENT_ITERATIONS, Fuzzer.ARGUMENT_SEED]
+
+func _validate_argument(fd :GdFunctionDescriptor, test_case :_TestCase) -> void:
+	if fd.is_parameterized():
+		return
+	for argument in fd.args():
+		if argument.type() == GdObjects.TYPE_FUZZER or argument.name() in TEST_CASE_ARGUMENTS:
+			continue
+		test_case.skip(true, "Unknown test case argument '%s' found." % argument.name())
 
 
 # converts given file name by configured naming convention
