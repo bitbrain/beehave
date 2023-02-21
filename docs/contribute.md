@@ -15,7 +15,7 @@ You can run the unit tests by right-clicking the `test` folder and selecting `Ru
 
 ## 🐝 Adding a new node
 
-In case you want to introduce a new node, feel free to [raise a pull request](https://github.com/bitbrain/beehave/compare). Check the issues tab for any discussions on new nodes, as it is a great place to gather feedback before you spend time on implementing it. Ensure to also introduce an icon for your node that is following the colour scheme:
+In case you want to introduce a new node, feel free to [raise a pull request](https://github.com/bitbrain/beehave/compare). Check the issues tab for any discussions on new nodes, as it is a great place to gather feedback before you spend time on implementing it. Ensure to also introduce an icon for your node that is following the color scheme:
 
 - Utility nodes: `#C689FF`
 - Leafs: `#FFB649`
