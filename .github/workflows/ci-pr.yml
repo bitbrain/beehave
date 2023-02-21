@@ -73,7 +73,7 @@ jobs:
         uses: ./.github/actions/unit-test
         with:
           godot-bin: ${{ matrix.godot-executable_path }}
-          test-includes: "res:/test/"
+          test-includes: "res://test/"
 
       - name: "📚 Publish Unit Test Reports"
         if: ${{ !cancelled() }}
