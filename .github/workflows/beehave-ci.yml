@@ -1,6 +1,9 @@
-name: ci-pr
+name: beehave-ci
 
 on:
+  push:
+    branches:
+      - "godot-4.x"
   pull_request:
     paths-ignore:
       - '**.jpg'
