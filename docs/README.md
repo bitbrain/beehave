@@ -10,11 +10,11 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 # 🐝 Features
 
-**🤖 Node based - build behaviour trees within your scene tree**
+**🤖 Node based - build behavior trees within your scene tree**
 
-**🐛 Debug view - a dedicated debug view to analyse your behaviour at runtime**
+**🐛 Debug view - a dedicated debug view to analyze your behavior at runtime**
 
-**🚗 Performance - built-in monitors to track performance of your behaviour trees**
+**🚗 Performance - built-in monitors to track performance of your behavior trees**
 
 **🍯 Active community - used by hundreds of game developers**
 
