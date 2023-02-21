@@ -65,6 +65,7 @@ static func current_date() -> String:
 	return Time.get_datetime_string_from_system(true, true)
 	#return "%02d.%02d.%04d   %02d:%02d:%02d" % [date["day"], date["month"], date["year"], date["hour"], date["minute"], date["second"]]
 
+
 static func build(template :String, report :GdUnitReportSummary, report_link :String) -> String:
 	return template\
 		.replace(PATH, report.path())\
@@ -79,6 +80,7 @@ static func build(template :String, report :GdUnitReportSummary, report_link :St
 		.replace(REPORT_STATE, report.report_state())\
 		.replace(REPORT_LINK, report_link)\
 		.replace(BUILD_DATE, current_date())
+
 
 static func load_template(template_name :String) -> String:
 	return FileAccess.open(template_name, FileAccess.READ).get_as_text()

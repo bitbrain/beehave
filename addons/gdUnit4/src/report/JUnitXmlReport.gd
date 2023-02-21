@@ -3,15 +3,6 @@
 class_name JUnitXmlReport
 extends RefCounted
 
-var _report_path :String
-var _iteration :int
-var _rtf :RichTextLabel
-
-func _init(path :String,iteration :int,rtf :RichTextLabel):
-	_iteration = iteration
-	_report_path = path
-	_rtf = rtf
-
 const ATTR_CLASSNAME := "classname"
 const ATTR_ERRORS := "errors"
 const ATTR_FAILURES := "failures"
@@ -28,6 +19,17 @@ const ATTR_TYPE := "type"
 
 const HEADER := '<?xml version="1.0" encoding="UTF-8" ?>\n'
 
+var _report_path :String
+var _iteration :int
+var _rtf :RichTextLabel
+
+
+func _init(path :String,iteration :int,rtf :RichTextLabel):
+	_iteration = iteration
+	_report_path = path
+	_rtf = rtf
+
+
 func write(report :GdUnitReportSummary) -> String:
 	var result_file: String = "%s/results.xml" % _report_path
 	var file = FileAccess.open(result_file, FileAccess.WRITE)
@@ -35,6 +37,7 @@ func write(report :GdUnitReportSummary) -> String:
 		push_warning("Can't saving the result to '%s'\n Error: %s" % [result_file, error_string(FileAccess.get_open_error())])
 	file.store_string(build_junit_report(report))
 	return result_file
+
 
 func build_junit_report(report :GdUnitReportSummary) -> String:
 	var ISO8601_datetime := Time.get_date_string_from_system()
@@ -48,6 +51,7 @@ func build_junit_report(report :GdUnitReportSummary) -> String:
 	var as_string = test_suites.to_xml()
 	test_suites.dispose()
 	return HEADER + as_string
+
 
 func build_test_suites(summary :GdUnitReportSummary) -> Array:
 	var test_suites :Array = Array()
@@ -68,6 +72,7 @@ func build_test_suites(summary :GdUnitReportSummary) -> Array:
 			.add_childs(build_test_cases(suite_report)))
 	return test_suites
 
+
 func build_test_cases(suite_report :GdUnitTestSuiteReport) -> Array:
 	var test_cases :Array = Array()
 	for index in suite_report.reports().size():
@@ -78,6 +83,7 @@ func build_test_cases(suite_report :GdUnitTestSuiteReport) -> Array:
 			.attribute(ATTR_TIME, to_time(report.duration()))\
 			.add_childs(build_reports(report)))
 	return test_cases
+
 
 func build_reports(testReport :GdUnitTestCaseReport) -> Array:
 	var failure_reports :Array = Array()
@@ -101,10 +107,12 @@ func build_reports(testReport :GdUnitTestCaseReport) -> Array:
 				.attribute(ATTR_MESSAGE, "SKIPPED: %s:%d" % [testReport._resource_path, report.line_number()]))
 	return failure_reports
 
+
 func convert_rtf_to_text(bbcode :String) -> String:
 	_rtf.clear()
 	_rtf.parse_bbcode(bbcode)
 	return _rtf.text
+
 
 static func to_type(type :int) -> String:
 	match type:
@@ -124,8 +132,10 @@ static func to_type(type :int) -> String:
 			return "ABORT"
 	return "UNKNOWN"
 
+
 static func to_time(duration :int) -> String:
 	return "%4.03f" % (duration / 1000.0)
+
 
 #static func to_ISO8601_datetime() -> String:
 	#return "%04d-%02d-%02dT%02d:%02d:%02d" % [date["year"], date["month"], date["day"],  date["hour"], date["minute"], date["second"]]

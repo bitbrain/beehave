@@ -1,4 +1,3 @@
-class_name GdUnitExecutor
 extends Node
 
 signal ExecutionCompleted()

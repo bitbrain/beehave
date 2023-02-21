@@ -3,19 +3,24 @@ extends GdUnitReportSummary
 
 var _time_stamp :int
 
+
 func _init(resource_path :String,name :String):
 	_resource_path = resource_path
 	_name = name
 	_time_stamp = Time.get_unix_time_from_system()
 
+
 func create_record(report_link :String) -> String:
 	return GdUnitHtmlPatterns.build(GdUnitHtmlPatterns.TABLE_RECORD_TESTSUITE, self, report_link)
+
 
 func output_path(report_dir :String) -> String:
 	return "%s/test_suites/%s.%s.html" % [report_dir, path().replace("/", "."), name()]
 
+
 func path_as_link() -> String:
 	return "../path/%s.html" % path().replace("/", ".")
+
 
 func write(report_dir :String) -> String:
 	var template := GdUnitHtmlPatterns.load_template("res://addons/gdUnit4/src/report/template/suite_report.html")
@@ -35,24 +40,31 @@ func write(report_dir :String) -> String:
 	FileAccess.open(report_output_path, FileAccess.WRITE).store_string(template)
 	return report_output_path
 
+
 func set_duration(duration :int) -> void:
 	_duration = duration
+
 
 func time_stamp() -> int:
 	return _time_stamp
 
+
 func duration() -> int:
 	return _duration
+
 
 func set_skipped(skipped :int) -> void:
 	_skipped_count = skipped
 
+
 func set_orphans(orphans :int) -> void:
 	_orphan_count = orphans
+
 
 func set_failed(failed :bool) -> void:
 	if failed:
 		_failure_count += 1
+
 
 func update(test_report :GdUnitTestCaseReport) -> void:
 	for report in _reports:

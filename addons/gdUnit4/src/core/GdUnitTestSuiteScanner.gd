@@ -23,7 +23,7 @@ func scan_testsuite_classes() -> void:
 				_extends_test_suite_classes.append(script_meta["class"])
 
 
-func scan(resource_path :String) -> Array:
+func scan(resource_path :String) -> Array[Node]:
 	scan_testsuite_classes()
 	# if single testsuite requested
 	if FileAccess.file_exists(resource_path):
@@ -37,7 +37,7 @@ func scan(resource_path :String) -> Array:
 	return _scan_test_suites(base_dir, [])
 
 
-func _scan_test_suites(dir :DirAccess, collected_suites :Array) -> Array:
+func _scan_test_suites(dir :DirAccess, collected_suites :Array[Node]) -> Array[Node]:
 	prints("Scanning for test suites in:", dir.get_current_dir())
 	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	var file_name := dir.get_next()

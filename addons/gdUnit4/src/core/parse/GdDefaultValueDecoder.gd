@@ -82,4 +82,7 @@ func _on_decode_Rect2i(value :Variant, regEx :RegEx) -> String:
 
 static func decode(type :int, value :Variant) -> String:
 	var decoder :Callable = instance("GdUnitDefaultValueDecoders", func(): return GdDefaultValueDecoder.new())._decoders.get(type)
+	if decoder == null:
+		push_error("No value decoder registered for type '%d'! Please open a Bug issue at 'https://github.com/MikeSchulze/gdUnit4/issues/new/choose'." % type)
+		return "null"
 	return decoder.call(value)

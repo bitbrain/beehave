@@ -30,8 +30,6 @@ func color(color :Color) -> CmdConsole:
 			printraw("%6d" % [c2])
 		printraw("[38;5;%dm" % c2 )
 	else:
-		if _debug_show_color_codes:
-			printraw("%s" % color.to_html(false))
 		printraw("[38;2;%d;%d;%dm" % [color.r8, color.g8, color.b8] )
 	return self
 
@@ -47,8 +45,14 @@ func scrollArea(from :int, to :int ) -> CmdConsole:
 	printraw("[%d;%dr" % [from ,to])
 	return self
 
-func progressBar(progress :int) -> CmdConsole:
-	#printraw(  "[%-100s][%d]\r" % [bar, progress])
+func progressBar(progress :int, color :Color = Color.POWDER_BLUE) -> CmdConsole:
+	if progress < 0:
+		progress = 0
+	if progress > 100:
+		progress = 100
+	color(color)
+	printraw("[%-50s] %-3d%%\r" % ["".lpad(progress/2, "■").rpad(50, "-"), progress])
+	end_color()
 	return self
 
 func printl(value :String) -> CmdConsole:

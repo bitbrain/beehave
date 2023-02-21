@@ -8,6 +8,9 @@ static func build(caller :Object, to_spy, push_errors :bool = true, debug_write 
 	
 	# if resource path load it before
 	if GdObjects.is_scene_resource_path(to_spy):
+		if not FileAccess.file_exists(to_spy):
+			push_error("Can't build spy on scene '%s'! The given resource not exists!" % to_spy)
+			return null
 		to_spy = load(to_spy)
 	# spy checked PackedScene
 	if GdObjects.is_scene(to_spy):

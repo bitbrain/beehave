@@ -3,19 +3,22 @@ extends SceneTree
 
 #warning-ignore-all:return_value_discarded
 class CLIRunner extends Node:
-
+	
 	enum {
+		READY,
 		INIT,
 		RUN,
 		STOP,
 		EXIT
 	}
+	
 	const DEFAULT_REPORT_COUNT = 20
 	const RETURN_SUCCESS  =   0
 	const RETURN_ERROR    = 100
+	const RETURN_ERROR_HEADLESS_NOT_SUPPORTED  = 103
 	const RETURN_WARNING  = 101
 
-	var _state = INIT
+	var _state = READY
 	var _test_suites_to_process :Array
 	var _executor
 	var _report :GdUnitHtmlReport
@@ -41,7 +44,8 @@ class CLIRunner extends Node:
 			CmdOption.new("--info", "", "Shows the GdUnit version info"),
 			CmdOption.new("--selftest", "", "Runs the GdUnit self test"),
 		])
-
+	
+	
 	func _ready():
 		_state = INIT
 		_report_dir = GdUnitTools.current_dir() + "reports"
@@ -56,11 +60,12 @@ class CLIRunner extends Node:
 		if err != OK:
 			prints("gdUnitSignals failed")
 			push_error("Error checked startup, can't connect executor for 'send_event'")
-			get_tree().quit(RETURN_ERROR)
+			quit(RETURN_ERROR)
 		add_child(_executor)
 		_rtf = RichTextLabel.new()
 		add_child(_rtf)
-
+	
+	
 	func _process(_delta):
 		match _state:
 			INIT:
@@ -82,13 +87,24 @@ class CLIRunner extends Node:
 			STOP:
 				_state = EXIT
 				_on_gdunit_event(GdUnitStop.new())
-				GdUnitSingleton.dispose()
-				get_tree().quit(report_exit_code(_report))
-
+				quit(report_exit_code(_report))
+	
+	
+	func quit(code :int) -> void:
+		if is_instance_valid(_executor):
+			_executor.free()
+		if is_instance_valid(_rtf):
+			_rtf.free()
+		GdUnitSignals.dispose()
+		GdUnitSingleton.dispose()
+		get_tree().quit(code)
+	
+	
 	func set_report_dir(path :String) -> void:
 		_report_dir = ProjectSettings.globalize_path(GdUnitTools.make_qualified_path(path))
 		_console.prints_color("Set write reports to %s" % _report_dir, Color.DEEP_SKY_BLUE)
-
+	
+	
 	func set_report_count(count :String) -> void:
 		var report_count := count.to_int()
 		if report_count < 1:
@@ -97,23 +113,27 @@ class CLIRunner extends Node:
 		else:
 			_console.prints_color("Set report history count to %s" % count, Color.DEEP_SKY_BLUE)
 			_report_max = report_count
-
+	
+	
 	func disable_fail_fast() -> void:
 		_console.prints_color("Disabled fail fast!", Color.DEEP_SKY_BLUE)
 		_executor.fail_fast(false)
-
+	
+	
 	func run_self_test() -> void:
 		_console.prints_color("Run GdUnit4 self tests.", Color.DEEP_SKY_BLUE)
 		disable_fail_fast()
 		_runner_config.self_test()
-
+	
+	
 	func show_version() -> void:
 		_console.prints_color("Godot %s" % Engine.get_version_info().get("string"), Color.DARK_SALMON)
 		var config = ConfigFile.new()
 		config.load('addons/gdUnit4/plugin.cfg')
 		_console.prints_color("GdUnit4 %s" % config.get_value('plugin', 'version'), Color.DARK_SALMON)
-		get_tree().quit(RETURN_SUCCESS)
-
+		quit(RETURN_SUCCESS)
+	
+	
 	func show_options(show_advanced :bool = false) -> void:
 		_console.prints_color(" Usage:", Color.DARK_SALMON)
 		_console.prints_color("	runtest -a <directory|path of testsuite>", Color.DARK_SALMON)
@@ -125,30 +145,43 @@ class CLIRunner extends Node:
 			_console.prints_color("-- Advanced options --------------------------------------------------------------------------", Color.DARK_SALMON).new_line()
 			for option in _cmd_options.advanced_options():
 				descripe_option(option)
-
+	
+	
 	func descripe_option(cmd_option :CmdOption) -> void:
 		_console.print_color("  %-40s" % str(cmd_option.commands()), Color.CORNFLOWER_BLUE)
 		_console.prints_color(cmd_option.description(), Color.LIGHT_GREEN)
 		if not cmd_option.help().is_empty():
 			_console.prints_color("%-4s %s" % ["", cmd_option.help()], Color.DARK_TURQUOISE)
 		_console.new_line()
-
+	
+	
 	func load_test_config(path :String = "GdUnitRunner.cfg") -> void:
 		_console.print_color("Loading test configuration %s\n" % path, Color.CORNFLOWER_BLUE)
 		_runner_config.load(path)
-
+	
+	
 	func show_help() -> void:
 		show_options()
-		get_tree().quit(RETURN_SUCCESS)
-
+		quit(RETURN_SUCCESS)
+	
+	
 	func show_advanced_help() -> void:
 		show_options(true)
-		get_tree().quit(RETURN_SUCCESS)
-
+		quit(RETURN_SUCCESS)
+	
+	
 	func gdUnitInit() -> void:
 		_console.prints_color("----------------------------------------------------------------------------------------------", Color.DARK_SALMON)
 		_console.prints_color(" GdUnit4 Comandline Tool", Color.DARK_SALMON)
 		_console.new_line()
+		
+		if DisplayServer.get_name() == "headless":
+			_console.prints_error("Headless mode is not supported!").new_line()
+			_console.print_color("Tests that use UI interaction do not work in headless mode because 'InputEvents' are not transported by the Godot engine and thus have no effect!", Color.CORNFLOWER_BLUE)\
+			.new_line().new_line()
+			_console.prints_error("Abnormal exit with %d" % RETURN_ERROR_HEADLESS_NOT_SUPPORTED)
+			quit(RETURN_ERROR_HEADLESS_NOT_SUPPORTED)
+			return
 		
 		var cmd_parser := CmdArgumentParser.new(_cmd_options, "GdUnitCmdTool.gd")
 		var result := cmd_parser.parse(OS.get_cmdline_args())
@@ -157,7 +190,7 @@ class CLIRunner extends Node:
 			_console.prints_error(result.error_message())
 			_console.prints_error("Abnormal exit with %d" % RETURN_ERROR)
 			_state = STOP
-			get_tree().quit(RETURN_ERROR)
+			quit(RETURN_ERROR)
 			return
 		
 		if result.is_empty():
@@ -182,33 +215,33 @@ class CLIRunner extends Node:
 		if result.is_error():
 			_console.prints_error(result.error_message())
 			_state = STOP
-			get_tree().quit(RETURN_ERROR)
+			quit(RETURN_ERROR)
 		
 		_test_suites_to_process = load_testsuites(_runner_config)
 		if _test_suites_to_process.is_empty():
 			_console.prints_warning("No test suites found, abort test run!")
 			_console.prints_color("Exit code: %d" % RETURN_SUCCESS,  Color.DARK_SALMON)
 			_state = STOP
-			get_tree().quit(RETURN_SUCCESS)
+			quit(RETURN_SUCCESS)
 		
-		# wait comamnd handler is finish, e.g. exit program checked show help
-		await get_tree().process_frame
 		var total_test_count = _collect_test_case_count(_test_suites_to_process)
 		_on_gdunit_event(GdUnitInit.new(_test_suites_to_process.size(), total_test_count))
-
-	func load_testsuites(config :GdUnitRunnerConfig) -> Array:
-		var test_suites_to_process = Array()
+	
+	
+	func load_testsuites(config :GdUnitRunnerConfig) -> Array[Node]:
+		var test_suites_to_process :Array[Node] = []
 		var to_execute := config.to_execute()
 		# scan for the requested test suites
 		var _scanner := GdUnitTestSuiteScanner.new()
 		for resource_path in to_execute.keys():
-			var selected_tests :Array = to_execute.get(resource_path)
-			var scaned_suites = _scanner.scan(resource_path)
+			var selected_tests :PackedStringArray = to_execute.get(resource_path)
+			var scaned_suites := _scanner.scan(resource_path)
 			skip_test_case(scaned_suites, selected_tests)
-			test_suites_to_process += scaned_suites
+			test_suites_to_process.append_array(scaned_suites)
 		skip_suites(test_suites_to_process, config)
 		return test_suites_to_process
-
+	
+	
 	func skip_test_case(test_suites :Array, test_case_names :Array) -> void:
 		if test_case_names.is_empty():
 			return
@@ -217,12 +250,14 @@ class CLIRunner extends Node:
 				if not test_case_names.has(test_case.get_name()):
 					test_suite.remove_child(test_case)
 					test_case.free()
-
+	
+	
 	func skip_suites(test_suites :Array, config :GdUnitRunnerConfig) -> void:
 		var skipped := config.skipped()
 		for test_suite in test_suites:
 			skip_suite(test_suite, skipped)
-
+	
+	
 	func skip_suite(test_suite :Node, skipped :Dictionary) -> void:
 		var skipped_suites := skipped.keys()
 		if skipped_suites.is_empty():
@@ -249,16 +284,19 @@ class CLIRunner extends Node:
 							_console.prints_warning("Skip test case %s:%s" % [suite_to_skip, test_to_skip])
 						else:
 							_console.prints_error("Can't skip test '%s' checked test suite '%s', no test with given name exists!" % [test_to_skip, suite_to_skip])
-
+	
+	
 	func _collect_test_case_count(testSuites :Array) -> int:
 		var total :int = 0
 		for test_suite in testSuites:
 			total += (test_suite as Node).get_child_count()
 		return total
-
+	
+	
 	func PublishEvent(data) -> void:
 		_on_gdunit_event(GdUnitEvent.new().deserialize(data.AsDictionary()))
-
+	
+	
 	func _on_gdunit_event(event :GdUnitEvent):
 		match event.type():
 			GdUnitEvent.INIT:
@@ -291,7 +329,8 @@ class CLIRunner extends Node:
 					event.elapsed_time())
 				_report.update_testcase_report(event.resource_path(), test_report)
 		print_status(event)
-
+	
+	
 	func report_exit_code(report :GdUnitHtmlReport) -> int:
 		if report.error_count() + report.failure_count() > 0:
 			_console.prints_color("Exit code: %d" % RETURN_ERROR, Color.FIREBRICK)
@@ -301,7 +340,8 @@ class CLIRunner extends Node:
 			return RETURN_WARNING
 		_console.prints_color("Exit code: %d" % RETURN_SUCCESS,  Color.DARK_SALMON)
 		return RETURN_SUCCESS
-
+	
+	
 	func print_status(event :GdUnitEvent) -> void:
 		match event.type():
 			GdUnitEvent.TESTSUITE_BEFORE:
@@ -316,17 +356,19 @@ class CLIRunner extends Node:
 			GdUnitEvent.TESTSUITE_AFTER:
 				_print_status(event)
 				_console.prints_color("	| %d total | %d error | %d failed | %d skipped | %d orphans |\n" % [_report.test_count(), _report.error_count(), _report.failure_count(), _report.skipped_count(), _report.orphan_count()], Color.ANTIQUE_WHITE)
-
+	
+	
 	func _print_failure_report(reports :Array) -> void:
 		for report in reports:
 			_rtf.clear()
-			_rtf.add_text(report._to_string())
+			_rtf.parse_bbcode(report._to_string())
 			if(report.is_failure() or report.is_error() or report.is_warning()):
 				_console.prints_color("	Report:", Color.DARK_TURQUOISE, CmdConsole.BOLD|CmdConsole.UNDERLINE)
-				for line in _rtf.text.split("\n"):
+				for line in _rtf.get_parsed_text().split("\n"):
 					_console.prints_color("		%s" % line, Color.DARK_TURQUOISE)
 		_console.new_line()
-
+	
+	
 	func _print_status(event :GdUnitEvent) -> void:
 		if event.is_skipped():
 			_console.print_color("SKIPPED", Color.GOLDENROD, CmdConsole.BOLD|CmdConsole.ITALIC)
@@ -338,6 +380,16 @@ class CLIRunner extends Node:
 			_console.print_color("PASSED", Color.FOREST_GREEN, CmdConsole.BOLD)
 		_console.prints_color(" %s" % LocalTime.elapsed(event.elapsed_time()), Color.CORNFLOWER_BLUE)
 
+
+var _cli_runner :CLIRunner
+
+
 func _initialize():
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
-	root.add_child(CLIRunner.new())
+	_cli_runner = CLIRunner.new()
+	root.add_child(_cli_runner)
+
+
+func _finalize():
+	prints("Finallize ..")
+	_cli_runner.free()

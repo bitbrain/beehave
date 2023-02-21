@@ -48,15 +48,6 @@ func skip(skipped :bool) -> void:
 func is_failure(_expected_failure :String = NO_ARG) -> bool:
 	return get_meta(GdUnitAssertImpl.GD_TEST_FAILURE) if has_meta(GdUnitAssertImpl.GD_TEST_FAILURE) else false
 
-# Utility to check if a test has failed in a particular line and if there is an error message
-func assert_failed_at(line_number :int, expected_failure :String) -> bool:
-	var is_failed = is_failure()
-	var last_failure = GdAssertReports.current_failure()
-	var last_failure_line = GdAssertReports.get_last_error_line_number()
-	assert_str(last_failure).is_equal(expected_failure)
-	assert_int(last_failure_line).is_equal(line_number)
-	return is_failed
-
 func is_skipped() -> bool:
 	return get_meta("gd_skipped") if has_meta("gd_skipped") else false
 
@@ -114,13 +105,20 @@ func resource_as_var(resource_path :String):
 func clear_push_errors() -> void:
 	GdUnitTools.clear_push_errors()
 
+
 # Waits for given signal is emited by the <source> until a specified timeout to fail
 # source: the object from which the signal is emitted
 # signal_name: signal name
 # args: the expected signal arguments as an array
 # timeout: the timeout in ms, default is set to 2000ms
 func await_signal_on(source :Object, signal_name :String, args :Array = [], timeout :int = 2000) -> Variant:
+	# fail fast if the given source instance invalid
+	if not is_instance_valid(source):
+		GdUnitAssertImpl.new(self, signal_name)\
+			.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), GdUnitAssertImpl._get_line_number())
+		return await GdUnitAwaiter.await_idle_frame()
 	return await GdUnitAwaiter.await_signal_on(weakref(self), source, signal_name, args, timeout)
+
 
 # Waits until the next idle frame
 func await_idle_frame():
@@ -377,6 +375,16 @@ func assert_signal(instance :Object, expect_result :int = GdUnitAssert.EXPECT_SU
 # TODO see https://github.com/MikeSchulze/gdUnit4/issues/4
 func assert_fail(assertion :GdUnitAssert) -> GdUnitAssert:
 	return assertion
+
+# Utility to check if a test has failed in a particular line and if there is an error message
+func assert_failed_at(line_number :int, expected_failure :String) -> bool:
+	var is_failed = is_failure()
+	var last_failure = GdAssertReports.current_failure()
+	var last_failure_line = GdAssertReports.get_last_error_line_number()
+	assert_str(last_failure).is_equal(expected_failure)
+	assert_int(last_failure_line).is_equal(line_number)
+	return is_failed
+
 
 func assert_not_yet_implemented():
 	GdUnitAssertImpl.new(self, null).test_fail()
