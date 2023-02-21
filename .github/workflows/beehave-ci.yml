@@ -78,14 +78,14 @@ jobs:
           godot-bin: ${{ matrix.godot-executable_path }}
           test-includes: "res://test/"
 
-      - name: "📚 Publish Unit Test Reports"
-        if: ${{ !cancelled() }}
-        uses: ./.github/actions/publish-test-report
-        with:
-          report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
+      #- name: "📚 Publish Unit Test Reports"
+      #  if: ${{ !cancelled() }}
+      #  uses: ./.github/actions/publish-test-report
+      #  with:
+      #    report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
 
-      - name: "🎉 Upload Unit Test Reports"
-        if: ${{ !cancelled() }}
-        uses: ./.github/actions/upload-test-report
-        with:
-          report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
+      #- name: "🎉 Upload Unit Test Reports"
+      #  if: ${{ !cancelled() }}
+      #  uses: ./.github/actions/upload-test-report
+      #  with:
+      #    report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
