@@ -33,7 +33,7 @@ func test_erase_existing_key() -> void:
 
 func test_erase_non_existing_key() -> void:
 	runner = scene_runner(blackboard_erase)
-	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
+	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
 
 
 func test_invalid_key_expression() -> void:
