@@ -1,8 +1,8 @@
-# Behavior tree AI for Godot Engine!
+![logo](assets/logo.svg)
 
-![](https://img.shields.io/badge/Godot%20Compatible-4.0%2B-%234385B5) ![](https://img.shields.io/badge/Godot%20Compatible-3.0%2B-%234385B5) [![beehave-ci](https://github.com/bitbrain/beehave/actions/workflows/beehave-ci.yml/badge.svg)](https://github.com/bitbrain/beehave/actions/workflows/beehave-ci.yml) [![](https://img.shields.io/discord/785246324793540608.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/CKBuE5djXe) [![](https://img.shields.io/badge/%20%F0%9F%90%9D%20swag!%20-shop.bitbra.in-blueviolet)](https://shop.bitbra.in)
+[![beehave-ci](https://github.com/bitbrain/beehave/actions/workflows/beehave-ci.yml/badge.svg)](https://github.com/bitbrain/beehave/actions/workflows/beehave-ci.yml) [![](https://img.shields.io/discord/785246324793540608.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/CKBuE5djXe) [![](https://img.shields.io/badge/%20%F0%9F%90%9D%20swag!%20-shop.bitbra.in-blueviolet)](https://shop.bitbra.in)
 
-Beehave is a powerful addon for Godot Engine that enables you to create robust AI systems using behavior trees. With Beehave, you can easily design complex NPC behaviors, build challenging boss battles, and create other advanced setups with ease.
+**Beehave is a powerful addon for Godot Engine that enables you to create robust AI systems using behavior trees.** With Beehave, you can easily design complex NPC behaviors, build challenging boss battles, and create other advanced setups with ease.
 
 Using behavior trees, Beehave makes it simple to create highly adaptive AI that responds to changes in the game world and overcomes unexpected obstacles. Whether you're a beginner or an experienced developer, Beehave is the perfect tool to take your game AI to the next level.
 
@@ -12,13 +12,23 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 **🤖 Node based - build behavior trees within your scene tree**
 
+![example](assets/beehave-demo-tree.png)
+
 **🐛 Debug view - a dedicated debug view to analyze your behavior at runtime**
+
+![debug-view](assets/debug-tree.gif)
 
 **🚗 Performance - built-in monitors to track performance of your behavior trees**
 
-**🍯 Active community - used by hundreds of game developers**
+![performance-monitor](assets/performance-monitor.gif)
 
 **🧪 Tested - any functionality of this addon is covered by test automation**
+
+TODO insert test run gif
+
+**🍯 Active community - used by hundreds of game developers**
+
+TODO insert discord link
 
 Learn more about the features such as node types and internals [here](/learn.md).
 
