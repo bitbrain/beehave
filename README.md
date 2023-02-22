@@ -18,7 +18,11 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 **🐛 Debug view - a dedicated debug view to analyze your behavior at runtime**
 
+![debug-view](docs/assets/debug-tree.gif)
+
 **🚗 Performance - built-in monitors to track performance of your behavior trees**
+
+![performance-monitor](docs/assets/performance-monitor.gif)
 
 **🍯 Active community - used by hundreds of game developers**
 
