@@ -38,6 +38,7 @@ func _ready() -> void:
 	button.icon = get_theme_icon(&"ExternalLink", &"EditorIcons")
 	button.pressed.connect(func(): make_floating.emit())
 	button.tooltip_text = "Make floating"
+	button.focus_mode = Control.FOCUS_NONE
 	graph.get_zoom_hbox().add_child(button)
 
 	var toggle_button := Button.new()
@@ -45,6 +46,7 @@ func _ready() -> void:
 	toggle_button.icon = get_theme_icon(&"Back", &"EditorIcons")
 	toggle_button.pressed.connect(_on_toggle_button_pressed.bind(toggle_button))
 	toggle_button.tooltip_text = "Toggle Panel"
+	toggle_button.focus_mode = Control.FOCUS_NONE
 	graph.get_zoom_hbox().add_child(toggle_button)
 	graph.get_zoom_hbox().move_child(toggle_button, 0)
 

@@ -25,9 +25,9 @@ static func build(caller :Object, clazz, mock_mode :String, debug_write := false
 		return null
 	# mocking a scene?
 	if GdObjects.is_scene(clazz):
-		return mock_on_scene(caller, clazz as PackedScene, memory_pool, debug_write)
+		return mock_on_scene(clazz as PackedScene, memory_pool, debug_write)
 	elif typeof(clazz) == TYPE_STRING and clazz.ends_with(".tscn"):
-		return mock_on_scene(caller, load(clazz), memory_pool, debug_write)
+		return mock_on_scene(load(clazz), memory_pool, debug_write)
 	# mocking a script
 	var instance := create_instance(clazz)
 	var mock := mock_on_script(instance, clazz, [ "get_script"], debug_write)
@@ -39,7 +39,6 @@ static func build(caller :Object, clazz, mock_mode :String, debug_write := false
 	mock_instance.__set_script(mock)
 	mock_instance.__set_singleton()
 	mock_instance.__set_mode(mock_mode)
-	mock_instance.__set_caller(caller)
 	return GdUnitMemoryPool.register_auto_free(mock_instance, memory_pool)
 
 
@@ -61,7 +60,7 @@ static func create_instance(clazz) -> Object:
 	return null
 
 
-static func mock_on_scene(caller :Object, scene :PackedScene, memory_pool :int, debug_write :bool) -> Object:
+static func mock_on_scene(scene :PackedScene, memory_pool :int, debug_write :bool) -> Object:
 	var push_errors := is_push_errors()
 	if not scene.can_instantiate():
 		if push_errors:
@@ -82,7 +81,6 @@ static func mock_on_scene(caller :Object, scene :PackedScene, memory_pool :int, 
 	scene_instance.set_script(mock)
 	scene_instance.__set_singleton()
 	scene_instance.__set_mode(GdUnitMock.CALL_REAL_FUNC)
-	scene_instance.__set_caller(caller)
 	return GdUnitMemoryPool.register_auto_free(scene_instance, memory_pool)
 
 

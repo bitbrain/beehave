@@ -2,6 +2,7 @@ class_name GdUnitFuncAssertImpl
 extends GdUnitFuncAssert
 
 signal value_provided(value)
+
 const DEFAULT_TIMEOUT := 2000
 
 var _current_value_provider :ValueProvider
@@ -12,17 +13,13 @@ var _expect_fail := false
 var _is_failed := false
 var _timeout := DEFAULT_TIMEOUT
 var _expect_result :int
-var _report_consumer : GdUnitReportConsumer
-var _caller : WeakRef
 var _interrupted := false
 
-func _init(caller :WeakRef, instance :Object, func_name :String, args := Array(), expect_result := EXPECT_SUCCESS):
+
+func _init(instance :Object, func_name :String, args := Array(), expect_result := EXPECT_SUCCESS):
 	_line_number = GdUnitAssertImpl._get_line_number()
 	_expect_result = expect_result
-	_caller = caller
 	GdAssertReports.reset_last_error_line_number()
-	# set report consumer to be use to report the final result
-	_report_consumer = caller.get_ref().get_meta(GdUnitReportConsumer.META_PARAM)
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
@@ -32,17 +29,20 @@ func _init(caller :WeakRef, instance :Object, func_name :String, args := Array()
 	else:
 		_current_value_provider = CallBackValueProvider.new(instance, func_name, args)
 
+
 func report_success() -> GdUnitAssert:
 	return GdAssertReports.report_success(self)
+
 
 func report_error(error_message :String) -> GdUnitAssert:
 	if _custom_failure_message == "":
 		return GdAssertReports.report_error(error_message, self, _line_number)
 	return GdAssertReports.report_error(_custom_failure_message, self, _line_number)
 
+
 func send_report(report :GdUnitReport)-> void:
-	if is_instance_valid(_report_consumer):
-		_report_consumer.consume(report)
+	GdUnitSignals.instance().gdunit_report.emit(report)
+
 
 # -------- Base Assert wrapping ------------------------------------------------
 func has_failure_message(expected: String) -> GdUnitFuncAssert:
@@ -55,6 +55,7 @@ func has_failure_message(expected: String) -> GdUnitFuncAssert:
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self
 
+
 func starts_with_failure_message(expected: String) -> GdUnitFuncAssert:
 	var current_error := GdUnitAssertImpl._normalize_bbcode(_current_error_message)
 	if not current_error.begins_with(expected):
@@ -65,9 +66,11 @@ func starts_with_failure_message(expected: String) -> GdUnitFuncAssert:
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self
 
+
 func override_failure_message(message :String) -> GdUnitAssert:
 	_custom_failure_message = message
 	return self
+
 
 func wait_until(timeout := 2000) -> GdUnitAssert:
 	if timeout <= 0:
@@ -77,66 +80,57 @@ func wait_until(timeout := 2000) -> GdUnitAssert:
 		_timeout = timeout
 	return self
 
+
 func is_null() -> GdUnitAssert:
-	return await _validate_callback("is_null")
+	return await _validate_callback(func is_null(c, e): return c == null)
+
 
 func is_not_null() -> GdUnitAssert:
-	return await _validate_callback("is_not_null")
+	return await _validate_callback(func is_not_null(c, e): return c != null)
+
 
 func is_false() -> GdUnitAssert:
-	return await _validate_callback("is_false")
+	return await _validate_callback(func is_false(c, e): return c == false)
+
 
 func is_true() -> GdUnitAssert:
-	return await _validate_callback("is_true")
+	return await _validate_callback(func is_true(c, e): return c == true)
+
 
 func is_equal(expected) -> GdUnitAssert:
-	return await _validate_callback("is_equal", expected)
+	return await _validate_callback(func is_equal(c, e): return GdObjects.equals(c, e), expected)
+
 
 func is_not_equal(expected) -> GdUnitAssert:
-	return await _validate_callback("is_not_equal", expected)
+	return await _validate_callback(func is_not_equal(c, e): return not GdObjects.equals(c, e), expected)
 
-# -------- assert implementations
-func _is_null(current, expected) -> bool:
-	return current == null
 
-func _is_not_null(current, expected) -> bool:
-	return current != null
-
-func _is_equal(current, expected) -> bool:
-	return GdObjects.equals(current, expected)
-
-func _is_not_equal(current, expected) -> bool:
-	return not GdObjects.equals(current, expected)
-
-func _is_true(current, expected) -> bool:
-	return current == true
-
-func _is_false(current, expected) -> bool:
-	return current == false
-
-func _validate_callback(func_name :String, expected = null) -> GdUnitFuncAssert:
+func _validate_callback(predicate :Callable, expected = null) -> GdUnitFuncAssert:
 	# if initial failed?
 	if _is_failed:
 		#await Engine.get_main_loop().process_frame
 		return self
-	var caller = _caller.get_ref()
-	var assert_cb := Callable(self, "_" + func_name)
 	var time_scale = Engine.get_time_scale()
-	var timeout = Timer.new()
-	caller.add_child(timeout)
-	timeout.set_one_shot(true)
-	timeout.connect("timeout", Callable(self, "_on_timeout"))
-	timeout.start((_timeout/1000.0)*time_scale)
-	
+	var timer := Timer.new()
+	timer.set_name("gdunit_interrupt_timer_%d" % timer.get_instance_id())
+	Engine.get_main_loop().root.add_child(timer)
+	timer.add_to_group("GdUnitTimers")
+	timer.timeout.connect(func do_interrupt():
+		_interrupted = true
+		value_provided.emit(null)
+		, CONNECT_REFERENCE_COUNTED)
+	timer.set_one_shot(true)
+	timer.start((_timeout/1000.0)*time_scale)
 	var sleep := Timer.new()
-	caller.add_child(sleep)
+	sleep.set_name("gdunit_sleep_timer_%d" % sleep.get_instance_id() )
+	Engine.get_main_loop().root.add_child(sleep)
 	
 	while true:
 		next_current_value()
 		var current = await value_provided
 		if _interrupted:
 			break
-		var is_success = assert_cb.call(current, expected)
+		var is_success = predicate.call(current, expected)
 		if _expect_result != EXPECT_FAIL and is_success:
 			break
 		sleep.start(0.05)
@@ -144,32 +138,26 @@ func _validate_callback(func_name :String, expected = null) -> GdUnitFuncAssert:
 	
 	sleep.stop()
 	sleep.queue_free()
-	timeout.stop()
-	timeout.disconnect("timeout", Callable(self, "_on_timeout"))
-	timeout.free()
-	_current_value_provider.dispose()
+	
 	await Engine.get_main_loop().process_frame
-	#if caller deleted? the test is intrrupted by a timeout
-	if not is_instance_valid(caller):
-		dispose()
-		return
+	dispose()
 	if _interrupted:
-		report_error(GdAssertMessages.error_interrupted(func_name, expected, LocalTime.elapsed(_timeout)))
+		# https://github.com/godotengine/godot/issues/73052
+		#var predicate_name = predicate.get_method()
+		var predicate_name = str(predicate).split('(')[0]
+		report_error(GdAssertMessages.error_interrupted(predicate_name, expected, LocalTime.elapsed(_timeout)))
 	else:
 		report_success()
-	dispose()
 	return self
+
 
 func next_current_value():
 	var current = await _current_value_provider.get_value()
 	call_deferred("emit_signal", "value_provided", current)
 
-func _on_timeout():
-	_interrupted = true
-	call_deferred("emit_signal", "value_provided", null)
 
 # it is important to free all references/connections to prevent orphan nodes
 func dispose():
 	GdUnitTools.release_connections(self)
-	_caller = null
+	_current_value_provider.dispose()
 	_current_value_provider = null

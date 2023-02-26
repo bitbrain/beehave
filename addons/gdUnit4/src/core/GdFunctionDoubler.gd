@@ -42,24 +42,51 @@ const DEFAULT_TYPED_RETURN_VALUES := {
 	TYPE_PACKED_COLOR_ARRAY: "PackedColorArray()",
 }
 
+# @GlobalScript enums
+# needs to manually map because of https://github.com/godotengine/godot/issues/73835
+const DEFAULT_ENUM_RETURN_VALUES = {
+	"Side" : "SIDE_LEFT",
+	"Corner" : "CORNER_TOP_LEFT",
+	"Orientation" : "HORIZONTAL",
+	"ClockDirection" : "CLOCKWISE",
+	"HorizontalAlignment" : "HORIZONTAL_ALIGNMENT_LEFT",
+	"VerticalAlignment" : "VERTICAL_ALIGNMENT_TOP",
+	"InlineAlignment" : "INLINE_ALIGNMENT_TOP_TO",
+	"EulerOrder" : "EULER_ORDER_XYZ",
+	"Key" : "KEY_NONE",
+	"KeyModifierMask" : "KEY_CODE_MASK",
+	"MouseButton" : "MOUSE_BUTTON_NONE",
+	"MouseButtonMask" : "MOUSE_BUTTON_MASK_LEFT",
+	"JoyButton" : "JOY_BUTTON_INVALID",
+	"JoyAxis" : "JOY_AXIS_INVALID",
+	"MIDIMessage" : "MIDI_MESSAGE_NONE",
+	"Error" : "OK",
+	"PropertyHint" : "PROPERTY_HINT_NONE",
+	"Variant.Type" : "TYPE_NIL",
+}
+
 var _push_errors :String
 
-static func default_return_value(type :Variant) -> String:
-	if type is StringName:
-		return type
+static func default_return_value(func_descriptor :GdFunctionDescriptor) -> String:
+	var return_type := func_descriptor.return_type()
+	if return_type == GdObjects.TYPE_ENUM:
+		var enum_path := func_descriptor._return_class.split(".")
+		if enum_path.size() == 2:
+			var keys := ClassDB.class_get_enum_constants(enum_path[0], enum_path[1])
+			return "%s.%s" % [enum_path[0], keys[0]]
+		# we need fallback for @GlobalScript enums,
+		return DEFAULT_ENUM_RETURN_VALUES.get(func_descriptor._return_class, "0")
+	return DEFAULT_TYPED_RETURN_VALUES.get(return_type, "null")
+
+
+func _init(push_errors :bool = false):
+	_push_errors = "true" if push_errors else "false"
 	if DEFAULT_TYPED_RETURN_VALUES.size() != TYPE_MAX:
 		push_error("missing default definitions! Expexting %d bud is %d" % [DEFAULT_TYPED_RETURN_VALUES.size(), TYPE_MAX])
 		for type_key in range(0, DEFAULT_TYPED_RETURN_VALUES.size()):
 			if not DEFAULT_TYPED_RETURN_VALUES.has(type_key):
 				prints("missing default definition for type", type_key)
 				assert(DEFAULT_TYPED_RETURN_VALUES.has(type_key), "Missing Type default definition!")
-	if DEFAULT_TYPED_RETURN_VALUES.has(type):
-		return DEFAULT_TYPED_RETURN_VALUES.get(type)
-	return "null"
-
-
-func _init(push_errors :bool = false):
-	_push_errors = "true" if push_errors else "false"
 
 
 func get_template(return_type :Variant, is_vararg :bool) -> String:
@@ -75,7 +102,7 @@ func double(func_descriptor :GdFunctionDescriptor) -> PackedStringArray:
 	var func_name := func_descriptor.name()
 	var args := func_descriptor.args()
 	var varargs := func_descriptor.varargs()
-	var default_return_value := default_return_value(func_descriptor.return_type())
+	var default_return_value := default_return_value(func_descriptor)
 	var arg_names := extract_arg_names(args)
 	var vararg_names := extract_arg_names(varargs)
 	
@@ -127,7 +154,7 @@ static func get_default(arg :GdFunctionArgument) -> String:
 	if arg.has_default():
 		return arg.value_as_string()
 	else:
-		return default_return_value(arg.type())
+		return DEFAULT_TYPED_RETURN_VALUES.get(arg.type(), "null")
 
 
 static func await_is_coroutine(is_coroutine :bool) -> String:

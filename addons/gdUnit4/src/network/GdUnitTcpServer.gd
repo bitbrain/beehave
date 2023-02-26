@@ -81,8 +81,8 @@ class TcpConnection extends Node:
 		# Reset the buffer if a completely terminated packet was received
 			_readBuffer = ""
 		# remove empty packages
-		for index in range(json_array.size()-1, -1, -1):
-			if json_array[index].is_empty():
+		for index in json_array.size():
+			if index < json_array.size() and json_array[index].is_empty():
 				json_array.remove_at(index)
 		return json_array
 	

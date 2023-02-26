@@ -3,6 +3,9 @@ extends GraphEdit
 
 const BeehaveGraphNode := preload("graph_node.gd")
 
+const HORIZONTAL_LAYOUT_ICON := preload("icons/horizontal_layout.svg")
+const VERTICAL_LAYOUT_ICON := preload("icons/vertical_layout.svg")
+
 const PROGRESS_SHIFT: int = 50
 const INACTIVE_COLOR: Color = Color("#898989aa")
 const ACTIVE_COLOR: Color = Color("#ffcc00c8")
@@ -10,6 +13,7 @@ const SUCCESS_COLOR: Color = Color("#009944c8")
 
 
 var updating_graph: bool = false
+var arraging_nodes: bool = false
 var beehave_tree: Dictionary:
 	set(value):
 		if beehave_tree == value:
@@ -18,14 +22,33 @@ var beehave_tree: Dictionary:
 		active_nodes.clear()
 		_update_graph()
 
+var horizontal_layout: bool = false:
+	set(value):
+		if updating_graph or arraging_nodes:
+			return
+		if horizontal_layout == value:
+			return
+		horizontal_layout = value
+		_update_layout_button()
+		_update_graph()
+
+
 var active_nodes: Array[String]
 var progress: int = 0
+var layout_button: Button
 
 
 func _ready() -> void:
 	custom_minimum_size = Vector2(100, 300)
 	arrange_nodes_button_hidden = true
 	minimap_enabled = false
+
+	layout_button = Button.new()
+	layout_button.flat = true
+	layout_button.focus_mode = Control.FOCUS_NONE
+	layout_button.pressed.connect(func(): horizontal_layout = not horizontal_layout)
+	get_zoom_hbox().add_child(layout_button)
+	_update_layout_button()
 
 
 func _update_graph() -> void:
@@ -51,19 +74,18 @@ func _update_graph() -> void:
 func _add_nodes(node: Dictionary) -> void:
 	if node.is_empty():
 		return
-	var gnode := BeehaveGraphNode.new()
+	var gnode := BeehaveGraphNode.new(horizontal_layout)
 	add_child(gnode)
 	gnode.title_text = node.name
 	gnode.name = node.id
 	gnode.icon = _get_icon(node.type.back())
 
 	if node.type.has(&"BeehaveTree"):
-		gnode.set_output(true, 0, Color.WHITE)
+		gnode.set_slots(false, true)
 	elif node.type.has(&"Leaf"):
-		gnode.set_input(true, 0, Color.WHITE)
+		gnode.set_slots(true, false)
 	elif node.type.has(&"Composite") or node.type.has(&"Decorator"):
-		gnode.set_input(true, 0, Color.WHITE)
-		gnode.set_output(true, 0, Color.WHITE)
+		gnode.set_slots(true, true)
 
 	for child in node.get("children", []):
 		_add_nodes(child)
@@ -76,9 +98,16 @@ func _connect_nodes(node: Dictionary) -> void:
 
 
 func _arrange_nodes(node: Dictionary) -> void:
-	var tree_node := _create_tree_nodes(beehave_tree)
-	tree_node.update_positions()
+	if arraging_nodes:
+		return
+
+	arraging_nodes = true
+
+	var tree_node := _create_tree_nodes(node)
+	tree_node.update_positions(horizontal_layout)
 	_place_nodes(tree_node)
+
+	arraging_nodes = false
 
 
 func _create_tree_nodes(node: Dictionary, root: TreeNode = null) -> TreeNode:
@@ -90,7 +119,7 @@ func _create_tree_nodes(node: Dictionary, root: TreeNode = null) -> TreeNode:
 
 
 func _place_nodes(node: TreeNode) -> void:
-	node.item.position_offset = Vector2(node.x, node.y) * Vector2(1, 100 * BeehaveUtils.get_editor_scale())
+	node.item.position_offset = Vector2(node.x, node.y)
 	for child in node.children:
 		_place_nodes(child)
 
@@ -166,8 +195,12 @@ func _get_connection_line(from_position: Vector2, to_position: Vector2) -> Packe
 	points.push_back(from_position)
 
 	var mid_position := ((to_position + from_position) / 2).round()
-	points.push_back(Vector2(from_position.x, mid_position.y))
-	points.push_back(Vector2(to_position.x, mid_position.y))
+	if horizontal_layout:
+		points.push_back(Vector2(mid_position.x, from_position.y))
+		points.push_back(Vector2(mid_position.x, to_position.y))
+	else:
+		points.push_back(Vector2(from_position.x, mid_position.y))
+		points.push_back(Vector2(to_position.x, mid_position.y))
 
 	points.push_back(to_position)
 
@@ -219,3 +252,8 @@ func _draw() -> void:
 		while shift <= curve.get_baked_length():
 			draw_circle(curve.sample_baked(shift), circle_size, ACTIVE_COLOR)
 			shift += progress_shift
+
+
+func _update_layout_button() -> void:
+	layout_button.icon = VERTICAL_LAYOUT_ICON if horizontal_layout else HORIZONTAL_LAYOUT_ICON
+	layout_button.tooltip_text = "Switch to Vertical layout" if horizontal_layout else "Switch to Horizontal layout"

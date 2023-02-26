@@ -25,9 +25,9 @@ var _runner_config := GdUnitRunnerConfig.new()
 
 
 func _ready():
-	GdUnitSignals.instance().gdunit_client_connected.connect(Callable(self, "_on_client_connected"))
-	GdUnitSignals.instance().gdunit_client_disconnected.connect(Callable(self, "_on_client_disconnected"))
-	GdUnitSignals.instance().gdunit_event.connect(Callable(self, "_on_event"))
+	GdUnitSignals.instance().gdunit_client_connected.connect(_on_client_connected)
+	GdUnitSignals.instance().gdunit_client_disconnected.connect(_on_client_disconnected)
+	GdUnitSignals.instance().gdunit_event.connect(_on_event)
 	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 	_editor_interface = plugin.get_editor_interface()
 	if Engine.is_editor_hint():

@@ -3,10 +3,11 @@ extends RefCounted
 
 # Based on https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/
 
-const sibling_distance: float = 20.0
+const SIBLING_DISTANCE: float = 20.0
+const LEVEL_DISTANCE: float = 40.0
 
 var x: float
-var y: int
+var y: float
 var mod: float
 var parent: TreeNode
 var children: Array[TreeNode]
@@ -69,12 +70,18 @@ func get_most_right_child() -> TreeNode:
 	return children.back()
 
 
-func update_positions() -> void:
+func update_positions(horizontally: bool = false) -> void:
 	_initialize_nodes(self, 0)
 	_calculate_initial_x(self)
 
 	_check_all_children_on_screen(self)
 	_calculate_final_positions(self, 0)
+
+	if horizontally:
+		_swap_x_y(self)
+		_calculate_x(self, 0)
+	else:
+		_calculate_y(self, 0)
 
 
 func _initialize_nodes(node: TreeNode, depth: int) -> void:
@@ -91,23 +98,23 @@ func _calculate_initial_x(node: TreeNode) -> void:
 		_calculate_initial_x(child)
 	if node.is_leaf():
 		if not node.is_most_left():
-			node.x = node.get_previous_sibling().x + node.get_previous_sibling().item.size.x + sibling_distance
+			node.x = node.get_previous_sibling().x + node.get_previous_sibling().item.layout_size + SIBLING_DISTANCE
 		else:
 			node.x = 0
 	else:
 		var mid: float
 		if node.children.size() == 1:
-			var offset: float = (node.children.front().item.size.x - node.item.size.x) / 2
+			var offset: float = (node.children.front().item.layout_size - node.item.layout_size) / 2
 			mid = node.children.front().x + offset
 		else:
-			var left_child = node.get_most_left_child()
-			var right_child = node.get_most_right_child()
-			mid = (left_child.x + right_child.x + right_child.item.size.x - node.item.size.x) / 2
+			var left_child := node.get_most_left_child()
+			var right_child := node.get_most_right_child()
+			mid = (left_child.x + right_child.x + right_child.item.layout_size - node.item.layout_size) / 2
 
 		if node.is_most_left():
 			node.x = mid
 		else:
-			node.x = node.get_previous_sibling().x + node.get_previous_sibling().item.size.x + sibling_distance
+			node.x = node.get_previous_sibling().x + node.get_previous_sibling().item.layout_size + SIBLING_DISTANCE
 			node.mod = node.x - mid
 
 	if not node.is_leaf() and not node.is_most_left():
@@ -137,7 +144,7 @@ func _check_all_children_on_screen(node: TreeNode) -> void:
 
 
 func _check_for_conflicts(node: TreeNode) -> void:
-	var min_distance = sibling_distance
+	var min_distance := SIBLING_DISTANCE
 	var shift_value: float = 0
 	var shift_sibling: TreeNode = null
 
@@ -171,17 +178,17 @@ func _center_nodes_between(left_node: TreeNode, right_node: TreeNode) -> void:
 	if num_nodes_between > 0:
 		# The extra distance that needs to be split into num_nodes_between + 1
 		# in order to find the new node spacing so that nodes are equally spaced
-		var distance_to_allocate: float = right_node.x - left_node.x - left_node.item.size.x
-		# Subtract sizes on nodes in between	
+		var distance_to_allocate: float = right_node.x - left_node.x - left_node.item.layout_size
+		# Subtract sizes on nodes in between
 		for i in range(left_index + 1, right_index):
-			distance_to_allocate -= left_node.parent.children[i].item.size.x
+			distance_to_allocate -= left_node.parent.children[i].item.layout_size
 		# Divide space equally
 		var distance_between_nodes: float = distance_to_allocate / (num_nodes_between + 1)
 
 		var prev_node := left_node
 		var middle_node := left_node.get_next_sibling()
 		while middle_node != right_node:
-			var desire_x := prev_node.x + prev_node.item.size.x + distance_between_nodes
+			var desire_x: float = prev_node.x + prev_node.item.layout_size + distance_between_nodes
 			var offset := desire_x - middle_node.x
 			middle_node.x += offset
 			middle_node.mod += offset
@@ -190,10 +197,12 @@ func _center_nodes_between(left_node: TreeNode, right_node: TreeNode) -> void:
 
 
 func _get_left_contour(node: TreeNode, mod_sum: float, values: Dictionary) -> void:
-	if not values.has(node.y):
-		values[node.y] = node.x + mod_sum
+	var node_left: float = node.x + mod_sum
+	var depth := int(node.y)
+	if not values.has(depth):
+		values[depth] = node_left
 	else:
-		values[node.y] = min(values[node.y], node.x + mod_sum)
+		values[depth] = min(values[depth], node_left)
 
 	mod_sum += node.mod
 	for child in node.children:
@@ -201,12 +210,46 @@ func _get_left_contour(node: TreeNode, mod_sum: float, values: Dictionary) -> vo
 
 
 func _get_right_contour(node: TreeNode, mod_sum: float, values: Dictionary) -> void:
-	var node_right = node.x + mod_sum + node.item.size.x
-	if not values.has(node.y):
-		values[node.y] = node_right
+	var node_right: float = node.x + mod_sum + node.item.layout_size
+	var depth := int(node.y)
+	if not values.has(depth):
+		values[depth] = node_right
 	else:
-		values[node.y] = max(values[node.y], node_right)
+		values[depth] = max(values[depth], node_right)
 
 	mod_sum += node.mod
 	for child in node.children:
 		_get_right_contour(child, mod_sum, values)
+
+
+func _swap_x_y(node: TreeNode) -> void:
+	for child in node.children:
+		_swap_x_y(child)
+
+	var temp := node.x
+	node.x = node.y
+	node.y = temp
+
+
+func _calculate_x(node: TreeNode, offset: int) -> void:
+	node.x = offset
+	var sibling := node.get_most_left_sibling()
+	var max_size: int = node.item.size.x
+	while sibling != null:
+		max_size = max(sibling.item.size.x, max_size)
+		sibling = sibling.get_next_sibling()
+
+	for child in node.children:
+		_calculate_x(child, max_size + offset + LEVEL_DISTANCE * BeehaveUtils.get_editor_scale())
+
+
+func _calculate_y(node: TreeNode, offset: int) -> void:
+	node.y = offset
+	var sibling := node.get_most_left_sibling()
+	var max_size: int = node.item.size.y
+	while sibling != null:
+		max_size = max(sibling.item.size.y, max_size)
+		sibling = sibling.get_next_sibling()
+
+	for child in node.children:
+		_calculate_y(child, max_size + offset + LEVEL_DISTANCE * BeehaveUtils.get_editor_scale())

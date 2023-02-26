@@ -13,10 +13,9 @@ var total_failed := 0
 var total_errors := 0
 
 func _ready():
-	GdUnitSignals.instance().gdunit_event.connect(Callable(self, "_on_gdunit_event"))
+	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
 	_failures.text = "0"
 	_errors.text = "0"
-
 	var editor :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 	var editiorTheme := editor.get_editor_interface().get_base_control().theme
 	_button_failure_up.icon = editiorTheme.get_icon("ArrowUp", "EditorIcons")
@@ -28,6 +27,7 @@ func status_changed(errors :int, failed :int):
 	total_errors += errors
 	_failures.text = str(total_failed)
 	_errors.text = str(total_errors)
+
 
 func _on_gdunit_event(event :GdUnitEvent) -> void:
 	match event.type():
@@ -50,8 +50,10 @@ func _on_gdunit_event(event :GdUnitEvent) -> void:
 			else:
 				status_changed(0, event.failed_count())
 
+
 func _on_failure_up_pressed():
 	emit_signal("failure_prevous")
+
 
 func _on_failure_down_pressed():
 	emit_signal("failure_next")

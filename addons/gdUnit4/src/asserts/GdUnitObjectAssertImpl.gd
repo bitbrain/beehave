@@ -3,8 +3,8 @@ extends GdUnitObjectAssert
 
 var _base :GdUnitAssert
 
-func _init(caller :Object,current,expect_result :int):
-	_base = GdUnitAssertImpl.new(caller, current, expect_result)
+func _init(current, expect_result :int):
+	_base = GdUnitAssertImpl.new(current, expect_result)
 	if current is ValueProvider or current == null:
 		return
 	if _base.__validate_value_type(current, TYPE_BOOL)\
@@ -85,7 +85,7 @@ func is_not_same(expected) -> GdUnitObjectAssert:
 # Verifies that the current value is an instance of the given type.
 func is_instanceof(type :Object) -> GdUnitObjectAssert:
 	var current :Object = __current()
-	if not GdObjects.is_instanceof(current, type):
+	if not is_instance_of(current, type):
 		var result_expected: = GdObjects.extract_class_name(type)
 		var result_current: = GdObjects.extract_class_name(current)
 		report_error(GdAssertMessages.error_is_instanceof(result_current, result_expected))
@@ -96,7 +96,7 @@ func is_instanceof(type :Object) -> GdUnitObjectAssert:
 # Verifies that the current value is not an instance of the given type.
 func is_not_instanceof(type) -> GdUnitObjectAssert:
 	var current :Variant = __current()
-	if GdObjects.is_instanceof(current, type):
+	if is_instance_of(current, type):
 		var result: = GdObjects.extract_class_name(type)
 		if result.is_success():
 			report_error("Expected not be a instance of <%s>" % result.value())
