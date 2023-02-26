@@ -24,11 +24,7 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 **🧪 Tested - any functionality of this addon is covered by test automation**
 
-TODO insert test run gif
-
-**🍯 Active community - used by hundreds of game developers**
-
-TODO insert discord link
+![performance-monitor](assets/gdunit-testrun.gif)
 
 Learn more about the features such as node types and internals [here](/learn.md).
 
