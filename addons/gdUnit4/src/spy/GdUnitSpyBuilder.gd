@@ -2,7 +2,6 @@ class_name GdUnitSpyBuilder
 extends GdUnitClassDoubler
 
 
-
 static func build(caller :Object, to_spy, push_errors :bool = true, debug_write = false):
 	var memory_pool :GdUnitMemoryPool.POOL = caller.get_meta(GdUnitMemoryPool.META_PARAM)
 	
@@ -14,10 +13,10 @@ static func build(caller :Object, to_spy, push_errors :bool = true, debug_write 
 		to_spy = load(to_spy)
 	# spy checked PackedScene
 	if GdObjects.is_scene(to_spy):
-		return spy_on_scene(caller, to_spy.instantiate(), memory_pool, debug_write)
+		return spy_on_scene(to_spy.instantiate(), memory_pool, debug_write)
 	# spy checked a scene instance
 	if GdObjects.is_instance_scene(to_spy):
-		return spy_on_scene(caller, to_spy, memory_pool, debug_write)
+		return spy_on_scene(to_spy, memory_pool, debug_write)
 	
 	var spy := spy_on_script(to_spy, [], debug_write)
 	if spy == null:
@@ -26,7 +25,6 @@ static func build(caller :Object, to_spy, push_errors :bool = true, debug_write 
 	copy_properties(to_spy, spy_instance)
 	GdUnitObjectInteractions.reset(spy_instance)
 	spy_instance.__set_singleton(to_spy)
-	spy_instance.__set_caller(caller)
 	# we do not call the original implementation for _ready and all input function, this is actualy done by the engine
 	spy_instance.__exclude_method_call([ "_input", "_gui_input", "_input_event", "_unhandled_input"])
 	return GdUnitMemoryPool.register_auto_free(spy_instance, memory_pool)
@@ -71,7 +69,7 @@ static func spy_on_script(instance, function_excludes :PackedStringArray, debug_
 	return spy
 
 
-static func spy_on_scene(caller :Object, scene :Node, memory_pool :GdUnitMemoryPool.POOL, debug_write) -> Object:
+static func spy_on_scene(scene :Node, memory_pool :GdUnitMemoryPool.POOL, debug_write) -> Object:
 	if scene.get_script() == null:
 		if GdUnitSettings.is_verbose_assert_errors():
 			push_error("Can't create a spy checked a scene without script '%s'" % scene.get_scene_file_path())
@@ -84,7 +82,6 @@ static func spy_on_scene(caller :Object, scene :Node, memory_pool :GdUnitMemoryP
 		return null
 	# replace original script whit spy 
 	scene.set_script(spy)
-	scene.__set_caller(caller)
 	return GdUnitMemoryPool.register_auto_free(scene, memory_pool)
 
 

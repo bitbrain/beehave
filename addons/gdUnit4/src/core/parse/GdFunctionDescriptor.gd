@@ -7,7 +7,7 @@ var _is_engine :bool
 var _is_coroutine :bool
 var _name :String
 var _line_number :int
-var _return_type :Variant
+var _return_type :int
 var _return_class :String
 var _args : Array[GdFunctionArgument]
 var _varargs :Array[GdFunctionArgument]
@@ -18,7 +18,7 @@ func _init(name :String,
 	is_virtual :bool,
 	is_static :bool,
 	is_engine :bool,
-	return_type :Variant,
+	return_type :int,
 	return_class :String,
 	args : Array[GdFunctionArgument],
 	varargs :Array[GdFunctionArgument] = []):
@@ -79,7 +79,7 @@ func return_type() -> Variant:
 
 
 func return_type_as_string() -> String:
-	if return_type() == TYPE_OBJECT and not _return_class.is_empty():
+	if (return_type() == TYPE_OBJECT or return_type() == GdObjects.TYPE_ENUM) and not _return_class.is_empty():
 		return _return_class
 	return GdObjects.type_as_string(return_type())
 
@@ -94,9 +94,7 @@ func varargs() -> Array[GdFunctionArgument]:
 
 func typeless() -> String:
 	var func_signature := ""
-	if _return_type is StringName:
-		func_signature = "func %s(%s) -> %s:" % [name(), typeless_args(), _return_type]
-	elif _return_type == TYPE_NIL:
+	if _return_type == TYPE_NIL:
 		func_signature = "func %s(%s) -> void:" % [name(), typeless_args()]
 	elif _return_type == GdObjects.TYPE_VARIANT:
 		func_signature = "func %s(%s) -> Variant:" % [name(), typeless_args()]
@@ -186,15 +184,12 @@ const enum_fix := [
 	"Variant.Type",
 	"Control.LayoutMode"]
 
+
 static func _extract_return_type(return_info :Dictionary) -> Variant:
 	var type :int = return_info["type"]
 	var usage :int = return_info["usage"]
 	if type == TYPE_INT and usage & PROPERTY_USAGE_CLASS_IS_ENUM:
-		var enum_value :Variant = return_info["class_name"]
-		# GD-110: bug Error is not work as enum, convert it to int
-		if enum_fix.has(enum_value):
-			return TYPE_INT
-		return enum_value
+		return GdObjects.TYPE_ENUM
 	if type == TYPE_NIL and usage & PROPERTY_USAGE_NIL_IS_VARIANT:
 		return GdObjects.TYPE_VARIANT
 	return type

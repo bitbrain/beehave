@@ -48,9 +48,11 @@ class MemoryStore extends RefCounted:
 		pool(pool)._store.push_front(value)
 	
 	
-	static func release(pool :POOL) -> void:
-		var pool_name :String = POOL.keys()[pool]
-		GdUnitSingleton.unregister(pool_name)
+	static func release_objects(pool :POOL) -> void:
+		var store := pool(pool)._store
+		while not store.is_empty():
+			var value := store.pop_front()
+			GdUnitTools.free_instance(value)
 
 
 var _current :POOL
@@ -97,8 +99,7 @@ func orphan_nodes() -> int:
 
 # register an instance to be freed when a test suite is finished
 static func register_auto_free(obj, pool :POOL) -> Variant:
-	# only register real object values
-	if not obj is Object:
+	if not is_instance_valid(obj):
 		return obj
 	if obj is MainLoop:
 		push_error("avoid to add mainloop to auto_free queue  %s" % obj)
@@ -113,13 +114,13 @@ static func register_auto_free(obj, pool :POOL) -> Variant:
 
 # runs over all registered objects and frees it
 static func run_auto_free(pool :POOL) -> void:
-	MemoryStore.release(pool)
+	MemoryStore.release_objects(pool)
 
 
 # tests if given object is registered for auto freeing
 static func is_auto_free_registered(obj, pool :POOL = -1) -> bool:
 	# only register real object values
-	if not obj is Object:
+	if not is_instance_valid(obj):
 		return false
 	# check all pools?
 	if pool == -1:

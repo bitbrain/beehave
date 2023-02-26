@@ -1,6 +1,6 @@
 # collects all reports seperated as warnings and failures/errors
 class_name GdUnitReportCollector
-extends GdUnitReportConsumer
+extends RefCounted
 
 const STAGE_TEST_SUITE_BEFORE = 1
 const STAGE_TEST_SUITE_AFTER = 2
@@ -10,6 +10,7 @@ const STAGE_TEST_CASE_AFTER = 16
 
 var ALL_REPORT_STATES := [STAGE_TEST_SUITE_BEFORE, STAGE_TEST_SUITE_AFTER, STAGE_TEST_CASE_BEFORE, STAGE_TEST_CASE_EXECUTE, STAGE_TEST_CASE_AFTER]
 var _current_stage :int
+var _consume_reports := true
 
 
 var _reports_by_state :Dictionary = {
@@ -19,6 +20,10 @@ var _reports_by_state :Dictionary = {
 	STAGE_TEST_CASE_AFTER : [] as Array[GdUnitReport],
 	STAGE_TEST_CASE_EXECUTE : [] as Array[GdUnitReport],
 }
+
+
+func _init():
+	GdUnitSignals.instance().gdunit_report.connect(consume)
 
 
 func get_reports_by_state(execution_state :int) -> Array[GdUnitReport]:
@@ -102,5 +107,12 @@ func set_stage(stage :int) -> void:
 	_current_stage = stage
 
 
+
+# we need to disable report collection for testing purposes
+func set_consume_reports(enabled :bool) -> void:
+	_consume_reports = enabled
+
+
 func consume(report :GdUnitReport) -> void:
-	add_report(_current_stage, report)
+	if _consume_reports:
+		add_report(_current_stage, report)

@@ -4,7 +4,7 @@ var __expected_interactions :int = -1
 var __expect_result :int
 var __saved_interactions := Dictionary()
 var __verified_interactions := Array()
-var __caller :Object
+
 
 func __save_function_interaction(args :Array) -> void:
 	var matcher := GdUnitArgumentMatchers.to_matcher(args, true)
@@ -14,13 +14,16 @@ func __save_function_interaction(args :Array) -> void:
 			return
 	__saved_interactions[args] = 1
 
+
 func __is_verify_interactions() -> bool:
 	return __expected_interactions != -1
+
 
 func __do_verify_interactions(times :int = 1, expect_result :int = GdUnitAssert.EXPECT_SUCCESS) -> Object:
 	__expected_interactions = times
 	__expect_result = expect_result
 	return self
+
 
 func __verify_interactions(args :Array):
 	var summary := Dictionary()
@@ -34,7 +37,7 @@ func __verify_interactions(args :Array):
 			# add as verified
 			__verified_interactions.append(key)
 	
-	var gd_assert := GdUnitAssertImpl.new(__caller, "", __expect_result)
+	var gd_assert := GdUnitAssertImpl.new("", __expect_result)
 	if total_interactions != __expected_interactions:
 		var expected_summary = {args : __expected_interactions}
 		var error_message :String
@@ -49,12 +52,14 @@ func __verify_interactions(args :Array):
 		gd_assert.report_success()
 	__expected_interactions = -1
 
+
 func __verify_no_interactions() -> Dictionary:
 	var summary := Dictionary()
 	if not __saved_interactions.is_empty():
 		for func_call in __saved_interactions.keys():
 			summary[func_call] = __saved_interactions[func_call]
 	return summary
+
 
 func __verify_no_more_interactions() -> Dictionary:
 	var summary := Dictionary()
@@ -69,8 +74,10 @@ func __verify_no_more_interactions() -> Dictionary:
 			summary[not_verified] = __saved_interactions[not_verified]
 	return summary
 
+
 func __reset_interactions() -> void:
 	__saved_interactions.clear()
+
 
 func __filter_vargs(arg_values :Array) -> Array:
 	var filtered := Array()
@@ -79,6 +86,3 @@ func __filter_vargs(arg_values :Array) -> Array:
 			continue
 		filtered.append(arg)
 	return filtered
-
-func __set_caller(caller :Object) -> void:
-	__caller = caller

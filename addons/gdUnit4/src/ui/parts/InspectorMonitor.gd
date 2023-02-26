@@ -14,7 +14,7 @@ var total_elapsed_time := 0
 var total_orphans := 0
 
 func _ready():
-	GdUnitSignals.instance().gdunit_event.connect(Callable(self, "_on_gdunit_event"))
+	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
 	_time.text = ""
 	_orphans.text = "0"
 

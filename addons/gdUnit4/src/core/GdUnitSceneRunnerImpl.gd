@@ -14,7 +14,6 @@ const MAP_MOUSE_BUTTON_MASKS := {
 	MOUSE_BUTTON_XBUTTON2 : MOUSE_BUTTON_MASK_MB_XBUTTON2,
 }
 
-var _test_suite :WeakRef
 var _scene_tree :SceneTree = null
 var _current_scene :Node = null
 var _verbose :bool
@@ -29,9 +28,8 @@ var _saved_time_scale :float
 var _saved_iterations_per_second :float
 
 
-func _init(test_suite :WeakRef, scene, verbose :bool, hide_push_errors = false):
+func _init(scene, verbose :bool, hide_push_errors = false):
 	_verbose = verbose
-	_test_suite = test_suite
 	_saved_iterations_per_second = Engine.get_physics_ticks_per_second()
 	set_time_factor(1)
 	# handle scene loading by resource path
@@ -80,7 +78,6 @@ func _notification(what):
 				_current_scene.free()
 		_scene_tree = null
 		_current_scene = null
-		_test_suite = null
 		# we hide the scene/main window after runner is finished 
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
 
@@ -212,30 +209,30 @@ func simulate_frames(frames: int, delta_milli :int = -1) -> GdUnitSceneRunner:
 
 func simulate_until_signal(signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG) -> GdUnitSceneRunner:
 	var args = GdObjects.array_filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
-	await GdUnitAwaiter.await_signal_idle_frames(_test_suite, _current_scene, signal_name, args, 10000)
+	await GdUnitAwaiter.await_signal_idle_frames(_current_scene, signal_name, args, 10000)
 	return self
 
 
 func simulate_until_object_signal(source :Object, signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG) -> GdUnitSceneRunner:
 	var args = GdObjects.array_filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
-	await GdUnitAwaiter.await_signal_idle_frames(_test_suite, source, signal_name, args, 10000)
+	await GdUnitAwaiter.await_signal_idle_frames(source, signal_name, args, 10000)
 	return self
 
 
 func await_func(func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
-	return GdUnitFuncAssertImpl.new(_test_suite, _current_scene, func_name, args, expeced)
+	return GdUnitFuncAssertImpl.new(_current_scene, func_name, args, expeced)
 
 
 func await_func_on(instance :Object, func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
-	return GdUnitFuncAssertImpl.new(_test_suite, instance, func_name, args, expeced)
+	return GdUnitFuncAssertImpl.new(instance, func_name, args, expeced)
 
 
 func await_signal(signal_name :String, args := [], timeout := 2000 ):
-	await GdUnitAwaiter.await_signal_on(_test_suite, _current_scene, signal_name, args, timeout)
+	await GdUnitAwaiter.await_signal_on(_current_scene, signal_name, args, timeout)
 
 
 func await_signal_on(source :Object, signal_name :String, args := [], timeout := 2000 ):
-	await GdUnitAwaiter.await_signal_on(_test_suite, source, signal_name, args, timeout)
+	await GdUnitAwaiter.await_signal_on(source, signal_name, args, timeout)
 
 
 # maximizes the window to bring the scene visible

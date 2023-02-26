@@ -2,7 +2,7 @@ class_name GdUnitSignalAssertImpl
 extends GdUnitSignalAssert
 
 const DEFAULT_TIMEOUT := 2000
-const NO_ARG = "<--null-->"
+const NO_ARG = GdUnitConstants.NO_ARG
 
 var _emitter :Object
 var _current_error_message :String = ""
@@ -12,8 +12,6 @@ var _expect_fail := false
 var _is_failed := false
 var _timeout := DEFAULT_TIMEOUT
 var _expect_result :int
-var _report_consumer : GdUnitReportConsumer
-var _caller : WeakRef
 var _interrupted := false
 var _signal_collector :SignalCollector = SignalCollector.instance("SignalCollector", func(): return SignalCollector.new())
 
@@ -31,6 +29,7 @@ class SignalCollector extends GdUnitSingleton:
 	# }
 	var _collected_signals :Dictionary = {}
 	
+	
 	# connect to all possible signals defined by the emitter
 	# prepares the signal collection to store received signals and arguments
 	func register_emitter(emitter :Object):
@@ -40,8 +39,8 @@ class SignalCollector extends GdUnitSingleton:
 				return
 			_collected_signals[emitter] = Dictionary()
 			# connect to 'tree_exiting' of the emitter to finally release all acquired resources/connections.
-			if !emitter.is_connected("tree_exiting", Callable(self, "unregister_emitter")):
-				emitter.connect("tree_exiting", Callable(self, "unregister_emitter").bind(emitter))
+			if !emitter.tree_exiting.is_connected(unregister_emitter):
+				emitter.tree_exiting.connect(unregister_emitter.bind(emitter))
 			# connect to all signals of the emitter we want to collect
 			for signal_def in emitter.get_signal_list():
 				var signal_name = signal_def["name"]
@@ -50,10 +49,11 @@ class SignalCollector extends GdUnitSingleton:
 					_collected_signals[emitter][signal_name] = Array()
 				if SIGNAL_BLACK_LIST.find(signal_name) != -1:
 					continue
-				if !emitter.is_connected(signal_name,Callable(self, "_on_signal_emmited")):
-					var err := emitter.connect(signal_name, Callable(self, "_on_signal_emmited").bind(emitter, signal_name))
+				if !emitter.is_connected(signal_name, _on_signal_emmited):
+					var err := emitter.connect(signal_name, _on_signal_emmited.bind(emitter, signal_name))
 					if err != OK:
 						push_error("Can't connect to signal %s on %s. Error: %s" % [signal_name, emitter, error_string(err)])
+	
 	
 	# unregister all acquired resources/connections, otherwise it ends up in orphans
 	# is called when the emitter is removed from the parent
@@ -61,6 +61,7 @@ class SignalCollector extends GdUnitSingleton:
 		GdUnitTools.release_connections(emitter)
 		if is_instance_valid(emitter):
 			_collected_signals.erase(emitter)
+	
 	
 	# receives the signal from the emitter with all emitted signal arguments and additional the emitter and signal_name as last two arguements
 	func _on_signal_emmited( arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG, arg10=NO_ARG, arg11=NO_ARG):
@@ -72,6 +73,7 @@ class SignalCollector extends GdUnitSingleton:
 		if is_signal_collecting(emitter, signal_name):
 			_collected_signals[emitter][signal_name].append(signal_args)
 	
+	
 	func reset_received_signals(emitter :Object):
 		#_debug_signal_list("before claer");
 		if _collected_signals.has(emitter):
@@ -79,8 +81,10 @@ class SignalCollector extends GdUnitSingleton:
 				_collected_signals[emitter][signal_name].clear()
 		#_debug_signal_list("after claer");
 	
+	
 	func is_signal_collecting(emitter :Object, signal_name :String) -> bool:
 		return _collected_signals.has(emitter) and _collected_signals[emitter].has(signal_name)
+	
 	
 	func match(emitter :Object, signal_name :String, args :Array) -> bool:
 		#prints("match", signal_name,  _collected_signals[emitter][signal_name]);
@@ -92,6 +96,7 @@ class SignalCollector extends GdUnitSingleton:
 				return true
 		return false
 	
+	
 	func _debug_signal_list(message :String):
 		prints("-----", message, "-------")
 		prints("senders {")
@@ -101,39 +106,36 @@ class SignalCollector extends GdUnitSingleton:
 				var args = _collected_signals[emitter][signal_name]
 				prints("\t\t", signal_name, args)
 		prints("}")
-
-func _init(caller :WeakRef, emitter :Object, expect_result := EXPECT_SUCCESS):
+	
+	
+func _init(emitter :Object, expect_result := EXPECT_SUCCESS):
 	_line_number = GdUnitAssertImpl._get_line_number()
-	_caller = caller
 	_emitter =  emitter
 	_expect_result = expect_result
 	GdAssertReports.reset_last_error_line_number()
-	# set report consumer to be use to report the final result
-	_report_consumer = caller.get_ref().get_meta(GdUnitReportConsumer.META_PARAM)
 	# we expect the test will fail
 	if expect_result == EXPECT_FAIL:
 		_expect_fail = true
-
-func _notification(what):
-	#prints(GdObjects.notification_as_string(what))
-	if what == NOTIFICATION_PREDELETE:
-		_caller = null
-
+	
+	
 func report_success() -> GdUnitAssert:
 	return GdAssertReports.report_success(self)
-
+	
+	
 func report_warning(message :String) -> GdUnitAssert:
 	return GdAssertReports.report_warning(self, message, GdUnitAssertImpl._get_line_number())
-
+	
+	
 func report_error(error_message :String) -> GdUnitAssert:
 	if _custom_failure_message == "":
 		return GdAssertReports.report_error(error_message, self, _line_number)
 	return GdAssertReports.report_error(_custom_failure_message, self, _line_number)
-
+	
+	
 func send_report(report :GdUnitReport)-> void:
-	if is_instance_valid(_report_consumer):
-		_report_consumer.consume(report)
-
+	GdUnitSignals.instance().gdunit_report.emit(report)
+	
+	
 # -------- Base Assert wrapping ------------------------------------------------
 func has_failure_message(expected: String) -> GdUnitSignalAssert:
 	var current_error := GdUnitAssertImpl._normalize_bbcode(_current_error_message)
@@ -144,7 +146,8 @@ func has_failure_message(expected: String) -> GdUnitSignalAssert:
 		_custom_failure_message = ""
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self
-
+	
+	
 func starts_with_failure_message(expected: String) -> GdUnitSignalAssert:
 	var current_error := GdUnitAssertImpl._normalize_bbcode(_current_error_message)
 	if not current_error.begins_with(expected):
@@ -154,11 +157,13 @@ func starts_with_failure_message(expected: String) -> GdUnitSignalAssert:
 		_custom_failure_message = ""
 		report_error(GdAssertMessages.error_not_same_error(current, expected))
 	return self
-
+	
+	
 func override_failure_message(message :String) -> GdUnitSignalAssert:
 	_custom_failure_message = message
 	return self
-
+	
+	
 func wait_until(timeout := 2000) -> GdUnitSignalAssert:
 	if timeout <= 0:
 		report_warning("Invalid timeout parameter, allowed timeouts must be greater than 0, use default timeout instead!")
@@ -166,23 +171,27 @@ func wait_until(timeout := 2000) -> GdUnitSignalAssert:
 	else:
 		_timeout = timeout
 	return self
-
+	
+	
 # Verifies the signal exists checked the emitter
 func is_signal_exists(signal_name :String) -> GdUnitSignalAssert:
 	if not _emitter.has_signal(signal_name):
 		report_error("The signal '%s' not exists checked object '%s'." % [signal_name, _emitter.get_class()])
 	return self
-
+	
+	
 # Verifies that given signal is emitted until waiting time
 func is_emitted(name :String, args := []) -> GdUnitSignalAssert:
 	_line_number = GdUnitAssertImpl._get_line_number()
 	return await _wail_until_signal(name, args, false)
-
+	
+	
 # Verifies that given signal is NOT emitted until waiting time
 func is_not_emitted(name :String, args := []) -> GdUnitSignalAssert:
 	_line_number = GdUnitAssertImpl._get_line_number()
 	return await _wail_until_signal(name, args, true)
-
+	
+	
 func _wail_until_signal(signal_name :String, expected_args :Array, expect_not_emitted: bool) -> GdUnitSignalAssert:
 	if _emitter == null:
 		report_error("Can't wait for signal checked a NULL object.")
@@ -192,25 +201,22 @@ func _wail_until_signal(signal_name :String, expected_args :Array, expect_not_em
 		report_error("Can't wait for non-existion signal '%s' checked object '%s'." % [signal_name,_emitter.get_class()])
 		return self
 	_signal_collector.register_emitter(_emitter)
-	var caller = _caller.get_ref()
 	var time_scale = Engine.get_time_scale()
-	var timeout = Timer.new()
-	caller.add_child(timeout)
-	timeout.set_one_shot(true)
-	timeout.connect("timeout",Callable(self,"_on_timeout"))
-	timeout.start((_timeout/1000.0)*time_scale)
+	var timer := Timer.new()
+	Engine.get_main_loop().root.add_child(timer)
+	timer.add_to_group("GdUnitTimers")
+	timer.set_one_shot(true)
+	timer.timeout.connect(func on_timeout(): _interrupted = true)
+	timer.start((_timeout/1000.0)*time_scale)
 	var is_signal_emitted = false
 	while not _interrupted and not is_signal_emitted:
 		await Engine.get_main_loop().process_frame
 		is_signal_emitted = _signal_collector.match(_emitter, signal_name, expected_args)
 		if is_signal_emitted and expect_not_emitted:
-			report_error(GdAssertMessages.error_signal_emitted(signal_name, expected_args, LocalTime.elapsed(_timeout-timeout.time_left*1000)))
-
+			report_error(GdAssertMessages.error_signal_emitted(signal_name, expected_args, LocalTime.elapsed(_timeout-timer.time_left*1000)))
+	
 	if _interrupted and not expect_not_emitted:
 		report_error(GdAssertMessages.error_wait_signal(signal_name, expected_args, LocalTime.elapsed(_timeout)))
-	timeout.free()
+	timer.free()
 	_signal_collector.reset_received_signals(_emitter)
 	return self
-
-func _on_timeout():
-	_interrupted = true

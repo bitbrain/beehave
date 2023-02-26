@@ -24,16 +24,21 @@ func _ready():
 	init_colors()
 	GdUnitFonts.init_fonts(output)
 	GdUnit4Version.init_version_label(title)
-	GdUnitSignals.instance().gdunit_event.connect(Callable(self, "_on_gdunit_event"))
-	GdUnitSignals.instance().gdunit_message.connect(Callable(self, "_on_gdunit_message"))
-	GdUnitSignals.instance().gdunit_client_connected.connect(Callable(self, "_on_gdunit_client_connected"))
-	GdUnitSignals.instance().gdunit_client_disconnected.connect(Callable(self, "_on_gdunit_client_disconnected"))
+	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
+	GdUnitSignals.instance().gdunit_message.connect(_on_gdunit_message)
+	GdUnitSignals.instance().gdunit_client_connected.connect(_on_gdunit_client_connected)
+	GdUnitSignals.instance().gdunit_client_disconnected.connect(_on_gdunit_client_disconnected)
 	output.clear()
 
 
 func _notification(what):
 	if what == EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED:
 		init_colors()
+	if what == NOTIFICATION_PREDELETE:
+		GdUnitSignals.instance().gdunit_event.disconnect(_on_gdunit_event)
+		GdUnitSignals.instance().gdunit_message.disconnect(_on_gdunit_message)
+		GdUnitSignals.instance().gdunit_client_connected.disconnect(_on_gdunit_client_connected)
+		GdUnitSignals.instance().gdunit_client_disconnected.disconnect(_on_gdunit_client_disconnected)
 
 
 func init_colors() -> void:
