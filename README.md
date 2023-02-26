@@ -14,19 +14,19 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 **🤖 Node based - build behavior trees within your scene tree**
 
-![example](docs/assets/beehave-demo-tree.png)
+<img src="docs/assets/beehave-demo-tree.png" width="650px"/>
 
 **🐛 Debug view - a dedicated debug view to analyze your behavior at runtime**
 
-![debug-view](docs/assets/debug-tree.gif)
+<img src="docs/assets/debug-tree.gif" width="650px"/>
 
 **🚗 Performance - built-in monitors to track performance of your behavior trees**
 
-![performance-monitor](docs/assets/performance-monitor.gif)
+<img src="docs/assets/performance-monitor.gif" width="650px"/>
 
 **🧪 Tested - any functionality of this addon is covered by test automation**
 
-![performance-monitor](docs/assets/gdunit-testrun.gif)
+<img src="docs/assets/gdunit-testrun.gif" width="650px"/>
 
 # 🧪 Installation
 
