@@ -23,11 +23,9 @@ script = ExtResource("2_phgmn")
 
 [node name="SequenceComposite" type="Node" parent="Node2D/BeehaveTree"]
 script = ExtResource("4_px6t4")
- = null
 
 [node name="ValueNotReached" type="Node" parent="Node2D/BeehaveTree/SequenceComposite"]
 script = ExtResource("5_thhls")
- = null
 
 [node name="ValueReachedCondition" type="Node" parent="Node2D/BeehaveTree/SequenceComposite/ValueNotReached"]
 script = ExtResource("5_rc0ra")
@@ -45,11 +43,9 @@ blackboard = NodePath("../../Blackboard")
 
 [node name="SequenceComposite" type="Node" parent="AnotherNode/BeehaveTree"]
 script = ExtResource("4_px6t4")
- = null
 
 [node name="ValueNotReached" type="Node" parent="AnotherNode/BeehaveTree/SequenceComposite"]
 script = ExtResource("5_thhls")
- = null
 
 [node name="ValueReachedCondition" type="Node" parent="AnotherNode/BeehaveTree/SequenceComposite/ValueNotReached"]
 script = ExtResource("5_rc0ra")
@@ -68,11 +64,9 @@ blackboard = NodePath("../../Blackboard")
 
 [node name="SequenceComposite" type="Node" parent="ThirdNode/BeehaveTree"]
 script = ExtResource("4_px6t4")
- = null
 
 [node name="ValueNotReached" type="Node" parent="ThirdNode/BeehaveTree/SequenceComposite"]
 script = ExtResource("5_thhls")
- = null
 
 [node name="ValueReachedCondition" type="Node" parent="ThirdNode/BeehaveTree/SequenceComposite/ValueNotReached"]
 script = ExtResource("5_rc0ra")
