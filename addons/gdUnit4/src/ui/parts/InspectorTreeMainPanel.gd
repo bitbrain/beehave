@@ -129,8 +129,8 @@ func _ready():
 	init_tree()
 	if Engine.is_editor_hint():
 		_editor = Engine.get_meta("GdUnitEditorPlugin")
-	GdUnitSignals.instance().gdunit_add_test_suite.connect(Callable(self, "_on_gdunit_add_test_suite"))
-	GdUnitSignals.instance().gdunit_event.connect(Callable(self, "_on_gdunit_event"))
+	GdUnitSignals.instance().gdunit_add_test_suite.connect(_on_gdunit_add_test_suite)
+	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
 
 
 # we need current to manually redraw bacause of the animation bug

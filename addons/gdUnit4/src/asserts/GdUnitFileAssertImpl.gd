@@ -2,11 +2,9 @@ class_name GdUnitFileAssertImpl
 extends GdUnitFileAssert
 
 var _base: GdUnitAssert
-var _caller :Object
 
-func _init(caller :Object,current,expect_result: int):
-	_caller = caller
-	_base = GdUnitAssertImpl.new(caller, current, expect_result)
+func _init(current, expect_result: int):
+	_base = GdUnitAssertImpl.new(current, expect_result)
 	if not _base.__validate_value_type(current, TYPE_STRING):
 		report_error("GdUnitFileAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
@@ -82,5 +80,5 @@ func contains_exactly(expected_rows :Array) -> GdUnitFileAssert:
 		var source_code = GdScriptParser.to_unix_format(instance.get_script().source_code)
 		GdUnitTools.free_instance(instance)
 		var rows := Array(source_code.split("\n"))
-		GdUnitArrayAssertImpl.new(_caller, rows, GdUnitAssert.EXPECT_SUCCESS).contains_exactly(expected_rows)
+		GdUnitArrayAssertImpl.new(rows, GdUnitAssert.EXPECT_SUCCESS).contains_exactly(expected_rows)
 	return self

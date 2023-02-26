@@ -1,8 +1,6 @@
 extends Node
 
 signal ExecutionCompleted()
-# this signal is only used in GdUnitExecutorTest!
-signal gdunit_event_test(event)
 
 const INIT = 0
 const STAGE_TEST_SUITE_BEFORE = GdUnitReportCollector.STAGE_TEST_SUITE_BEFORE
@@ -17,33 +15,43 @@ var _testcase_timer :LocalTime
 var _memory_pool :GdUnitMemoryPool = GdUnitMemoryPool.new()
 var _report_errors_enabled :bool
 var _report_collector : = GdUnitReportCollector.new()
+var _arument_matcher = GdUnitArgumentMatchers.new()
 
 var _total_test_execution_orphans :int
 var _total_test_warnings :int
 var _total_test_failed :int
 var _total_test_errors :int
 var _fail_fast := false
+var _debug := false
 
-var _x = GdUnitArgumentMatchers.new()
-var _debug_mode :bool
 
-func _init(debug_mode := false):
-	_debug_mode = debug_mode
+func _init(debug := false):
+	set_name("GdUnitExecutor%s" % ("Debug" if debug else ""))
+	_debug = debug
+
 
 func _ready():
 	_report_errors_enabled = GdUnitSettings.is_report_push_errors()
 
+
 func fail_fast(enabled :bool) -> void:
 	_fail_fast = enabled
+
 
 func set_stage(stage :int) -> void:
 	_report_collector.set_stage(stage)
 
+
+func set_consume_reports(enabled :bool) -> void:
+	_report_collector.set_consume_reports(enabled)
+
+
 func fire_event(event :GdUnitEvent) -> void:
-	if _debug_mode:
-		emit_signal("gdunit_event_test", event)
+	if _debug:
+		GdUnitSignals.instance().gdunit_event_debug.emit(event)
 	else:
 		GdUnitSignals.instance().gdunit_event.emit(event)
+
 
 func fire_test_skipped(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	fire_event(GdUnitEvent.new()\
@@ -125,9 +133,7 @@ func test_before(test_suite :GdUnitTestSuite, test_case :_TestCase, test_case_na
 		fire_event(GdUnitEvent.new()\
 			.test_before(test_suite.get_script().resource_path, test_suite.get_name(), test_case_name))
 	
-	test_suite.set_meta(GdUnitAssertImpl.GD_TEST_FAILURE, false)
 	await test_suite.before_test()
-	
 	_memory_pool.monitor_stop()
 
 func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, test_case_name :String, fire_event := true):
@@ -275,8 +281,6 @@ func Execute(test_suite :GdUnitTestSuite) -> void:
 		return
 	
 	var ts := test_suite
-	_report_collector.register_report_provider(ts)
-	
 	await suite_before(ts, ts.get_child_count())
 	
 	if not ts.is_skipped():
