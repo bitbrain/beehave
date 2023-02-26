@@ -1,10 +1,8 @@
-![logo](assets/logo.svg)
+![logo](docs/assets/logo.svg)
 
-🐝  Behavior Tree addon for [Godot Engine](https://godotengine.org/).
+[![beehave-ci](https://github.com/bitbrain/beehave/actions/workflows/beehave-ci.yml/badge.svg)](https://github.com/bitbrain/beehave/actions/workflows/beehave-ci.yml) [![](https://img.shields.io/discord/785246324793540608.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/CKBuE5djXe) [![](https://img.shields.io/badge/%20%F0%9F%90%9D%20swag!%20-shop.bitbra.in-blueviolet)](https://shop.bitbra.in)
 
 ---
-
-![](https://img.shields.io/badge/Godot%20Compatible-4.0%2B-%234385B5) ![](https://img.shields.io/badge/Godot%20Compatible-3.0%2B-%234385B5) [![beehave-ci](https://github.com/bitbrain/beehave/actions/workflows/beehave-ci.yml/badge.svg)](https://github.com/bitbrain/beehave/actions/workflows/beehave-ci.yml) [![](https://img.shields.io/discord/785246324793540608.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.com/invite/CKBuE5djXe) [![](https://img.shields.io/badge/%20%F0%9F%90%9D%20swag!%20-shop.bitbra.in-blueviolet)](https://shop.bitbra.in)
 
 **[Beehave](https://bitbra.in/beehave) is a powerful addon for Godot Engine that enables you to create robust AI systems using behavior trees.** With Beehave, you can easily design complex NPC behaviors, build challenging boss battles, and create other advanced setups with ease.
 
@@ -16,13 +14,19 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 **🤖 Node based - build behavior trees within your scene tree**
 
+<img src="docs/assets/beehave-demo-tree.png" width="650px"/>
+
 **🐛 Debug view - a dedicated debug view to analyze your behavior at runtime**
+
+<img src="docs/assets/debug-tree.gif" width="650px"/>
 
 **🚗 Performance - built-in monitors to track performance of your behavior trees**
 
-**🍯 Active community - used by hundreds of game developers**
+<img src="docs/assets/performance-monitor.gif" width="650px"/>
 
 **🧪 Tested - any functionality of this addon is covered by test automation**
+
+<img src="docs/assets/gdunit-testrun.gif" width="650px"/>
 
 # 🧪 Installation
 
@@ -34,7 +38,7 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 Behavior trees are a modular way to build AI logic for your game. For simple AI, behavior trees are definitely overkill, however, for more complex AI interactions, behavior trees can help you to better manage changes and re-use logic across all NPCs.
 
-![example](assets/example.png)
+![example](docs/assets/example.png)
 
 [Learn how to beehave on the official wiki!](https://bitbra.in/beehave/#/learn)
 
