@@ -12,6 +12,7 @@ const TYPE_NODE 	= TYPE_MAX + 2001
 # missing Godot types
 const TYPE_CONTROL	= TYPE_MAX + 2002
 const TYPE_CANVAS	= TYPE_MAX + 2003
+const TYPE_ENUM		= TYPE_MAX + 2004
 
 
 # used as default value for varargs
@@ -485,10 +486,6 @@ static func is_instance_scene(instance) -> bool:
 	return false
 
 
-static func is_instanceof(obj :Object, type: Object) -> bool:
-	return is_type(type) and obj is type
-
-
 static func can_be_instantiate(obj :Variant) -> bool:
 	if not obj or is_engine_type(obj):
 		return false
@@ -534,6 +531,9 @@ static func extract_class_path(clazz) -> PackedStringArray:
 		return clazz_path
 	
 	if clazz is GDScript:
+		if not clazz.resource_path.is_empty():
+			clazz_path.append(clazz.resource_path)
+			return clazz_path
 		# if not found we go the expensive way and extract the path form the script by creating an instance
 		var arg_list := build_function_default_arguments(clazz, "_init")
 		var instance = clazz.callv("new", arg_list)

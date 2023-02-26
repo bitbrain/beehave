@@ -11,4 +11,4 @@ func is_match(value :Variant) -> bool:
 		return false
 	if is_instance_valid(value) and GdObjects.is_script(_clazz):
 		return value.get_script() == _clazz
-	return GdObjects.is_instanceof(value, _clazz)
+	return is_instance_of(value, _clazz)
