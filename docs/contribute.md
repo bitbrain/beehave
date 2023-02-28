@@ -24,6 +24,14 @@ In case you want to introduce a new node, feel free to [raise a pull request](ht
 
 Also ensure to update the `README.md` file with the documentation of the newly introduced node.
 
+## 📚 Adding documentation
+
+When introducing a new feature or changing behavior, ensure to update this wiki accordingly. In order to do so, modify the `/docs` folder inside the repository. Run the following command in order to test your wiki locally:
+```bash
+docsify serve /docs
+```
+> 💡 [Learn more](https://docsify.js.org/#/?id=docsify) about how to use **docsify**.
+
 ## Version management
 
 The current `godot-3.x` branch is aimed for **Godot 3.x** while any **Godot 4.x** features should go into the `godot-4.x` branch. When raising pull requests, make sure to also raise a Godot 4 relevant version against `godot-4.x` if requested.
