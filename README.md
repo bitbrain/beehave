@@ -10,21 +10,29 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 # 🐝 Features
 
-**🤖 Node based - build behavior trees within your scene tree**
+### 🤖 Node based - build behavior trees within your scene tree
 
-<img src="docs/assets/beehave-demo-tree.png" width="650px"/>
+Compose behavior trees in your scene and attach them to any node of your chosing.
 
-**🐛 Debug view - a dedicated debug view to analyze your behavior at runtime**
+<img src="docs/assets/beehave-demo-tree.png" width="450px"/>
 
-<img src="docs/assets/debug-tree.gif" width="650px"/>
+### 🐛 Debug view - a dedicated debug view to analyze your behavior at runtime
 
-**🚗 Performance - built-in monitors to track performance of your behavior trees**
+A dedicated debug view inside the Godot editor allows you to better understand what the behavior is doing under the hood.
 
-<img src="docs/assets/performance-monitor.gif" width="650px"/>
+<img src="docs/assets/debug-tree.gif" width="450px"/>
 
-**🧪 Tested - any functionality of this addon is covered by test automation**
+### 🚗 Performance - built-in monitors to track performance of your behavior trees
 
-<img src="docs/assets/gdunit-testrun.gif" width="650px"/>
+Maintaining high framerate is important in games. Investigate performance issues by using the custom monitor available inside the Godot editor.
+
+<img src="docs/assets/performance-monitor.gif" width="450px"/>
+
+### 🧪 Tested - any functionality of this addon is covered by test automation
+
+In order to avoid bugs creeping into the codebase, every feature is covered by unit tests.
+
+<img src="docs/assets/gdunit-testrun.gif" width="450px"/>
 
 # 🧪 Installation
 
