@@ -1,12 +1,12 @@
 # GdUnit generated TestSuite
-class_name SelectorStarTest
+class_name SelectorReactiveTest
 extends GdUnitTestSuite
 @warning_ignore("unused_parameter")
 @warning_ignore("return_value_discarded")
 
 
 # TestSuite generated from
-const __source = "res://addons/beehave/nodes/composites/selector_star.gd"
+const __source = "res://addons/beehave/nodes/composites/selector_reactive.gd"
 const __count_up_action = "res://test/actions/count_up_action.gd"
 const __blackboard = "res://addons/beehave/blackboard.gd"
 const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
@@ -65,43 +65,43 @@ func test_return_failure_of_none_is_succeeding() -> void:
 	assert_that(action2.count).is_equal(1)
 
 
-func test_keeps_running_child_until_success() -> void:
+func test_keeps_restarting_child_until_success() -> void:
 	action1.status = BeehaveNode.FAILURE
 	action2.status = BeehaveNode.RUNNING
 	
 	for i in range(2):
 		assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	
-	assert_that(action1.count).is_equal(1)
+	assert_that(action1.count).is_equal(2)
 	assert_that(action2.count).is_equal(2)
 	
 	action2.status = BeehaveNode.SUCCESS
 	
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
-	assert_that(action1.count).is_equal(1)
+	assert_that(action1.count).is_equal(3)
 	assert_that(action2.count).is_equal(3)
 	
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
-	assert_that(action1.count).is_equal(2)
+	assert_that(action1.count).is_equal(4)
 	assert_that(action2.count).is_equal(4)
 
 
-func test_keeps_running_child_until_failure() -> void:
+func test_keeps_restarting_child_until_failure() -> void:
 	action1.status = BeehaveNode.FAILURE
 	action2.status = BeehaveNode.RUNNING
 	
 	for i in range(2):
 		assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	
-	assert_that(action1.count).is_equal(1)
+	assert_that(action1.count).is_equal(2)
 	assert_that(action2.count).is_equal(2)
 	
 	action2.status = BeehaveNode.FAILURE
 	
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
-	assert_that(action1.count).is_equal(1)
+	assert_that(action1.count).is_equal(3)
 	assert_that(action2.count).is_equal(3)
 	
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
-	assert_that(action1.count).is_equal(2)
+	assert_that(action1.count).is_equal(4)
 	assert_that(action2.count).is_equal(4)
