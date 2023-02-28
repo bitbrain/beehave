@@ -1,19 +1,13 @@
-## Selector Star nodes will attempt to execute each of its children until one of
+## Selector Reactive nodes will attempt to execute each of its children until one of
 ## them return `SUCCESS`. If all children return `FAILURE`, this node will also
-## return `FAILURE`. This node will skip all previous child nodes that were
-## executed prior, in case one of the children is currently in `RUNNING` state.
+## return `FAILURE`.
+## If a child returns `RUNNING` it will restart.
 @tool
 @icon("../../icons/selector_reactive.svg")
-class_name SelectorStarComposite extends Composite
-
-var last_execution_index: int = 0
-
+class_name ReactiveSelectorComposite extends Composite
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():
-		if c.get_index() < last_execution_index:
-			continue
-
 		if c != running_child:
 			c.before_run(actor, blackboard)
 
@@ -26,13 +20,16 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 		match response:
 			SUCCESS:
+				# Interrupt any child that was RUNNING before.
+				if c != running_child:
+					interrupt(actor, blackboard)
 				c.after_run(actor, blackboard)
 				return SUCCESS
 			FAILURE:
-				last_execution_index += 1
 				c.after_run(actor, blackboard)
 			RUNNING:
-				running_child = c
+				if c != running_child:
+					running_child = c
 				if c is ActionLeaf:
 					blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 				return RUNNING
@@ -40,16 +37,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	return FAILURE
 
 
-func after_run(actor: Node, blackboard: Blackboard) -> void:
-	last_execution_index = 0
-
-
-func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	after_run(actor, blackboard)
-	super(actor, blackboard)
-
-
 func get_class_name() -> Array[StringName]:
 	var classes := super()
-	classes.push_back(&"SelectorStarComposite")
+	classes.push_back(&"SelectorComposite")
 	return classes

@@ -14,15 +14,17 @@ const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
 var tree: BeehaveTree
 var action1: ActionLeaf
 var action2: ActionLeaf
-
+var actor: Node
+var blackboard: Blackboard
+var sequence: SequenceStarComposite
 
 func before_test() -> void:
 	tree = auto_free(load(__tree).new())
 	action1 = auto_free(load(__count_up_action).new())
 	action2 = auto_free(load(__count_up_action).new())
-	var sequence = auto_free(load(__source).new())
-	var actor = auto_free(Node2D.new())
-	var blackboard = auto_free(load(__blackboard).new())
+	sequence = auto_free(load(__source).new())
+	actor = auto_free(Node2D.new())
+	blackboard = auto_free(load(__blackboard).new())
 	
 	tree.add_child(sequence)
 	sequence.add_child(action1)
@@ -91,5 +93,21 @@ func test_keeps_running_child_until_failure() -> void:
 	assert_that(action2.count).is_equal(3)
 	
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
-	assert_that(action1.count).is_equal(2)
+	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(4)
+
+func test_tick_again_when_child_returns_failure() -> void:
+	action1.status = BeehaveNode.SUCCESS
+	action2.status = BeehaveNode.FAILURE
+	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
+	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(2)
+	
+func test_tick_again_when_child_returns_running() -> void:
+	action1.status = BeehaveNode.SUCCESS
+	action2.status = BeehaveNode.RUNNING
+	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
+	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(2)

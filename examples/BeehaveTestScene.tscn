@@ -1,10 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://y24m3r3eydsu"]
+[gd_scene load_steps=12 format=3 uid="uid://dxkotdttpvmb0"]
 
 [ext_resource type="Script" path="res://examples/BeehaveTestScene.gd" id="1_s45or"]
-[ext_resource type="Texture2D" uid="uid://bphl1evimyk6u" path="res://splash.png" id="2_yf6a3"]
+[ext_resource type="Texture2D" uid="uid://b0p837bgri7g0" path="res://splash.png" id="2_yf6a3"]
 [ext_resource type="Script" path="res://examples/ColorChangingSprite.gd" id="3_4a21r"]
 [ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="3_hid2l"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector.gd" id="4_8ftoq"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector_reactive.gd" id="5_3qraw"]
 [ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="5_ifctq"]
 [ext_resource type="PackedScene" uid="uid://dl8hr0kerrxsv" path="res://examples/conditions/HasPositivePosition.tscn" id="6_7qx5k"]
 [ext_resource type="PackedScene" uid="uid://c3msbcyat8v0n" path="res://examples/actions/SetModulateColor.tscn" id="7_b4xjm"]
@@ -34,7 +34,7 @@ script = ExtResource("3_hid2l")
 blackboard = NodePath("../../Blackboard")
 
 [node name="SelectorComposite" type="Node" parent="ColorChangingSprite/BeehaveTree"]
-script = ExtResource("4_8ftoq")
+script = ExtResource("5_3qraw")
 
 [node name="SequenceComposite" type="Node" parent="ColorChangingSprite/BeehaveTree/SelectorComposite"]
 script = ExtResource("5_ifctq")
@@ -69,7 +69,7 @@ script = ExtResource("3_hid2l")
 blackboard = NodePath("../../Blackboard")
 
 [node name="SelectorComposite" type="Node" parent="AnotherSprite/AnotherTree"]
-script = ExtResource("4_8ftoq")
+script = ExtResource("5_3qraw")
 
 [node name="SequenceComposite" type="Node" parent="AnotherSprite/AnotherTree/SelectorComposite"]
 script = ExtResource("5_ifctq")
@@ -85,6 +85,14 @@ script = ExtResource("5_ifctq")
 [node name="HasNegativePosition" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2" instance=ExtResource("8_dorjh")]
 
 [node name="SetModulateColor" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2" instance=ExtResource("7_b4xjm")]
+modulate_color = Color(0, 0, 1, 1)
+
+[node name="SequenceComposite2" type="Node" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2"]
+script = ExtResource("5_ifctq")
+
+[node name="HasNegativePosition" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2/SequenceComposite2" instance=ExtResource("8_dorjh")]
+
+[node name="SetModulateColor" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2/SequenceComposite2" instance=ExtResource("7_b4xjm")]
 modulate_color = Color(0, 0, 1, 1)
 
 [node name="SetModulateColor" parent="AnotherSprite/AnotherTree/SelectorComposite" instance=ExtResource("7_b4xjm")]

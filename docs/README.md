@@ -10,27 +10,35 @@ Using behavior trees, Beehave makes it simple to create highly adaptive AI that 
 
 # 🐝 Features
 
-**🤖 Node based - build behavior trees within your scene tree**
+### 🤖 Node based - build behavior trees within your scene tree
 
-![example](assets/beehave-demo-tree.png)
+Compose behavior trees in your scene and attach them to any node of your chosing.
 
-**🐛 Debug view - a dedicated debug view to analyze your behavior at runtime**
+<img src="assets/beehave-demo-tree.png" width="450px"/>
 
-![debug-view](assets/debug-tree.gif)
+### 🐛 Debug view - a dedicated debug view to analyze your behavior at runtime
 
-**🚗 Performance - built-in monitors to track performance of your behavior trees**
+A dedicated debug view inside the Godot editor allows you to better understand what the behavior is doing under the hood.
 
-![performance-monitor](assets/performance-monitor.gif)
+<img src="assets/debug-tree.gif" width="450px"/>
 
-**🧪 Tested - any functionality of this addon is covered by test automation**
+### 🚗 Performance - built-in monitors to track performance of your behavior trees
 
-![performance-monitor](assets/gdunit-testrun.gif)
+Maintaining high framerate is important in games. Investigate performance issues by using the custom monitor available inside the Godot editor.
 
-Learn more about the features such as node types and internals [here](/learn.md).
+<img src="assets/performance-monitor.gif" width="450px"/>
+
+### 🧪 Tested - any functionality of this addon is covered by test automation
+
+In order to avoid bugs creeping into the codebase, every feature is covered by unit tests.
+
+<img src="assets/gdunit-testrun.gif" width="450px"/>
+
+> 💡 [Learn more](/manual/) about the features such as node types and internals.
 
 # 📦 Installation
 
-1. [Download for Godot 3.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-3.x.zip) or [Download for Godot 4.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-4.x.zip)
+1. [Download for Godot 4.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-4.x.zip) or [Download for Godot 3.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-3.x.zip)
 2. Unpack the `beehave` folder into your `/addons` folder within the Godot project
 3. Enable this addon within the Godot settings: `Project > Project Settings > Plugins`
 
