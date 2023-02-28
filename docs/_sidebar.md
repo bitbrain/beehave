@@ -9,5 +9,5 @@
         * [Sequence](/manual/sequence.md)
     * [Decorators](/manual/decorators.md)
     * [Debugging](/manual/debugging.md)
-    * [Performance Monitoring](/manual/performance.md)
+    * [Performance](/manual/performance.md)
 * [🍻 Contribute](/contribute.md)
