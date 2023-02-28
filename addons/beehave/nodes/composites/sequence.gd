@@ -38,7 +38,8 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				return FAILURE
 			RUNNING:
 				if c != running_child:
-					interrupt(actor, blackboard)
+					if running_child != null:
+						running_child.interrupt(actor, blackboard)
 					running_child = c
 				if c is ActionLeaf:
 					blackboard.set_value("running_action", c, str(actor.get_instance_id()))
