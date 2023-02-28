@@ -39,5 +39,5 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 func get_class_name() -> Array[StringName]:
 	var classes := super()
-	classes.push_back(&"SelectorComposite")
+	classes.push_back(&"ReactiveSelectorComposite")
 	return classes
