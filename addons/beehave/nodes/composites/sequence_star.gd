@@ -1,8 +1,8 @@
 ## Sequence Star nodes will attempt to execute all of its children and report
 ## `SUCCESS` in case all of the children report a `SUCCESS` status code.
 ## If at least one child reports a `FAILURE` status code, this node will also
-## return `FAILURE`. This node will skip all previous child nodes that succeeded
-## prior, in case one of the children is currently in `RUNNING` state
+## return `FAILURE` and tick again.
+## In case a child returns `RUNNING` this node will restart.
 @tool
 @icon("../../icons/sequence_reactive.svg")
 class_name SequenceStarComposite extends Composite

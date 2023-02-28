@@ -1,8 +1,8 @@
 ## Sequence nodes will attempt to execute all of its children and report
 ## `SUCCESS` in case all of the children report a `SUCCESS` status code.
 ## If at least one child reports a `FAILURE` status code, this node will also
-## return `FAILURE`. This node will attempt to process all its children every
-## single tick, even if one of them is currently `RUNNING` already.
+## return `FAILURE` and restart.
+## In case a child returns `RUNNING` this node will tick again. 
 @tool
 @icon("../../icons/sequence.svg")
 class_name SequenceComposite extends Composite
