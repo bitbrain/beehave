@@ -50,3 +50,9 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 	
 func _reset() -> void:
 	successful_index = 0
+
+
+func get_class_name() -> Array[StringName]:
+	var classes := super()
+	classes.push_back(&"SequenceReactiveComposite")
+	return classes

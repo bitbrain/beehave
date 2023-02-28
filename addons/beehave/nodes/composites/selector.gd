@@ -51,5 +51,5 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 
 func get_class_name() -> Array[StringName]:
 	var classes := super()
-	classes.push_back(&"SelectorStarComposite")
+	classes.push_back(&"SelectorComposite")
 	return classes
