@@ -6,8 +6,6 @@
 
 Using behavior trees, Beehave makes it simple to create highly adaptive AI that responds to changes in the game world and overcomes unexpected obstacles. Whether you're a beginner or an experienced developer, Beehave is the perfect tool to take your game AI to the next level.
 
-> ⚠ **Disclaimer: Godot 4 is not released yet. As a result, the version for Godot 4 may be unstable to use and the API may change. Please keep using [the stable 3.x branch](https://github.com/bitbrain/beehave/tree/godot-3.x) if you do not want to have breaking changes in your game.**
-
 # 🐝 Features
 
 ### 🤖 Node based - build behavior trees within your scene tree
