@@ -60,9 +60,13 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				if c is ActionLeaf:
 					blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 				return RUNNING
-	if not resume_on_failure:
-			_reset()
+
 	return SUCCESS
+
+
+func after_run(actor: Node, blackboard: Blackboard) -> void:
+	if not resume_on_failure:
+		_reset()
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
