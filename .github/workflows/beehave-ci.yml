@@ -54,19 +54,6 @@ jobs:
           godot-bin-name: ${{ matrix.godot-bin-name }}
           godot-cache-path: ${{ matrix.godot-cache-path }}
 
-      - name: "🖥️ Install OpenGL Drivers"
-        if: ${{ matrix.install-opengl && !cancelled() }}
-        shell: bash
-        run: |
-          sudo apt-get -y update
-          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-          export DISPLAY=:99
-          sudo apt-get install cmake pkg-config
-          sudo apt-get install mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev
-          sudo apt-get install libglew-dev libglfw3-dev libglm-dev
-          sudo apt-get install libao-dev libmpg123-dev
-          glxinfo | grep OpenGL
-
       - name: "♻️ Update Godot project cache"
         if: ${{ !cancelled() }}
         timeout-minutes: 1
