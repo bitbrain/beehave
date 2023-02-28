@@ -44,4 +44,26 @@ func test_return_failure_of_none_is_succeeding() -> void:
 	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(1)
 	
+func test_interrupt_second_when_first_is_succeeding() -> void:
+	action1.status = BeehaveNode.FAILURE
+	action2.status = BeehaveNode.RUNNING
+	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(1)
 	
+	action1.status = BeehaveNode.SUCCESS
+	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
+	assert_that(action1.count).is_equal(2)
+	assert_that(action2.count).is_equal(0)
+
+func test_interrupt_second_when_first_is_running() -> void:
+	action1.status = BeehaveNode.FAILURE
+	action2.status = BeehaveNode.RUNNING
+	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(1)
+	
+	action1.status = BeehaveNode.RUNNING
+	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(2)
+	assert_that(action2.count).is_equal(0)
