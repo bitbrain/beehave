@@ -20,6 +20,9 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 		match response:
 			SUCCESS:
+				# Interrupt any child that was RUNNING before.
+				if c != running_child:
+					interrupt(actor, blackboard)
 				c.after_run(actor, blackboard)
 				return SUCCESS
 			FAILURE:
