@@ -3,8 +3,8 @@ Selector nodes will attempt to execute each of its children and reports `SUCCESS
 
 Type of Node | Child returns `RUNNING`
 -- | --
-SelectorStar | Tick again
-Selector | Restart
+`SelectorComposite` | Restart
+`SelectorReactiveComposite` | Tick again
 
 ## Selector Random
-The Selector Random will attempt to execute all of its children just like a Selector Star would, with the exception that the children will be executed in a random order.
+The `SelectorRandomComposite` will attempt to execute all of its children just like a Selector Star would, with the exception that the children will be executed in a random order.

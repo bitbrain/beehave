@@ -3,9 +3,9 @@ Sequence nodes will attempt to execute all of its children and reports `SUCCESS`
 
 Type of Node | Child returns `FAILURE` | Child returns `RUNNING`
 -- | -- | --
-Sequence | Restart | Tick again
-ReactiveSequence | Restart | Restart
-SequenceStar | Tick again | Tick again
+`SequenceComposite` | Restart | Tick again
+`SequenceReactiveComposite` | Restart | Restart
+`SequenceStarComposite` | Tick again | Tick again
 
 ## Sequence Random
 The Sequence Random will attempt to execute all of its children just like a Sequence Star would, with the exception that the children will be executed in a random order.
