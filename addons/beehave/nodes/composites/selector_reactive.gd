@@ -29,6 +29,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				c.after_run(actor, blackboard)
 			RUNNING:
 				if c != running_child:
+					interrupt(actor, blackboard)
 					running_child = c
 				if c is ActionLeaf:
 					blackboard.set_value("running_action", c, str(actor.get_instance_id()))

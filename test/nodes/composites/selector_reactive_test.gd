@@ -105,3 +105,15 @@ func test_keeps_restarting_child_until_failure() -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	assert_that(action1.count).is_equal(4)
 	assert_that(action2.count).is_equal(4)
+	
+func test_interrupt_second_when_first_is_running() -> void:
+	action1.status = BeehaveNode.FAILURE
+	action2.status = BeehaveNode.RUNNING
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(1)
+	
+	action1.status = BeehaveNode.RUNNING
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(2)
+	assert_that(action2.count).is_equal(0)

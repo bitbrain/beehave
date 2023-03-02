@@ -32,7 +32,7 @@ jobs:
       matrix:
         os: [ubuntu-22.04]
         godot-version: ['4.0']
-        godot-status-version: ['rc6']
+        godot-status-version: ['stable']
         include:
           - os: ubuntu-22.04
             name: Godot 🐧 Linux Build
