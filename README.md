@@ -34,7 +34,7 @@ In order to avoid bugs creeping into the codebase, every feature is covered by u
 
 <img src="docs/assets/gdunit-testrun.gif" width="450px"/>
 
-# 🧪 Installation
+#  Installation
 
 1. [Download for Godot 3.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-3.x.zip) or [Download for Godot 4.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-4.x.zip)
 2. Unpack the `beehave` folder into your `/addons` folder within the Godot project
