@@ -32,6 +32,7 @@ script = ExtResource("3_4a21r")
 unique_name_in_owner = true
 script = ExtResource("3_hid2l")
 blackboard = NodePath("../../Blackboard")
+custom_monitor = true
 
 [node name="SelectorComposite" type="Node" parent="ColorChangingSprite/BeehaveTree"]
 script = ExtResource("5_3qraw")
@@ -67,6 +68,7 @@ texture = SubResource("CompressedTexture2D_atdvc")
 [node name="AnotherTree" type="Node" parent="AnotherSprite" node_paths=PackedStringArray("blackboard")]
 script = ExtResource("3_hid2l")
 blackboard = NodePath("../../Blackboard")
+custom_monitor = null
 
 [node name="SelectorComposite" type="Node" parent="AnotherSprite/AnotherTree"]
 script = ExtResource("5_3qraw")

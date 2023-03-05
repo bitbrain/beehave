@@ -12,6 +12,7 @@ enum {
 signal tree_enabled
 signal tree_disabled
 
+## Wether this behavior tree should be enabled or not.
 @export var enabled: bool = true:
 	set(value):
 		enabled = value
@@ -26,7 +27,11 @@ signal tree_disabled
 	get:
 		return enabled
 
+## An optional node path this behavior tree should apply to.
 @export_node_path var actor_node_path : NodePath
+
+## Custom blackboard node. An internal blackboard will be used
+## if no blackboard is provided explicitly.
 @export var blackboard:Blackboard:
 	set(b):
 		blackboard = b
@@ -39,6 +44,22 @@ signal tree_disabled
 			add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
 	get:
 		return blackboard if blackboard else _internal_blackboard
+
+## When enabled, this tree is tracked individually
+## as a custom monitor.
+@export var custom_monitor = false:
+	set(b):
+		custom_monitor = b
+		if custom_monitor and _process_time_metric_name != '':
+			Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
+			BeehaveGlobalMetrics.register_tree(self)
+		else:
+			if _process_time_metric_name != '':
+				# Remove tree metric from the engine
+				Performance.remove_custom_monitor(_process_time_metric_name)
+				BeehaveGlobalMetrics.unregister_tree(self)
+
+			BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
 var actor : Node
 var status : int = -1
@@ -69,8 +90,9 @@ func _ready() -> void:
 	_process_time_metric_name = "beehave/%s-%s-process_time" % [parent_name, get_instance_id()]
 
 	# Register custom metric to the engine
-	Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
-	BeehaveGlobalMetrics.register_tree(self)
+	if custom_monitor:
+		Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
+		BeehaveGlobalMetrics.register_tree(self)
 
 	set_physics_process(enabled)
 
@@ -126,14 +148,17 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
+## Returns the currently running action
 func get_running_action() -> ActionLeaf:
 	return blackboard.get_value("running_action", null, str(actor.get_instance_id()))
 
 
+## Returns the last condition that was executed
 func get_last_condition() -> ConditionLeaf:
 	return blackboard.get_value("last_condition", null, str(actor.get_instance_id()))
 
 
+## Returns the status of the last executed condition
 func get_last_condition_status() -> String:
 	if blackboard.has_value("last_condition_status", str(actor.get_instance_id())):
 		var status = blackboard.get_value("last_condition_status", null, str(actor.get_instance_id()))
@@ -153,21 +178,24 @@ func interrupt() -> void:
 			first_child.interrupt(actor, blackboard)
 
 
+## Enables this tree.
 func enable() -> void:
 	self.enabled = true
 
 
+## Disables this tree.
 func disable() -> void:
 	self.enabled = false
 
 
 func _exit_tree() -> void:
-	if _process_time_metric_name != '':
-		# Remove tree metric from the engine
-		Performance.remove_custom_monitor(_process_time_metric_name)
-		BeehaveGlobalMetrics.unregister_tree(self)
+	if custom_monitor:
+		if _process_time_metric_name != '':
+			# Remove tree metric from the engine
+			Performance.remove_custom_monitor(_process_time_metric_name)
+			BeehaveGlobalMetrics.unregister_tree(self)
 
-	BeehaveDebuggerMessages.unregister_tree(get_instance_id())
+		BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
 
 # Called by the engine to profile this tree
