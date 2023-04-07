@@ -11,5 +11,5 @@ static func of(test_suite) -> RPCGdUnitTestSuite:
 func dto() -> GdUnitResourceDto:
 	return GdUnitTestSuiteDto.new().deserialize(_data)
 
-func to_string():
+func _to_string():
 	return "RPCGdUnitTestSuite: " + str(_data)

@@ -8,7 +8,8 @@ enum POOL {
 	TESTSUITE,
 	TESTCASE,
 	EXECUTE,
-	UNIT_TEST_ONLY
+	UNIT_TEST_ONLY,
+	ALL,
 }
 
 
@@ -27,31 +28,31 @@ class MemoryStore extends RefCounted:
 	func _notification(what):
 		if what == NOTIFICATION_PREDELETE:
 			while not _store.is_empty():
-				var value := _store.pop_front()
+				var value :Variant = _store.pop_front()
 				GdUnitTools.free_instance(value)
 	
 	
-	static func pool(pool :POOL) -> MemoryStore:
-		var pool_name :String = POOL.keys()[pool]
+	static func pool(p_pool :POOL) -> MemoryStore:
+		var pool_name :String = POOL.keys()[p_pool]
 		return GdUnitSingleton.instance(pool_name, func(): return MemoryStore.new())
 	
 	
-	static func append(pool :POOL, value :Variant) -> void:
-		pool(pool)._store.append(value)
+	static func append(p_pool :POOL, value :Variant) -> void:
+		pool(p_pool)._store.append(value)
 	
 	
-	static func contains(pool :POOL, value :Variant) -> bool:
-		return pool(pool)._store.has(value)
+	static func contains(p_pool :POOL, value :Variant) -> bool:
+		return pool(p_pool)._store.has(value)
 	
 	
-	static func push_front(pool :POOL, value :Variant) -> void:
-		pool(pool)._store.push_front(value)
+	static func push_front(p_pool :POOL, value :Variant) -> void:
+		pool(p_pool)._store.push_front(value)
 	
 	
-	static func release_objects(pool :POOL) -> void:
-		var store := pool(pool)._store
+	static func release_objects(p_pool :POOL) -> void:
+		var store := pool(p_pool)._store
 		while not store.is_empty():
-			var value := store.pop_front()
+			var value :Variant = store.pop_front()
 			GdUnitTools.free_instance(value)
 
 
@@ -84,7 +85,7 @@ func monitor_stop() -> void:
 
 
 func free_pool() -> void:
-	run_auto_free(_current)
+	GdUnitMemoryPool.run_auto_free(_current)
 
 
 func get_monitor(pool_id :POOL) -> GdUnitMemMonitor:
@@ -99,7 +100,10 @@ func orphan_nodes() -> int:
 
 # register an instance to be freed when a test suite is finished
 static func register_auto_free(obj, pool :POOL) -> Variant:
-	if not is_instance_valid(obj):
+	# do not register on GDScriptNativeClass
+	if typeof(obj) == TYPE_OBJECT and (obj as Object).is_class("GDScriptNativeClass") :
+		return obj
+	if obj is GDScript or obj is ScriptExtension:
 		return obj
 	if obj is MainLoop:
 		push_error("avoid to add mainloop to auto_free queue  %s" % obj)
@@ -118,12 +122,12 @@ static func run_auto_free(pool :POOL) -> void:
 
 
 # tests if given object is registered for auto freeing
-static func is_auto_free_registered(obj, pool :POOL = -1) -> bool:
+static func is_auto_free_registered(obj, pool :POOL = POOL.ALL) -> bool:
 	# only register real object values
 	if not is_instance_valid(obj):
 		return false
 	# check all pools?
-	if pool == -1:
+	if pool == POOL.ALL:
 		return is_auto_free_registered(obj, POOL.TESTSUITE)\
 			or is_auto_free_registered(obj, POOL.TESTCASE)\
 			or is_auto_free_registered(obj, POOL.EXECUTE)

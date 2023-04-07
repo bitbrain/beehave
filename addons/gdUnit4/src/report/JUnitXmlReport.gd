@@ -46,7 +46,7 @@ func build_junit_report(report :GdUnitReportSummary) -> String:
 		.attribute(ATTR_NAME, "report_%s" % _iteration)\
 		.attribute(ATTR_TESTS, report.test_count())\
 		.attribute(ATTR_FAILURES, report.failure_count())\
-		.attribute(ATTR_TIME, to_time(report.duration()))\
+		.attribute(ATTR_TIME, JUnitXmlReport.to_time(report.duration()))\
 		.add_childs(build_test_suites(report))
 	var as_string = test_suites.to_xml()
 	test_suites.dispose()
@@ -68,7 +68,7 @@ func build_test_suites(summary :GdUnitReportSummary) -> Array:
 			.attribute(ATTR_FAILURES, suite_report.failure_count())\
 			.attribute(ATTR_ERRORS, suite_report.error_count())\
 			.attribute(ATTR_SKIPPED, suite_report.skipped_count())\
-			.attribute(ATTR_TIME, to_time(suite_report.duration()))\
+			.attribute(ATTR_TIME, JUnitXmlReport.to_time(suite_report.duration()))\
 			.add_childs(build_test_cases(suite_report)))
 	return test_suites
 
@@ -80,7 +80,7 @@ func build_test_cases(suite_report :GdUnitTestSuiteReport) -> Array:
 		test_cases.append( XmlElement.new("testcase")\
 			.attribute(ATTR_NAME, report.name())\
 			.attribute(ATTR_CLASSNAME, report.suite_name())\
-			.attribute(ATTR_TIME, to_time(report.duration()))\
+			.attribute(ATTR_TIME, JUnitXmlReport.to_time(report.duration()))\
 			.add_childs(build_reports(report)))
 	return test_cases
 
@@ -93,12 +93,12 @@ func build_reports(testReport :GdUnitTestCaseReport) -> Array:
 			if report.is_failure():
 				failure_reports.append( XmlElement.new("failure")\
 					.attribute(ATTR_MESSAGE, "FAILED: %s:%d" % [testReport._resource_path, report.line_number()])\
-					.attribute(ATTR_TYPE, to_type(report.type()))\
+					.attribute(ATTR_TYPE, JUnitXmlReport.to_type(report.type()))\
 					.text(convert_rtf_to_text(report.message())))
 			elif report.is_error():
 				failure_reports.append( XmlElement.new("error")\
 					.attribute(ATTR_MESSAGE, "ERROR: %s:%d" % [testReport._resource_path, report.line_number()])\
-					.attribute(ATTR_TYPE, to_type(report.type()))\
+					.attribute(ATTR_TYPE, JUnitXmlReport.to_type(report.type()))\
 					.text(convert_rtf_to_text(report.message())))
 	if testReport.skipped_count():
 		for failure in testReport._failure_reports:

@@ -130,7 +130,6 @@ static func is_mockable(clazz :Variant, push_errors :bool=false) -> bool:
 		return true
 	# verify class type
 	if GdObjects.is_object(clazz):
-		var mockable := false
 		if GdObjects.is_instance(clazz):
 			if push_errors:
 				push_error("It is not allowed to mock an instance '%s', use class name instead, Read 'Mocker' documentation for details" % clazz)

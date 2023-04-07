@@ -30,9 +30,6 @@ func _enter_tree():
 	add_control_to_bottom_panel(_gd_console, "gdUnitConsole")
 	_server_node = load("res://addons/gdUnit4/src/network/GdUnitServer.tscn").instantiate()
 	add_child(_server_node)
-	var err := _gd_inspector.connect("gdunit_runner_stop",Callable(_server_node,"_on_gdunit_runner_stop"))
-	if err != OK:
-		prints("ERROR", GdUnitTools.error_as_string(err))
 	_fixup_node_inspector()
 	prints("Loading GdUnit4 Plugin success")
 
@@ -47,7 +44,7 @@ func _exit_tree():
 	if is_instance_valid(_server_node):
 		remove_child(_server_node)
 		_server_node.free()
+	GdUnitTools.dispose_all()
 	if Engine.has_meta("GdUnitEditorPlugin"):
 		Engine.remove_meta("GdUnitEditorPlugin")
 	prints("Unload GdUnit4 Plugin success")
-	GdUnitSingleton.dispose()

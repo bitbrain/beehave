@@ -36,5 +36,5 @@ static func init_fonts(item: CanvasItem) -> float:
 static func create_font(font_resource: String, size: float) -> Font:
 	var font := FontFile.new()
 	font.font_data = load(font_resource)
-	font.fixed_size = size
+	font.fixed_size = int(size)
 	return font

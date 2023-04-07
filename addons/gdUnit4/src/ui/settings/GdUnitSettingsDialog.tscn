@@ -1,0 +1,283 @@
+[gd_scene load_steps=6 format=3 uid="uid://dwgat6j2u77g4"]
+
+[ext_resource type="Script" path="res://addons/gdUnit4/src/ui/settings/GdUnitSettingsDialog.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://c7sk0yhd52lg3" path="res://addons/gdUnit4/src/ui/assets/icon.png" id="2_w63lb"]
+[ext_resource type="PackedScene" uid="uid://dte0m2endcgtu" path="res://addons/gdUnit4/src/ui/templates/TestSuiteTemplate.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://addons/gdUnit4/src/ui/settings/GdUnitInputCapture.tscn" id="5_xu3j8"]
+[ext_resource type="Script" path="res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd" id="8_2ggr0"]
+
+[node name="Control" type="Window"]
+disable_3d = true
+gui_embed_subwindows = true
+initial_position = 1
+size = Vector2i(384, 384)
+visible = false
+wrap_controls = true
+transient = true
+exclusive = true
+script = ExtResource("2")
+
+[node name="property_template" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 956.0
+offset_bottom = 656.0
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="property_template"]
+layout_mode = 0
+offset_top = 13.0
+offset_right = 131.0
+offset_bottom = 27.0
+
+[node name="btn_reset" type="Button" parent="property_template"]
+layout_mode = 0
+offset_right = 12.0
+offset_bottom = 40.0
+tooltip_text = "Reset to default value"
+clip_text = true
+
+[node name="info" type="Label" parent="property_template"]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 11.0
+offset_right = 590.0
+offset_bottom = 25.0
+size_flags_horizontal = 3
+text = "Enables/disables the update notification "
+clip_text = true
+max_lines_visible = 1
+
+[node name="sub_category" type="Panel" parent="property_template"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 30.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="property_template/sub_category"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.196078, 0.631373, 0.639216, 1)
+
+[node name="GdUnitUpdateClient" type="Node" parent="."]
+script = ExtResource("8_2ggr0")
+
+[node name="Panel" type="Panel" parent="."]
+clip_contents = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="v" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel/v"]
+use_parent_material = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+
+[node name="GridContainer" type="HBoxContainer" parent="Panel/v/MarginContainer"]
+use_parent_material = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PanelContainer" type="MarginContainer" parent="Panel/v/MarginContainer/GridContainer"]
+use_parent_material = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Panel" type="VBoxContainer" parent="Panel/v/MarginContainer/GridContainer/PanelContainer"]
+use_parent_material = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CenterContainer" type="CenterContainer" parent="Panel/v/MarginContainer/GridContainer/PanelContainer/Panel"]
+use_parent_material = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="logo" type="TextureRect" parent="Panel/v/MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+texture = ExtResource("2_w63lb")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CenterContainer2" type="MarginContainer" parent="Panel/v/MarginContainer/GridContainer/PanelContainer/Panel"]
+use_parent_material = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="version" type="RichTextLabel" parent="Panel/v/MarginContainer/GridContainer/PanelContainer/Panel/CenterContainer2"]
+unique_name_in_owner = true
+use_parent_material = true
+clip_contents = false
+layout_mode = 2
+size_flags_horizontal = 3
+auto_translate = false
+localize_numeral_system = false
+bbcode_enabled = true
+scroll_active = false
+meta_underlined = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/v/MarginContainer/GridContainer/PanelContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+
+[node name="btn_report_bug" type="Button" parent="Panel/v/MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Press to create a bug report"
+text = "Report Bug"
+
+[node name="btn_request_feature" type="Button" parent="Panel/v/MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Press to create a feature request"
+text = "Request Feature"
+
+[node name="btn_install_examples" type="Button" parent="Panel/v/MarginContainer/GridContainer/PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Press to install the advanced test examples"
+disabled = true
+text = "Install Examples"
+
+[node name="Properties" type="TabContainer" parent="Panel/v/MarginContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 11
+
+[node name="Common" type="ScrollContainer" parent="Panel/v/MarginContainer/GridContainer/Properties"]
+layout_mode = 2
+
+[node name="common-content" type="VBoxContainer" parent="Panel/v/MarginContainer/GridContainer/Properties/Common"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(1431, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="UI" type="ScrollContainer" parent="Panel/v/MarginContainer/GridContainer/Properties"]
+visible = false
+layout_mode = 2
+
+[node name="ui-content" type="VBoxContainer" parent="Panel/v/MarginContainer/GridContainer/Properties/UI"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(1249, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Shortcuts" type="ScrollContainer" parent="Panel/v/MarginContainer/GridContainer/Properties"]
+visible = false
+layout_mode = 2
+
+[node name="shortcut-content" type="VBoxContainer" parent="Panel/v/MarginContainer/GridContainer/Properties/Shortcuts"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(941, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="GdUnitInputCapture" parent="Panel/v/MarginContainer/GridContainer/Properties/Shortcuts/shortcut-content" instance=ExtResource("5_xu3j8")]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.543351, 0.543351, 0.543351, 0.589016)
+z_index = 1
+z_as_relative = false
+layout_mode = 2
+size_flags_horizontal = 1
+size_flags_vertical = 1
+
+[node name="Report" type="ScrollContainer" parent="Panel/v/MarginContainer/GridContainer/Properties"]
+visible = false
+layout_mode = 2
+
+[node name="report-content" type="VBoxContainer" parent="Panel/v/MarginContainer/GridContainer/Properties/Report"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(1249, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Templates" parent="Panel/v/MarginContainer/GridContainer/Properties" instance=ExtResource("4")]
+visible = false
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="Panel/v"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/v/MarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="Panel/v/MarginContainer2/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="progress_lbl" type="Label" parent="Panel/v/MarginContainer2/HBoxContainer/ProgressBar"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+clip_text = true
+
+[node name="btn_close" type="Button" parent="Panel/v/MarginContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Close"
+
+[connection signal="pressed" from="Panel/v/MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_report_bug" to="." method="_on_btn_report_bug_pressed"]
+[connection signal="pressed" from="Panel/v/MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_request_feature" to="." method="_on_btn_request_feature_pressed"]
+[connection signal="pressed" from="Panel/v/MarginContainer/GridContainer/PanelContainer/VBoxContainer/btn_install_examples" to="." method="_on_btn_install_examples_pressed"]
+[connection signal="pressed" from="Panel/v/MarginContainer2/HBoxContainer/btn_close" to="." method="_on_btn_close_pressed"]

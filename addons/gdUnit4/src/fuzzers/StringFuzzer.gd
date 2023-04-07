@@ -14,7 +14,7 @@ func _init(min_length :int,max_length :int,pattern :String = DEFAULT_CHARSET):
 	assert(not null or not pattern.is_empty())
 	_min_length = min_length
 	_max_length = max_length
-	_charset = extract_charset(pattern)
+	_charset = StringFuzzer.extract_charset(pattern)
 
 static func extract_charset(pattern :String) -> PackedByteArray:
 	var reg := RegEx.new()

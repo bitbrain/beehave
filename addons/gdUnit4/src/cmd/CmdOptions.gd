@@ -6,19 +6,23 @@ var _default_options :Array
 var _advanced_options :Array
 
 
-func _init(options :Array = Array(),advanced_options :Array = Array()):
+func _init(p_options :Array = Array(), p_advanced_options :Array = Array()):
 	# default help options
-	_default_options = options 
-	_advanced_options = advanced_options
+	_default_options = p_options 
+	_advanced_options = p_advanced_options
+
 
 func default_options() -> Array:
 	return _default_options
 
+
 func advanced_options() -> Array:
 	return _advanced_options
 
+
 func options() -> Array:
 	return default_options() + advanced_options()
+
 
 func get_option(cmd :String) -> CmdOption:
 	for option in options():

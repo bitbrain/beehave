@@ -19,6 +19,7 @@ var _status := INIT
 var _source_file :String = ""
 var _source_line :int = -1
 
+
 func _init():
 	var cmd_parser := CmdArgumentParser.new(_cmd_options, "GdUnitBuildTool.gd")
 	var result := cmd_parser.parse(OS.get_cmdline_args())
@@ -42,13 +43,14 @@ func _init():
 		return
 	_status = PROCESSING
 
+
 func _idle(_delta):
 	if _status == PROCESSING:
 		var script := ResourceLoader.load(_source_file) as Script
 		if script == null:
 			exit(RETURN_ERROR, "Can't load source file %s!" % _source_file)
 		
-		var result := GdUnitTestSuiteBuilder.new().create(script, _source_line)
+		var result := GdUnitTestSuiteBuilder.create(script, _source_line)
 		if result.is_error():
 			print_json_error(result.error_message())
 			exit(RETURN_ERROR, result.error_message())
@@ -57,6 +59,7 @@ func _idle(_delta):
 		_console.prints_color("Added testcase: %s" % result.value(), Color.CORNFLOWER_BLUE)
 		print_json_result(result.value())
 		exit(RETURN_SUCCESS)
+
 
 func exit(code :int, message :String = "") -> void:
 	_status = EXIT
@@ -68,21 +71,25 @@ func exit(code :int, message :String = "") -> void:
 		_console.prints_color("Exit code: %d" % RETURN_SUCCESS, Color.DARK_SALMON)
 	quit(code)
 
+
 func print_json_result(result :Dictionary) -> void:
 	# convert back to system path
 	var path = ProjectSettings.globalize_path(result["path"]);
 	var json = 'JSON_RESULT:{"TestCases" : [{"line":%d, "path": "%s"}]}' % [result["line"], path]
 	prints(json)
 
+
 func print_json_error(error :String) -> void:
 	prints('JSON_RESULT:{"Error" : "%s"}' % error)
 
-func show_options(show_advanced :bool = false) -> void:
+
+func show_options() -> void:
 	_console.prints_color(" Usage:", Color.DARK_SALMON)
 	_console.prints_color("	build -scp <source_path> -scl <line_number>", Color.DARK_SALMON)
 	_console.prints_color("-- Options ---------------------------------------------------------------------------------------", Color.DARK_SALMON).new_line()
 	for option in _cmd_options.default_options():
 		descripe_option(option)
+
 
 func descripe_option(cmd_option :CmdOption) -> void:
 	_console.print_color("  %-40s" % str(cmd_option.commands()), Color.CORNFLOWER_BLUE)

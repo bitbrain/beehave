@@ -7,18 +7,18 @@ var _rtf :RichTextLabel
 
 
 func _init(rtf :RichTextLabel,
-		resource_path :String,
-		suite_name :String,
+		p_resource_path :String,
+		p_suite_name :String,
 		test_name :String,
 		is_error := false,
 		is_failed := false,
 		orphans :int = 0,
 		is_skipped := false,
 		failure_reports :Array = [],
-		duration :int = 0):
+		p_duration :int = 0):
 	_rtf = rtf
-	_resource_path = resource_path
-	_suite_name = suite_name
+	_resource_path = p_resource_path
+	_suite_name = p_suite_name
 	_name = test_name
 	_test_count = 1
 	_error_count = is_error
@@ -26,7 +26,7 @@ func _init(rtf :RichTextLabel,
 	_orphan_count = orphans
 	_skipped_count = is_skipped
 	_failure_reports = failure_reports
-	_duration = duration
+	_duration = p_duration
 
 
 func suite_name() -> String:
@@ -52,7 +52,7 @@ func convert_rtf_to_html(bbcode :String) -> String:
 	return "\n".join(converted)
 
 
-func create_record(report_dir :String) -> String:
+func create_record(_report_dir :String) -> String:
 	return GdUnitHtmlPatterns.TABLE_RECORD_TESTCASE\
 		.replace(GdUnitHtmlPatterns.REPORT_STATE, report_state())\
 		.replace(GdUnitHtmlPatterns.TESTCASE_NAME, name())\

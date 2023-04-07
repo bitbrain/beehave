@@ -68,7 +68,7 @@ const DEFAULT_ENUM_RETURN_VALUES = {
 var _push_errors :String
 
 static func default_return_value(func_descriptor :GdFunctionDescriptor) -> String:
-	var return_type := func_descriptor.return_type()
+	var return_type :Variant = func_descriptor.return_type()
 	if return_type == GdObjects.TYPE_ENUM:
 		var enum_path := func_descriptor._return_class.split(".")
 		if enum_path.size() == 2:
@@ -89,6 +89,7 @@ func _init(push_errors :bool = false):
 				assert(DEFAULT_TYPED_RETURN_VALUES.has(type_key), "Missing Type default definition!")
 
 
+@warning_ignore("unused_parameter")
 func get_template(return_type :Variant, is_vararg :bool) -> String:
 	push_error("Must be implemented!")
 	return ""
@@ -102,35 +103,36 @@ func double(func_descriptor :GdFunctionDescriptor) -> PackedStringArray:
 	var func_name := func_descriptor.name()
 	var args := func_descriptor.args()
 	var varargs := func_descriptor.varargs()
-	var default_return_value := default_return_value(func_descriptor)
+	var return_value := GdFunctionDoubler.default_return_value(func_descriptor)
 	var arg_names := extract_arg_names(args)
 	var vararg_names := extract_arg_names(varargs)
 	
 	# save original constructor arguments
 	if func_name == "_init":
-		var constructor_args := ",".join(extract_constructor_args(args))
+		var constructor_args := ",".join(GdFunctionDoubler.extract_constructor_args(args))
 		var constructor := "func _init(%s):\n	super(%s)\n	pass\n" % [constructor_args, ", ".join(arg_names)]
 		return constructor.split("\n")
 	
-	var double := ""
+	var double_src := ""
 	if func_descriptor.is_engine():
-		double += '@warning_ignore("native_method_override")\n'
-	double += func_signature
+		double_src += '@warning_ignore("native_method_override")\n'
+	double_src += '@warning_ignore("shadowed_variable")\n'
+	double_src += func_signature
 	# fix to  unix format, this is need when the template is edited under windows than the template is stored with \r\n
 	var func_template := get_template(func_descriptor.return_type(), is_vararg).replace("\r\n", "\n")
-	double += func_template\
+	double_src += func_template\
 		.replace("$(arguments)", ", ".join(arg_names))\
 		.replace("$(varargs)", ", ".join(vararg_names))\
-		.replace("$(await)", await_is_coroutine(is_coroutine)) \
+		.replace("$(await)", GdFunctionDoubler.await_is_coroutine(is_coroutine)) \
 		.replace("$(func_name)", func_name )\
-		.replace("${default_return_value}", default_return_value)\
+		.replace("${default_return_value}", return_value)\
 		.replace("$(push_errors)", _push_errors)
 	
 	if is_static:
-		double = double.replace("$(instance)", "__instance().")
+		double_src = double_src.replace("$(instance)", "__instance().")
 	else:
-		double = double.replace("$(instance)", "")
-	return double.split("\n")
+		double_src = double_src.replace("$(instance)", "")
+	return double_src.split("\n")
 
 
 func extract_arg_names(argument_signatures :Array[GdFunctionArgument]) -> PackedStringArray:

@@ -18,6 +18,7 @@ func _ready():
 	_time.text = ""
 	_orphans.text = "0"
 
+
 func status_changed(elapsed_time :int, orphan_nodes :int):
 	total_elapsed_time += elapsed_time
 	total_orphans += orphan_nodes
@@ -25,6 +26,7 @@ func status_changed(elapsed_time :int, orphan_nodes :int):
 	_orphans.text = str(total_orphans)
 	if total_orphans > 0:
 		_orphan_button.icon = ICON_RED
+
 
 func _on_gdunit_event(event :GdUnitEvent) -> void:
 	match event.type():
@@ -41,6 +43,7 @@ func _on_gdunit_event(event :GdUnitEvent) -> void:
 			pass
 		GdUnitEvent.TESTSUITE_AFTER:
 			status_changed(event.elapsed_time(), event.orphan_nodes())
+
 
 func _on_ToolButton_pressed():
 	emit_signal("jump_to_orphan_nodes")

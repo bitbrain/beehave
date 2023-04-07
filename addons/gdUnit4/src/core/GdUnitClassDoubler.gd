@@ -91,7 +91,7 @@ static func double_functions(instance :Object, clazz_name :String, clazz_path :P
 		if functions.has(func_descriptor.name()) or exclude_override_functions.has(func_descriptor.name()):
 			continue
 		# GD-110: Hotfix do not double invalid engine functions
-		if is_invalid_method_descriptior(clazz_name, method):
+		if is_invalid_method_descriptior(method):
 			#prints("'%s': invalid method descriptor found! %s" % [clazz_name, method])
 			continue
 		# do not double on not implemented virtual functions
@@ -104,7 +104,7 @@ static func double_functions(instance :Object, clazz_name :String, clazz_path :P
 
 
 # GD-110
-static func is_invalid_method_descriptior(clazz :String, method :Dictionary) -> bool:
+static func is_invalid_method_descriptior(method :Dictionary) -> bool:
 	var return_info = method["return"]
 	var type :int = return_info["type"]
 	var usage :int = return_info["usage"]

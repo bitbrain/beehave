@@ -12,6 +12,7 @@ signal gdunit_message(message :String)
 signal gdunit_report(report :GdUnitReport)
 signal gdunit_set_test_failed(is_failed :bool)
 
+signal gdunit_settings_changed(property :GdUnitProperty)
 
 const META_KEY := "GdUnitSignals"
 
@@ -19,10 +20,15 @@ const META_KEY := "GdUnitSignals"
 static func instance() -> GdUnitSignals:
 	if Engine.has_meta(META_KEY):
 		return Engine.get_meta(META_KEY)
-	var instance := GdUnitSignals.new()
-	Engine.set_meta(META_KEY, instance)
-	return instance
+	var instance_ := GdUnitSignals.new()
+	Engine.set_meta(META_KEY, instance_)
+	return instance_
 
 
 static func dispose() -> void:
+	var signals := instance()
+	# cleanup connected signals
+	for signal_ in signals.get_signal_list():
+		for connection in signals.get_signal_connection_list(signal_["name"]):
+			connection["signal"].disconnect(connection["callable"])
 	Engine.remove_meta(META_KEY)

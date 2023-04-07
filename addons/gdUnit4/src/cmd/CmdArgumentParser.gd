@@ -5,9 +5,11 @@ var _options :CmdOptions
 var _tool_name :String
 var _parsed_commands :Dictionary = Dictionary()
 
-func _init(options :CmdOptions,tool_name :String):
-	_options = options
-	_tool_name = tool_name
+
+func _init(p_options :CmdOptions, p_tool_name :String):
+	_options = p_options
+	_tool_name = p_tool_name
+
 
 func parse(args :Array, ignore_unknown_cmd := false) -> Result:
 	_parsed_commands.clear()
@@ -33,8 +35,10 @@ func parse(args :Array, ignore_unknown_cmd := false) -> Result:
 			return Result.error("Unknown '%s' command!" % cmd)
 	return Result.success(_parsed_commands.values())
 
+
 func options() -> CmdOptions:
 	return _options
+
 
 func _parse_cmd_arguments(option :CmdOption, args :Array) -> int:
 	var command_name := option.short_command()
@@ -49,6 +53,7 @@ func _parse_cmd_arguments(option :CmdOption, args :Array) -> int:
 			return -1
 	_parsed_commands[command_name] = command
 	return 0
+
 
 func _is_next_value_argument(args :Array) -> bool:
 	if args.is_empty():

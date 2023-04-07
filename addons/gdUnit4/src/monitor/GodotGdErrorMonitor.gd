@@ -29,16 +29,16 @@ func stop():
 
 
 func reports() -> Array[GdUnitReport]:
-	var reports :Array[GdUnitReport] = []
+	var reports_ :Array[GdUnitReport] = []
 	if _report_enabled:
 		var loggs := _collect_log_entries()
 		for index in loggs.size():
 			var message := loggs[index]
 			if _is_report_script_errors() and message.contains(USER_SCRIPT_ERROR):
-				reports.append(_report_runtime_error(message, loggs[index+1]))
+				reports_.append(GodotGdErrorMonitor._report_runtime_error(message, loggs[index+1]))
 			if _is_report_push_errors() and message.contains(USER_PUSH_ERROR):
-				reports.append(_report_user_error(message, loggs[index+1]))
-	return reports
+				reports_.append(GodotGdErrorMonitor._report_user_error(message, loggs[index+1]))
+	return reports_
 
 
 func is_reporting_enabled() -> bool:

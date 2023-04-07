@@ -60,21 +60,19 @@ static func save_an_open_script(script_path :String, close := false) -> bool:
 	#prints("save_an_open_script", script_path, close)
 	if !Engine.is_editor_hint():
 		return false
-	var editor_interface := editor_interface()
-	var script_editor := script_editor()
+	var interface := editor_interface()
+	var editor := script_editor()
 	var editor_popup := _menu_popup()
-	var open_file_index = 0
 	# search for the script in all opened editor scrips
-	for open_script in script_editor.get_open_scripts():
+	for open_script in editor.get_open_scripts():
 		if open_script.resource_path == script_path:
 			# select the script in the editor
-			editor_interface.edit_script(open_script, 0);
+			interface.edit_script(open_script, 0);
 			# save and close
 			editor_popup.id_pressed.emit(FILE_SAVE)
 			if close:
 				editor_popup.id_pressed.emit(FILE_CLOSE)
 			return true
-		open_file_index +=1
 	return false
 
 
@@ -88,39 +86,33 @@ static func close_open_editor_scripts() -> void:
 	if Engine.is_editor_hint():
 		_menu_popup().id_pressed.emit(CLOSE_ALL)
 
+
 # Edits the given script.
 # The script is openend in the current editor and selected in the file system dock.
 # The line and column on which to open the script can also be specified.
 # The script will be open with the user-configured editor for the script's language which may be an external editor.
 static func edit_script(script_path :String, line_number :int = -1):
-	var editor_interface := editor_interface()
-	var file_system := editor_interface.get_resource_filesystem()
+	var interface := editor_interface()
+	var file_system := interface.get_resource_filesystem()
 	file_system.update_file(script_path)
-	var file_system_dock := editor_interface.get_file_system_dock()
+	var file_system_dock := interface.get_file_system_dock()
 	file_system_dock.navigate_to_path(script_path)
-	editor_interface.select_file(script_path)
+	interface.select_file(script_path)
 	var script = load(script_path)
-	editor_interface.edit_script(script, line_number)
+	interface.edit_script(script, line_number)
 
 
 # Register the given context menu to the current script editor
 # Is called when the plugin is activated
 # The active script is connected to the ScriptEditorContextMenuHandler
 static func register_context_menu(menu :Array[GdUnitContextMenuItem]) -> void:
-	script_editor().editor_script_changed.connect(ScriptEditorContextMenuHandler.create(menu).bind(script_editor()))
+	Engine.get_main_loop().root.call_deferred("add_child", ScriptEditorContextMenuHandler.new(menu, script_editor()))
 
 
 # Unregisteres all registerend context menus and gives the ScriptEditorContextMenuHandler> free
 # Is called when the plugin is deactivated
 static func unregister_context_menu() -> void:
-	for connection in script_editor().editor_script_changed.get_connections():
-		var cb :Callable = connection["callable"]
-		if cb.get_object() is ScriptEditorContextMenuHandler:
-			cb.get_object().free()
-
-
-static func filesystem_add_context_menu() -> void:
-	pass
+	ScriptEditorContextMenuHandler.dispose(script_editor())
 
 
 static func _menu_popup() -> PopupMenu:

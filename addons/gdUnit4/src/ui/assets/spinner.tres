@@ -1,13 +1,13 @@
 [gd_resource type="AnimatedTexture" load_steps=9 format=3 uid="uid://ck3p6wmq42arh"]
 
-[ext_resource type="Texture2D" uid="uid://k6tafcfmj7nh" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress7.svg" id="1"]
-[ext_resource type="Texture2D" uid="uid://bk7uary1uurve" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress5.svg" id="2"]
-[ext_resource type="Texture2D" uid="uid://cre3u1yoi31wc" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress1.svg" id="3"]
-[ext_resource type="Texture2D" uid="uid://357jyfxexe8n" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress8.svg" id="4"]
-[ext_resource type="Texture2D" uid="uid://b6f3oeyqc8rmv" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress2.svg" id="5"]
-[ext_resource type="Texture2D" uid="uid://r8nlrj4e1u4x" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress6.svg" id="6"]
-[ext_resource type="Texture2D" uid="uid://cipvy0wb2544u" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress3.svg" id="7"]
-[ext_resource type="Texture2D" uid="uid://di1hwc1nhx46e" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress4.svg" id="8"]
+[ext_resource type="Texture2D" uid="uid://cct6crbhix7u8" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress7.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://bkj6kjyjyi7cd" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress5.svg" id="2"]
+[ext_resource type="Texture2D" uid="uid://ddxpytkht0m5p" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress1.svg" id="3"]
+[ext_resource type="Texture2D" uid="uid://dqc521iq12a7l" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress8.svg" id="4"]
+[ext_resource type="Texture2D" uid="uid://dowca7ike2thl" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress2.svg" id="5"]
+[ext_resource type="Texture2D" uid="uid://bsljbs1aiyels" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress6.svg" id="6"]
+[ext_resource type="Texture2D" uid="uid://cwh8md6qipmdw" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress3.svg" id="7"]
+[ext_resource type="Texture2D" uid="uid://dm0jpqdjetv2c" path="res://addons/gdUnit4/src/ui/assets/spinner/Progress4.svg" id="8"]
 
 [resource]
 frames = 8

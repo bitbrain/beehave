@@ -22,81 +22,97 @@ var _debug_show_color_codes := false
 var _color_mode = COLOR_TABLE
 
 
-func color(color :Color) -> CmdConsole:
+func color(p_color :Color) -> CmdConsole:
 	# using color table 16 - 231 a  6 x 6 x 6 RGB color cube  (16 + R * 36 + G * 6 + B)
 	if _color_mode == COLOR_TABLE:
-		var c2 = 16 + (int(color.r8/42) * 36) + (int(color.g8/42) * 6) + int(color.b8/42)
+		@warning_ignore("integer_division")
+		var c2 = 16 + (int(p_color.r8/42) * 36) + (int(p_color.g8/42) * 6) + int(p_color.b8/42)
 		if _debug_show_color_codes:
 			printraw("%6d" % [c2])
 		printraw("[38;5;%dm" % c2 )
 	else:
-		printraw("[38;2;%d;%d;%dm" % [color.r8, color.g8, color.b8] )
+		printraw("[38;2;%d;%d;%dm" % [p_color.r8, p_color.g8, p_color.b8] )
 	return self
+
 
 func end_color() -> CmdConsole:
 	printraw("[0m")
 	return self
 
+
 func row_pos(row :int) -> CmdConsole:
 	printraw("[%d;0H" % row )
 	return self
+
 
 func scrollArea(from :int, to :int ) -> CmdConsole:
 	printraw("[%d;%dr" % [from ,to])
 	return self
 
-func progressBar(progress :int, color :Color = Color.POWDER_BLUE) -> CmdConsole:
-	if progress < 0:
-		progress = 0
-	if progress > 100:
-		progress = 100
-	color(color)
-	printraw("[%-50s] %-3d%%\r" % ["".lpad(progress/2, "■").rpad(50, "-"), progress])
+
+func progressBar(p_progress :int, p_color :Color = Color.POWDER_BLUE) -> CmdConsole:
+	if p_progress < 0:
+		p_progress = 0
+	if p_progress > 100:
+		p_progress = 100
+	color(p_color)
+	printraw("[%-50s] %-3d%%\r" % ["".lpad(int(p_progress/2.0), "■").rpad(50, "-"), p_progress])
 	end_color()
 	return self
+
 
 func printl(value :String) -> CmdConsole:
 	printraw(value)
 	return self
 
+
 func new_line() -> CmdConsole:
 	prints()
 	return self
 
+
 func reset() -> CmdConsole:
 	return self
+
 
 func bold(enable :bool) -> CmdConsole:
 	if enable:
 		printraw(__CSI_BOLD)
 	return self
 
+
 func italic(enable :bool) -> CmdConsole:
 	if enable:
 		printraw(__CSI_ITALIC)
 	return self
+
 
 func underline(enable :bool) -> CmdConsole:
 	if enable:
 		printraw(__CSI_UNDERLINE)
 	return self
 
+
 func prints_error(message :String) -> CmdConsole:
 	return color(Color.CRIMSON).printl(message).end_color().new_line()
+
 
 func prints_warning(message :String) -> CmdConsole:
 	return color(Color.GOLDENROD).printl(message).end_color().new_line()
 
-func prints_color(message :String, color :Color, flags := 0) -> CmdConsole:
-	return print_color(message, color, flags).new_line()
 
-func print_color( message :String, color :Color, flags := 0) -> CmdConsole:
-	return color(color)\
-		.bold(flags&BOLD == BOLD)\
-		.italic(flags&ITALIC == ITALIC)\
-		.underline(flags&UNDERLINE == UNDERLINE)\
-		.printl(message)\
+func prints_color(p_message :String, p_color :Color, p_flags := 0) -> CmdConsole:
+	return print_color(p_message, p_color, p_flags).new_line()
+
+
+func print_color(p_message :String, p_color :Color, p_flags := 0) -> CmdConsole:
+	return color(p_color)\
+		.bold(p_flags&BOLD == BOLD)\
+		.italic(p_flags&ITALIC == ITALIC)\
+		.underline(p_flags&UNDERLINE == UNDERLINE)\
+		.printl(p_message)\
 		.end_color()
+
 
 func print_color_table():
 	prints_color("Color Table 6x6x6", Color.ANTIQUE_WHITE)
