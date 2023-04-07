@@ -43,3 +43,7 @@ func after_run(actor: Node, blackboard: Blackboard) -> void:
 
 func get_class_name() -> Array[StringName]:
 	return [&"BeehaveNode"]
+
+
+func can_send_message(blackboard: Blackboard) -> bool:
+	return blackboard.get_value("can_send_message", false)

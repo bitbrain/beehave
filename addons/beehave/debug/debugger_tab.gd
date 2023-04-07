@@ -12,6 +12,8 @@ var graph: BeehaveGraphEdit
 var message: Label
 
 var active_trees: Dictionary
+var active_tree_id: int = -1
+var session: EditorDebuggerSession
 
 
 func _ready() -> void:
@@ -51,6 +53,7 @@ func _ready() -> void:
 	graph.get_zoom_hbox().move_child(toggle_button, 0)
 
 	stop()
+	visibility_changed.connect(_on_visibility_changed)
 
 
 func start() -> void:
@@ -95,3 +98,10 @@ func _on_toggle_button_pressed(toggle_button: Button) -> void:
 func _on_item_selected(idx: int) -> void:
 	var id: StringName = item_list.get_item_metadata(idx)
 	graph.beehave_tree = active_trees.get(id, {})
+
+	active_tree_id = id.to_int()
+	session.send_message("beehave:activate_tree", [active_tree_id])
+
+
+func _on_visibility_changed() -> void:
+	session.send_message("beehave:visibility_changed", [visible and is_visible_in_tree()])

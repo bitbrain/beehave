@@ -41,6 +41,7 @@ func _setup_session(session_id: int) -> void:
 
 	debugger_tab.name = "🐝 Beehave"
 	debugger_tab.make_floating.connect(_on_make_floating)
+	debugger_tab.session = session
 	session.add_session_tab(debugger_tab)
 
 

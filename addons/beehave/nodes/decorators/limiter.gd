@@ -18,7 +18,8 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	if current_count < max_count:
 		blackboard.set_value(cache_key, current_count + 1, str(actor.get_instance_id()))
 		var response = child.tick(actor, blackboard)
-		BeehaveDebuggerMessages.process_tick(child.get_instance_id(), response)
+		if can_send_message(blackboard):
+			BeehaveDebuggerMessages.process_tick(child.get_instance_id(), response)
 
 		if child is ConditionLeaf:
 			blackboard.set_value("last_condition", child, str(actor.get_instance_id()))

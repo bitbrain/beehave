@@ -67,6 +67,7 @@ var status : int = -1
 var _internal_blackboard: Blackboard
 var _process_time_metric_name : String
 var _process_time_metric_value : float = 0.0
+var _can_send_message: bool = false
 
 func _ready() -> void:
 	if Engine.is_editor_hint():
@@ -95,7 +96,7 @@ func _ready() -> void:
 		BeehaveGlobalMetrics.register_tree(self)
 
 	set_physics_process(enabled)
-
+	BeehaveGlobalDebugger.register_tree(self)
 	BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
 
@@ -107,13 +108,16 @@ func _physics_process(delta: float) -> void:
 	var start_time = Time.get_ticks_usec()
 
 	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
+	blackboard.set_value("can_send_message", _can_send_message)
 
-	BeehaveDebuggerMessages.process_begin(get_instance_id())
+	if _can_send_message:
+		BeehaveDebuggerMessages.process_begin(get_instance_id())
 
 	if self.get_child_count() == 1:
 		tick()
 
-	BeehaveDebuggerMessages.process_end(get_instance_id())
+	if _can_send_message:
+		BeehaveDebuggerMessages.process_end(get_instance_id())
 
 	# Check the cost for this frame and save it for metric report
 	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
@@ -125,8 +129,9 @@ func tick() -> int:
 		child.before_run(actor, blackboard)
 
 	status = child.tick(actor, blackboard)
-	BeehaveDebuggerMessages.process_tick(child.get_instance_id(), status)
-	BeehaveDebuggerMessages.process_tick(get_instance_id(), status)
+	if _can_send_message:
+		BeehaveDebuggerMessages.process_tick(child.get_instance_id(), status)
+		BeehaveDebuggerMessages.process_tick(get_instance_id(), status)
 
 	# Clear running action if nothing is running
 	if status != RUNNING:
