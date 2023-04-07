@@ -42,7 +42,7 @@ func _scan_test_suites(dir :DirAccess, collected_suites :Array[Node]) -> Array[N
 	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	var file_name := dir.get_next()
 	while file_name != "":
-		var resource_path = _file(dir, file_name)
+		var resource_path = GdUnitTestSuiteScanner._file(dir, file_name)
 		if dir.current_is_dir():
 			var sub_dir := DirAccess.open(resource_path)
 			if sub_dir != null:
@@ -63,7 +63,7 @@ static func _file(dir :DirAccess, file_name :String) -> String:
 
 
 func _parse_is_test_suite(resource_path :String) -> Node:
-	if not _is_script_format_supported(resource_path):
+	if not GdUnitTestSuiteScanner._is_script_format_supported(resource_path):
 		return null
 	if GdUnit3MonoAPI.is_test_suite(resource_path):
 		return GdUnit3MonoAPI.parse_test_suite(resource_path)
@@ -84,7 +84,7 @@ static func _is_script_format_supported(resource_path :String) -> bool:
 
 func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
 	var test_suite = script.new()
-	test_suite.set_name(parse_test_suite_name(script))
+	test_suite.set_name(GdUnitTestSuiteScanner.parse_test_suite_name(script))
 	# find all test cases as array of names
 	var test_case_names := _extract_test_case_names(script)
 	# add test cases to test suite and parse test case line nummber
@@ -104,8 +104,6 @@ func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
 func _extract_test_case_names(script :GDScript) -> PackedStringArray:
 	var names := PackedStringArray()
 	for method in script.get_script_method_list():
-		#prints(method["flags"], method["name"] )
-		var flags :int = method["flags"]
 		var funcName :String = method["name"]
 		if funcName.begins_with("test"):
 			names.append(funcName)
@@ -187,7 +185,6 @@ static func _to_naming_convention(file_name :String) -> String:
 
 
 static func resolve_test_suite_path(source_script_path :String, test_root_folder :String = "test") -> String:
-	var file_extension := source_script_path.get_extension()
 	var file_name = source_script_path.get_basename().get_file()
 	var suite_name := _to_naming_convention(file_name)
 	if test_root_folder.is_empty():
@@ -223,7 +220,6 @@ static func create_test_suite(test_suite_path :String, source_path :String) -> R
 		var error := DirAccess.make_dir_recursive_absolute(test_suite_path.get_base_dir())
 		if error != OK:
 			return Result.error("Can't create directoy  at: %s. Error code %s" % [test_suite_path.get_base_dir(), error])
-	var file_extension := test_suite_path.get_extension()
 	var script := GDScript.new()
 	script.source_code = GdUnitTestSuiteTemplate.build_template(source_path)
 	var error := ResourceSaver.save(script, test_suite_path)

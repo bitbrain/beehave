@@ -25,8 +25,8 @@ func attribute(name :String, value) -> XmlElement:
 	return self
 
 
-func text(text :String) -> XmlElement:
-	_text = text if text.ends_with("\n") else text + "\n"
+func text(p_text :String) -> XmlElement:
+	_text = p_text if p_text.ends_with("\n") else p_text + "\n"
 	return self
 
 
@@ -63,5 +63,5 @@ func to_xml() -> String:
 			"text": cdata(_text)})
 
 
-func cdata(text :String) -> String:
-	return "" if text.is_empty() else "<![CDATA[\n{text}]]>\n".format({"text" : text})
+func cdata(p_text :String) -> String:
+	return "" if p_text.is_empty() else "<![CDATA[\n{text}]]>\n".format({"text" : p_text})

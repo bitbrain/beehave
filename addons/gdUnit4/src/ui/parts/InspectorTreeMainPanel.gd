@@ -74,7 +74,7 @@ func clear_tree_item_cache() -> void:
 	_item_hash.clear()
 
 
-static func _find_item(parent :TreeItem, resource_path :String, test_case :String = "") -> TreeItem:
+func _find_item(parent :TreeItem, resource_path :String, test_case :String = "") -> TreeItem:
 	var item = _find_by_resource_path(parent, resource_path)
 	if not item:
 		return null
@@ -83,45 +83,45 @@ static func _find_item(parent :TreeItem, resource_path :String, test_case :Strin
 	return _find_by_name(item, test_case)
 
 
-static func _find_by_resource_path(parent :TreeItem, resource_path :String) -> TreeItem:
+func _find_by_resource_path(parent :TreeItem, resource_path :String) -> TreeItem:
 	for item in parent.get_children():
 		if item.get_meta(META_RESOURCE_PATH) == resource_path:
 			return item
 	return null
 
 
-static func _find_by_name(parent :TreeItem, name :String) -> TreeItem:
+func _find_by_name(parent :TreeItem, item_name :String) -> TreeItem:
 	for item in parent.get_children():
-		if item.get_meta(META_GDUNIT_NAME) == name:
+		if item.get_meta(META_GDUNIT_NAME) == item_name:
 			return item
 	return null
 
 
-static func is_state_running(item :TreeItem) -> bool:
+func is_state_running(item :TreeItem) -> bool:
 	return item.has_meta(META_GDUNIT_STATE) and item.get_meta(META_GDUNIT_STATE) == STATE.RUNNING
 
 
-static func is_state_success(item :TreeItem) -> bool:
+func is_state_success(item :TreeItem) -> bool:
 	return item.has_meta(META_GDUNIT_STATE) and item.get_meta(META_GDUNIT_STATE) == STATE.SUCCESS
 
 
-static func is_state_warning(item :TreeItem) -> bool:
+func is_state_warning(item :TreeItem) -> bool:
 	return item.has_meta(META_GDUNIT_STATE) and item.get_meta(META_GDUNIT_STATE) == STATE.WARNING
 
 
-static func is_state_failed(item :TreeItem) -> bool:
+func is_state_failed(item :TreeItem) -> bool:
 	return item.has_meta(META_GDUNIT_STATE) and item.get_meta(META_GDUNIT_STATE) == STATE.FAILED
 
 
-static func is_state_error(item :TreeItem) -> bool:
+func is_state_error(item :TreeItem) -> bool:
 	return item.has_meta(META_GDUNIT_STATE) and (item.get_meta(META_GDUNIT_STATE) == STATE.ERROR or item.get_meta(META_GDUNIT_STATE) == STATE.ABORDED)
 
 
-static func is_item_state_orphan(item :TreeItem) -> bool:
+func is_item_state_orphan(item :TreeItem) -> bool:
 	return item.has_meta(META_GDUNIT_ORPHAN)
 
 
-static func is_test_suite(item :TreeItem) -> bool:
+func is_test_suite(item :TreeItem) -> bool:
 	return item.has_meta(META_GDUNIT_TYPE) and item.get_meta(META_GDUNIT_TYPE) == GdUnitType.TEST_SUITE
 
 
@@ -131,6 +131,10 @@ func _ready():
 		_editor = Engine.get_meta("GdUnitEditorPlugin")
 	GdUnitSignals.instance().gdunit_add_test_suite.connect(_on_gdunit_add_test_suite)
 	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
+	var command_handler := GdUnitCommandHandler.instance()
+	command_handler.gdunit_runner_start.connect(_on_gdunit_runner_start)
+	command_handler.gdunit_runner_stop.connect(_on_gdunit_runner_stop)
+
 
 
 # we need current to manually redraw bacause of the animation bug
@@ -470,9 +474,9 @@ func add_test_cases(parent :TreeItem, test_case_names :Array) -> void:
 ################################################################################
 # Tree signal receiver
 ################################################################################
-func _on_tree_item_mouse_selected(position :Vector2, mouse_button_index :int):
+func _on_tree_item_mouse_selected(mouse_position :Vector2, mouse_button_index :int):
 	if mouse_button_index == MOUSE_BUTTON_RIGHT:
-		_context_menu.position = position + _tree.get_global_position()
+		_context_menu.position = mouse_position + _tree.get_global_position()
 		_context_menu.popup()
 
 
@@ -525,13 +529,13 @@ func _on_Tree_item_activated() -> void:
 ################################################################################
 # external signal receiver
 ################################################################################
-func _on_GdUnit_gdunit_runner_start():
+func _on_gdunit_runner_start():
 	_context_menu_run.disabled = true
 	_context_menu_debug.disabled = true
 	clear_failures()
 
 
-func _on_GdUnit_gdunit_runner_stop(client_id :int):
+func _on_gdunit_runner_stop(_client_id :int):
 	_context_menu_run.disabled = false
 	_context_menu_debug.disabled = false
 	abort_running()

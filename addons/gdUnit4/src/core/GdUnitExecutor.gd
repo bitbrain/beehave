@@ -2,6 +2,7 @@ extends Node
 
 signal ExecutionCompleted()
 
+
 const INIT = 0
 const STAGE_TEST_SUITE_BEFORE = GdUnitReportCollector.STAGE_TEST_SUITE_BEFORE
 const STAGE_TEST_SUITE_AFTER = GdUnitReportCollector.STAGE_TEST_SUITE_AFTER
@@ -15,7 +16,7 @@ var _testcase_timer :LocalTime
 var _memory_pool :GdUnitMemoryPool = GdUnitMemoryPool.new()
 var _report_errors_enabled :bool
 var _report_collector : = GdUnitReportCollector.new()
-var _arument_matcher = GdUnitArgumentMatchers.new()
+
 
 var _total_test_execution_orphans :int
 var _total_test_warnings :int
@@ -71,6 +72,7 @@ func fire_test_skipped(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	fire_event(GdUnitEvent.new()\
 		.test_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, [report]))
 
+
 func suite_before(test_suite :GdUnitTestSuite, total_count :int):
 	set_stage(STAGE_TEST_SUITE_BEFORE)
 	fire_event(GdUnitEvent.new()\
@@ -81,8 +83,10 @@ func suite_before(test_suite :GdUnitTestSuite, total_count :int):
 	_total_test_warnings = 0
 	if not test_suite.is_skipped():
 		_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.TESTSUITE, true)
+		@warning_ignore("redundant_await")
 		await test_suite.before()
 		_memory_pool.monitor_stop()
+
 
 func suite_after(test_suite :GdUnitTestSuite):
 	set_stage(STAGE_TEST_SUITE_AFTER)
@@ -97,6 +101,7 @@ func suite_after(test_suite :GdUnitTestSuite):
 	if not is_skipped:
 		_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.TESTSUITE)
 		skip_count = 0
+		@warning_ignore("redundant_await")
 		await test_suite.after()
 		GdUnitTools.append_array(reports, _report_collector.get_reports(STAGE_TEST_SUITE_AFTER))
 		_memory_pool.free_pool()
@@ -123,20 +128,23 @@ func suite_after(test_suite :GdUnitTestSuite):
 	fire_event(GdUnitEvent.new().suite_after(test_suite.get_script().resource_path, test_suite.get_name(), statistics, reports))
 	_report_collector.clear_reports(STAGE_TEST_SUITE_BEFORE|STAGE_TEST_SUITE_AFTER)
 
-func test_before(test_suite :GdUnitTestSuite, test_case :_TestCase, test_case_name :String, fire_event := true):
+
+func test_before(test_suite :GdUnitTestSuite, test_case_name :String, do_fire_event := true):
 	set_stage(STAGE_TEST_CASE_BEFORE)
 	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.TESTCASE, true)
 	
 	_total_test_execution_orphans = 0
-	if fire_event:
+	if do_fire_event:
 		_testcase_timer = LocalTime.now()
 		fire_event(GdUnitEvent.new()\
 			.test_before(test_suite.get_script().resource_path, test_suite.get_name(), test_case_name))
 	
+	@warning_ignore("redundant_await")
 	await test_suite.before_test()
 	_memory_pool.monitor_stop()
 
-func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, test_case_name :String, fire_event := true):
+
+func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, test_case_name :String, do_fire_event := true):
 	_memory_pool.free_pool()
 	# give objects time to finallize
 	await get_tree().process_frame
@@ -155,7 +163,7 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, test_case_nam
 	
 	set_stage(STAGE_TEST_CASE_AFTER)
 	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.TESTCASE)
-	
+	@warning_ignore("redundant_await")
 	await test_suite.after_test()
 	_memory_pool.free_pool()
 	_memory_pool.monitor_stop()
@@ -185,13 +193,14 @@ func test_after(test_suite :GdUnitTestSuite, test_case :_TestCase, test_case_nam
 		GdUnitEvent.SKIPPED_COUNT: int(test_case.is_skipped()),
 	}
 	
-	if fire_event:
+	if do_fire_event:
 		fire_event(GdUnitEvent.new()\
 			.test_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case_name, statistics, reports.duplicate()))
 	_report_collector.clear_reports(STAGE_TEST_CASE_BEFORE|STAGE_TEST_CASE_EXECUTE|STAGE_TEST_CASE_AFTER)
 
+
 func execute_test_case_single(test_suite :GdUnitTestSuite, test_case :_TestCase):
-	await test_before(test_suite, test_case, test_case.get_name())
+	await test_before(test_suite, test_case.get_name())
 	
 	set_stage(STAGE_TEST_CASE_EXECUTE)
 	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.EXECUTE, true)
@@ -200,13 +209,14 @@ func execute_test_case_single(test_suite :GdUnitTestSuite, test_case :_TestCase)
 	test_case.dispose()
 	await test_after(test_suite, test_case, test_case.get_name())
 
+
 func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	test_case.generate_seed()
 	var fuzzers := create_fuzzers(test_suite, test_case)
 	var is_failure := false
 	for iteration in test_case.iterations():
 		# call before_test for each iteration
-		await test_before(test_suite, test_case, test_case.get_name(), iteration==0)
+		await test_before(test_suite, test_case.get_name(), iteration==0)
 		
 		set_stage(STAGE_TEST_CASE_EXECUTE)
 		_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.EXECUTE, true)
@@ -230,6 +240,7 @@ func execute_test_case_iterative(test_suite :GdUnitTestSuite, test_case :_TestCa
 			break
 	test_case.dispose()
 
+
 func execute_test_case_parameterized(test_suite :GdUnitTestSuite, test_case :_TestCase):
 	var testcase_timer = LocalTime.now()
 	fire_event(GdUnitEvent.new()\
@@ -245,7 +256,7 @@ func execute_test_case_parameterized(test_suite :GdUnitTestSuite, test_case :_Te
 		# is test_parameter_index is set, we run this parameterized test only
 		if test_parameter_index != -1 and test_parameter_index != test_case_index:
 			continue
-		await test_before(test_suite, test_case, test_case_names[test_case_index])
+		await test_before(test_suite, test_case_names[test_case_index])
 		set_stage(STAGE_TEST_CASE_EXECUTE)
 		_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.EXECUTE, true)
 		await test_case.execute(test_case_parameters[test_case_index])
@@ -271,6 +282,7 @@ func execute_test_case_parameterized(test_suite :GdUnitTestSuite, test_case :_Te
 
 func execute(test_suite :GdUnitTestSuite):
 	await Execute(test_suite)
+
 
 func Execute(test_suite :GdUnitTestSuite) -> void:
 	# stop checked first error if fail fast enabled
@@ -317,12 +329,14 @@ func Execute(test_suite :GdUnitTestSuite) -> void:
 	ts.free()
 	ExecutionCompleted.emit()
 
+
 func copy_properties(source :Object, target :Object):
 	if not source is _TestCase and not source is GdUnitTestSuite:
 		return
 	for property in source.get_property_list():
 		var property_name = property["name"]
 		target.set(property_name, source.get(property_name))
+
 
 # clones a test suite and moves the test cases to new instance
 func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
@@ -339,14 +353,17 @@ func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
 	parent.add_child(_test_suite)
 	return _test_suite
 
+
 func dispose_timers(test_suite :GdUnitTestSuite):
+	GdUnitTools.release_timers()
 	for child in test_suite.get_children():
 		if child is Timer:
 			child.stop()
 			test_suite.remove_child(child)
 			child.free()
 
-static func create_fuzzers(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Array[Fuzzer]:
+
+func create_fuzzers(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Array[Fuzzer]:
 	if not test_case.has_fuzzer():
 		return Array()
 	var fuzzers :Array[Fuzzer] = []

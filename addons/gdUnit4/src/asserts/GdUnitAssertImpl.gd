@@ -60,7 +60,7 @@ func report_success() -> GdUnitAssert:
 
 func report_error(error_message :String, failure_line_number: int = -1) -> GdUnitAssert:
 	_set_test_failure(true)
-	var line_number := failure_line_number if failure_line_number != -1 else _get_line_number()
+	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssertImpl._get_line_number()
 	GdAssertReports.set_last_error_line_number(line_number)
 	if _custom_failure_message.is_empty():
 		return GdAssertReports.report_error(error_message, self, line_number)
@@ -82,7 +82,7 @@ static func _normalize_bbcode(message :String) -> String:
 
 func has_failure_message(expected :String):
 	var expected_error := GdUnitTools.normalize_text(expected)
-	var current_error := _normalize_bbcode(_current_error_message)
+	var current_error := GdUnitAssertImpl._normalize_bbcode(_current_error_message)
 	if current_error != expected_error:
 		_expect_fail = false
 		var diffs := GdDiffTool.string_diff(current_error, expected_error)
@@ -93,7 +93,7 @@ func has_failure_message(expected :String):
 
 func starts_with_failure_message(expected :String):
 	var expected_error := GdUnitTools.normalize_text(expected)
-	var current_error := _normalize_bbcode(_current_error_message)
+	var current_error := GdUnitAssertImpl._normalize_bbcode(_current_error_message)
 	if current_error.find(expected_error) != 0:
 		_expect_fail = false
 		var diffs := GdDiffTool.string_diff(current_error, expected_error)

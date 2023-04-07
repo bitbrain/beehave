@@ -31,36 +31,36 @@ func _init():
 	_default_timeout = GdUnitSettings.test_timeout()
 
 
-func configure(name: String, line_number: int, script_path: String, timeout :int = DEFAULT_TIMEOUT, fuzzers :Array = [], iterations: int = 1, seed_ :int = -1) -> _TestCase:
-	set_name(name)
-	_line_number = line_number
-	_fuzzers = fuzzers
-	_iterations = iterations
-	_seed = seed_
-	_script_path = script_path
+@warning_ignore("shadowed_variable_base_class")
+func configure(p_name: String, p_line_number: int, p_script_path: String, p_timeout :int = DEFAULT_TIMEOUT, p_fuzzers :Array = [], p_iterations: int = 1, p_seed :int = -1) -> _TestCase:
+	set_name(p_name)
+	_line_number = p_line_number
+	_fuzzers = p_fuzzers
+	_iterations = p_iterations
+	_seed = p_seed
+	_script_path = p_script_path
 	_timeout = _default_timeout
-	if timeout != DEFAULT_TIMEOUT:
-		_timeout = timeout
+	if p_timeout != DEFAULT_TIMEOUT:
+		_timeout = p_timeout
 	return self
 
 
-func execute(test_parameter := Array(), iteration := 0):
-	
-	_current_iteration = iteration - 1
-	if iteration == 0:
+func execute(p_test_parameter := Array(), p_iteration := 0):
+	_current_iteration = p_iteration - 1
+	if p_iteration == 0:
 		_set_failure_handler()
 		set_timeout()
 	_monitor.start()
-	if not test_parameter.is_empty():
-		update_fuzzers(test_parameter, iteration)
-		_execute_test_case(name, test_parameter) 
+	if not p_test_parameter.is_empty():
+		update_fuzzers(p_test_parameter, p_iteration)
+		_execute_test_case(name, p_test_parameter) 
 	else:
 		_execute_test_case(name, [])
 	await completed
 	_monitor.stop()
-	for report in _monitor.reports():
-		if report.is_error():
-			_report = report
+	for report_ in _monitor.reports():
+		if report_.is_error():
+			_report = report_
 			_interupted = true
 
 
@@ -69,6 +69,7 @@ func dispose():
 	_remove_failure_handler()
 
 
+@warning_ignore("shadowed_variable_base_class", "redundant_await")
 func _execute_test_case(name :String, test_parameter :Array):
 	# needs at least on await otherwise it braks the awaiting chain
 	await get_parent().callv(name, test_parameter)
@@ -86,6 +87,7 @@ func set_timeout():
 	var time :float = _timeout * 0.001
 	_timer = Timer.new()
 	add_child(_timer)
+	_timer.set_name("gdunit_test_case_timer_%d" % _timer.get_instance_id())
 	_timer.timeout.connect(func do_interrupt():
 		if has_fuzzer():
 			_report = GdUnitReport.new().create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.fuzzer_interuped(_current_iteration, "timedout"))
@@ -93,7 +95,7 @@ func set_timeout():
 			_report = GdUnitReport.new().create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.test_timeout(timeout()))
 		_interupted = true
 		completed.emit()
-	)
+		, CONNECT_REFERENCE_COUNTED)
 	_timer.set_one_shot(true)
 	_timer.set_wait_time(time)
 	_timer.set_autostart(false)
@@ -194,8 +196,8 @@ func skip(skipped :bool, error :String = "") -> void:
 	_skip_info = error
 
 
-func set_test_parameters(test_parameters :Array) -> void:
-	_test_parameters = test_parameters
+func set_test_parameters(p_test_parameters :Array) -> void:
+	_test_parameters = p_test_parameters
 
 
 func set_test_parameter_index(index :int) -> void:
@@ -211,11 +213,11 @@ func test_parameter_index() -> int:
 
 
 func test_case_names() -> PackedStringArray:
-	var test_case_names :=  PackedStringArray()
+	var test_cases :=  PackedStringArray()
 	var test_name = get_name()
 	for index in _test_parameters.size():
-		test_case_names.append("%s:%d %s" % [test_name, index, str(_test_parameters[index]).replace('"', "'")])
-	return test_case_names
+		test_cases.append("%s:%d %s" % [test_name, index, str(_test_parameters[index]).replace('"', "'")])
+	return test_cases
 
 
 func _to_string():

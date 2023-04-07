@@ -8,36 +8,45 @@ var _default_value :Variant
 const UNDEFINED = "<-NO_ARG->"
 const ARG_PARAMETERIZED_TEST := "test_parameters"
 
-func _init(name :String, type :int = TYPE_MAX, default_value :Variant = UNDEFINED):
-	_name = name
-	_type = type
-	_default_value = default_value
+
+func _init(p_name :String, p_type :int = TYPE_MAX, p_default_value :Variant = UNDEFINED):
+	_name = p_name
+	_type = p_type
+	_default_value = p_default_value
+
 
 func name() -> String:
 	return _name
 
+
 func default() -> Variant:
-	return GdObjects.convert(_default_value, _type)
+	return convert(_default_value, _type)
+
 
 func value_as_string() -> String:
 	if has_default():
 		return str(_default_value)
 	return ""
 
+
 func type() -> int:
 	return _type
+
 
 func has_default() -> bool:
 	return _default_value != UNDEFINED
 
+
 func is_parameter_set() -> bool:
 	return _name == ARG_PARAMETERIZED_TEST
+
 
 static func get_parameter_set(parameters :Array) -> GdFunctionArgument:
 	for current in parameters:
 		if current != null and current.is_parameter_set():
 			return current
 	return null
+
 
 func _to_string() -> String:
 	var s = _name

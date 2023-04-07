@@ -2,7 +2,7 @@
 extends ConfirmationDialog
 
 
-@onready var _progress_panel :Control =$UpdateProgress
+#@onready var _progress_panel :Control =$UpdateProgress
 @onready var _progress_content :Label = $UpdateProgress/Progress/label
 @onready var _progress_bar :ProgressBar = $UpdateProgress/Progress/bar
 
@@ -80,7 +80,7 @@ func restart_godot() -> void:
 	plugin.get_editor_interface().restart_editor(true)
 
 
-static func enable_gdUnit() -> void:
+func enable_gdUnit() -> void:
 	var enabled_plugins := PackedStringArray()
 	if ProjectSettings.has_setting("editor_plugins/enabled"):
 		enabled_plugins = ProjectSettings.get_setting("editor_plugins/enabled")
@@ -97,13 +97,13 @@ func disable_gdUnit() -> void:
 
 const GDUNIT_TEMP := "user://tmp"
 
-static func temp_dir() -> String:
+func temp_dir() -> String:
 	if not DirAccess.dir_exists_absolute(GDUNIT_TEMP):
 		DirAccess.make_dir_recursive_absolute(GDUNIT_TEMP)
 	return GDUNIT_TEMP
 
 
-static func create_temp_dir(folder_name :String) -> String:
+func create_temp_dir(folder_name :String) -> String:
 	var new_folder = temp_dir() + "/" + folder_name
 	delete_directory(new_folder)
 	if not DirAccess.dir_exists_absolute(new_folder):
@@ -111,7 +111,7 @@ static func create_temp_dir(folder_name :String) -> String:
 	return new_folder
 
 
-static func delete_directory(path :String, only_content := false) -> void:
+func delete_directory(path :String, only_content := false) -> void:
 	var dir := DirAccess.open(path)
 	if dir != null:
 		dir.list_dir_begin()
@@ -134,7 +134,7 @@ static func delete_directory(path :String, only_content := false) -> void:
 				push_error("Delete %s failed: %s" % [path, error_string(err)])
 
 
-static func copy_directory(from_dir :String, to_dir :String) -> bool:
+func copy_directory(from_dir :String, to_dir :String) -> bool:
 	if not DirAccess.dir_exists_absolute(from_dir):
 		push_error("Source directory not found '%s'" % from_dir)
 		return false
@@ -170,7 +170,7 @@ static func copy_directory(from_dir :String, to_dir :String) -> bool:
 		return false
 
 
-static func extract_zip(zip_package :String, dest_path :String) -> Variant:
+func extract_zip(zip_package :String, dest_path :String) -> Variant:
 	var zip: ZIPReader = ZIPReader.new()
 	var err := zip.open(zip_package)
 	if err != OK:

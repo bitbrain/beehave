@@ -3,13 +3,13 @@ extends RPC
 
 var _message :String
 
-static func of(message :String) -> RPCMessage:
+static func of(p_message :String) -> RPCMessage:
 	var rpc = RPCMessage.new()
-	rpc._message = message
+	rpc._message = p_message
 	return rpc
 
 func message() -> String:
 	return _message
 
-func to_string():
+func _to_string():
 	return "RPCMessage: " + _message

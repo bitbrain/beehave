@@ -21,9 +21,6 @@ var _test_suites_to_process :Array
 var _state = INIT
 var _cs_executor
 
-# holds the received sync rpc result
-var _result :Result
-
 
 func _init():
 	# minimize scene window checked debug mode
@@ -38,7 +35,7 @@ func _init():
 
 
 func _ready():
-	var config_result := _config.load()
+	var config_result := _config.load_config()
 	if config_result.is_error():
 		push_error(config_result.error_message())
 		_state = EXIT
@@ -63,7 +60,7 @@ func _notification(what):
 		Engine.remove_meta(GDUNIT_RUNNER)
 
 
-func _process(delta):
+func _process(_delta):
 	match _state:
 		INIT:
 			# wait until client is connected to the GdUnitServer

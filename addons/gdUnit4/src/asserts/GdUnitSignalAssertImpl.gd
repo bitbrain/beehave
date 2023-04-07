@@ -9,7 +9,8 @@ var _current_error_message :String = ""
 var _custom_failure_message :String = ""
 var _line_number := -1
 var _expect_fail := false
-var _is_failed := false
+@warning_ignore("unused_private_class_variable")
+var _is_failed :bool = false
 var _timeout := DEFAULT_TIMEOUT
 var _expect_result :int
 var _interrupted := false
@@ -58,7 +59,7 @@ class SignalCollector extends GdUnitSingleton:
 	# unregister all acquired resources/connections, otherwise it ends up in orphans
 	# is called when the emitter is removed from the parent
 	func unregister_emitter(emitter :Object):
-		GdUnitTools.release_connections(emitter)
+		GdUnitTools._release_connections(emitter)
 		if is_instance_valid(emitter):
 			_collected_signals.erase(emitter)
 	
@@ -76,7 +77,7 @@ class SignalCollector extends GdUnitSingleton:
 	
 	func reset_received_signals(emitter :Object):
 		#_debug_signal_list("before claer");
-		if _collected_signals.has(emitter):
+		if _collected_signals.has(emitter) or not _collected_signals.has(emitter):
 			for signal_name in _collected_signals[emitter]:
 				_collected_signals[emitter][signal_name].clear()
 		#_debug_signal_list("after claer");
@@ -88,7 +89,7 @@ class SignalCollector extends GdUnitSingleton:
 	
 	func match(emitter :Object, signal_name :String, args :Array) -> bool:
 		#prints("match", signal_name,  _collected_signals[emitter][signal_name]);
-		if _collected_signals.is_empty():
+		if _collected_signals.is_empty() or not _collected_signals.has(emitter):
 			return false
 		for received_args in _collected_signals[emitter][signal_name]:
 			#prints("testing", signal_name, received_args, "vs", args)
@@ -211,10 +212,11 @@ func _wail_until_signal(signal_name :String, expected_args :Array, expect_not_em
 	var is_signal_emitted = false
 	while not _interrupted and not is_signal_emitted:
 		await Engine.get_main_loop().process_frame
-		is_signal_emitted = _signal_collector.match(_emitter, signal_name, expected_args)
-		if is_signal_emitted and expect_not_emitted:
-			report_error(GdAssertMessages.error_signal_emitted(signal_name, expected_args, LocalTime.elapsed(_timeout-timer.time_left*1000)))
-	
+		if is_instance_valid(_emitter):
+			is_signal_emitted = _signal_collector.match(_emitter, signal_name, expected_args)
+			if is_signal_emitted and expect_not_emitted:
+				report_error(GdAssertMessages.error_signal_emitted(signal_name, expected_args, LocalTime.elapsed(int(_timeout-timer.time_left*1000))))
+		
 	if _interrupted and not expect_not_emitted:
 		report_error(GdAssertMessages.error_wait_signal(signal_name, expected_args, LocalTime.elapsed(_timeout)))
 	timer.free()

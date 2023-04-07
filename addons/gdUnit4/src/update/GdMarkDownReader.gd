@@ -78,14 +78,14 @@ var _image_urls := Array()
 var _on_table_tag := false
 var _client
 
-static func regex(pattern :String) -> RegEx:
-	var regex := RegEx.new()
-	var err = regex.compile(pattern)
+
+func regex(pattern :String) -> RegEx:
+	var regex_ := RegEx.new()
+	var err = regex_.compile(pattern)
 	if err != OK:
 		push_error("error '%s' checked pattern '%s'" % [err, pattern])
 		return null
-	return regex
-
+	return regex_
 
 
 func _init():
@@ -114,25 +114,24 @@ func list_replace(indent :int) -> String:
 
 
 func code_block(replace :String, border :bool = false) -> String:
-	var code_block := "[code][color=aqua][font_size=16]%s[/font_size][/color][/code]" % replace
+	var cb := "[code][color=aqua][font_size=16]%s[/font_size][/color][/code]" % replace
 	if border:
 		return "[img=1400x14]res://addons/gdUnit4/src/update/assets/border_top.png[/img]"\
-			+ "[indent]" + code_block + "[/indent]"\
+			+ "[indent]" + cb + "[/indent]"\
 			+ "[img=1400x14]res://addons/gdUnit4/src/update/assets/border_bottom.png[/img]\n"
-	return code_block
+	return cb
 
 
 func to_bbcode(input :String) -> String:
-	var bbcode := Array()
 	input = process_tables(input)
 	
 	for pattern in md_replace_patterns:
-		var regex :RegEx = pattern[0]
+		var regex_ :RegEx = pattern[0]
 		var bb_replace = pattern[1]
 		if bb_replace is Callable:
-			input = await bb_replace.call(regex, input)
+			input = await bb_replace.call(regex_, input)
 		else:
-			input = regex.sub(input, bb_replace, true)
+			input = regex_.sub(input, bb_replace, true)
 	return input
 
 
@@ -244,54 +243,52 @@ func extract_cells(line :String, bold := false) -> String:
 	return cells
 
 
-func process_image_references(regex :RegEx, input :String) -> String:
-	var to_replace := PackedStringArray()
-	var tool_tips :=  PackedStringArray()
+func process_image_references(p_regex :RegEx, p_input :String) -> String:
 	# exists references?
-	var matches := regex.search_all(input)
+	var matches := p_regex.search_all(p_input)
 	if matches.is_empty():
-		return input
+		return p_input
 	# collect image references and remove_at it
 	var references := Dictionary()
 	var link_regex := regex("\\[(\\S+)\\]:(\\S+)([ ]\"(.*)\")?")
 	# create copy of original source to replace checked it
-	input = input.replace("\r", "")
-	var extracted_references := input
+	var input := p_input.replace("\r", "")
+	var extracted_references :=  p_input.replace("\r", "")
 	for reg_match in link_regex.search_all(input):
 		var line = reg_match.get_string(0) + "\n"
-		var reference = reg_match.get_string(1)
-		var topl_tip = reg_match.get_string(4)
+		var ref = reg_match.get_string(1)
+		#var topl_tip = reg_match.get_string(4)
 		# collect reference and url
-		references[reference] = reg_match.get_string(2)
+		references[ref] = reg_match.get_string(2)
 		extracted_references = extracted_references.replace(line, "")
 	
 	# replace image references by collected url's
 	for reference_key in references.keys():
 		var regex_key := regex("\\](\\[%s\\])" % reference_key)
 		for reg_match in regex_key.search_all(extracted_references):
-			var reference :String = reg_match.get_string(0)
+			var ref :String = reg_match.get_string(0)
 			var image_url :String = "](%s)" % references.get(reference_key)
-			extracted_references = extracted_references.replace(reference, image_url)
+			extracted_references = extracted_references.replace(ref, image_url)
 	return extracted_references
 
 
-func process_image(regex :RegEx, input :String) -> String:
+func process_image(p_regex :RegEx, p_input :String) -> String:
 	var to_replace := PackedStringArray()
 	var tool_tips :=  PackedStringArray()
 	# find all matches
-	var matches := regex.search_all(input)
+	var matches := p_regex.search_all(p_input)
 	if matches.is_empty():
-		return input
+		return p_input
 	for reg_match in matches:
 		# grap the parts to replace and store temporay because a direct replace will distort the offsets
-		to_replace.append(input.substr(reg_match.get_start(0), reg_match.get_end(0)))
+		to_replace.append(p_input.substr(reg_match.get_start(0), reg_match.get_end(0)))
 		# grap optional tool tips
 		tool_tips.append(reg_match.get_string(5))
 	# finally replace all findings
 	for replace in to_replace:
-		var re := regex.sub(replace, "[img]$2[/img]")
-		input = input.replace(replace, re)
-	return await _process_external_image_resources(input)
+		var re := p_regex.sub(replace, "[img]$2[/img]")
+		p_input = p_input.replace(replace, re)
+	return await _process_external_image_resources(p_input)
 
 
 func _process_external_image_resources(input :String) -> String:

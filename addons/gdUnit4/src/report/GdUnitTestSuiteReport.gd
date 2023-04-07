@@ -4,10 +4,10 @@ extends GdUnitReportSummary
 var _time_stamp :int
 
 
-func _init(resource_path :String,name :String):
-	_resource_path = resource_path
-	_name = name
-	_time_stamp = Time.get_unix_time_from_system()
+func _init(p_resource_path :String, p_name :String):
+	_resource_path = p_resource_path
+	_name = p_name
+	_time_stamp = Time.get_unix_time_from_system() as int
 
 
 func create_record(report_link :String) -> String:
@@ -41,8 +41,8 @@ func write(report_dir :String) -> String:
 	return report_output_path
 
 
-func set_duration(duration :int) -> void:
-	_duration = duration
+func set_duration(p_duration :int) -> void:
+	_duration = p_duration
 
 
 func time_stamp() -> int:

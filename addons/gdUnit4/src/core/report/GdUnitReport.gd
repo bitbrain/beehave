@@ -18,10 +18,10 @@ var _line_number :int
 var _message :String
 
 
-func create(type, line_number :int, message :String) -> GdUnitReport:
-	_type = type
-	_line_number = line_number
-	_message = message
+func create(p_type, p_line_number :int, p_message :String) -> GdUnitReport:
+	_type = p_type
+	_line_number = p_line_number
+	_message = p_message
 	return self
 
 

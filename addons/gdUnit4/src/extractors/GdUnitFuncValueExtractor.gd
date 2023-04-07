@@ -5,15 +5,18 @@ extends GdUnitValueExtractor
 var _func_names :Array
 var _args :Array
 
-func _init(func_name :String,args :Array):
+func _init(func_name :String, p_args :Array):
 	_func_names = func_name.split(".")
-	_args = args
+	_args = p_args
+
 
 func func_names() -> Array:
 	return _func_names
 
+
 func args() -> Array:
 	return _args
+
 
 # Extracts a value by given `func_name` and `args`,
 # Allows to use a chained list of functions setarated ba a dot. 
@@ -42,6 +45,7 @@ func extract_value(value):
 		if type == TYPE_STRING and value == "n.a.":
 			return value
 	return value
+
 
 func _call_func(value, func_name :String):
 	# for array types we need to call explicit by function name, using funcref is only supported for Objects

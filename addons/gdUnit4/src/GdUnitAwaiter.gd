@@ -49,7 +49,9 @@ static func await_signal_idle_frames(source :Object, signal_name :String, args :
 # use this waiter and not `await get_tree().create_timer().timeout to prevent errors when a test case is timed out
 static func await_millis(milliSec :int) -> void:
 	var timer :Timer = Timer.new()
+	timer.set_name("gdunit_await_millis_timer_%d" % timer.get_instance_id())
 	Engine.get_main_loop().root.add_child(timer)
+	timer.add_to_group("GdUnitTimers")
 	timer.set_one_shot(true)
 	timer.start(milliSec * 0.001)
 	await timer.timeout

@@ -7,9 +7,9 @@ class HttpResponse:
 	var _code :int
 	var _body :PackedByteArray
 	
-	func _init(code :int, body :PackedByteArray):
-		_code = code
-		_body = body
+	func _init(code_ :int, body_ :PackedByteArray):
+		_code = code_
+		_body = body_
 	
 	func code() -> int:
 		return _code
@@ -76,7 +76,7 @@ func request_zip_package(url :String, file :String) -> HttpResponse:
 	return await self.request_completed
 
 
-func _on_request_completed(result :int, response_code :int, headers :PackedStringArray, body :PackedByteArray):
+func _on_request_completed(_result :int, response_code :int, _headers :PackedStringArray, body :PackedByteArray):
 	if _http_request.get_http_client_status() != HTTPClient.STATUS_DISCONNECTED:
 		_http_request.set_download_file("")
 	request_completed.emit(HttpResponse.new(response_code, body))

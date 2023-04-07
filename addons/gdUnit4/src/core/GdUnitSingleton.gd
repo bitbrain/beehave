@@ -14,26 +14,26 @@ const MEATA_KEY := "GdUnitSingletons"
 static func instance(name :String, clazz :Callable) -> Variant:
 	if Engine.has_meta(name):
 		return Engine.get_meta(name)
-	var singleton := clazz.call()
+	var singleton :Variant = clazz.call()
 	Engine.set_meta(name, singleton)
 	GdUnitTools.prints_verbose("Register singleton '%s:%s'" % [name, singleton])
-	var singletons := Engine.get_meta(MEATA_KEY, PackedStringArray())
+	var singletons :PackedStringArray = Engine.get_meta(MEATA_KEY, PackedStringArray())
 	singletons.append(name)
 	Engine.set_meta(MEATA_KEY, singletons)
 	return singleton
 
 
-static func unregister(singleton :String) -> void:
+static func unregister(p_singleton :String) -> void:
 	var singletons :PackedStringArray = Engine.get_meta(MEATA_KEY, PackedStringArray())
-	if singletons.has(singleton):
-		GdUnitTools.prints_verbose("	Unregister singleton '%s'" % singleton);
-		var index := singletons.find(singleton)
+	if singletons.has(p_singleton):
+		GdUnitTools.prints_verbose("\n	Unregister singleton '%s'" % p_singleton);
+		var index := singletons.find(p_singleton)
 		singletons.remove_at(index)
-		var instance := Engine.get_meta(singleton)
-		GdUnitTools.prints_verbose("	Free singeleton instance '%s:%s'" % [singleton, instance])
-		GdUnitTools.free_instance(instance)
-		Engine.remove_meta(singleton)
-		GdUnitTools.prints_verbose("	Succesfully freed '%s'" % singleton)
+		var instance_ :Variant = Engine.get_meta(p_singleton)
+		GdUnitTools.prints_verbose("	Free singeleton instance '%s:%s'" % [p_singleton, instance_])
+		GdUnitTools.free_instance(instance_)
+		Engine.remove_meta(p_singleton)
+		GdUnitTools.prints_verbose("	Succesfully freed '%s'" % p_singleton)
 	Engine.set_meta(MEATA_KEY, singletons)
 
 

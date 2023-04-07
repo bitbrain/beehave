@@ -24,34 +24,33 @@ var _key_on_press := []
 
 # time factor settings
 var _time_factor := 1.0
-var _saved_time_scale :float
 var _saved_iterations_per_second :float
 
 
-func _init(scene, verbose :bool, hide_push_errors = false):
-	_verbose = verbose
+func _init(p_scene, p_verbose :bool, p_hide_push_errors = false):
+	_verbose = p_verbose
 	_saved_iterations_per_second = Engine.get_physics_ticks_per_second()
 	set_time_factor(1)
 	# handle scene loading by resource path
-	if typeof(scene) == TYPE_STRING:
-		if !FileAccess.file_exists(scene):
-			if not hide_push_errors:
-				push_error("GdUnitSceneRunner: Can't load scene by given resource path: '%s'. The resource not exists." % scene)
+	if typeof(p_scene) == TYPE_STRING:
+		if !FileAccess.file_exists(p_scene):
+			if not p_hide_push_errors:
+				push_error("GdUnitSceneRunner: Can't load scene by given resource path: '%s'. The resource not exists." % p_scene)
 			return
-		if !str(scene).ends_with("tscn"):
-			if not hide_push_errors:
-				push_error("GdUnitSceneRunner: The given resource: '%s'. is not a scene." % scene)
+		if !str(p_scene).ends_with("tscn"):
+			if not p_hide_push_errors:
+				push_error("GdUnitSceneRunner: The given resource: '%s'. is not a scene." % p_scene)
 			return
-		_current_scene =  load(scene).instantiate()
+		_current_scene =  load(p_scene).instantiate()
 	else:
 		# verify we have a node instance
-		if not scene is Node:
-			if not hide_push_errors:
-				push_error("GdUnitSceneRunner: The given instance '%s' is not a Node." % scene)
+		if not p_scene is Node:
+			if not p_hide_push_errors:
+				push_error("GdUnitSceneRunner: The given instance '%s' is not a Node." % p_scene)
 			return
-		_current_scene = scene
+		_current_scene = p_scene
 	if _current_scene == null:
-		if not hide_push_errors:
+		if not p_hide_push_errors:
 			push_error("GdUnitSceneRunner: Scene must be not null!")
 		return
 	_scene_tree = Engine.get_main_loop()
@@ -160,13 +159,13 @@ func simulate_mouse_move_relative(relative :Vector2, speed :Vector2 = Vector2.ON
 	return self
 
 
-func simulate_mouse_button_pressed(buttonIndex :int, double_click := false) -> GdUnitSceneRunner:
+func simulate_mouse_button_pressed(buttonIndex :MouseButton, double_click := false) -> GdUnitSceneRunner:
 	simulate_mouse_button_press(buttonIndex, double_click)
 	simulate_mouse_button_release(buttonIndex)
 	return self
 
 
-func simulate_mouse_button_press(buttonIndex :int, double_click := false) -> GdUnitSceneRunner:
+func simulate_mouse_button_press(buttonIndex :MouseButton, double_click := false) -> GdUnitSceneRunner:
 	var event := InputEventMouseButton.new()
 	event.button_index = buttonIndex
 	event.pressed = true
@@ -178,7 +177,7 @@ func simulate_mouse_button_press(buttonIndex :int, double_click := false) -> GdU
 	return _handle_input_event(event)
 
 
-func simulate_mouse_button_release(buttonIndex :int) -> GdUnitSceneRunner:
+func simulate_mouse_button_release(buttonIndex :MouseButton) -> GdUnitSceneRunner:
 	var event := InputEventMouseButton.new()
 	event.button_index = buttonIndex
 	event.pressed = false
@@ -272,12 +271,12 @@ func _scene_name() -> String:
 
 func __activate_time_factor() -> void:
 	Engine.set_time_scale(_time_factor)
-	Engine.set_physics_ticks_per_second(_saved_iterations_per_second * _time_factor)
+	Engine.set_physics_ticks_per_second((_saved_iterations_per_second * _time_factor) as int)
 
 
 func __deactivate_time_factor() -> void:
 	Engine.set_time_scale(1)
-	Engine.set_physics_ticks_per_second(_saved_iterations_per_second)
+	Engine.set_physics_ticks_per_second(_saved_iterations_per_second as int)
 
 
 # copy over current active modifiers

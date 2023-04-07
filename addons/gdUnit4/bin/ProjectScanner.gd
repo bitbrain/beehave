@@ -61,7 +61,7 @@ class ProjectScanner extends Node:
 		await get_tree().process_frame
 		while fs.is_scanning():
 			await get_tree().process_frame
-			_console.progressBar(fs.get_scanning_progress() * 100)
+			_console.progressBar(fs.get_scanning_progress() * 100 as int)
 		_console.progressBar(100)
 		_console.new_line()
 		
@@ -71,7 +71,7 @@ class ProjectScanner extends Node:
 		await get_tree().process_frame
 		while fs.is_scanning():
 			await get_tree().process_frame
-			_console.progressBar(fs.get_scanning_progress() * 100)
+			_console.progressBar(fs.get_scanning_progress() * 100 as int)
 		_console.progressBar(100)
 		_console.new_line()
 		plugin.free()

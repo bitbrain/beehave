@@ -13,25 +13,25 @@ var _args : Array[GdFunctionArgument]
 var _varargs :Array[GdFunctionArgument]
 
 
-func _init(name :String,
-	line_number :int,
-	is_virtual :bool,
-	is_static :bool,
-	is_engine :bool,
-	return_type :int,
-	return_class :String,
-	args : Array[GdFunctionArgument],
-	varargs :Array[GdFunctionArgument] = []):
-	_name = name
-	_line_number = line_number
-	_return_type = return_type
-	_return_class = return_class
-	_is_virtual = is_virtual
-	_is_static = is_static
-	_is_engine = is_engine
+func _init(p_name :String,
+	p_line_number :int,
+	p_is_virtual :bool,
+	p_is_static :bool,
+	p_is_engine :bool,
+	p_return_type :int,
+	p_return_class :String,
+	p_args : Array[GdFunctionArgument],
+	p_varargs :Array[GdFunctionArgument] = []):
+	_name = p_name
+	_line_number = p_line_number
+	_return_type = p_return_type
+	_return_class = p_return_class
+	_is_virtual = p_is_virtual
+	_is_static = p_is_static
+	_is_engine = p_is_engine
 	_is_coroutine = false
-	_args = args
-	_varargs = varargs
+	_args = p_args
+	_varargs = p_varargs
 
 
 func name() -> String:
@@ -135,14 +135,14 @@ func _to_string() -> String:
 
 
 # extract function description given by Object.get_method_list()
-static func extract_from(method_descriptor :Dictionary) -> GdFunctionDescriptor:
-	var function_flags :int = method_descriptor["flags"]
-	var is_virtual :bool = function_flags & METHOD_FLAG_VIRTUAL
-	var is_static :bool = function_flags & METHOD_FLAG_STATIC
-	var is_vararg :bool = function_flags & METHOD_FLAG_VARARG
-	var is_const :bool = function_flags & METHOD_FLAG_CONST
-	var is_core :bool = function_flags & METHOD_FLAG_OBJECT_CORE
-	var is_default :bool = function_flags & METHOD_FLAGS_DEFAULT
+static func extract_from(descriptor :Dictionary) -> GdFunctionDescriptor:
+	var function_flags :int = descriptor["flags"]
+	var is_virtual_ :bool = function_flags & METHOD_FLAG_VIRTUAL
+	var is_static_ :bool = function_flags & METHOD_FLAG_STATIC
+	var is_vararg_ :bool = function_flags & METHOD_FLAG_VARARG
+	#var is_const :bool = function_flags & METHOD_FLAG_CONST
+	#var is_core :bool = function_flags & METHOD_FLAG_OBJECT_CORE
+	#var is_default :bool = function_flags & METHOD_FLAGS_DEFAULT
 	#prints("is_virtual: ", is_virtual)
 	#prints("is_static: ", is_static)
 	#prints("is_const: ", is_const)
@@ -150,15 +150,15 @@ static func extract_from(method_descriptor :Dictionary) -> GdFunctionDescriptor:
 	#prints("is_default: ", is_default)
 	#prints("is_vararg: ", is_vararg)
 	return GdFunctionDescriptor.new(
-		method_descriptor["name"],
+		descriptor["name"],
 		-1,
-		is_virtual,
-		is_static,
+		is_virtual_,
+		is_static_,
 		true,
-		_extract_return_type(method_descriptor["return"]),
-		method_descriptor["return"]["class_name"],
-		_extract_args(method_descriptor),
-		_build_varargs(is_vararg)
+		_extract_return_type(descriptor["return"]),
+		descriptor["return"]["class_name"],
+		_extract_args(descriptor),
+		_build_varargs(is_vararg_)
 	)
 
 # temporary exclude GlobalScope enums
@@ -195,10 +195,10 @@ static func _extract_return_type(return_info :Dictionary) -> Variant:
 	return type
 
 
-static func _extract_args(method_descriptor :Dictionary) -> Array[GdFunctionArgument]:
-	var args :Array[GdFunctionArgument] = []
-	var arguments :Array = method_descriptor["args"]
-	var defaults :Array = method_descriptor["default_args"]
+static func _extract_args(descriptor :Dictionary) -> Array[GdFunctionArgument]:
+	var args_ :Array[GdFunctionArgument] = []
+	var arguments :Array = descriptor["args"]
+	var defaults :Array = descriptor["default_args"]
 	# iterate backwards because the default values are stored from right to left
 	while not arguments.is_empty():
 		var arg :Dictionary = arguments.pop_back()
@@ -207,19 +207,19 @@ static func _extract_args(method_descriptor :Dictionary) -> Array[GdFunctionArgu
 		var arg_default := GdFunctionArgument.UNDEFINED
 		if not defaults.is_empty():
 			arg_default = _argument_default_value(arg, defaults.pop_back())
-		args.push_front(GdFunctionArgument.new(arg_name, arg_type, arg_default))
-	return args
+		args_.push_front(GdFunctionArgument.new(arg_name, arg_type, arg_default))
+	return args_
 
 
-static func _build_varargs(is_vararg :bool) -> Array[GdFunctionArgument]:
-	var varargs :Array[GdFunctionArgument] = []
-	if not is_vararg:
-		return varargs
+static func _build_varargs(p_is_vararg :bool) -> Array[GdFunctionArgument]:
+	var varargs_ :Array[GdFunctionArgument] = []
+	if not p_is_vararg:
+		return varargs_
 	# if function has vararg we need to handle this manually by adding 10 default arguments
 	var type := GdObjects.TYPE_VARARG
 	for index in 10:
-		varargs.push_back(GdFunctionArgument.new("vararg%d_" % index, type, "\"%s\"" % GdObjects.TYPE_VARARG_PLACEHOLDER_VALUE))
-	return varargs
+		varargs_.push_back(GdFunctionArgument.new("vararg%d_" % index, type, "\"%s\"" % GdObjects.TYPE_VARARG_PLACEHOLDER_VALUE))
+	return varargs_
 
 
 static func _argument_name(arg :Dictionary) -> String:
@@ -269,7 +269,6 @@ static func _argument_default_value(arg :Dictionary, default_value) -> String:
 		TYPE_PACKED_COLOR_ARRAY:
 			return GdDefaultValueDecoder.decode(type, default_value)
 		TYPE_OBJECT:
-			var clazz_name := arg["class_name"] as String
 			if default_value == null:
 				return "null"
 	if GdObjects.is_primitive_type(default_value):

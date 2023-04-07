@@ -1,4 +1,4 @@
-# Base interface of all GdUnit asserts
+## Base interface of all GdUnit asserts
 class_name GdUnitAssert
 extends RefCounted
 
@@ -8,33 +8,45 @@ const EXPECT_SUCCESS:int = 0
 const EXPECT_FAIL:int    = 1
 
 
-# Verifies that the current value is null.
+## Verifies that the current value is null.
 func is_null():
 	return self
 
-# Verifies that the current value is not null.
+
+## Verifies that the current value is not null.
 func is_not_null():
 	return self
 
-# Verifies that the current value is equal to expected one.
+
+## Verifies that the current value is equal to expected one.
+@warning_ignore("unused_parameter")
 func is_equal(expected):
 	return self
 
-# Verifies that the current value is not equal to expected one.
+
+## Verifies that the current value is not equal to expected one.
+@warning_ignore("unused_parameter")
 func is_not_equal(expected):
 	return self
+
 
 func test_fail():
 	return self
 
-# Verifies the failure message is equal to expected one.
+
+## Verifies the failure message is equal to expected one.
+@warning_ignore("unused_parameter")
 func has_failure_message(expected: String):
 	return self
 
-# Verifies that the failure starts with the given prefix.
+
+## Verifies that the failure starts with the given prefix.
+@warning_ignore("unused_parameter")
 func starts_with_failure_message(expected: String):
 	return self
 
-# Overrides the default failure message by given custom message.
+
+## Overrides the default failure message by given custom message.
+@warning_ignore("unused_parameter")
 func override_failure_message(message :String):
 	return self

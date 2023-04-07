@@ -8,42 +8,53 @@ var _value
 var _value_set :PackedStringArray
 var _default
 
-func _init(name :String,type :int,value,default_value,help :="",value_set := PackedStringArray()):
-	_name = name
-	_type = type
-	_value = value
-	_value_set = value_set
-	_default = default_value
-	_help = help
+
+func _init(p_name :String, p_type :int, p_value, p_default_value, p_help :="", p_value_set := PackedStringArray()):
+	_name = p_name
+	_type = p_type
+	_value = p_value
+	_value_set = p_value_set
+	_default = p_default_value
+	_help = p_help
+
 
 func name() -> String:
 	return _name
 
+
 func type() -> int:
 	return _type
+
 
 func value():
 	return _value
 
+
 func value_set() -> PackedStringArray:
 	return _value_set
+
 
 func is_selectable_value() -> bool:
 	return not _value_set.is_empty()
 
-func set_value(value) -> void:
+
+func set_value(p_value :Variant) -> void:
 	match _type:
 		TYPE_STRING:
-			_value = str(value)
+			_value = str(p_value)
 		TYPE_BOOL:
-			_value = bool(value)
+			_value = bool(p_value)
 		TYPE_INT:
-			_value = int(value)
+			_value = int(p_value)
 		TYPE_FLOAT:
-			_value = float(value)
+			_value = float(p_value)
+		_:
+			_value = p_value
+
 
 func default():
 	return _default
+
 
 func category() -> String:
 	var elements := _name.split("/")
@@ -51,8 +62,10 @@ func category() -> String:
 		return elements[2]
 	return ""
 
+
 func help() -> String:
 	return _help
+
 
 func _to_string() -> String:
 	return "%-64s %-10s %-10s (%s) help:%s set:%s" % [name(), type(), value(), default(), help(), _value_set]

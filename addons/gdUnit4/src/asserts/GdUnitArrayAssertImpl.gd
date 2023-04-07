@@ -54,7 +54,7 @@ func _array_equals_div(current :Array, expected :Array, case_sensitive :bool = f
 	return [current_, expected_, index_report_]
 
 
-func _array_div(left :Array, right :Array, same_order := false) -> Array:
+func _array_div(left :Array, right :Array, _same_order := false) -> Array:
 	var not_expect := left.duplicate(true)
 	var not_found := right.duplicate(true)
 	for index_c in left.size():
@@ -194,7 +194,7 @@ func contains(expected) -> GdUnitArrayAssert:
 	if current_ == null:
 		return report_error(GdAssertMessages.error_arr_contains(current_, expected_, [], expected_))
 	var diffs := _array_div(current_, expected_)
-	var not_expect := diffs[0] as Array
+	#var not_expect := diffs[0] as Array
 	var not_found := diffs[1] as Array
 	if not not_found.is_empty():
 		return report_error(GdAssertMessages.error_arr_contains(current_, expected_, [], not_found))
@@ -235,6 +235,7 @@ func contains_exactly_in_any_order(expected) -> GdUnitArrayAssert:
 	return report_error(GdAssertMessages.error_arr_contains_exactly_in_any_order(current_, expected_, not_expect, not_found))
 
 
+@warning_ignore("shadowed_global_identifier")
 func is_same(expected) -> GdUnitAssert:
 	_base.is_same(expected)
 	return self
