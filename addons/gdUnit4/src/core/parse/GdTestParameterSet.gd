@@ -35,6 +35,9 @@ static func validate_parameter_types(input_arguments :Array, input_values :Array
 		var input_param_type := input_param.type()
 		var input_value = input_values[i]
 		var input_value_type := typeof(input_value)
+		# is input type enum allow int values
+		if input_param_type == GdObjects.TYPE_VARIANT and input_value_type == TYPE_INT:
+			continue
 		# allow only equal types and object == null
 		if input_param_type == TYPE_OBJECT and input_value_type == TYPE_NIL:
 			continue

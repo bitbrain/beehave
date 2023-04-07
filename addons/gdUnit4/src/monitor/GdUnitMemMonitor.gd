@@ -1,9 +1,9 @@
 class_name GdUnitMemMonitor
 extends GdUnitMonitor
 
-var _orphan_nodes_start :int
-var _orphan_nodes_end :int
-var _orphan_total :int
+var _orphan_nodes_start :float
+var _orphan_nodes_end :float
+var _orphan_total :float
 
 func _init(name :String = ""):
 	super("MemMonitor:" + name)
@@ -22,5 +22,5 @@ func stop():
 	_orphan_total += _orphan_nodes_end - _orphan_nodes_start
 
 func orphan_nodes() -> int:
-	return _orphan_total
+	return _orphan_total as int
 

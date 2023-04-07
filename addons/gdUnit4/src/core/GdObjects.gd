@@ -252,10 +252,9 @@ static func _equals(obj_a, obj_b, case_sensitive :bool, deep_check :bool, deep_s
 	return obj_a == obj_b
 
 
+@warning_ignore("shadowed_variable_base_class")
 static func notification_as_string(instance :Variant, notification :int) -> String:
 	var error := "Unknown notification: '%s' at instance:  %s" % [notification, instance]
-	if instance == null:
-		return error
 	if instance is Node:
 		return NOTIFICATION_AS_STRING_MAPPINGS[TYPE_NODE].get(notification, error)
 	if instance is Control:
@@ -289,28 +288,6 @@ static func to_snake_case(value :String) -> String:
 			result.append('_')
 		result.append(lower_ch)
 	return ''.join(result)
-
-
-# Converts from one type to another as best as possible.
-# The Type parameter uses the values Variant.Type and the extended GdObject.Type
-static func convert(value :Variant, type :int) -> Variant:
-	# https://github.com/godotengine/godot/issues/65919
-	# TODO replace this anoing code by GdScript.convert
-	if value is String:
-		return str_to_var(value)
-
-	match type:
-		TYPE_NIL:
-			return null
-		TYPE_BOOL:
-			return str_to_var(value)
-		TYPE_STRING:
-			return var_to_str(value).replace("\"", "")
-		TYPE_FUZZER:
-			return str(value)
-		_:
-			push_error("To convert a value '%s':'%s' to type '%s' current not supported!" % [value, typeof_as_string(value), type_as_string(type)])
-			return null
 
 
 static func is_snake_case(value :String) -> bool:
@@ -406,7 +383,8 @@ static func is_type(value :Variant) -> bool:
 	return false
 
 
-static func is_same(left, right) -> bool:
+@warning_ignore("shadowed_global_identifier")
+static func _is_same(left, right) -> bool:
 	var left_type := -1 if left == null else typeof(left)
 	var right_type := -1 if right == null else typeof(right)
 
@@ -735,25 +713,25 @@ static func array_erase_value(array :Array, value) -> void:
 			array.erase(element)
 
 
-static func find_nodes_by_class(root: Node, cls: String, recursive: bool = false) -> Array:
+static func find_nodes_by_class(root: Node, cls: String, recursive: bool = false) -> Array[Node]:
 	if not recursive:
 		return _find_nodes_by_class_no_rec(root, cls)
 	return _find_nodes_by_class(root, cls)
 
 
-static func _find_nodes_by_class_no_rec(parent: Node, cls: String) -> Array:
-	var result = []
+static func _find_nodes_by_class_no_rec(parent: Node, cls: String) -> Array[Node]:
+	var result :Array[Node] = []
 	for ch in parent.get_children():
 		if ch.get_class() == cls:
 			result.append(ch)
 	return result
 
 
-static func _find_nodes_by_class(root: Node, cls: String) -> Array:
-	var result = []
-	var stack = [root]
+static func _find_nodes_by_class(root: Node, cls: String) -> Array[Node]:
+	var result :Array[Node] = []
+	var stack  :Array[Node] = [root]
 	while stack:
-		var node = stack.pop_back()
+		var node :Node = stack.pop_back()
 		if node.get_class() == cls:
 			result.append(node)
 		for ch in node.get_children():

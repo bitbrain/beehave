@@ -4,8 +4,6 @@ extends Node
 signal connection_succeeded(message)
 signal connection_failed(message)
 
-# connetion timeout in ms
-var _connection_timeout = 2.000
 var _timer :Timer
 
 var _host :String
@@ -13,6 +11,7 @@ var _port :int
 var _client_id :int
 var _connected :bool
 var _stream :StreamPeerTCP
+
 
 func _ready():
 	_connected = false
@@ -23,6 +22,7 @@ func _ready():
 	_timer.set_one_shot(true)
 	_timer.connect('timeout', Callable(self, '_connecting_timeout'))
 
+
 func stop() -> void:
 	console("Client: disconnect from server")
 	if _stream != null:
@@ -30,6 +30,7 @@ func stop() -> void:
 	if _stream != null:
 		_stream.disconnect_from_host()
 	_connected = false
+
 
 func start(host :String, port :int) -> Result:
 	_host = host
@@ -44,6 +45,7 @@ func start(host :String, port :int) -> Result:
 		if err != OK:
 			return Result.error("GdUnit3: Can't establish client, error code: %s" % err)
 	return Result.success("GdUnit3: Client connected checked port %d" % port)
+
 
 func _process(_delta):
 	match _stream.get_status():
@@ -68,13 +70,13 @@ func _process(_delta):
 		
 		StreamPeerTCP.STATUS_CONNECTED:
 			if not _connected:
-				var rpc = null
+				var rpc_ = null
 				set_process(false)
-				while rpc == null:
+				while rpc_ == null:
 					await get_tree().create_timer(0.500).timeout
-					rpc = rpc_receive()
+					rpc_ = rpc_receive()
 				set_process(true)
-				_client_id = rpc.client_id()
+				_client_id = rpc_.client_id()
 				console("Connected to Server: %d" % _client_id)
 				emit_signal("connection_succeeded", "Connect to TCP Server %s:%d success." % [_host, _port])
 				_connected = true
@@ -86,19 +88,23 @@ func _process(_delta):
 			emit_signal("connection_failed", "Connect to TCP Server %s:%d faild!" % [_host, _port])
 			return
 
+
 func is_client_connected() -> bool:
 	return _connected
 
+
 func process_rpc() -> void:
 	if _stream.get_available_bytes() > 0:
-		var rpc = rpc_receive()
-		if rpc is RPCClientDisconnect:
+		var rpc_ = rpc_receive()
+		if rpc_ is RPCClientDisconnect:
 			stop()
 
-func rpc_send(rpc :RPC) -> void:
+
+func rpc_send(p_rpc :RPC) -> void:
 	if _stream != null:
-		var data := GdUnitServerConstants.JSON_RESPONSE_DELIMITER + rpc.serialize() + GdUnitServerConstants.JSON_RESPONSE_DELIMITER
+		var data := GdUnitServerConstants.JSON_RESPONSE_DELIMITER + p_rpc.serialize() + GdUnitServerConstants.JSON_RESPONSE_DELIMITER
 		_stream.put_data(data.to_ascii_buffer())
+
 
 func rpc_receive() -> RPC:
 	if _stream != null:
@@ -117,12 +123,15 @@ func rpc_receive() -> RPC:
 			return RPC.deserialize(decoded)
 	return null
 
+
 func console(message :String) -> void:
 	prints("TCP Client:", message)
 	pass
 
+
 func _on_connection_failed(message :String):
 	console("connection faild: " + message)
+
 
 func _on_connection_succeeded(message :String):
 	console("connected: " + message)

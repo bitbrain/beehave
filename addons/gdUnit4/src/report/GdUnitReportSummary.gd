@@ -8,7 +8,6 @@ const CHARACTERS_TO_ENCODE := {
 
 var _resource_path :String
 var _name :String
-var _suite_count := 0
 var _test_count := 0
 var _failure_count := 0
 var _error_count := 0
@@ -92,23 +91,23 @@ func succes_rate() -> String:
 	return calculate_succes_rate(test_count(), error_count(), failure_count())
 
 
-static func calculate_state(error_count :int, failure_count :int, orphan_count :int) -> String:
-	if error_count > 0:
+func calculate_state(p_error_count :int, p_failure_count :int, p_orphan_count :int) -> String:
+	if p_error_count > 0:
 		return "error"
-	if failure_count > 0:
+	if p_failure_count > 0:
 		return "failure"
-	if orphan_count > 0:
+	if p_orphan_count > 0:
 		return "warning"
 	return "success"
 
 
-static func calculate_succes_rate(test_count :int, error_count: int, failure_count: int) -> String:
-	if failure_count == 0:
+func calculate_succes_rate(p_test_count :int, p_error_count :int, p_failure_count :int) -> String:
+	if p_failure_count == 0:
 		return "100%"
-	return "%d" % ((test_count-failure_count-error_count) * 100 / test_count) + "%"
+	return "%d" % ((p_test_count-p_failure_count-p_error_count) * 100.0 / p_test_count) + "%"
 
 
-func create_summary(report_dir :String) -> String:
+func create_summary(_report_dir :String) -> String:
 	return ""
 
 

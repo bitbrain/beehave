@@ -2,7 +2,7 @@ class_name GdUnitSpyBuilder
 extends GdUnitClassDoubler
 
 
-static func build(caller :Object, to_spy, push_errors :bool = true, debug_write = false):
+static func build(caller :Object, to_spy, debug_write = false):
 	var memory_pool :GdUnitMemoryPool.POOL = caller.get_meta(GdUnitMemoryPool.META_PARAM)
 	
 	# if resource path load it before

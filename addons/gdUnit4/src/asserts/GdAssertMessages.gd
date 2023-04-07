@@ -201,6 +201,7 @@ static func error_is_same(current, expected) -> String:
 	return "%s\n %s\n to refer to the same object\n %s" % [_error("Expecting:"), _colored_value(expected), _colored_value(current)]
 
 
+@warning_ignore("unused_parameter")
 static func error_not_same(current, expected) -> String:
 	return "%s %s" % [_error("Expecting: not same"), _colored_value(expected)]
 

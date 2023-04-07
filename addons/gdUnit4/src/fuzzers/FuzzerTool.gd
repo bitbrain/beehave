@@ -20,12 +20,12 @@ static func create_fuzzer(source :GDScript, function: GdFunctionArgument) -> Fuz
 	script.source_code = source_code
 	var temp_dir := "res://addons/gdUnit4/.tmp"
 	DirAccess.make_dir_recursive_absolute(temp_dir)
-	var resource_path := "%s/%s" % [temp_dir, "_fuzzer_bulder%d.gd" % Time.get_ticks_msec()]
-	var err := ResourceSaver.save(script, resource_path, ResourceSaver.FLAG_BUNDLE_RESOURCES|ResourceSaver.FLAG_REPLACE_SUBRESOURCE_PATHS)
+	var resource_path_ := "%s/%s" % [temp_dir, "_fuzzer_bulder%d.gd" % Time.get_ticks_msec()]
+	var err := ResourceSaver.save(script, resource_path_, ResourceSaver.FLAG_BUNDLE_RESOURCES|ResourceSaver.FLAG_REPLACE_SUBRESOURCE_PATHS)
 	if err != OK:
 		prints("Script loading error", error_string(err))
 		return null
-	script = ResourceLoader.load(resource_path, "GDScript", ResourceLoader.CACHE_MODE_IGNORE);
+	script = ResourceLoader.load(resource_path_, "GDScript", ResourceLoader.CACHE_MODE_IGNORE);
 	var instance :Object = script.new()
 	instance.queue_free()
 	DirAccess.remove_absolute(script.resource_path)

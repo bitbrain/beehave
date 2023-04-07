@@ -1,5 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dx7xy4dgi3wwb"]
+[gd_scene load_steps=4 format=3 uid="uid://dx7xy4dgi3wwb"]
 
+[ext_resource type="Texture2D" uid="uid://tkrsqx2oxw6o" path="res://addons/gdUnit4/src/ui/assets/PlayDebug.svg" id="2_4h4dw"]
+[ext_resource type="Texture2D" uid="uid://de1q5raia84bn" path="res://addons/gdUnit4/src/ui/assets/PlayOverall.svg" id="2_s3tbo"]
 [ext_resource type="Script" path="res://addons/gdUnit4/src/ui/parts/InspectorToolBar.gd" id="3"]
 
 [node name="ToolBar" type="HBoxContainer"]
@@ -13,86 +15,69 @@ script = ExtResource("3")
 
 [node name="Tools" type="HBoxContainer" parent="."]
 layout_mode = 2
-offset_right = 85.0
-offset_bottom = 648.0
-grow_horizontal = 0
 
 [node name="VSeparator2" type="VSeparator" parent="Tools"]
 layout_mode = 2
-offset_right = 4.0
-offset_bottom = 648.0
 size_flags_horizontal = 3
 size_flags_vertical = 9
 
 [node name="help" type="Button" parent="Tools"]
+unique_name_in_owner = true
 layout_mode = 2
-offset_left = 8.0
-offset_right = 16.0
-offset_bottom = 648.0
 
 [node name="tool" type="Button" parent="Tools"]
+unique_name_in_owner = true
 layout_mode = 2
-offset_left = 20.0
-offset_right = 28.0
-offset_bottom = 648.0
-tooltip_text = "GdUnit3 Tools"
+tooltip_text = "GdUnit Settings"
 
 [node name="VSeparator" type="VSeparator" parent="Tools"]
 layout_mode = 2
-offset_left = 32.0
-offset_right = 36.0
-offset_bottom = 648.0
 
-[node name="run" type="Button" parent="Tools"]
+[node name="run-overall" type="Button" parent="Tools"]
+unique_name_in_owner = true
 use_parent_material = true
 layout_mode = 2
-offset_left = 40.0
-offset_right = 48.0
-offset_bottom = 648.0
+tooltip_text = "Run overall tests"
+icon = ExtResource("2_s3tbo")
+
+[node name="run" type="Button" parent="Tools"]
+unique_name_in_owner = true
+use_parent_material = true
+layout_mode = 2
 tooltip_text = "Rerun unit tests"
 
 [node name="debug" type="Button" parent="Tools"]
+unique_name_in_owner = true
 use_parent_material = true
 layout_mode = 2
-offset_left = 52.0
-offset_right = 60.0
-offset_bottom = 648.0
 tooltip_text = "Rerun unit tests (Debug)"
+icon = ExtResource("2_4h4dw")
 
 [node name="stop" type="Button" parent="Tools"]
+unique_name_in_owner = true
 use_parent_material = true
 layout_mode = 2
-offset_left = 64.0
-offset_right = 72.0
-offset_bottom = 648.0
 tooltip_text = "Stops runing unit tests"
 disabled = true
 
 [node name="VSeparator3" type="VSeparator" parent="Tools"]
 layout_mode = 2
-offset_left = 76.0
-offset_right = 80.0
-offset_bottom = 648.0
 
 [node name="CenterContainer" type="MarginContainer" parent="Tools"]
 use_parent_material = true
 layout_mode = 2
-offset_left = 84.0
-offset_right = 85.0
-offset_bottom = 648.0
 size_flags_horizontal = 3
 
 [node name="version" type="Label" parent="Tools/CenterContainer"]
+unique_name_in_owner = true
 use_parent_material = true
 layout_mode = 2
-offset_right = 1.0
-offset_bottom = 648.0
-grow_horizontal = 0
 size_flags_horizontal = 3
 size_flags_vertical = 13
 
 [connection signal="pressed" from="Tools/help" to="." method="_on_wiki_pressed"]
 [connection signal="pressed" from="Tools/tool" to="." method="_on_btn_tool_pressed"]
+[connection signal="pressed" from="Tools/run-overall" to="." method="_on_runoverall_pressed" binds= [false]]
 [connection signal="pressed" from="Tools/run" to="." method="_on_run_pressed" binds= [false]]
 [connection signal="pressed" from="Tools/debug" to="." method="_on_run_pressed" binds= [true]]
 [connection signal="pressed" from="Tools/stop" to="." method="_on_stop_pressed"]

@@ -15,9 +15,9 @@ class TcpConnection extends Node:
 	var _readBuffer :String = ""
 	
 	
-	func _init(server):
-		#assert(server is TCPServer)
-		_stream = server.take_connection()
+	func _init(p_server):
+		#assert(p_server is TCPServer)
+		_stream = p_server.take_connection()
 		_stream.set_big_endian(true)
 		_id = _stream.get_instance_id()
 		rpc_send(RPCClientConnect.new().with_id(_id))
@@ -42,8 +42,8 @@ class TcpConnection extends Node:
 		return get_parent()
 	
 	
-	func rpc_send(rpc :RPC) -> void:
-		_stream.put_var(rpc.serialize(), true)
+	func rpc_send(p_rpc :RPC) -> void:
+		_stream.put_var(p_rpc.serialize(), true)
 	
 	
 	func _process(_delta):
@@ -63,10 +63,10 @@ class TcpConnection extends Node:
 			else:
 				var received_data := partial_data[1] as PackedByteArray
 				for package in _read_next_data_packages(received_data):
-					var rpc = RPC.deserialize(package)
-					if rpc is RPCClientDisconnect:
+					var rpc_ = RPC.deserialize(package)
+					if rpc_ is RPCClientDisconnect:
 						close()
-					server().rpc_data.emit(rpc)
+					server().rpc_data.emit(rpc_)
 	
 	
 	func _read_next_data_packages(data_package :PackedByteArray) -> PackedStringArray:
@@ -87,8 +87,8 @@ class TcpConnection extends Node:
 		return json_array
 	
 	
-	func console(message :String) -> void:
-		#print_debug("TCP Connection:", message)
+	func console(_message :String) -> void:
+		#print_debug("TCP Connection:", _message)
 		pass
 
 
@@ -157,6 +157,6 @@ func _on_client_disconnected(client_id :int):
 
 
 
-func console(message :String) -> void:
-	#print_debug("TCP Server:", message)
+func console(_message :String) -> void:
+	#print_debug("TCP Server:", _message)
 	pass

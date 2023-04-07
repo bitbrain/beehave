@@ -3,13 +3,16 @@ extends RPC
 
 var _event :Dictionary
 
-static func of(event :GdUnitEvent) -> RPCGdUnitEvent:
+
+static func of(p_event :GdUnitEvent) -> RPCGdUnitEvent:
 	var rpc = RPCGdUnitEvent.new()
-	rpc._event = event.serialize()
+	rpc._event = p_event.serialize()
 	return rpc
+
 
 func event() -> GdUnitEvent:
 	return GdUnitEvent.new().deserialize(_event)
 
-func to_string():
+
+func _to_string():
 	return "RPCGdUnitEvent: " + str(_event)

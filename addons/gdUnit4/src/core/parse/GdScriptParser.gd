@@ -79,11 +79,12 @@ class Token extends RefCounted:
 	var _is_operator: bool
 	var _regex :RegEx
 	
-	func _init(token: String, is_operator := false, regex :RegEx = null) -> void:
-		_token = token
-		_is_operator = is_operator
-		_consumed = token.length()
-		_regex = regex
+	
+	func _init(p_token: String, p_is_operator := false, p_regex :RegEx = null) -> void:
+		_token = p_token
+		_is_operator = p_is_operator
+		_consumed = p_token.length()
+		_regex = p_regex
 	
 	func match(input: String, pos: int) -> bool:
 		if _regex:
@@ -154,40 +155,40 @@ class FuzzerToken extends Token:
 class Variable extends Token:
 	var _plain_value
 	var _typed_value
-	var _type := TYPE_NIL
+	var _type :int = TYPE_NIL
 	
 	
-	func _init(value: String):
-		super(value)
-		_type = _scan_type(value)
-		_plain_value = value
-		_typed_value = _cast_to_type(value, _type)
+	func _init(p_value: String):
+		super(p_value)
+		_type = _scan_type(p_value)
+		_plain_value = p_value
+		_typed_value = _cast_to_type(p_value, _type)
 	
 	
-	func _scan_type(value: String) -> int:
-		if value.begins_with("\"") and value.ends_with("\""):
+	func _scan_type(p_value: String) -> int:
+		if p_value.begins_with("\"") and p_value.ends_with("\""):
 			return TYPE_STRING
-		var type := GdObjects.string_to_type(value)
-		if type != TYPE_NIL:
-			return type
-		if value.is_valid_int():
+		var type_ := GdObjects.string_to_type(p_value)
+		if type_ != TYPE_NIL:
+			return type_
+		if p_value.is_valid_int():
 			return TYPE_INT
-		if value.is_valid_float():
+		if p_value.is_valid_float():
 			return TYPE_FLOAT
-		if value.is_valid_hex_number():
+		if p_value.is_valid_hex_number():
 			return TYPE_INT
 		return TYPE_OBJECT
 	
 	
-	func _cast_to_type(value :String, type: int) -> Variant:
-		match type:
+	func _cast_to_type(p_value :String, p_type: int) -> Variant:
+		match p_type:
 			TYPE_STRING:
-				return value#.substr(1, value.length() - 2)
+				return p_value#.substr(1, p_value.length() - 2)
 			TYPE_INT:
-				return value.to_int()
+				return p_value.to_int()
 			TYPE_FLOAT:
-				return value.to_float()
-		return value
+				return p_value.to_float()
+		return p_value
 	
 	
 	func is_variable() -> bool:
@@ -248,7 +249,7 @@ class TokenInnerClass extends Token:
 		for row_index in range(offset+1, source_rows.size()):
 			# scan until next non tab
 			var source_row := source_rows[row_index]
-			var row = _strip_leading_spaces(source_row)
+			var row = TokenInnerClass._strip_leading_spaces(source_row)
 			if row.is_empty() or row.begins_with("\t") or row.begins_with("#"):
 				# fold all line to left by removing leading tabs and spaces
 				if source_row.begins_with("\t"):
@@ -260,7 +261,7 @@ class TokenInnerClass extends Token:
 					_content.append(source_row)
 				continue
 			break
-		_consumed += _consumed_bytes("".join(_content))
+		_consumed += TokenInnerClass._consumed_bytes("".join(_content))
 	
 	
 	func _to_string():
@@ -326,30 +327,32 @@ func extract_clazz_name(value :String) -> String:
 		return result.get_string(2)
 
 
+@warning_ignore("unused_parameter")
 func tokenize_inner_class(source_code: String, current: int, token: Token) -> Token:
 	var clazz_name := extract_clazz_name(source_code.substr(current, 64))
 	return TokenInnerClass.new(clazz_name)
 
 
+@warning_ignore("assert_always_false")
 func _process_values(left: Token, token_stack: Array, operator: Token) -> Token:
 	# precheck
 	if left.is_variable() and operator.is_operator():
 		var lvalue = left.value()
 		var value = null
-		var next_token = token_stack.pop_front() as Token
+		var next_token_ = token_stack.pop_front() as Token
 	
 		if operator == OPERATOR_ADD:
-			value =  lvalue + next_token.value()
+			value =  lvalue + next_token_.value()
 		elif operator == OPERATOR_SUB:
-			value =  lvalue - next_token.value()
+			value =  lvalue - next_token_.value()
 		elif operator == OPERATOR_MUL:
-			value =  lvalue * next_token.value()
+			value =  lvalue * next_token_.value()
 		elif operator == OPERATOR_DIV:
-			value =  lvalue / next_token.value()
+			value =  lvalue / next_token_.value()
 		elif operator == OPERATOR_REMAINDER:
-			value =  lvalue & next_token.value()
+			value =  lvalue & next_token_.value()
 		else:
-			assert(false) #,"Unsupported operator %s" % operator)
+			assert(false, "Unsupported operator %s" % operator)
 		return Variable.new( str(value))
 	return operator
 
@@ -450,7 +453,6 @@ func parse_arguments(input: String) -> Array[GdFunctionArgument]:
 							break
 			arg_value = arg_value.lstrip(" ")
 			if arg_type == TYPE_NIL and arg_value != GdFunctionArgument.UNDEFINED:
-				var value_type := TYPE_STRING
 				if arg_value.begins_with("Color."):
 					arg_type = TYPE_COLOR
 				elif arg_value.begins_with("Vector2."):
@@ -476,7 +478,7 @@ func parse_arguments(input: String) -> Array[GdFunctionArgument]:
 # Parse an string for an argument with given name <argument_name> and returns the value
 # if the argument not found the <default_value> is returned
 func parse_argument(row: String, argument_name: String, default_value):
-	var input := clean_up_row(row)
+	var input := GdScriptParser.clean_up_row(row)
 	var argument_found := false
 	var current_index := 0
 	var token :Token = null
@@ -532,7 +534,7 @@ func _parse_end_function(input: String, remove_trailing_char := false) -> String
 
 func extract_inner_class(source_rows: PackedStringArray, clazz_name :String) -> PackedStringArray:
 	for row_index in source_rows.size():
-		var input := clean_up_row(source_rows[row_index])
+		var input := GdScriptParser.clean_up_row(source_rows[row_index])
 		var token := next_token(input, 0)
 		if token.is_inner_class():
 			if token.is_class_name(clazz_name):
@@ -575,7 +577,7 @@ func load_source_code(script :GDScript, script_path :PackedStringArray) -> Packe
 			if class_path.size() > 1:
 				_scanned_inner_classes.append(class_path[1])
 	
-	var source_code := to_unix_format(script.source_code)
+	var source_code := GdScriptParser.to_unix_format(script.source_code)
 	var source_rows := source_code.split("\n")
 	# extract all inner class names
 	# want to extract an inner class?
@@ -586,11 +588,11 @@ func load_source_code(script :GDScript, script_path :PackedStringArray) -> Packe
 
 
 func get_class_name(script :GDScript) -> String:
-	var source_code := to_unix_format(script.source_code)
+	var source_code := GdScriptParser.to_unix_format(script.source_code)
 	var source_rows := source_code.split("\n")
 	
 	for index in min(10, source_rows.size()):
-		var input = clean_up_row(source_rows[index])
+		var input = GdScriptParser.clean_up_row(source_rows[index])
 		var token := next_token(input, 0)
 		if token == TOKEN_CLASS_NAME:
 			token = tokenize_value(input, token._consumed, token)
@@ -600,7 +602,7 @@ func get_class_name(script :GDScript) -> String:
 
 
 func parse_func_name(row :String) -> String:
-	var input = clean_up_row(row)
+	var input = GdScriptParser.clean_up_row(row)
 	var current_index = 0
 	var token := next_token(input, current_index)
 	current_index += token._consumed
@@ -619,7 +621,7 @@ func parse_functions(rows :PackedStringArray, clazz_name :String, clazz_path :Pa
 		# step over inner class functions
 		if row.begins_with("\t"):
 			continue
-		var input = clean_up_row(row)
+		var input = GdScriptParser.clean_up_row(row)
 		# skip comments and empty lines
 		if input.begins_with("#") or input.length() == 0:
 			continue
@@ -640,7 +642,7 @@ func is_func_coroutine(rows :PackedStringArray, index :int) -> bool:
 		is_coroutine = row.contains("await")
 		if is_coroutine:
 			return true
-		var input = clean_up_row(row)
+		var input = GdScriptParser.clean_up_row(row)
 		var token := next_token(input, 0)
 		if token == TOKEN_FUNCTION_STATIC_DECLARATION or token == TOKEN_FUNCTION_DECLARATION:
 			break
@@ -698,7 +700,7 @@ func is_virtual_func(clazz_name :String, clazz_path :PackedStringArray, func_nam
 
 
 func is_static_func(func_signature :String) -> bool:
-	var input := clean_up_row(func_signature)
+	var input := GdScriptParser.clean_up_row(func_signature)
 	var token := next_token(input, 0)
 	return token == TOKEN_FUNCTION_STATIC_DECLARATION
 
@@ -728,15 +730,15 @@ func extract_functions(script :GDScript, clazz_name :String, clazz_path :PackedS
 func parse(clazz_name :String, clazz_path :PackedStringArray) -> Result:
 	if clazz_path.is_empty():
 		return Result.error("Invalid script path '%s'" % clazz_path)
-	var is_inner_class := is_inner_class(clazz_path)
+	var is_inner_class_ := is_inner_class(clazz_path)
 	var script :GDScript = load(clazz_path[0])
 	var function_descriptors := extract_functions(script, clazz_name, clazz_path)
-	var gd_class := GdClassDescriptor.new(clazz_name, is_inner_class, function_descriptors)
+	var gd_class := GdClassDescriptor.new(clazz_name, is_inner_class_, function_descriptors)
 	# iterate over class dependencies
 	script = script.get_base_script()
 	while script != null:
 		clazz_name = GdObjects.extract_class_name_from_class_path([script.resource_path])
 		function_descriptors = extract_functions(script, clazz_name, clazz_path)
-		gd_class.set_parent_clazz(GdClassDescriptor.new(clazz_name, is_inner_class, function_descriptors))
+		gd_class.set_parent_clazz(GdClassDescriptor.new(clazz_name, is_inner_class_, function_descriptors))
 		script = script.get_base_script()
 	return Result.success(gd_class)

@@ -8,7 +8,7 @@ const SKIPPED = "skipped"
 const SERVER_PORT = "server_port"
 const EXIT_FAIL_FAST ="exit_on_first_fail"
 
-const CONFIG_FILE = "res://GdUnitRunner.cfg"
+const CONFIG_FILE = "res://addons/gdUnit4/GdUnitRunner.cfg"
 
 var _config := {
 		VERSION : CONFIG_VERSION,
@@ -42,26 +42,26 @@ func self_test() -> GdUnitRunnerConfig:
 	return self
 
 
-func add_test_suite(resource_path :String) -> GdUnitRunnerConfig:
-	var to_execute := to_execute()
-	to_execute[resource_path] = to_execute.get(resource_path, PackedStringArray())
+func add_test_suite(p_resource_path :String) -> GdUnitRunnerConfig:
+	var to_execute_ := to_execute()
+	to_execute_[p_resource_path] = to_execute_.get(p_resource_path, PackedStringArray())
 	return self
 
 
 func add_test_suites(resource_paths :PackedStringArray) -> GdUnitRunnerConfig:
-	for resource_path in resource_paths:
-		add_test_suite(resource_path)
+	for resource_path_ in resource_paths:
+		add_test_suite(resource_path_)
 	return self
 
 
-func add_test_case(resource_path :String, test_name :StringName, test_param_index :int = -1) -> GdUnitRunnerConfig:
-	var to_execute := to_execute()
-	var test_cases :PackedStringArray = to_execute.get(resource_path, PackedStringArray())
+func add_test_case(p_resource_path :String, test_name :StringName, test_param_index :int = -1) -> GdUnitRunnerConfig:
+	var to_execute_ := to_execute()
+	var test_cases :PackedStringArray = to_execute_.get(p_resource_path, PackedStringArray())
 	if test_param_index != -1:
 		test_cases.append("%s:%d" % [test_name, test_param_index])
 	else:
 		test_cases.append(test_name)
-	to_execute[resource_path] = test_cases
+	to_execute_[p_resource_path] = test_cases
 	return self
 
 
@@ -81,16 +81,16 @@ func skip_test_suite(value :StringName) -> GdUnitRunnerConfig:
 
 
 func skip_test_suites(resource_paths :PackedStringArray) -> GdUnitRunnerConfig:
-	for resource_path in resource_paths:
-		skip_test_suite(resource_path)
+	for resource_path_ in resource_paths:
+		skip_test_suite(resource_path_)
 	return self
 
 
-func skip_test_case(resource_path :String, test_name :StringName) -> GdUnitRunnerConfig:
+func skip_test_case(p_resource_path :String, test_name :StringName) -> GdUnitRunnerConfig:
 	var to_ignore := skipped()
-	var test_cases :PackedStringArray = to_ignore.get(resource_path, PackedStringArray())
+	var test_cases :PackedStringArray = to_ignore.get(p_resource_path, PackedStringArray())
 	test_cases.append(test_name)
-	to_ignore[resource_path] = test_cases
+	to_ignore[p_resource_path] = test_cases
 	return self
 
 
@@ -102,17 +102,17 @@ func skipped() -> Dictionary:
 	return _config.get(SKIPPED, PackedStringArray())
 
 
-func save(path :String = CONFIG_FILE) -> Result:
+func save_config(path :String = CONFIG_FILE) -> Result:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		var error = FileAccess.get_open_error()
 		return Result.error("Can't write test runner configuration '%s'! %s" % [path, GdUnitTools.error_as_string(error)])
 	_config[VERSION] = CONFIG_VERSION
-	file.store_string(JSON.new().stringify(_config))
+	file.store_string(JSON.stringify(_config))
 	return Result.success(path)
 
 
-func load(path :String = CONFIG_FILE) -> Result:
+func load_config(path :String = CONFIG_FILE) -> Result:
 	if not FileAccess.file_exists(path):
 		return Result.error("Can't find test runner configuration '%s'! Please select a test to run." % path)
 	var file := FileAccess.open(path, FileAccess.READ)
@@ -135,8 +135,8 @@ func load(path :String = CONFIG_FILE) -> Result:
 
 func fix_value_types():
 	# fix float value to int json stores all numbers as float
-	var server_port :int = _config.get(SERVER_PORT, -1)
-	_config[SERVER_PORT] = server_port
+	var server_port_ :int = _config.get(SERVER_PORT, -1)
+	_config[SERVER_PORT] = server_port_
 	convert_Array_to_PackedStringArray(_config[INCLUDED])
 	convert_Array_to_PackedStringArray(_config[SKIPPED])
 

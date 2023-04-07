@@ -1,47 +1,68 @@
-# An Assertion Tool to verify function callback values
+## An Assertion Tool to verify function callback values
 class_name GdUnitFuncAssert
 extends GdUnitAssert
 
 
-# Verifies that the current value is null.
-func is_null() -> GdUnitAssert:
+## Verifies that the current value is null.
+func is_null() -> GdUnitFuncAssert:
+	await Engine.get_main_loop().process_frame
 	return self
 
-# Verifies that the current value is not null.
-func is_not_null() -> GdUnitAssert:
+
+## Verifies that the current value is not null.
+func is_not_null() -> GdUnitFuncAssert:
+	await Engine.get_main_loop().process_frame
 	return self
 
-# Verifies that the current value is equal to the given one.
-func is_equal(expected) -> GdUnitAssert:
+
+## Verifies that the current value is equal to the given one.
+@warning_ignore("unused_parameter")
+func is_equal(expected) -> GdUnitFuncAssert:
+	await Engine.get_main_loop().process_frame
 	return self
 
-# Verifies that the current value is not equal to the given one.
-func is_not_equal(expected) -> GdUnitAssert:
+
+## Verifies that the current value is not equal to the given one.
+@warning_ignore("unused_parameter")
+func is_not_equal(expected) -> GdUnitFuncAssert:
+	await Engine.get_main_loop().process_frame
 	return self
 
-# Verifies that the current value is true.
-func is_true() -> GdUnitAssert:
+
+## Verifies that the current value is true.
+func is_true() -> GdUnitFuncAssert:
+	await Engine.get_main_loop().process_frame
 	return self
 
-# Verifies that the current value is false.
-func is_false() -> GdUnitAssert:
+
+## Verifies that the current value is false.
+func is_false() -> GdUnitFuncAssert:
+	await Engine.get_main_loop().process_frame
 	return self
 
-# Verifies the failure message is equal to expected one.
-func has_failure_message(expected: String):
+
+## Verifies the failure message is equal to expected one.
+@warning_ignore("unused_parameter")
+func has_failure_message(expected: String) -> GdUnitFuncAssert:
 	return self
 
-# Verifies that the failure starts with the given prefix.
-func starts_with_failure_message(expected: String):
+
+## Verifies that the failure starts with the given prefix.
+@warning_ignore("unused_parameter")
+func starts_with_failure_message(expected: String) -> GdUnitFuncAssert:
 	return self
 
-# Overrides the default failure message by given custom message.
-func override_failure_message(message :String):
+
+## Overrides the default failure message by given custom message.
+@warning_ignore("unused_parameter")
+func override_failure_message(message :String) -> GdUnitFuncAssert:
 	return self
 
-# Sets the timeout in ms to wait the function returnd the expected value, if the time over a failure is emitted
-# e.g.
-# do wait until 5s the function `is_state` is returns 10 
-# assert_func(instance, "is_state").wait_until(5000).is_equal(10)
-func wait_until(timeout :int) -> GdUnitAssert:
+
+## Sets the timeout in ms to wait the function returnd the expected value, if the time over a failure is emitted.[br]
+## e.g.[br]
+## do wait until 5s the function `is_state` is returns 10 [br]
+## [code]assert_func(instance, "is_state").wait_until(5000).is_equal(10)[/code]
+@warning_ignore("unused_parameter")
+func wait_until(timeout :int) -> GdUnitFuncAssert:
 	return self
