@@ -17,10 +17,10 @@ You can run the unit tests by right-clicking the `test` folder and selecting `Ru
 
 If you want to introduce a new node, raise a pull request after checking the issues tab for any discussions on new nodes. It's a great place to gather feedback before implementing a new node. Ensure that you also introduce an icon for your node that follows the color scheme:
 
-- Utility nodes: `#C689FF`.
-- Leafs: `#FFB649`.
-- Decorators: `#46C0E1`.
-- Composites: `#40D29F`.
+- Utility nodes: `#C689FF`
+- Leafs: `#FFB649`
+- Decorators: `#46C0E1`
+- Composites: `#40D29F`
 
 Also, update the `README.md` file with the documentation for the newly introduced node.
 
