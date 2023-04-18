@@ -4,9 +4,11 @@ Debugging behavior trees can be challenging, especially when the AI behavior is 
 
 ![how-to-debug](../assets/how-to-debug.png)
 
-> 💡 Please note that your game must be running and your scene must contain a valid behavior tree for the behavior tree to show up.
+> 💡 Please note that your game must be running, and your scene must contain a valid behavior tree for the behavior tree to show up.
 
-You can toggle between **vertical** and **horizontal** mode by clicking the button on the top of the debug view:
+The debug view provides real-time information about the state of each node in the tree, as well as the overall status of the tree. This can be useful for identifying issues with your behavior tree logic or tracking down errors that may be causing unexpected behavior in your game.
+
+You can toggle between **vertical** and **horizontal** mode by clicking the button at the top of the debug view:
 
 ![how-to-debug-horizontal](../assets/how-to-debug-horizontal.png)
 
@@ -14,4 +16,4 @@ In case you want to investigate your behaviors in a separate window, **Beehave**
 
 ![how-to-debug-popout](../assets/how-to-debug-popout.png)
 
-If you have any other ideas how to improve the debug view, please feel free [to provide your feedback here](https://github.com/bitbrain/beehave/discussions/141).
+If you have any other ideas on how to improve the debug view, please feel free [to provide your feedback here](https://github.com/bitbrain/beehave/discussions/141).
