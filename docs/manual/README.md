@@ -16,6 +16,16 @@ For an in-depth tutorial on how to use the Beehave addon, watch the video below:
 
 [![tutorial-thumbnail](https://img.youtube.com/vi/n0gVEA1dyPQ/0.jpg)](https://www.youtube.com/watch?v=n0gVEA1dyPQ)
 
+## Status codes
+
+Status codes in Behavior Trees are used to tell the parent node whether a child node has succeeded or failed at its task. Think of it like a signal that a child node sends to its parent node to let it know whether the task it was assigned was completed successfully or not.
+
+For example, let's say you have a character in a game that needs to perform a sequence of actions in order to complete a task. You might use a Behavior Tree to define this sequence of actions, with each action represented by a child node. If the character successfully performs an action, the child node representing that action would report a `SUCCESS` status code to its parent node. If the character fails to perform the action, the child node would report a `FAILURE` status code instead.
+
+Here's a concrete example: imagine you have an enemy AI that needs to decide whether to attack the player or retreat. You could use a Behavior Tree to make this decision, with a Selector node as the parent node and two Action nodes as its children. The first child node would represent the attack action, and the second child node would represent the retreat action.
+
+When the Selector node is executed, it will start by ticking the first child node (attack). If the attack action is successful, the child node will report a `SUCCESS` status code to the Selector, which will stop executing and the enemy will attack the player. If the attack action fails, the child node will report a `FAILURE` status code to the Selector, which will then tick the second child node (retreat). If the retreat action is successful, the child node will report a `SUCCESS` status code to the Selector, which will stop executing and the enemy will retreat. If the retreat action fails, the child node will report a `FAILURE` status code to the Selector, which will then return `FAILURE` to its parent node.
+
 ## Actions and Conditions
 
 In Beehave, **Conditions** are leaf nodes of type `ConditionLeaf`. They are simple nodes that return either `SUCCESS` or `FAILURE`, based on a single condition. To maximize reusability, avoid creating conditions that check multiple factors.
