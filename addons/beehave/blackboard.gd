@@ -31,3 +31,11 @@ func has_value(key: Variant, blackboard_name: String = 'default') -> bool:
 func erase_value(key: Variant, blackboard_name: String = 'default') -> void:
 	if blackboard.has(blackboard_name):
 		blackboard[blackboard_name][key] = null
+
+
+func set_for_actor(actor: Node, key: Variant, value: Variant) -> void:
+	return self.set_value(key, value, str(actor.get_instance_id()))
+
+
+func get_for_actor(actor: Node, key: Variant, default_value: Variant) -> Variant:
+	return self.get_value(key, default_value, str(actor.get_instance_id()))
