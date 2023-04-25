@@ -88,7 +88,7 @@ func _ready() -> void:
 
 	# Get the name of the parent node name for metric
 	var parent_name = actor.name
-	_process_time_metric_name = "beehave/%s-%s-process_time" % [parent_name, get_instance_id()]
+	_process_time_metric_name = "beehave [microseconds]/process_time_%s-%s" % [parent_name, get_instance_id()]
 
 	# Register custom metric to the engine
 	if custom_monitor:
@@ -107,7 +107,6 @@ func _physics_process(delta: float) -> void:
 	# Start timing for metric
 	var start_time = Time.get_ticks_usec()
 
-	blackboard.set_value("delta", delta, str(actor.get_instance_id()))
 	blackboard.set_value("can_send_message", _can_send_message)
 
 	if _can_send_message:
@@ -120,7 +119,7 @@ func _physics_process(delta: float) -> void:
 		BeehaveDebuggerMessages.process_end(get_instance_id())
 
 	# Check the cost for this frame and save it for metric report
-	_process_time_metric_value = (Time.get_ticks_usec() - start_time) / 1000.0
+	_process_time_metric_value = Time.get_ticks_usec() - start_time
 
 
 func tick() -> int:
@@ -204,7 +203,7 @@ func _exit_tree() -> void:
 
 
 # Called by the engine to profile this tree
-func _get_process_time_metric_value() -> float:
+func _get_process_time_metric_value() -> int:
 	return _process_time_metric_value
 
 
