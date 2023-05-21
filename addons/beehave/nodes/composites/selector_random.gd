@@ -61,6 +61,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 func after_run(actor: Node, blackboard: Blackboard) -> void:
 	_reset()
+	super(actor, blackboard)
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:

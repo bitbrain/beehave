@@ -18,6 +18,7 @@ var actor: Node
 var blackboard: Blackboard
 var sequence: SequenceStarComposite
 
+
 func before_test() -> void:
 	tree = auto_free(load(__tree).new())
 	action1 = auto_free(load(__count_up_action).new())
@@ -96,6 +97,7 @@ func test_keeps_running_child_until_failure() -> void:
 	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(4)
 
+
 func test_tick_again_when_child_returns_failure() -> void:
 	action1.status = BeehaveNode.SUCCESS
 	action2.status = BeehaveNode.FAILURE
@@ -103,7 +105,8 @@ func test_tick_again_when_child_returns_failure() -> void:
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
 	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(2)
-	
+
+
 func test_tick_again_when_child_returns_running() -> void:
 	action1.status = BeehaveNode.SUCCESS
 	action2.status = BeehaveNode.RUNNING
@@ -111,3 +114,13 @@ func test_tick_again_when_child_returns_running() -> void:
 	assert_that(sequence.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
 	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(2)
+
+
+func test_clear_running_child_after_run() -> void:
+	action1.status = BeehaveNode.SUCCESS
+	action2.status = BeehaveNode.RUNNING
+	tree.tick()
+	assert_that(sequence.running_child).is_equal(action2)
+	action2.status = BeehaveNode.SUCCESS
+	tree.tick()
+	assert_that(sequence.running_child).is_equal(null)

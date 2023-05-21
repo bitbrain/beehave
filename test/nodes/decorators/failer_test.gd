@@ -12,12 +12,13 @@ const __blackboard = "res://addons/beehave/blackboard.gd"
 
 var tree: BeehaveTree
 var action: ActionLeaf
+var failer: AlwaysFailDecorator
 
 
 func before_test() -> void:
 	tree = auto_free(load(__tree).new())
 	action = auto_free(load(__action).new())
-	var failer = auto_free(load(__source).new())
+	failer = auto_free(load(__source).new())
 	
 	var actor = auto_free(Node2D.new())
 	var blackboard = auto_free(load(__blackboard).new())
@@ -32,3 +33,12 @@ func before_test() -> void:
 func test_tick() -> void:
 	action.status = BeehaveNode.SUCCESS
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+
+
+func test_clear_running_child_after_run() -> void:
+	action.status = BeehaveNode.RUNNING
+	tree.tick()
+	assert_that(failer.running_child).is_equal(action)
+	action.status = BeehaveNode.SUCCESS
+	tree.tick()
+	assert_that(failer.running_child).is_equal(null)

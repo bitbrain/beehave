@@ -124,7 +124,7 @@ func _physics_process(delta: float) -> void:
 
 func tick() -> int:
 	var child := self.get_child(0)
-	if status == -1:
+	if status != RUNNING:
 		child.before_run(actor, blackboard)
 
 	status = child.tick(actor, blackboard)

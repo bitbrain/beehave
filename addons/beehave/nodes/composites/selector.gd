@@ -43,6 +43,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 func after_run(actor: Node, blackboard: Blackboard) -> void:
 	last_execution_index = 0
+	super(actor, blackboard)
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:

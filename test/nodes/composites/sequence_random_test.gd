@@ -13,6 +13,7 @@ const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
 const RANDOM_SEED = 123
 
 var tree: BeehaveTree
+var sequence: SequenceRandomComposite
 var action1: ActionLeaf
 var action2: ActionLeaf
 
@@ -21,7 +22,7 @@ func before_test() -> void:
 	tree = auto_free(load(__tree).new())
 	action1 = auto_free(load(__count_up_action).new())
 	action2 = auto_free(load(__count_up_action).new())
-	var sequence = auto_free(load(__source).new())
+	sequence = auto_free(load(__source).new())
 	sequence.random_seed = RANDOM_SEED
 	var actor = auto_free(Node2D.new())
 	var blackboard = auto_free(load(__blackboard).new())
@@ -70,3 +71,13 @@ func test_return_failure_of_none_is_succeeding() -> void:
 	
 	assert_that(action1.count).is_equal(1)
 	assert_that(action2.count).is_equal(0)
+
+
+func test_clear_running_child_after_run() -> void:
+	action1.status = BeehaveNode.SUCCESS
+	action2.status = BeehaveNode.RUNNING
+	tree.tick()
+	assert_that(sequence.running_child).is_equal(action2)
+	action2.status = BeehaveNode.SUCCESS
+	tree.tick()
+	assert_that(sequence.running_child).is_equal(null)
