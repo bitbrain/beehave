@@ -12,6 +12,7 @@ const __blackboard = "res://addons/beehave/blackboard.gd"
 const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
 
 var tree: BeehaveTree
+var selector: SelectorReactiveComposite
 var action1: ActionLeaf
 var action2: ActionLeaf
 
@@ -20,7 +21,7 @@ func before_test() -> void:
 	tree = auto_free(load(__tree).new())
 	action1 = auto_free(load(__count_up_action).new())
 	action2 = auto_free(load(__count_up_action).new())
-	var selector = auto_free(load(__source).new())
+	selector = auto_free(load(__source).new())
 	var actor = auto_free(Node2D.new())
 	var blackboard = auto_free(load(__blackboard).new())
 	
@@ -105,7 +106,8 @@ func test_keeps_restarting_child_until_failure() -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	assert_that(action1.count).is_equal(4)
 	assert_that(action2.count).is_equal(4)
-	
+
+
 func test_interrupt_second_when_first_is_running() -> void:
 	action1.status = BeehaveNode.FAILURE
 	action2.status = BeehaveNode.RUNNING
@@ -117,3 +119,13 @@ func test_interrupt_second_when_first_is_running() -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	assert_that(action1.count).is_equal(2)
 	assert_that(action2.count).is_equal(0)
+
+
+func test_clear_running_child_after_run() -> void:
+	action1.status = BeehaveNode.FAILURE
+	action2.status = BeehaveNode.RUNNING
+	tree.tick()
+	assert_that(selector.running_child).is_equal(action2)
+	action2.status = BeehaveNode.FAILURE
+	tree.tick()
+	assert_that(selector.running_child).is_equal(null)

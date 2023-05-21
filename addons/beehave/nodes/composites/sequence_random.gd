@@ -68,6 +68,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 func after_run(actor: Node, blackboard: Blackboard) -> void:
 	if not resume_on_failure:
 		_reset()
+	super(actor, blackboard)
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:

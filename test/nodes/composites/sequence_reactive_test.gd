@@ -124,3 +124,13 @@ func test_interrupt_second_when_first_is_running() -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	assert_that(action1.count).is_equal(2)
 	assert_that(action2.count).is_equal(0)
+
+
+func test_clear_running_child_after_run() -> void:
+	action1.status = BeehaveNode.SUCCESS
+	action2.status = BeehaveNode.RUNNING
+	tree.tick()
+	assert_that(sequence.running_child).is_equal(action2)
+	action2.status = BeehaveNode.SUCCESS
+	tree.tick()
+	assert_that(sequence.running_child).is_equal(null)

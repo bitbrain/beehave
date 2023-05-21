@@ -30,6 +30,10 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 		running_child = null
 
 
+func after_run(actor: Node, blackboard: Blackboard) -> void:
+	running_child = null
+
+
 func get_class_name() -> Array[StringName]:
 	var classes := super()
 	classes.push_back(&"Composite")

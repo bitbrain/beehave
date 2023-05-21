@@ -13,12 +13,13 @@ const __blackboard = "res://addons/beehave/blackboard.gd"
 
 var tree: BeehaveTree
 var action: ActionLeaf
+var inverter: InverterDecorator
 
 
 func before_test() -> void:
 	tree = auto_free(load(__tree).new())
 	action = auto_free(load(__action).new())
-	var inverter = auto_free(load(__source).new())
+	inverter = auto_free(load(__source).new())
 	
 	var actor = auto_free(Node2D.new())
 	var blackboard = auto_free(load(__blackboard).new())
@@ -38,3 +39,12 @@ func test_invert_success_to_failure() -> void:
 func test_invert_failure_to_success() -> void:
 	action.status = BeehaveNode.FAILURE
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+
+
+func test_clear_running_child_after_run() -> void:
+	action.status = BeehaveNode.RUNNING
+	tree.tick()
+	assert_that(inverter.running_child).is_equal(action)
+	action.status = BeehaveNode.SUCCESS
+	tree.tick()
+	assert_that(inverter.running_child).is_equal(null)
