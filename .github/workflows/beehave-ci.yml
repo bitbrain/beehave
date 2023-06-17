@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "godot-4.x"
-      - "update-gdunit"
     paths-ignore:
       - '**.jpg'
       - '**.png'
