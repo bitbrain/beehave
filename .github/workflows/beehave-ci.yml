@@ -32,7 +32,7 @@ jobs:
       matrix:
         godot-version: ['4.0.1', '4.0.2', '4.0.3']
 
-    name: "🤖 CI on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
+    name: "🤖 CI on Godot ${{ matrix.godot-version }}"
     uses: ./.github/workflows/unit-tests.yml
     with:
       godot-version: ${{ matrix.godot-version }}
