@@ -1,6 +1,6 @@
 # GdUnit Monitoring Base Class
 class_name GdUnitMonitor
-extends Resource
+extends RefCounted
 
 var _id :String
 

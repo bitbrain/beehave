@@ -12,18 +12,34 @@ runs:
   using: composite
 
   steps:
-    - name: "🐧 Unit Test Linux"
+    - name: "Unit Test Linux"
       if: ${{ runner.OS == 'Linux' }}
       env:
-        DISPLAY: :1
         GODOT_BIN: "/home/runner/godot-linux/godot"
       shell: bash
       run: |
-        Xvfb :1 -screen 0 1600x1200x24 &
-        chmod +x ./runtest.sh
-        ./runtest.sh --add ${{ inputs.test-includes }} --display-driver x11 --rendering-driver opengl3 --screen 0 --continue --verbose
-        killall Xvfb
+        chmod +x ./addons/gdUnit4/runtest.sh
+        xvfb-run --auto-servernum ./addons/gdUnit4/runtest.sh --add ${{ inputs.test-includes }} --audio-driver Dummy --display-driver x11 --rendering-driver opengl3 --screen 0 --continue --verbose
 
+
+# not tested yet
+    - name: "Unit Test Windows cmd"
+      if: ${{ runner.OS == 'Windows' }}
+      env:
+        GODOT_BIN: "C:\\Users\\runneradmin/godot-win/godot.exe"
+      shell: cmd
+      run: |
+        echo "%HOMEPATH%"
+        set unix_path=${{ inputs.godot-bin }}
+        set win_path=%unix_path:~1%
+        set win_path=%HOMEPATH%%unix_path:~1%
+        set win_path=%win_path:/=\%
+        echo "%win_path%"
+        echo "%GODOT_BIN%"
+
+        %GODOT_BIN% -s -d .\addons\gdUnit4\bin\GdUnitCmdTool.gd
+
+        
       #  chmod +x ./runtest.cmd
       #  ./runtest.cmd --add ${{ inputs.test-includes }} --continue
       #  set GODOT_BIN=%win_path%

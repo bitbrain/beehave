@@ -254,27 +254,25 @@ static func _argument_default_value(arg :Dictionary, default_value) -> String:
 		return "null"
 	var type := _argument_type(arg)
 	match type:
-		TYPE_NIL, TYPE_RID:
-			return GdDefaultValueDecoder.decode(type, default_value)
-		TYPE_STRING:
-			return GdDefaultValueDecoder.decode(type, default_value)
-		TYPE_STRING_NAME:
-			return GdDefaultValueDecoder.decode(type, default_value)
+		TYPE_NIL:
+			return "null"
+		TYPE_RID:
+			return GdDefaultValueDecoder.decode_typed(type, default_value)
+		TYPE_STRING, TYPE_STRING_NAME:
+			return GdDefaultValueDecoder.decode_typed(type, default_value)
 		TYPE_BOOL:
-			return GdDefaultValueDecoder.decode(type, default_value)
+			return GdDefaultValueDecoder.decode_typed(type, default_value)
 		TYPE_RECT2, TYPE_RECT2I:
-			return GdDefaultValueDecoder.decode(type, default_value)
+			return GdDefaultValueDecoder.decode_typed(type, default_value)
 		TYPE_TRANSFORM2D, TYPE_TRANSFORM3D:
-			return GdDefaultValueDecoder.decode(type, default_value)
-		TYPE_PACKED_COLOR_ARRAY:
-			return GdDefaultValueDecoder.decode(type, default_value)
+			return GdDefaultValueDecoder.decode_typed(type, default_value)
 		TYPE_OBJECT:
 			if default_value == null:
 				return "null"
 	if GdObjects.is_primitive_type(default_value):
 		return str(default_value)
-	if GdObjects.is_type_array(type):
-		if default_value == null:
+	if GdArrayTools.is_type_array(type):
+		if default_value == null or default_value.is_empty():
 			return "[]"
-		return str(default_value)
+		return GdDefaultValueDecoder.decode_typed(type, default_value)
 	return "%s(%s)" % [GdObjects.type_as_string(type), str(default_value).trim_prefix("(").trim_suffix(")")]

@@ -30,6 +30,10 @@ project/assembly_name="Beehave"
 
 enabled=PackedStringArray("res://addons/beehave/plugin.cfg", "res://addons/gdUnit4/plugin.cfg")
 
+[filesystem]
+
+import/blender/enabled=false
+
 [gdunit4]
 
 settings/test/test_root_folder="test/"

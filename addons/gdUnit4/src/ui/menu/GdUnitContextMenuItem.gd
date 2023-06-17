@@ -8,9 +8,6 @@ enum MENU_ID {
 }
 
 
-var _is_visible :Callable
-
-
 func _init(p_id :MENU_ID, p_name :StringName, p_is_visible :Callable, p_command :GdUnitCommand):
 	assert(p_id != null, "(%s) missing parameter 'MENU_ID'" % p_name)
 	assert(p_is_visible != null, "(%s) missing parameter 'GdUnitCommand'" % p_name)

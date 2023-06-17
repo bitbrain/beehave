@@ -4,7 +4,9 @@ extends GdUnitClassDoubler
 
 static func build(caller :Object, to_spy, debug_write = false):
 	var memory_pool :GdUnitMemoryPool.POOL = caller.get_meta(GdUnitMemoryPool.META_PARAM)
-	
+	if GdObjects.is_singleton(to_spy):
+		push_error("Spy on a Singleton is not allowed! '%s'" % to_spy.get_class())
+		return null
 	# if resource path load it before
 	if GdObjects.is_scene_resource_path(to_spy):
 		if not FileAccess.file_exists(to_spy):
@@ -40,7 +42,7 @@ static func get_class_info(clazz :Variant) -> Dictionary:
 
 
 static func spy_on_script(instance, function_excludes :PackedStringArray, debug_write) -> GDScript:
-	if GdObjects.is_array_type(instance):
+	if GdArrayTools.is_array_type(instance):
 		if GdUnitSettings.is_verbose_assert_errors():
 			push_error("Can't build spy checked type '%s'! Spy checked Container Built-In Type not supported!" % instance.get_class())
 		return null

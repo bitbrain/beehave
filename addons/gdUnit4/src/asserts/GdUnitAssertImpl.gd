@@ -1,11 +1,9 @@
 class_name GdUnitAssertImpl
 extends GdUnitAssert
 
-var _gdunit_signals := GdUnitSignals.instance()
-var _current_value_provider :ValueProvider
-var _is_failed :bool = false
+
+var _current :Variant
 var _current_error_message :String = ""
-var _expect_fail :bool = false
 var _custom_failure_message :String = ""
 
 
@@ -32,39 +30,36 @@ static func _get_line_number() -> int:
 	return -1
 
 
-func _init(current :Variant, expect_result :int = EXPECT_SUCCESS):
-	_current_value_provider = current if current is ValueProvider else DefaultValueProvider.new(current)
+func _init(current :Variant):
+	_current = current
+	# save the actual assert instance on the current thread context
+	GdUnitThreadManager.get_current_context().set_assert(self)
 	GdAssertReports.reset_last_error_line_number()
-	_set_test_failure(false)
-	# we expect the test will fail
-	if expect_result == EXPECT_FAIL or GdAssertReports.is_expect_fail():
-		_expect_fail = true
 
 
-func _set_test_failure(failed :bool) -> void:
-	_is_failed = failed
-	_gdunit_signals.gdunit_set_test_failed.emit(failed)
+func _failure_message() -> String:
+	return _current_error_message
 
 
 func __current() -> Variant:
-	return _current_value_provider.get_value()
+	return _current
 
 
-func __validate_value_type(value, type :int) -> bool:
-	return value is ValueProvider or value == null or typeof(value) == type
+func __validate_value_type(value, type :Variant.Type) -> bool:
+	return value == null or typeof(value) == type
 
 
 func report_success() -> GdUnitAssert:
-	return GdAssertReports.report_success(self)
+	GdAssertReports.report_success(GdUnitAssertImpl._get_line_number())
+	return self
 
 
 func report_error(error_message :String, failure_line_number: int = -1) -> GdUnitAssert:
-	_set_test_failure(true)
 	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssertImpl._get_line_number()
 	GdAssertReports.set_last_error_line_number(line_number)
-	if _custom_failure_message.is_empty():
-		return GdAssertReports.report_error(error_message, self, line_number)
-	return GdAssertReports.report_error(_custom_failure_message, self, line_number)
+	_current_error_message = error_message if _custom_failure_message.is_empty() else _custom_failure_message
+	GdAssertReports.report_error(_current_error_message, line_number)
+	return self
 
 
 func test_fail():
@@ -78,28 +73,6 @@ static func _normalize_bbcode(message :String) -> String:
 	var normalized = rtl.get_parsed_text()
 	rtl.free()
 	return normalized.replace("\r", "")
-
-
-func has_failure_message(expected :String):
-	var expected_error := GdUnitTools.normalize_text(expected)
-	var current_error := GdUnitAssertImpl._normalize_bbcode(_current_error_message)
-	if current_error != expected_error:
-		_expect_fail = false
-		var diffs := GdDiffTool.string_diff(current_error, expected_error)
-		var current := GdAssertMessages._colored_array_div(diffs[1])
-		report_error(GdAssertMessages.error_not_same_error(current, expected_error))
-	return self
-
-
-func starts_with_failure_message(expected :String):
-	var expected_error := GdUnitTools.normalize_text(expected)
-	var current_error := GdUnitAssertImpl._normalize_bbcode(_current_error_message)
-	if current_error.find(expected_error) != 0:
-		_expect_fail = false
-		var diffs := GdDiffTool.string_diff(current_error, expected_error)
-		var current := GdAssertMessages._colored_array_div(diffs[1])
-		report_error(GdAssertMessages.error_not_same_error(current, expected_error))
-	return self
 
 
 func override_failure_message(message :String):
@@ -133,7 +106,3 @@ func is_not_null() -> GdUnitAssert:
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
 	return report_success()
-
-
-func send_report(report :GdUnitReport)-> void:
-	_gdunit_signals.gdunit_report.emit(report)

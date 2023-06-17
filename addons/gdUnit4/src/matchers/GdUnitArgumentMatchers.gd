@@ -21,7 +21,11 @@ static func any() -> GdUnitArgumentMatcher:
 
 
 static func by_type(type :int) -> GdUnitArgumentMatcher:
-	return AnyBuildInTypeArgumentMatcher.new(type)
+	return AnyBuildInTypeArgumentMatcher.new([type])
+
+
+static func by_types(types :PackedInt32Array) -> GdUnitArgumentMatcher:
+	return AnyBuildInTypeArgumentMatcher.new(types)
 
 
 static func any_class(clazz) -> GdUnitArgumentMatcher:

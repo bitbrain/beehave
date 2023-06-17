@@ -8,15 +8,17 @@ const USER_PUSH_ERROR := "USER ERROR:"
 var _godot_log_file :String
 var _eof :int
 var _report_enabled := false
+var _report_force : bool
 
 
-func _init():
+func _init(force := false):
 	super("GodotGdErrorMonitor")
-	_godot_log_file = GdUnitSettings.get_log_path().get_base_dir() + "/godot.log"
+	_report_force = force
+	_godot_log_file = GdUnitSettings.get_log_path()
 
 
 func start():
-	_report_enabled = is_reporting_enabled()
+	_report_enabled = _report_force or is_reporting_enabled()
 	if _report_enabled:
 		var file = FileAccess.open(_godot_log_file, FileAccess.READ)
 		if file:
@@ -86,8 +88,8 @@ static func _parse_error_line_number(error :String) -> int:
 
 
 func _is_report_push_errors() -> bool:
-	return GdUnitSettings.is_report_push_errors()
+	return _report_force or GdUnitSettings.is_report_push_errors()
 
 
 func _is_report_script_errors() -> bool:
-	return GdUnitSettings.is_report_script_errors()
+	return _report_force or GdUnitSettings.is_report_script_errors()

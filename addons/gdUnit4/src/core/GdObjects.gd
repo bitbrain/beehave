@@ -131,12 +131,10 @@ const NOTIFICATION_AS_STRING_MAPPINGS := {
 }
 
 
-static func equals_sorted(obj_a :Array, obj_b :Array, case_sensitive :bool = false ) -> bool:
-	var a := obj_a.duplicate()
-	var b := obj_b.duplicate()
-	a.sort()
-	b.sort()
-	return equals(a, b, case_sensitive)
+enum COMPARE_MODE {
+	OBJECT_REFERENCE,
+	PARAMETER_DEEP_TEST
+}
 
 
 # prototype of better object to dictionary
@@ -178,11 +176,19 @@ static func obj2dict(obj :Object, hashed_objects := Dictionary()) -> Dictionary:
 	return {"%s" % clazz_name : dict}
 
 
-static func equals(obj_a, obj_b, case_sensitive :bool = false, deep_check :bool = true ) -> bool:
-	return _equals(obj_a, obj_b, case_sensitive, deep_check, [], 0)
+static func equals(obj_a, obj_b, case_sensitive :bool = false, compare_mode :COMPARE_MODE = COMPARE_MODE.PARAMETER_DEEP_TEST) -> bool:
+	return _equals(obj_a, obj_b, case_sensitive, compare_mode, [], 0)
 
 
-static func _equals(obj_a, obj_b, case_sensitive :bool, deep_check :bool, deep_stack, stack_depth :int ) -> bool:
+static func equals_sorted(obj_a :Array, obj_b :Array, case_sensitive :bool = false, compare_mode :COMPARE_MODE = COMPARE_MODE.PARAMETER_DEEP_TEST) -> bool:
+	var a := obj_a.duplicate()
+	var b := obj_b.duplicate()
+	a.sort()
+	b.sort()
+	return equals(a, b, case_sensitive, compare_mode)
+
+
+static func _equals(obj_a, obj_b, case_sensitive :bool, compare_mode :COMPARE_MODE, deep_stack, stack_depth :int ) -> bool:
 	var type_a := typeof(obj_a)
 	var type_b := typeof(obj_b)
 	if stack_depth > 32:
@@ -209,9 +215,7 @@ static func _equals(obj_a, obj_b, case_sensitive :bool, deep_check :bool, deep_s
 				return true
 			deep_stack.append(obj_a)
 			deep_stack.append(obj_b)
-			if deep_check:
-				# prototype of better deep check
-				#return equals(obj2dict(obj_a), obj2dict(obj_b))
+			if compare_mode == COMPARE_MODE.PARAMETER_DEEP_TEST:
 				# fail fast
 				if not is_instance_valid(obj_a) or not is_instance_valid(obj_b):
 					return false
@@ -219,28 +223,24 @@ static func _equals(obj_a, obj_b, case_sensitive :bool, deep_check :bool, deep_s
 					return false
 				var a = obj2dict(obj_a)
 				var b = obj2dict(obj_b)
-				return _equals(a, b, case_sensitive, deep_check, deep_stack, stack_depth)
+				return _equals(a, b, case_sensitive, compare_mode, deep_stack, stack_depth)
 			return obj_a == obj_b
 		
 		TYPE_ARRAY:
-			var arr_a:= obj_a as Array
-			var arr_b:= obj_b as Array
-			if arr_a.size() != arr_b.size():
+			if obj_a.size() != obj_b.size():
 				return false
-			for index in arr_a.size():
-				if not _equals(arr_a[index], arr_b[index], case_sensitive, deep_check, deep_stack, stack_depth):
+			for index in obj_a.size():
+				if not _equals(obj_a[index], obj_b[index], case_sensitive, compare_mode, deep_stack, stack_depth):
 					return false
 			return true
 		
 		TYPE_DICTIONARY:
-			var dic_a:= obj_a as Dictionary
-			var dic_b:= obj_b as Dictionary
-			if dic_a.size() != dic_b.size():
+			if obj_a.size() != obj_b.size():
 				return false
-			for key in dic_a.keys():
-				var value_a = dic_a[key] if dic_a.has(key) else null
-				var value_b = dic_b[key] if dic_b.has(key) else null
-				if not _equals(value_a, value_b, case_sensitive, deep_check, deep_stack, stack_depth):
+			for key in obj_a.keys():
+				var value_a = obj_a[key] if obj_a.has(key) else null
+				var value_b = obj_b[key] if obj_b.has(key) else null
+				if not _equals(value_a, value_b, case_sensitive, compare_mode, deep_stack, stack_depth):
 					return false
 			return true
 		
@@ -317,39 +317,7 @@ static func string_as_typeof(type_name :String) -> int:
 
 
 static func is_primitive_type(value) -> bool:
-	match typeof(value):
-		TYPE_BOOL:
-			return true
-		TYPE_STRING:
-			return true
-		TYPE_INT:
-			return true
-		TYPE_FLOAT:
-			return true
-	return false
-
-static func is_array_type(value) -> bool:
-	return is_type_array(typeof(value))
-
-static func is_type_array(type :int) -> bool:
-	match type:
-		TYPE_ARRAY:
-			return true
-		TYPE_PACKED_COLOR_ARRAY:
-			return true
-		TYPE_PACKED_INT32_ARRAY:
-			return true
-		TYPE_PACKED_BYTE_ARRAY:
-			return true
-		TYPE_PACKED_FLOAT32_ARRAY:
-			return true
-		TYPE_PACKED_STRING_ARRAY:
-			return true
-		TYPE_PACKED_VECTOR2_ARRAY:
-			return true
-		TYPE_PACKED_VECTOR3_ARRAY:
-			return true
-	return false
+	return typeof(value) in [TYPE_BOOL, TYPE_STRING, TYPE_STRING_NAME, TYPE_INT, TYPE_FLOAT]
 
 
 static func _is_type_equivalent(type_a, type_b) -> bool:
@@ -443,6 +411,15 @@ static func is_gd_testsuite(script :Script) -> bool:
 				if base.resource_path.find("GdUnitTestSuite") != -1:
 					return true
 				stack.push_back(base)
+	return false
+
+
+static func is_singleton(value :Variant) -> bool:
+	if not is_instance_valid(value) or is_native_class(value):
+		return false
+	for name in Engine.get_singleton_list():
+		if value.is_class(name):
+			return true
 	return false
 
 
@@ -678,39 +655,6 @@ static func default_value_by_type(type :int):
 	
 	push_error("Can't determine a default value for type: '%s', Please create a Bug issue and attach the stacktrace please." % type)
 	return null
-
-
-static func array_to_string(elements :Array, delimiter := "\n", max_elements := -1) -> String:
-	if elements == null:
-		return "Null"
-	if elements.is_empty():
-		return "empty"
-	var formatted := ""
-	var index := 0
-	for element in elements:
-		if max_elements != -1 and index > max_elements:
-			return formatted + delimiter + "..."
-		if formatted.length() > 0 :
-			formatted += delimiter
-		formatted += str(element)
-		index += 1
-	return formatted
-
-
-# Filters an array by given value
-static func array_filter_value(array :Array, filter_value) -> Array:
-	var filtered_array := Array()
-	for element in array:
-		if not equals(element, filter_value):
-			filtered_array.append(element)
-	return filtered_array
-
-
-# Erases a value from given array by using equals(l,r) to find the element to erase
-static func array_erase_value(array :Array, value) -> void:
-	for element in array:
-		if equals(element, value):
-			array.erase(element)
 
 
 static func find_nodes_by_class(root: Node, cls: String, recursive: bool = false) -> Array[Node]:

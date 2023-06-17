@@ -17,7 +17,7 @@ func _init(timeout_millis :int, wait_on_idle_frame := false):
 
 
 func _on_signal_emmited(arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG):
-	var signal_args := GdObjects.array_filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
+	var signal_args :Variant = GdArrayTools.filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
 	signal_emitted.emit(signal_args)
 
 

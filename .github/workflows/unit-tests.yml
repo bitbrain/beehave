@@ -1,0 +1,83 @@
+name: unit-tests
+run-name: ${{ github.head_ref || github.ref_name }}-unit-tests
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: false
+        type: string
+        default: 'ubuntu-22.04'
+      godot-version:
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      os:
+        required: false
+        type: string
+        default: 'ubuntu-22.04'
+      godot-version:
+        required: true
+        type: string
+
+concurrency:
+  group: unit-tests-${{ github.head_ref || github.ref_name }}-${{ inputs.godot-version }}
+  cancel-in-progress: true
+
+jobs:
+
+  unit-test:
+    name: "Unit Tests"
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 15
+
+    steps:
+      - name: "📦 Checkout Beehave Repository"
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+          submodules: 'recursive'
+
+      - name: "🤖 Install Godot ${{ inputs.godot-version }}"
+        uses: ./.github/actions/godot-install
+        with:
+          godot-version: ${{ inputs.godot-version }}
+          godot-mono: false
+          godot-status-version: 'stable'
+          godot-bin-name: 'linux.x86_64'
+          godot-cache-path: '~/godot-linux'
+
+      - name: "♻️ Update Project"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 1
+        continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
+        shell: bash
+        run: |
+          xvfb-run --auto-servernum ~/godot-linux/godot -e --path . -s res://addons/gdUnit4/bin/ProjectScanner.gd --headless --audio-driver Dummy
+
+      - name: "🧪 Run Unit Tests"
+        if: ${{ !cancelled() }}
+        timeout-minutes: 4
+        uses: ./.github/actions/unit-test
+        with:
+          godot-bin: ${{ env.GODOT_BIN }}
+          test-includes: "res://test"
+
+      - name: "✍ Set Report Name"
+        if: ${{ always() }}
+        shell: bash
+        run: echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}" >> "$GITHUB_ENV"
+
+      - name: "📚 Publish Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/publish-test-report
+        with:
+          report-name: ${{ env.REPORT_NAME }}
+
+      - name: "🎉 Upload Unit Test Reports"
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/upload-test-report
+        with:
+          report-name: ${{ env.REPORT_NAME }}
