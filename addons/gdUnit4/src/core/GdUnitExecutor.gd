@@ -285,13 +285,14 @@ func execute(test_suite :GdUnitTestSuite):
 
 
 func Execute(test_suite :GdUnitTestSuite) -> void:
+	var context := GdUnitThreadManager.get_current_context()
+	context.init()
 	# stop checked first error if fail fast enabled
 	if _fail_fast and _total_test_failed > 0:
 		test_suite.free()
 		await get_tree().process_frame
 		ExecutionCompleted.emit()
 		return
-	
 	var ts := test_suite
 	await suite_before(ts, ts.get_child_count())
 	
@@ -327,6 +328,7 @@ func Execute(test_suite :GdUnitTestSuite) -> void:
 				
 	await suite_after(ts)
 	ts.free()
+	context.clear()
 	ExecutionCompleted.emit()
 
 

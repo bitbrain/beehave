@@ -16,10 +16,21 @@ func _init(value):
 	_value = value
 
 
-func checked(obj :Object):
+## Selects the mock to work on, used in combination with [method GdUnitTestSuite.do_return][br]
+## Example:
+## 	[codeblock]
+## 		do_return(false).on(myMock).is_selected()
+## 	[/codeblock]
+func on(obj :Object) -> Object:
 	if not GdUnitMock._is_mock_or_spy( obj, "__do_return"):
 		return obj
 	return obj.__do_return(_value)
+
+
+## [color=yellow]`checked` is obsolete, use `on` instead [/color]
+func  checked(obj :Object) -> Object:
+	push_warning("Using a deprecated function 'checked' use `on` instead")
+	return on(obj)
 
 
 static func _is_mock_or_spy(obj :Object, func_sig :String) -> bool:

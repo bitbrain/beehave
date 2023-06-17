@@ -23,18 +23,6 @@ func is_signal_exists(name :String) -> GdUnitSignalAssert:
 	return self
 
 
-## Verifies the failure message is equal to expected one.
-@warning_ignore("unused_parameter")
-func has_failure_message(expected: String) -> GdUnitSignalAssert:
-	return self
-
-
-## Verifies that the failure starts with the given prefix.
-@warning_ignore("unused_parameter")
-func starts_with_failure_message(expected: String) -> GdUnitSignalAssert:
-	return self
-
-
 ## Overrides the default failure message by given custom message.
 @warning_ignore("unused_parameter")
 func override_failure_message(message :String) -> GdUnitSignalAssert:

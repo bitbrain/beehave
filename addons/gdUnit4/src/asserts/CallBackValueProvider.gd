@@ -16,8 +16,9 @@ func _init(instance :Object, func_name :String, args :Array = Array(), force_err
 func get_value() -> Variant:
 	if not _cb.is_valid():
 		return null
-	@warning_ignore("redundant_await")
-	return await (_cb.call() if _args.is_empty() else _cb.callv(_args))
+	if _args.is_empty():
+		return await _cb.call()
+	return await _cb.callv(_args)
 
 
 func dispose():

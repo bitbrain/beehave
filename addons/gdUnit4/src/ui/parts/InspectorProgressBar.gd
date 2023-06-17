@@ -9,34 +9,37 @@ extends ProgressBar
 func _ready():
 	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
 	style.bg_color = Color.DARK_GREEN
+	update_text()
 
 
 func progress_init(p_max_value :int) -> void:
 	bar.value = 0
 	bar.max_value = p_max_value
 	style.bg_color = Color.DARK_GREEN
+	update_text()
 
 
-func progress_update(p_value :int, failed :int, p_max_value :int = -1) -> void:
+func progress_update(p_value :int, is_failed :bool) -> void:
 	bar.value += p_value
-	if p_max_value != -1:
-		bar.max_value = p_max_value
-	status.text = str(bar.value) + ":" + str(bar.max_value)
-	# if faild change color to red
-	if failed > 0:
+	update_text()
+	if is_failed:
 		style.bg_color = Color.DARK_RED
+
+
+func update_text() -> void:
+	status.text = "%d:%d" % [bar.value, bar.max_value]
 
 
 func _on_gdunit_event(event :GdUnitEvent) -> void:
 	match event.type():
 		GdUnitEvent.INIT:
 			progress_init(event.total_count())
-		GdUnitEvent.TESTCASE_BEFORE:
-			pass
+		
 		GdUnitEvent.TESTCASE_AFTER:
-			progress_update(1, event.is_failed())
-		GdUnitEvent.TESTSUITE_BEFORE:
-			pass
+			# we only count when the test is finished (excluding parameterized test iterrations)
+			# test_name:<number> indicates a parameterized test run
+			if event.test_name().find(":") == -1:
+				progress_update(1, event.is_failed() or event.is_error())
+		
 		GdUnitEvent.TESTSUITE_AFTER:
-			progress_update(0, event.is_failed())
-			pass
+			progress_update(0, event.is_failed() or event.is_error())

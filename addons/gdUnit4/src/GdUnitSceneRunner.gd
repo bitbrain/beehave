@@ -124,7 +124,7 @@ func simulate_until_object_signal(source :Object, signal_name :String, arg0=NO_A
 ## Waits for the function return value until specified timeout or fails.[br]
 ## [member args] : optional function arguments
 @warning_ignore("unused_parameter")
-func await_func(func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
+func await_func(func_name :String, args := []) -> GdUnitFuncAssert:
 	return null
 
 
@@ -132,7 +132,7 @@ func await_func(func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SU
 ## [member source : the object where implements the function[br]
 ## [member args] : optional function arguments
 @warning_ignore("unused_parameter")
-func await_func_on(source :Object, func_name :String, args := [], expeced := GdUnitAssert.EXPECT_SUCCESS) -> GdUnitFuncAssert:
+func await_func_on(source :Object, func_name :String, args := []) -> GdUnitFuncAssert:
 	return null
 
 

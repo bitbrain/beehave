@@ -32,7 +32,7 @@ func extract_value(value):
 	if value == null:
 		return null
 	for func_name in func_names():
-		if GdObjects.is_array_type(value):
+		if GdArrayTools.is_array_type(value):
 			var values := Array()
 			for element in Array(value):
 				values.append(_call_func(element, func_name))
@@ -50,7 +50,7 @@ func extract_value(value):
 func _call_func(value, func_name :String):
 	# for array types we need to call explicit by function name, using funcref is only supported for Objects
 	# TODO extend to all array functions
-	if GdObjects.is_array_type(value) and func_name == "empty":
+	if GdArrayTools.is_array_type(value) and func_name == "empty":
 		return value.is_empty()
 	
 	if not (value is Object):
