@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "godot-4.x"
+      - "update-gdunit"
     paths-ignore:
       - '**.jpg'
       - '**.png'
@@ -24,63 +25,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit-test:
-    name: "🤖 unit tests on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
-    continue-on-error: false
+  unit-tests:
     strategy:
       fail-fast: false
+      max-parallel: 10
       matrix:
-        os: [ubuntu-22.04]
-        godot-version: ['4.0.2', '4.0.3']
-        godot-status-version: ['stable']
-        include:
-          - os: ubuntu-22.04
-            name: Godot 🐧 Linux Build
-            godot-bin-name: 'linux.x86_64'
-            godot-executable_path: '~/godot-linux/godot'
-            godot-cache-path: '~/godot-linux'
-            godot-mono: false
-            install-opengl: true
+        godot-version: ['4.0.1', '4.0.2', '4.0.3']
 
+    name: "🤖 CI on Godot v${{ matrix.godot-version }}-${{ matrix.godot-status-version }} (${{ matrix.name }})"
+    uses: ./.github/workflows/unit-tests.yml
+    with:
+      godot-version: ${{ matrix.godot-version }}
+
+  finalize:
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    name: Final Results
+    needs: [unit-tests]
     steps:
-      - name: "📦 Checkout Beehave Repository"
-        uses: actions/checkout@v3
-
-      - name: "🤖 Install Godot ${{ matrix.godot-version }}"
-        uses: ./.github/actions/godot-install
-        with:
-          godot-version: ${{ matrix.godot-version }}
-          godot-status-version: ${{ matrix.godot-status-version }}
-          godot-bin-name: ${{ matrix.godot-bin-name }}
-          godot-cache-path: ${{ matrix.godot-cache-path }}
-
-      - name: "♻️ Update Godot project cache"
-        if: ${{ !cancelled() }}
-        timeout-minutes: 1
-        continue-on-error: true # we still ignore the timeout, the script is not quit and we run into a timeout
-        shell: bash
-        run: |
-          ${{ matrix.godot-executable_path }} --version
-          ${{ matrix.godot-executable_path }} -e --path . -s res://addons/gdUnit4/bin/ProjectScanner.gd --headless
-
-      - name: "🧪 Run Unit Tests"
-        if: ${{ !cancelled() }}
-        timeout-minutes: 10
-        uses: ./.github/actions/unit-test
-        with:
-          godot-bin: ${{ matrix.godot-executable_path }}
-          test-includes: "res://test/"
-
-      #- name: "📚 Publish Unit Test Reports"
-      #  if: ${{ !cancelled() }}
-      #  uses: ./.github/actions/publish-test-report
-      #  with:
-      #    report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
-
-      #- name: "🎉 Upload Unit Test Reports"
-      #  if: ${{ !cancelled() }}
-      #  uses: ./.github/actions/upload-test-report
-      #  with:
-      #    report-name: ${{ matrix.godot-build }}${{ matrix.godot-version }}
+      - run: exit 1
+        if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+          }}
