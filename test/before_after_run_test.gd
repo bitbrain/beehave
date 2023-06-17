@@ -38,13 +38,13 @@ func test_action_after_run() -> void:
 	action.stopped_running.connect(after_run_callback)
 	action.running_frame_count = 1
 	
-	assert_bool(tree.blackboard.get_value("entered", false), false)
-	assert_bool(tree.blackboard.get_value("exited", false), false)
+	assert_bool(tree.blackboard.get_value("entered", false)).is_false()
+	assert_bool(tree.blackboard.get_value("exited", false)).is_false()
 	
 	assert_int(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	assert_bool(tree.blackboard.get_value("entered", false), true)
-	assert_bool(tree.blackboard.get_value("exited", false), false)
+	assert_bool(tree.blackboard.get_value("entered", false)).is_true()
+	assert_bool(tree.blackboard.get_value("exited", false)).is_false()
 	
 	assert_int(tree.tick()).is_equal(BeehaveNode.SUCCESS)
-	assert_bool(tree.blackboard.get_value("entered", false), true)
-	assert_bool(tree.blackboard.get_value("exited", false), true)
+	assert_bool(tree.blackboard.get_value("entered", false)).is_true()
+	assert_bool(tree.blackboard.get_value("exited", false)).is_true()
