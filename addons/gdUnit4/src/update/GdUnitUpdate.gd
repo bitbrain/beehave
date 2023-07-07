@@ -1,36 +1,65 @@
 @tool
 extends ConfirmationDialog
 
+const GdUnitUpdateClient = preload("res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd")
+const spinner_icon := "res://addons/gdUnit4/src/ui/assets/spinner.tres"
 
-#@onready var _progress_panel :Control =$UpdateProgress
-@onready var _progress_content :Label = $UpdateProgress/Progress/label
-@onready var _progress_bar :ProgressBar = $UpdateProgress/Progress/bar
+
+@onready var _progress_content :RichTextLabel = %message
+@onready var _progress_bar :TextureProgressBar = %progress
 
 
 var _debug_mode := false
+var _editor_interface :EditorInterface
+var _update_client :GdUnitUpdateClient
+var _download_url :String
+
+
+func _ready():
+	message_h4("Press 'Update' to start!", Color.GREEN)
+	init_progress(5)
+
+
+func _process(_delta):
+	if _progress_content != null and _progress_content.is_visible_in_tree():
+		_progress_content.queue_redraw()
 
 
 func init_progress(max_value : int) -> void:
 	_progress_bar.max_value = max_value
-	_progress_bar.value = 0
+	_progress_bar.value = 1
+
+
+func setup(editor_interface :EditorInterface, update_client :GdUnitUpdateClient, download_url :String) -> void:
+	_editor_interface = editor_interface
+	_update_client = update_client
+	_download_url = download_url
 
 
 func update_progress(message :String) -> void:
-	prints("..", message)
-	_progress_content.text = message
+	message_h4(message, Color.GREEN)
 	_progress_bar.value += 1
 	if _debug_mode:
 		await get_tree().create_timer(3).timeout
-	else:
-		await get_tree().process_frame
+	await get_tree().create_timer(.2).timeout
+
+
+func _colored(message :String, color :Color) -> String:
+	return "[color=#%s]%s[/color]" % [color.to_html(), message]
+
+
+func message_h4(message :String, color :Color) -> void:
+	_progress_content.clear()
+	_progress_content.append_text("[font_size=16]%s[/font_size]" % _colored(message, color))
 
 
 func run_update() -> void:
 	get_cancel_button().disabled = true
 	get_ok_button().disabled = true
-	init_progress(4)
 	
-	await update_progress("Extract update ..")
+	await update_progress("Download Release ... [img=24x24]%s[/img]" % spinner_icon)
+	await download_release()
+	await update_progress("Extract update ... [img=24x24]%s[/img]" % spinner_icon)
 	var zip_file := temp_dir() + "/update.zip"
 	var tmp_path := create_temp_dir("update")
 	var result :Variant = extract_zip(zip_file, tmp_path)
@@ -40,44 +69,31 @@ func run_update() -> void:
 		queue_free()
 		return
 	
-	await update_progress("Deinstall GdUnit4 ..")
+	await update_progress("Uninstall GdUnit4 ... [img=24x24]%s[/img]" % spinner_icon)
 	disable_gdUnit()
 	if not _debug_mode:
 		delete_directory("res://addons/gdUnit4/")
 	# give editor time to react on deleted files
-	await get_tree().create_timer(3).timeout
+	await get_tree().create_timer(1).timeout
 	
-	await update_progress("Install new GdUnit4 version ..")
+	await update_progress("Install new GdUnit4 version ...")
 	if _debug_mode:
 		copy_directory(tmp_path, "res://debug")
 	else:
 		copy_directory(tmp_path, "res://")
 	
 	await update_progress("New GdUnit version successfully installed, Restarting Godot ...")
-	enable_gdUnit()
 	await get_tree().create_timer(3).timeout
+	enable_gdUnit()
 	hide()
 	delete_directory("res://addons/.gdunit_update")
 	restart_godot()
 
 
-func rescan() -> void:
-	await get_tree().process_frame
-	prints("Rescan Project")
-	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
-	var fs := plugin.get_editor_interface().get_resource_filesystem()
-	fs.scan_sources()
-	fs.update_script_classes()
-	fs.scan()
-	while fs.is_scanning():
-		prints("Rescan Project ... scan ...")
-		await get_tree().create_timer(.2).timeout
-
-
 func restart_godot() -> void:
 	prints("Force restart Godot")
-	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
-	plugin.get_editor_interface().restart_editor(true)
+	if _editor_interface:
+		_editor_interface.restart_editor(true)
 
 
 func enable_gdUnit() -> void:
@@ -91,8 +107,8 @@ func enable_gdUnit() -> void:
 
 
 func disable_gdUnit() -> void:
-	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
-	plugin.get_editor_interface().set_plugin_enabled("gdUnit4", false)
+	if _editor_interface:
+		_editor_interface.set_plugin_enabled("gdUnit4", false)
 
 
 const GDUNIT_TEMP := "user://tmp"
@@ -190,6 +206,22 @@ func extract_zip(zip_package :String, dest_path :String) -> Variant:
 		file.store_buffer(zip.read_file(zip_entry))
 	zip.close()
 	return dest_path
+
+
+func download_release() -> void:
+	var zip_file := GdUnitTools.temp_dir() + "/update.zip"
+	var response :GdUnitUpdateClient.HttpResponse
+	if _debug_mode:
+		response = GdUnitUpdateClient.HttpResponse.new(200, PackedByteArray())
+		zip_file = "res://update.zip"
+	else:
+		response = await _update_client.request_zip_package(_download_url, zip_file)
+	_update_client.queue_free()
+	if response.code() != 200:
+		push_warning("Update information cannot be retrieved from GitHub! \n Error code: %d : %s" % [response.code(), response.response()])
+		await message_h4("Update failed! Try it later again.", Color.RED)
+		await get_tree().create_timer(3).timeout
+		return
 
 
 func _on_confirmed():
