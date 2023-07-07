@@ -4,14 +4,15 @@
 [ext_resource type="Script" path="res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd" id="2_18asx"]
 
 [node name="Control" type="Window"]
+disable_3d = true
+gui_embed_subwindows = true
+initial_position = 1
 title = "GdUnit Update Notification"
-position = Vector2i(397, 182)
 size = Vector2i(800, 400)
 visible = false
+wrap_controls = true
+transient = true
 exclusive = true
-always_on_top = true
-popup_window = true
-extend_to_title = true
 min_size = Vector2i(800, 400)
 script = ExtResource("1_112wo")
 
@@ -46,7 +47,6 @@ theme_override_constants/margin_bottom = 4
 [node name="header" type="Label" parent="Panel/GridContainer/PanelContainer"]
 layout_mode = 2
 size_flags_horizontal = 9
-text = "A new version 'v4.0.1' is available"
 
 [node name="PanelContainer2" type="PanelContainer" parent="Panel/GridContainer"]
 layout_mode = 2

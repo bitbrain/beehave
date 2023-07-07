@@ -168,6 +168,13 @@ func maximize_view() -> GdUnitSceneRunner:
 func get_property(name :String) -> Variant:
 	return null
 
+## Set the  value <value> of the property with the name <name>.[br]
+## [member name] : name of property[br]
+## [member value] : value of property[br]
+## [member return] : true|false depending on valid property name.
+func set_property(name :String, value :Variant) -> bool:
+	return false
+
 
 ## executes the function specified by <name> in the scene and returns the result.[br]
 ## [member name] : the name of the function to execute[br]

@@ -10,9 +10,6 @@ func _ready():
 	if Engine.is_editor_hint():
 		var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 		_getEditorThemes(plugin.get_editor_interface())
-	if GdUnitSettings.is_update_notification_enabled():
-		var update_tool = load("res://addons/gdUnit4/src/update/GdUnitUpdateNotify.tscn").instantiate()
-		add_child(update_tool)
 	GdUnitCommandHandler.instance().gdunit_runner_start.connect(func():
 		var tab_container :TabContainer = get_parent_control()
 		for tab_index in tab_container.get_tab_count():

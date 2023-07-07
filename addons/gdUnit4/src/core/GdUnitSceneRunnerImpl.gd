@@ -241,11 +241,22 @@ func maximize_view() -> GdUnitSceneRunner:
 	return self
 
 
-func get_property(name :String):
-	var property = _current_scene.get(name)
-	if property != null:
-		return property
-	return  "The property '%s' not exist checked loaded scene." % name
+func _property_exists(name :String) -> bool:
+	return _current_scene.get_property_list().any(func(properties :Dictionary) : return properties["name"] == name)
+
+
+func get_property(name :String) -> Variant:
+	if not _property_exists(name):
+		return "The property '%s' not exist checked loaded scene." % name
+	return _current_scene.get(name)
+
+
+func set_property(name :String, value :Variant) -> bool:
+	if not _property_exists(name):
+		push_error("The property named '%s' cannot be set, it does not exist!" % name)
+		return false;
+	_current_scene.set(name, value)
+	return true
 
 
 func invoke(name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG):
