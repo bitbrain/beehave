@@ -65,19 +65,19 @@ jobs:
           godot-bin: ${{ env.GODOT_BIN }}
           test-includes: "res://test"
 
-      - name: "✍ Set Report Name"
-        if: ${{ always() }}
-        shell: bash
-        run: echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}" >> "$GITHUB_ENV"
+      #- name: "✍ Set Report Name"
+      #  if: ${{ always() }}
+      #  shell: bash
+      #  run: echo "REPORT_NAME=${{ inputs.os }}-${{ inputs.godot-version }}" >> "$GITHUB_ENV"
 
-      - name: "📚 Publish Unit Test Reports"
-        if: ${{ !cancelled() }}
-        uses: ./.github/actions/publish-test-report
-        with:
-          report-name: ${{ env.REPORT_NAME }}
-
-      - name: "🎉 Upload Unit Test Reports"
-        if: ${{ !cancelled() }}
-        uses: ./.github/actions/upload-test-report
-        with:
-          report-name: ${{ env.REPORT_NAME }}
+      #- name: "📚 Publish Unit Test Reports"
+      #  if: ${{ !cancelled() }}
+      #  uses: ./.github/actions/publish-test-report
+      #  with:
+      #    report-name: ${{ env.REPORT_NAME }}
+    
+      #- name: "🎉 Upload Unit Test Reports"
+      #  if: ${{ !cancelled() }}
+      #  uses: ./.github/actions/upload-test-report
+      #  with:
+      #    report-name: ${{ env.REPORT_NAME }}
