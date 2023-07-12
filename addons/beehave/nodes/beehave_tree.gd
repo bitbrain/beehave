@@ -99,6 +99,8 @@ func _ready() -> void:
 	BeehaveGlobalDebugger.register_tree(self)
 	BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
+	child_entered_tree.connect(_on_child_entered_tree)
+
 
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
@@ -205,6 +207,10 @@ func _exit_tree() -> void:
 # Called by the engine to profile this tree
 func _get_process_time_metric_value() -> int:
 	return _process_time_metric_value
+
+
+func _on_child_entered_tree(node: Node) -> void:
+	node.ready.connect(func(): BeehaveDebuggerMessages.register_tree(_get_debugger_data(self)), CONNECT_ONE_SHOT)
 
 
 func _get_debugger_data(node: Node) -> Dictionary:

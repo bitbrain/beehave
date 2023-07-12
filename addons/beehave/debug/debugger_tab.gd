@@ -71,10 +71,15 @@ func stop() -> void:
 
 
 func register_tree(data: Dictionary) -> void:
-	var idx := item_list.add_item(data.name, TREE_ICON)
-	item_list.set_item_tooltip(idx, data.path)
-	item_list.set_item_metadata(idx, data.id)
+	if not active_trees.has(data.id):
+		var idx := item_list.add_item(data.name, TREE_ICON)
+		item_list.set_item_tooltip(idx, data.path)
+		item_list.set_item_metadata(idx, data.id)
+
 	active_trees[data.id] = data
+
+	if active_tree_id == data.id.to_int():
+		graph.beehave_tree = data
 
 
 func unregister_tree(instance_id: int) -> void:
