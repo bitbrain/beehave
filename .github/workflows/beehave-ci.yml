@@ -25,6 +25,8 @@ concurrency:
 
 jobs:
   unit-tests:
+    permissions: write-all
+
     strategy:
       fail-fast: false
       max-parallel: 10
