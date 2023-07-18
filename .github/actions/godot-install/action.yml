@@ -56,7 +56,7 @@ runs:
           chmod 770 "$DIR"
         fi
 
-        DOWNLOAD_URL=https://downloads.tuxfamily.org/godotengine/${{ inputs.godot-version }}
+        DOWNLOAD_URL=https://github.com/godotengine/godot/releases/download/${{ inputs.godot-version }}-${{ inputs.godot-status-version }}
         GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_${{ inputs.godot-bin-name }}
         if ${{inputs.godot-mono == 'true'}}; then
           GODOT_BIN=Godot_v${{ inputs.godot-version }}-${{ inputs.godot-status-version }}_mono_${{ inputs.godot-bin-name }}
