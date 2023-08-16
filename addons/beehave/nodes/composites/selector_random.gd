@@ -3,25 +3,17 @@
 ## will be executed in a random order.
 @tool
 @icon("../../icons/selector_random.svg")
-class_name SelectorRandomComposite extends Composite
-
-## Sets a predicable seed
-@export var random_seed:int = 0:
-	set(rs):
-		random_seed = rs
-		if random_seed != 0:
-			seed(random_seed)
-		else:
-			randomize()
-
+class_name SelectorRandomComposite extends RandomizedComposite
 
 ## A shuffled list of the children that will be executed in reverse order.
 var _children_bag: Array[Node] = []
 var c: Node
 
 func _ready() -> void:
+	super()
 	if random_seed == 0:
 		randomize()
+
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	if _children_bag.is_empty():
@@ -76,10 +68,8 @@ func _get_reversed_indexes() -> Array[int]:
 	return reversed
 
 
-## Generates a new shuffled list of the children.
 func _reset() -> void:
-	_children_bag = get_children().duplicate()
-	_children_bag.shuffle()
+	_children_bag = get_shuffled_children()
 
 
 func get_class_name() -> Array[StringName]:

@@ -3,21 +3,15 @@
 ## will be executed in a random order.
 @tool
 @icon("../../icons/sequence_random.svg")
-class_name SequenceRandomComposite extends Composite
+class_name SequenceRandomComposite extends RandomizedComposite
 
+
+signal reseted(new_order)
 
 ## Whether the sequence should start where it left off after a previous failure.
 @export var resume_on_failure: bool = false
 ## Whether the sequence should start where it left off after a previous interruption.
 @export var resume_on_interrupt: bool = false
-## Sets a predicable seed
-@export var random_seed: int = 0:
-	set(rs):
-		random_seed = rs
-		if random_seed != 0:
-			seed(random_seed)
-		else:
-			randomize()
 
 ## A shuffled list of the children that will be executed in reverse order.
 var _children_bag: Array[Node] = []
@@ -25,6 +19,7 @@ var c: Node
 
 
 func _ready() -> void:
+	super()
 	if random_seed == 0:
 		randomize()
 
@@ -84,13 +79,13 @@ func _get_reversed_indexes() -> Array[int]:
 	return reversed
 
 
-## Generates a new shuffled list of the children.
 func _reset() -> void:
-	_children_bag = get_children().duplicate()
-	_children_bag.shuffle()
+	_children_bag = get_shuffled_children()
+	reseted.emit(_children_bag)
 
 
 func get_class_name() -> Array[StringName]:
 	var classes := super()
 	classes.push_back(&"SequenceRandomComposite")
 	return classes
+
