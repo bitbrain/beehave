@@ -16,7 +16,7 @@ const WEIGHTS_PREFIX = "Weights/"
 @export var use_weights: bool:
 	set(value):
 		use_weights = value
-		if use_weights and Engine.is_editor_hint():
+		if use_weights:
 			_update_weights(get_children())
 			_connect_children_changing_signals()
 		notify_property_list_changed()
@@ -112,6 +112,7 @@ func _update_weights(children: Array[Node]) -> void:
 
 
 func _on_child_entered_tree(node: Node):
+#	print('%s has entered the tree' % node.name)
 	_update_weights(get_children())
 
 	if not node.renamed.is_connected(_on_child_renamed):
@@ -119,6 +120,9 @@ func _on_child_entered_tree(node: Node):
 
 
 func _on_child_exiting_tree(node: Node):
+	if node.renamed.is_connected(_on_child_renamed):
+		node.renamed.disconnect(_on_child_renamed)
+	
 	var children = get_children()
 	children.erase(node)
 	_update_weights(children)

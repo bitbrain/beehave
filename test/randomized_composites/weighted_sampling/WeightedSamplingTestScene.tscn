@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://dkaaauniwk8vr"]
+
+[ext_resource type="Script" path="res://test/randomized_composites/weighted_sampling/WeightedSamplingTestScene.gd" id="1_jp21r"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="1_lxyfw"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence_random.gd" id="2_rx8pw"]
+[ext_resource type="Script" path="res://test/actions/mock_action.gd" id="3_kgdbt"]
+
+[node name="WeightedSamplingTestScene" type="Node2D"]
+script = ExtResource("1_jp21r")
+
+[node name="BeehaveTree" type="Node" parent="."]
+script = ExtResource("1_lxyfw")
+
+[node name="SequenceRandom" type="Node" parent="BeehaveTree"]
+unique_name_in_owner = true
+script = ExtResource("2_rx8pw")
+random_seed = 12345
+use_weights = true
+Weights/Idle = 1
+Weights/Run = 1
+"Weights/Attack Meele" = 1
+"Weights/Attack Ranged" = 1
+
+[node name="Idle" type="Node" parent="BeehaveTree/SequenceRandom"]
+script = ExtResource("3_kgdbt")
+
+[node name="Run" type="Node" parent="BeehaveTree/SequenceRandom"]
+script = ExtResource("3_kgdbt")
+
+[node name="Attack Meele" type="Node" parent="BeehaveTree/SequenceRandom"]
+script = ExtResource("3_kgdbt")
+
+[node name="Attack Ranged" type="Node" parent="BeehaveTree/SequenceRandom"]
+script = ExtResource("3_kgdbt")
+
+[connection signal="reset" from="BeehaveTree/SequenceRandom" to="." method="_on_sequence_reset"]

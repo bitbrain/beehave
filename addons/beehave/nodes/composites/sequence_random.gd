@@ -5,8 +5,8 @@
 @icon("../../icons/sequence_random.svg")
 class_name SequenceRandomComposite extends RandomizedComposite
 
-
-signal reseted(new_order)
+# Emitted whenever the children are shuffled.
+signal reset(new_order: Array[Node])
 
 ## Whether the sequence should start where it left off after a previous failure.
 @export var resume_on_failure: bool = false
@@ -80,12 +80,13 @@ func _get_reversed_indexes() -> Array[int]:
 
 
 func _reset() -> void:
-	_children_bag = get_shuffled_children()
-	reseted.emit(_children_bag)
+	var new_order = get_shuffled_children()
+	_children_bag = new_order.duplicate()
+	_children_bag.reverse() # It needs to run the children in reverse order.
+	reset.emit(new_order)
 
 
 func get_class_name() -> Array[StringName]:
 	var classes := super()
 	classes.push_back(&"SequenceRandomComposite")
 	return classes
-
