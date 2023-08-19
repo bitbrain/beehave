@@ -16,8 +16,6 @@ var _sleep_timer :Timer = null
 
 
 func _init(instance :Object, func_name :String, args := Array()):
-	# temporary workaround to hold the instance see https://github.com/godotengine/godot/issues/73889
-	GdUnitTools.register_assert(self)
 	_line_number = GdUnitAssertImpl._get_line_number()
 	GdAssertReports.reset_last_error_line_number()
 	# save the actual assert instance on the current thread context
@@ -29,20 +27,13 @@ func _init(instance :Object, func_name :String, args := Array()):
 		_current_value_provider = CallBackValueProvider.new(instance, func_name, args)
 
 
-func _to_string():
-	return "GdUnitFuncAssertImpl" + str(get_instance_id())
-
-
 func _notification(_what):
 	if is_instance_valid(self):
 		dispose()
-	# temporary workaround to hold the instance see https://github.com/godotengine/godot/issues/73889
-	while is_instance_valid(self) and get_reference_count() > 1:
-		unreference()
 
 
 func report_success() -> GdUnitAssert:
-	GdAssertReports.report_success(_line_number)
+	GdAssertReports.report_success()
 	return self
 
 

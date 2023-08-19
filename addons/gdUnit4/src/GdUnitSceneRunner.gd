@@ -172,6 +172,7 @@ func get_property(name :String) -> Variant:
 ## [member name] : name of property[br]
 ## [member value] : value of property[br]
 ## [member return] : true|false depending on valid property name.
+@warning_ignore("unused_parameter")
 func set_property(name :String, value :Variant) -> bool:
 	return false
 

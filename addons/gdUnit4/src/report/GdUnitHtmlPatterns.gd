@@ -25,6 +25,18 @@ const TABLE_RECORD_PATH = """
 								</tr>
 """
 
+
+const TABLE_REPORT_TESTSUITE = """
+								<tr>
+									<td class="${report_state}">TestSuite hooks</td>
+									<td>n/a</td>
+									<td>${orphan_count}</td>
+									<td>${duration}</td>
+									<td class="report-column">${failure-report}</td>
+								</tr>
+"""
+
+
 const TABLE_RECORD_TESTCASE = """
 								<tr>
 									<td class="${report_state}">${testcase_name}</td>
@@ -58,12 +70,8 @@ const BREADCRUMP_PATH_LINK = "${breadcrumb_path_link}"
 const BUILD_DATE = "${buid_date}"
 
 
-#static func current_date2() -> String:
-#	return "{day}.{month}.{year}   {hour}:{minute}:{second}".format(OS.get_datetime())
-
 static func current_date() -> String:
 	return Time.get_datetime_string_from_system(true, true)
-	#return "%02d.%02d.%04d   %02d:%02d:%02d" % [date["day"], date["month"], date["year"], date["hour"], date["minute"], date["second"]]
 
 
 static func build(template :String, report :GdUnitReportSummary, report_link :String) -> String:

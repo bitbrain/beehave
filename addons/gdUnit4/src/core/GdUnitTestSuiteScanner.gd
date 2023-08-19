@@ -10,6 +10,7 @@ func test_${func_name}() -> void:
 
 var _script_parser := GdScriptParser.new()
 var _extends_test_suite_classes := Array()
+var regex_replace_class_name := GdUnitTools.to_regex("(?m)^class_name .*$")
 
 
 func scan_testsuite_classes() -> void:
@@ -114,50 +115,96 @@ static func parse_test_suite_name(script :Script) -> String:
 	return script.resource_path.get_file().replace(".gd", "")
 
 
+func _handle_test_suite_arguments(test_suite, script :GDScript, fd :GdFunctionDescriptor):
+	for arg in fd.args():
+		match arg.name():
+			_TestCase.ARGUMENT_SKIP:
+				var result = _run_expression(script, arg.value_as_string())
+				if result is bool:
+					test_suite.__is_skipped = result
+				else:
+					push_error("Test expression '%s' cannot be evaluated because it is not of type bool!" % arg.value_as_string())
+			_TestCase.ARGUMENT_SKIP_REASON:
+				test_suite.__skip_reason = arg.value_as_string()
+			_:
+				push_error("Unsuported argument `%s` found on before() at '%s'!" % [arg.name(), script.resource_path])
+
+
+func _handle_test_case_arguments(test_suite, script :GDScript, fd :GdFunctionDescriptor):
+	var timeout := _TestCase.DEFAULT_TIMEOUT
+	var iterations := Fuzzer.ITERATION_DEFAULT_COUNT
+	var seed_value := -1
+	var is_skipped := false
+	var skip_reason := "Unknown."
+	var fuzzers :Array[GdFunctionArgument] = []
+	var test := _TestCase.new()
+	
+	for arg in fd.args():
+		# verify argument is allowed
+		# is test using fuzzers?
+		if arg.type() == GdObjects.TYPE_FUZZER:
+			fuzzers.append(arg)
+		elif arg.has_default():
+			match arg.name():
+				_TestCase.ARGUMENT_TIMEOUT:
+					timeout = arg.default()
+				_TestCase.ARGUMENT_SKIP:
+					var result = _run_expression(script, arg.value_as_string())
+					if result is bool:
+						is_skipped = result
+					else:
+						push_error("Test expression '%s' cannot be evaluated because it is not of type bool!" % arg.value_as_string())
+				_TestCase.ARGUMENT_SKIP_REASON:
+					skip_reason = arg.value_as_string()
+				Fuzzer.ARGUMENT_ITERATIONS:
+					iterations = arg.default()
+				Fuzzer.ARGUMENT_SEED:
+					seed_value = arg.default()
+	# create new test
+	test.configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value)
+	test.skip(is_skipped, skip_reason)
+	_validate_argument(fd, test)
+	test_suite.add_child(test)
+	# is parameterized test?
+	if fd.is_parameterized():
+		var test_paramaters := GdTestParameterSet.extract_test_parameters(test_suite.get_script(), fd)
+		var error := GdTestParameterSet.validate(fd.args(), test_paramaters)
+		if not error.is_empty():
+			test.skip(true, error)
+		test.set_test_parameters(test_paramaters)
+
+
 func _parse_and_add_test_cases(test_suite, script :GDScript, test_case_names :PackedStringArray):
 	var test_cases_to_find = Array(test_case_names)
+	var functions_to_scan := test_case_names
+	functions_to_scan.append("before")
 	var source := _script_parser.load_source_code(script, [script.resource_path])
-	var functions = _script_parser.parse_functions(source, "", [script.resource_path], test_case_names)
-	for function in functions:
-		var fd :GdFunctionDescriptor = function
+	var function_descriptors := _script_parser.parse_functions(source, "", [script.resource_path], functions_to_scan)
+	for fd in function_descriptors:
+		if fd.name() == "before":
+			_handle_test_suite_arguments(test_suite, script, fd)
 		if test_cases_to_find.has(fd.name()):
-			var timeout := _TestCase.DEFAULT_TIMEOUT
-			var iterations := Fuzzer.ITERATION_DEFAULT_COUNT
-			var seed_value := -1
-			var fuzzers :Array[GdFunctionArgument] = []
-			var test := _TestCase.new()
-			
-			_validate_argument(fd, test)
-			for arg in fd.args():
-				var fa := arg as GdFunctionArgument
-				# verify argument is allowed
-				# is test using fuzzers?
-				if fa.type() == GdObjects.TYPE_FUZZER:
-					fuzzers.append(fa)
-				elif fa.has_default():
-					match fa.name():
-						_TestCase.ARGUMENT_TIMEOUT:
-							timeout = fa.default()
-						Fuzzer.ARGUMENT_ITERATIONS:
-							iterations = fa.default()
-						Fuzzer.ARGUMENT_SEED:
-							seed_value = fa.default()
-						#_:
-						#	push_error("Invalid test case arguemnt found. ", fa)
-					continue
-			# create new test
-			test.configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value)
-			test_suite.add_child(test)
-			# is parameterized test?
-			if fd.is_parameterized():
-				var test_paramaters := GdTestParameterSet.extract_test_parameters(test_suite.get_script(), fd)
-				var error := GdTestParameterSet.validate(fd.args(), test_paramaters)
-				if not error.is_empty():
-					test.skip(true, error)
-				test.set_test_parameters(test_paramaters)
+			_handle_test_case_arguments(test_suite, script, fd)
 
 
-const TEST_CASE_ARGUMENTS = [_TestCase.ARGUMENT_TIMEOUT, Fuzzer.ARGUMENT_ITERATIONS, Fuzzer.ARGUMENT_SEED]
+func _run_expression(src_script :GDScript, expression :String) -> Variant:
+	var script := GDScript.new()
+	script.source_code = _remove_class_name(src_script.source_code)
+	script.source_code += """
+		func __run_expression() -> Variant:
+			return $expression
+		""".dedent().replace("$expression", expression)
+	script.reload(false)
+	var runner := script.new()
+	runner.queue_free()
+	return runner.__run_expression()
+
+
+func _remove_class_name(source_code :String) -> String:
+	return regex_replace_class_name.sub(source_code, "")
+
+
+const TEST_CASE_ARGUMENTS = [_TestCase.ARGUMENT_TIMEOUT, _TestCase.ARGUMENT_SKIP, _TestCase.ARGUMENT_SKIP_REASON, Fuzzer.ARGUMENT_ITERATIONS, Fuzzer.ARGUMENT_SEED]
 
 func _validate_argument(fd :GdFunctionDescriptor, test_case :_TestCase) -> void:
 	if fd.is_parameterized():

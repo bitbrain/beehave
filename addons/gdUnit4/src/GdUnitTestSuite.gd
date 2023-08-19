@@ -17,6 +17,11 @@ extends Node
 
 const NO_ARG = GdUnitConstants.NO_ARG
 
+### internal runtime variables that must not be overwritten!!!
+var __is_skipped := false
+var __skip_reason :String = "Unknow."
+
+
 ## This function is called before a test suite starts[br]
 ## You can overwrite to prepare test data or initalizize necessary variables
 func before() -> void:
@@ -41,17 +46,8 @@ func after_test() -> void:
 	pass
 
 
-## Skip the test-suite from execution, it will be ignored
-func skip(skipped :bool) -> void:
-	set_meta("gd_skipped", skipped)
-
-
 func is_failure(_expected_failure :String = NO_ARG) -> bool:
 	return Engine.get_meta("GD_TEST_FAILURE") if Engine.has_meta("GD_TEST_FAILURE") else false
-
-
-func is_skipped() -> bool:
-	return get_meta("gd_skipped") if has_meta("gd_skipped") else false
 
 
 var __active_test_case :String
@@ -525,15 +521,42 @@ func assert_signal(instance :Object) -> GdUnitSignalAssert:
 	return GdUnitSignalAssertImpl.new(instance)
 
 
-## Verifiys an assertion is failing as expected
-## This assert is only designed for internal use to verify failing asserts working as expected
+## An assertion tool to test for failing assertions.[br]
+## This assert is only designed for internal use to verify failing asserts working as expected.[br]
 ## Usage:
 ##     [codeblock]
 ##		assert_failure(func(): assert_bool(true).is_not_equal(true)) \
-##			.has_message("Expecting:\n 'true'\n not equal to\n 'true'")
+##		    .has_message("Expecting:\n 'true'\n not equal to\n 'true'")
 ##     [/codeblock]
 func assert_failure(assertion :Callable) -> GdUnitFailureAssert:
-	return GdUnitFailureAssertImpl.new(assertion)
+	return GdUnitFailureAssertImpl.new().execute(assertion)
+
+
+## An assertion tool to test for failing assertions.[br]
+## This assert is only designed for internal use to verify failing asserts working as expected.[br]
+## Usage:
+##     [codeblock]
+##		await assert_failure_await(func(): assert_bool(true).is_not_equal(true)) \
+##		    .has_message("Expecting:\n 'true'\n not equal to\n 'true'")
+##     [/codeblock]
+func assert_failure_await(assertion :Callable) -> GdUnitFailureAssert:
+	return await GdUnitFailureAssertImpl.new().execute_and_await(assertion)
+
+
+## An assertion tool to verify for Godot errors.[br]
+## You can use to verify for certain Godot erros like failing assertions, push_error, push_warn.[br]
+## Usage:
+##     [codeblock]
+##		# tests no error was occured during execution the code
+##		await assert_error(func (): return 0 )\
+##		    .is_success()
+##		
+##		# tests an push_error('test error') was occured during execution the code
+##		await assert_error(func (): push_error('test error') )\
+##		    .is_push_error('test error')
+##     [/codeblock]
+func assert_error(current :Callable) -> GdUnitGodotErrorAssert:
+	return GdUnitGodotErrorAssertImpl.new(current)
 
 
 ## Utility to check if a test has failed in a particular line and if there is an error message

@@ -10,6 +10,7 @@ var _iteration :int
 func _init(path :String):
 	_iteration = GdUnitTools.find_last_path_index(path, REPORT_DIR_PREFIX) + 1
 	_report_path = "%s/%s%d" % [path, REPORT_DIR_PREFIX, _iteration]
+	DirAccess.make_dir_recursive_absolute(_report_path)
 
 
 func add_testsuite_report(suite_report :GdUnitTestSuiteReport):
@@ -22,10 +23,26 @@ func add_testcase_report(resource_path :String, suite_report :GdUnitTestCaseRepo
 			report.add_report(suite_report)
 
 
-func update_test_suite_report(resource_path :String, duration :int) -> void:
+func update_test_suite_report(
+	resource_path :String,
+	duration :int,
+	is_error :bool,
+	is_failed: bool,
+	is_warning :bool,
+	is_skipped :bool,
+	skipped_count :int,
+	failed_count :int,
+	orphan_count :int,
+	reports :Array = []) -> void:
+	
 	for report in _reports:
 		if report.resource_path() == resource_path:
 			report.set_duration(duration)
+			report.set_failed(is_failed, failed_count)
+			report.set_orphans(orphan_count)
+			report.set_reports(reports)
+	if is_skipped:
+		_skipped_count = skipped_count
 
 
 func update_testcase_report(resource_path :String, test_report :GdUnitTestCaseReport):

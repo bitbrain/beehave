@@ -57,6 +57,7 @@ func init_shortcuts(command_handler :GdUnitCommandHandler) -> void:
 	# register for shortcut changes
 	GdUnitSignals.instance().gdunit_settings_changed.connect(_on_settings_changed.bind(command_handler))
 
+
 func _on_runoverall_pressed(debug := false):
 	run_overall_pressed.emit(debug)
 
