@@ -28,7 +28,7 @@ class SignalCollector extends RefCounted:
 	
 	
 	func clear() -> void:
-		for emitter in _collected_signals:
+		for emitter in _collected_signals.keys():
 			if is_instance_valid(emitter):
 				unregister_emitter(emitter)
 	
@@ -42,7 +42,7 @@ class SignalCollector extends RefCounted:
 				return
 			_collected_signals[emitter] = Dictionary()
 			# connect to 'tree_exiting' of the emitter to finally release all acquired resources/connections.
-			if !emitter.tree_exiting.is_connected(unregister_emitter):
+			if emitter is Node and !emitter.tree_exiting.is_connected(unregister_emitter):
 				emitter.tree_exiting.connect(unregister_emitter.bind(emitter))
 			# connect to all signals of the emitter we want to collect
 			for signal_def in emitter.get_signal_list():
@@ -62,7 +62,10 @@ class SignalCollector extends RefCounted:
 	# is called when the emitter is removed from the parent
 	func unregister_emitter(emitter :Object):
 		if is_instance_valid(emitter):
-			GdUnitTools._release_connections(emitter)
+			for signal_def in emitter.get_signal_list():
+				var signal_name = signal_def["name"]
+				if emitter.is_connected(signal_name, _on_signal_emmited):
+					emitter.disconnect(signal_name, _on_signal_emmited.bind(emitter, signal_name))
 			_collected_signals.erase(emitter)
 	
 	
@@ -122,7 +125,7 @@ func _init(emitter :Object):
 
 
 func report_success() -> GdUnitAssert:
-	GdAssertReports.report_success(_line_number)
+	GdAssertReports.report_success()
 	return self
 
 

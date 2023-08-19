@@ -208,7 +208,6 @@ func cmd_run(debug :bool) -> void:
 	# before start we have to save all changes
 	ScriptEditorControls.save_all_open_script()
 	gdunit_runner_start.emit()
-	_is_running = true
 	_current_runner_process_id = -1
 	_running_debug_mode = debug
 	if debug:
@@ -276,6 +275,7 @@ static func scan_test_directorys(base_directory :String, test_suite_paths :Packe
 
 func run_debug_mode():
 	_editor_interface.play_custom_scene("res://addons/gdUnit4/src/core/GdUnitRunner.tscn")
+	_is_running = true
 
 
 func run_release_mode():
@@ -287,6 +287,7 @@ func run_release_mode():
 	arguments.append(ProjectSettings.globalize_path("res://"))
 	arguments.append("res://addons/gdUnit4/src/core/GdUnitRunner.tscn")
 	_current_runner_process_id = OS.create_process(OS.get_executable_path(), arguments, false);
+	_is_running = true
 
 
 func script_editor() -> ScriptEditor:

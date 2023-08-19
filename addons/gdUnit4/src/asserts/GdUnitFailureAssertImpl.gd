@@ -1,29 +1,35 @@
 class_name GdUnitFailureAssertImpl
 extends GdUnitFailureAssert
 
-var _gdunit_signals := GdUnitSignals.instance()
-var _current :GdUnitAssert
 var _is_failed := false
 var _failure_message :String
 
 
-func _init(assertion :Callable):
+func execute_and_await(assertion :Callable, do_await := true) -> GdUnitFailureAssert:
 	# do not report any failure from the original assertion we want to test
 	GdAssertReports.expect_fail(true)
 	var thread_context := GdUnitThreadManager.get_current_context()
 	thread_context.set_assert(null)
 	GdUnitSignals.instance().gdunit_set_test_failed.connect(_on_test_failed)
-	
 	# execute the given assertion as callable
-	assertion.call()
+	if do_await:
+		await assertion.call()
+	else:
+		assertion.call()
 	GdAssertReports.expect_fail(false)
 	# get the assert instance from current tread context
-	_current = thread_context.get_assert()
-	if not is_instance_of(_current, GdUnitAssert):
+	var current_assert := thread_context.get_assert()
+	if not is_instance_of(current_assert, GdUnitAssert):
 		_is_failed = true
 		_failure_message = "Invalid Callable! It must be a callable of 'GdUnitAssert'"
 		return
-	_failure_message = _current._failure_message()
+	_failure_message = current_assert._failure_message()
+	return self
+
+
+func execute(assertion :Callable) -> GdUnitFailureAssert:
+	execute_and_await(assertion, false)
+	return self
 
 
 func _on_test_failed(value :bool) -> void:
@@ -89,17 +95,10 @@ func starts_with_message(expected :String) -> GdUnitFailureAssert:
 
 func _report_error(error_message :String, failure_line_number: int = -1) -> GdUnitAssert:
 	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssertImpl._get_line_number()
-	GdAssertReports.set_last_error_line_number(line_number)
-	GdUnitSignals.instance().gdunit_set_test_failed.emit(true)
-	_send_report(GdUnitReport.new().create(GdUnitReport.FAILURE, line_number, error_message))
+	GdAssertReports.report_error(error_message, line_number)
 	return self
 
 
 func _report_success() -> GdUnitFailureAssert:
-	GdAssertReports.set_last_error_line_number(-1)
-	GdUnitSignals.instance().gdunit_set_test_failed.emit(false)
+	GdAssertReports.report_success()
 	return self
-
-
-func _send_report(report :GdUnitReport)-> void:
-	_gdunit_signals.gdunit_report.emit(report)

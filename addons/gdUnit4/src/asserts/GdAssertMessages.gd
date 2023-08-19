@@ -156,8 +156,21 @@ static func test_timeout(timeout :int) -> String:
 	return "%s\n %s" % [_error("Timeout !"), _colored_value("Test timed out after %s" %  LocalTime.elapsed(timeout))]
 
 
+static func test_suite_skipped(hint :String, skip_count) -> String:
+	return """
+		%s
+		  Tests skipped: %s
+		  Reason: %s
+		""".dedent().trim_prefix("\n")\
+		% [_error("Entire test-suite is skipped!"), _colored_value(skip_count), _colored_value(hint)]
+
+
 static func test_skipped(hint :String) -> String:
-	return "%s\n %s" % [_error("This test is skipped!"), "Reason: %s" % _colored_value(hint)]
+	return """
+		%s
+		  Reason: %s
+		""".dedent().trim_prefix("\n")\
+		% [_error("This test is skipped!"), _colored_value(hint)]
 
 
 static func error_not_implemented() -> String:

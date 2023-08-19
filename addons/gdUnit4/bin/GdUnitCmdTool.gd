@@ -27,7 +27,6 @@ class CLIRunner extends Node:
 	var _runner_config := GdUnitRunnerConfig.new()
 	var _console := CmdConsole.new()
 	var _cs_executor
-	var _rtf :RichTextLabel
 	var _cmd_options: = CmdOptions.new([
 			CmdOption.new("-a, --add", "-a <directory|path of testsuite>", "Adds the given test suite or directory to the execution pipeline.", TYPE_STRING),
 			CmdOption.new("-i, --ignore", "-i <testsuite_name|testsuite_name:test-name>", "Adds the given test suite or test case to the ignore list.", TYPE_STRING),
@@ -62,8 +61,6 @@ class CLIRunner extends Node:
 			push_error("Error checked startup, can't connect executor for 'send_event'")
 			quit(RETURN_ERROR)
 		add_child(_executor)
-		_rtf = RichTextLabel.new()
-		add_child(_rtf)
 	
 	
 	func _process(_delta):
@@ -93,14 +90,8 @@ class CLIRunner extends Node:
 	func quit(code :int) -> void:
 		if is_instance_valid(_executor):
 			_executor.free()
-		if is_instance_valid(_rtf):
-			_rtf.free()
 		GdUnitTools.dispose_all()
 		await get_tree().physics_frame
-		prints("-Orphan nodes report-----------------------")
-		Window.print_orphan_nodes()
-		prints("-SceneTree report-----------------------")
-		get_tree().root.print_tree_pretty()
 		get_tree().quit(code)
 	
 	
@@ -308,7 +299,7 @@ class CLIRunner extends Node:
 			GdUnitEvent.STOP:
 				var report_path := _report.write()
 				_report.delete_history(_report_max)
-				JUnitXmlReport.new(_report._report_path, _report.iteration(), _rtf).write(_report)
+				JUnitXmlReport.new(_report._report_path, _report.iteration()).write(_report)
 				_console.prints_color("Total test suites: %s" % _report.suite_count(), Color.DARK_SALMON)
 				_console.prints_color("Total test cases:  %s" % _report.test_count(), Color.DARK_SALMON)
 				_console.prints_color("Total time:        %s" % LocalTime.elapsed(_report.duration()), Color.DARK_SALMON)
@@ -316,17 +307,27 @@ class CLIRunner extends Node:
 			GdUnitEvent.TESTSUITE_BEFORE:
 				_report.add_testsuite_report(GdUnitTestSuiteReport.new(event.resource_path(), event.suite_name()))
 			GdUnitEvent.TESTSUITE_AFTER:
-				_report.update_test_suite_report(event.resource_path(), event.elapsed_time())
+				_report.update_test_suite_report(
+					event.resource_path(),
+					event.elapsed_time(),
+					event.is_error(),
+					event.is_failed(),
+					event.is_warning(),
+					event.is_skipped(),
+					event.skipped_count(),
+					event.failed_count(),
+					event.orphan_nodes(),
+					event.reports())
 			GdUnitEvent.TESTCASE_BEFORE:
-				_report.add_testcase_report(event.resource_path(), GdUnitTestCaseReport.new(_rtf, event.resource_path(), event.suite_name(), event.test_name()))
+				_report.add_testcase_report(event.resource_path(), GdUnitTestCaseReport.new(event.resource_path(), event.suite_name(), event.test_name()))
 			GdUnitEvent.TESTCASE_AFTER:
 				var test_report := GdUnitTestCaseReport.new(
-					_rtf,
 					event.resource_path(),
 					event.suite_name(),
 					event.test_name(),
 					event.is_error(),
 					event.is_failed(),
+					event.failed_count(),
 					event.orphan_nodes(),
 					event.is_skipped(),
 					event.reports(),
@@ -358,17 +359,17 @@ class CLIRunner extends Node:
 				_print_status(event)
 				_print_failure_report(event.reports())
 			GdUnitEvent.TESTSUITE_AFTER:
+				_print_failure_report(event.reports())
 				_print_status(event)
 				_console.prints_color("	| %d total | %d error | %d failed | %d skipped | %d orphans |\n" % [_report.test_count(), _report.error_count(), _report.failure_count(), _report.skipped_count(), _report.orphan_count()], Color.ANTIQUE_WHITE)
 	
 	
 	func _print_failure_report(reports :Array) -> void:
 		for report in reports:
-			_rtf.clear()
-			_rtf.parse_bbcode(report._to_string())
 			if report.is_failure() or report.is_error() or report.is_warning() or report.is_skipped():
 				_console.prints_color("	Report:", Color.DARK_TURQUOISE, CmdConsole.BOLD|CmdConsole.UNDERLINE)
-				for line in _rtf.get_parsed_text().split("\n"):
+				var text = GdUnitTools.richtext_normalize(report._to_string())
+				for line in text.split("\n"):
 					_console.prints_color("		%s" % line, Color.DARK_TURQUOISE)
 		_console.new_line()
 	
@@ -397,3 +398,8 @@ func _initialize():
 func _finalize():
 	prints("Finallize ..")
 	_cli_runner.free()
+	prints("-Orphan nodes report-----------------------")
+	Window.print_orphan_nodes()
+	prints("-SceneTree report-----------------------")
+	root.print_tree_pretty()
+	prints("Finallize .. done")
