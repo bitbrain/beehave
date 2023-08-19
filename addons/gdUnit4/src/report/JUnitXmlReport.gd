@@ -21,13 +21,11 @@ const HEADER := '<?xml version="1.0" encoding="UTF-8" ?>\n'
 
 var _report_path :String
 var _iteration :int
-var _rtf :RichTextLabel
 
 
-func _init(path :String,iteration :int,rtf :RichTextLabel):
+func _init(path :String,iteration :int):
 	_iteration = iteration
 	_report_path = path
-	_rtf = rtf
 
 
 func write(report :GdUnitReportSummary) -> String:
@@ -109,9 +107,7 @@ func build_reports(testReport :GdUnitTestCaseReport) -> Array:
 
 
 func convert_rtf_to_text(bbcode :String) -> String:
-	_rtf.clear()
-	_rtf.parse_bbcode(bbcode)
-	return _rtf.text
+	return GdUnitTools.richtext_normalize(bbcode)
 
 
 static func to_type(type :int) -> String:

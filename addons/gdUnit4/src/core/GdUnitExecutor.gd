@@ -55,6 +55,7 @@ func fire_event(event :GdUnitEvent) -> void:
 
 
 func fire_test_skipped(test_suite :GdUnitTestSuite, test_case :_TestCase):
+	set_stage(STAGE_TEST_CASE_BEFORE)
 	fire_event(GdUnitEvent.new()\
 		.test_before(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name()))
 	var statistics = {
@@ -68,24 +69,45 @@ func fire_test_skipped(test_suite :GdUnitTestSuite, test_case :_TestCase):
 		GdUnitEvent.SKIPPED: true,
 		GdUnitEvent.SKIPPED_COUNT: 1,
 	}
+	set_stage(STAGE_TEST_CASE_AFTER)
 	var report := GdUnitReport.new().create(GdUnitReport.SKIPPED, test_case.line_number(), GdAssertMessages.test_skipped(test_case.skip_info()))
 	fire_event(GdUnitEvent.new()\
 		.test_after(test_suite.get_script().resource_path, test_suite.get_name(), test_case.get_name(), statistics, [report]))
 
 
-func suite_before(test_suite :GdUnitTestSuite, total_count :int):
+func fire_test_suite_skipped(test_suite :GdUnitTestSuite):
+	var skip_count := test_suite.get_child_count()
 	set_stage(STAGE_TEST_SUITE_BEFORE)
 	fire_event(GdUnitEvent.new()\
-		.suite_before(test_suite.get_script().resource_path, test_suite.get_name(), total_count))
+		.suite_before(test_suite.get_script().resource_path, test_suite.get_name(), skip_count))
+	var statistics = {
+		GdUnitEvent.ORPHAN_NODES: 0,
+		GdUnitEvent.ELAPSED_TIME: 0,
+		GdUnitEvent.WARNINGS: false,
+		GdUnitEvent.ERRORS: false,
+		GdUnitEvent.ERROR_COUNT: 0,
+		GdUnitEvent.FAILED: false,
+		GdUnitEvent.FAILED_COUNT: 0,
+		GdUnitEvent.SKIPPED_COUNT: skip_count,
+		GdUnitEvent.SKIPPED: true
+	}
+	set_stage(STAGE_TEST_SUITE_AFTER)
+	var report := GdUnitReport.new().create(GdUnitReport.SKIPPED, -1, GdAssertMessages.test_suite_skipped(test_suite.__skip_reason, skip_count))
+	fire_event(GdUnitEvent.new().suite_after(test_suite.get_script().resource_path, test_suite.get_name(), statistics, [report]))
+
+
+func suite_before(test_suite :GdUnitTestSuite):
+	set_stage(STAGE_TEST_SUITE_BEFORE)
+	fire_event(GdUnitEvent.new()\
+		.suite_before(test_suite.get_script().resource_path, test_suite.get_name(), test_suite.get_child_count()))
 	_testsuite_timer = LocalTime.now()
 	_total_test_errors = 0
 	_total_test_failed = 0
 	_total_test_warnings = 0
-	if not test_suite.is_skipped():
-		_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.TESTSUITE, true)
-		@warning_ignore("redundant_await")
-		await test_suite.before()
-		_memory_pool.monitor_stop()
+	_memory_pool.set_pool(test_suite, GdUnitMemoryPool.POOL.TESTSUITE, true)
+	@warning_ignore("redundant_await")
+	await test_suite.before()
+	_memory_pool.monitor_stop()
 
 
 func suite_after(test_suite :GdUnitTestSuite):
@@ -93,7 +115,7 @@ func suite_after(test_suite :GdUnitTestSuite):
 	GdUnitTools.clear_tmp()
 	
 	var is_warning := _total_test_warnings != 0
-	var is_skipped := test_suite.is_skipped()
+	var is_skipped := test_suite.__is_skipped
 	var skip_count := test_suite.get_child_count()
 	var orphan_nodes := 0
 	var reports := _report_collector.get_reports(STAGE_TEST_SUITE_BEFORE)
@@ -287,6 +309,7 @@ func execute(test_suite :GdUnitTestSuite):
 func Execute(test_suite :GdUnitTestSuite) -> void:
 	var context := GdUnitThreadManager.get_current_context()
 	context.init()
+	
 	# stop checked first error if fail fast enabled
 	if _fail_fast and _total_test_failed > 0:
 		test_suite.free()
@@ -294,12 +317,8 @@ func Execute(test_suite :GdUnitTestSuite) -> void:
 		ExecutionCompleted.emit()
 		return
 	var ts := test_suite
-	await suite_before(ts, ts.get_child_count())
-	
-	if not ts.is_skipped():
-		# needs at least one yielding otherwise the waiting function is blocked
-		if ts.get_child_count() == 0:
-			await get_tree().process_frame
+	if not ts.__is_skipped and ts.get_child_count() != 0:
+		await suite_before(ts)
 		
 		for test_case_index in ts.get_child_count():
 			var test_case := ts.get_child(test_case_index) as _TestCase
@@ -325,8 +344,12 @@ func Execute(test_suite :GdUnitTestSuite) -> void:
 				# we delete the current test suite where is execute the current test case to kill the function state
 				# and replace it by a clone without function state
 				ts = await clone_test_suite(ts)
-				
-	await suite_after(ts)
+		
+		await suite_after(ts)
+	else:
+		fire_test_suite_skipped(ts)
+		# needs at least one yielding otherwise the waiting function is blocked
+		await get_tree().process_frame
 	ts.free()
 	context.clear()
 	ExecutionCompleted.emit()
