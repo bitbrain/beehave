@@ -112,24 +112,38 @@ func _update_weights(children: Array[Node]) -> void:
 
 
 func _on_child_entered_tree(node: Node):
-#	print('%s has entered the tree' % node.name)
 	_update_weights(get_children())
 
-	if not node.renamed.is_connected(_on_child_renamed):
-		node.renamed.connect(_on_child_renamed)
+	var renamed_callable = _on_child_renamed.bind(node.name, node)
+	if not node.renamed.is_connected(renamed_callable):
+		node.renamed.connect(renamed_callable)
 
 
 func _on_child_exiting_tree(node: Node):
-	if node.renamed.is_connected(_on_child_renamed):
-		node.renamed.disconnect(_on_child_renamed)
+	var renamed_callable = _on_child_renamed.bind(node.name, node)
+	if node.renamed.is_connected(renamed_callable):
+		node.renamed.disconnect(renamed_callable)
 	
 	var children = get_children()
 	children.erase(node)
 	_update_weights(children)
 
 
-func _on_child_renamed():
-	_update_weights(get_children())
+func _on_child_renamed(old_name: String, renamed_child: Node):
+	if old_name == renamed_child.name:
+		return # No need to update the weights.
+	
+	# Disconnect signal with old name...
+	renamed_child.renamed\
+			.disconnect(_on_child_renamed.bind(old_name, renamed_child))
+	# ...and connect with the new name.
+	renamed_child.renamed\
+			.connect(_on_child_renamed.bind(renamed_child.name, renamed_child))
+	
+	var original_weight = _weights[old_name]
+	_weights.erase(old_name)
+	_weights[renamed_child.name] = original_weight
+	notify_property_list_changed()
 
 
 func get_class_name() -> Array[StringName]:

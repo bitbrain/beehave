@@ -69,7 +69,9 @@ func _get_reversed_indexes() -> Array[int]:
 
 
 func _reset() -> void:
-	_children_bag = get_shuffled_children()
+	var new_order = get_shuffled_children()
+	_children_bag = new_order.duplicate()
+	_children_bag.reverse() # It needs to run the children in reverse order.
 
 
 func get_class_name() -> Array[StringName]:
