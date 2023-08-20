@@ -57,3 +57,10 @@ func test_invalid_key_expression() -> void:
 	
 	runner = scene_runner(blackboard_has)
 	assert_that(blackboard_has.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
+
+
+func test_invalid_key_expression_wrong_format() -> void:
+	blackboard_has.key = KEY
+	
+	runner = scene_runner(blackboard_has)
+	assert_that(blackboard_has.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
