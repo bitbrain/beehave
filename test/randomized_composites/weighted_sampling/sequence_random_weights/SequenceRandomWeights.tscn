@@ -1,19 +1,19 @@
 [gd_scene load_steps=5 format=3 uid="uid://dkaaauniwk8vr"]
 
-[ext_resource type="Script" path="res://test/randomized_composites/weighted_sampling/WeightedSamplingTestScene.gd" id="1_jp21r"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="1_lxyfw"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence_random.gd" id="2_rx8pw"]
-[ext_resource type="Script" path="res://test/actions/mock_action.gd" id="3_kgdbt"]
+[ext_resource type="Script" path="res://test/randomized_composites/weighted_sampling/sequence_random_weights/sequence_random_weights.gd" id="1_u523k"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="2_rnxkd"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence_random.gd" id="3_muod7"]
+[ext_resource type="Script" path="res://test/actions/mock_action.gd" id="4_74p3k"]
 
-[node name="WeightedSamplingTestScene" type="Node2D"]
-script = ExtResource("1_jp21r")
+[node name="SequenceRandomWeights" type="Node2D"]
+script = ExtResource("1_u523k")
 
 [node name="BeehaveTree" type="Node" parent="."]
-script = ExtResource("1_lxyfw")
+script = ExtResource("2_rnxkd")
 
 [node name="SequenceRandom" type="Node" parent="BeehaveTree"]
 unique_name_in_owner = true
-script = ExtResource("2_rx8pw")
+script = ExtResource("3_muod7")
 random_seed = 12345
 use_weights = true
 Weights/Idle = 1
@@ -22,15 +22,15 @@ Weights/Run = 1
 "Weights/Attack Ranged" = 1
 
 [node name="Idle" type="Node" parent="BeehaveTree/SequenceRandom"]
-script = ExtResource("3_kgdbt")
+script = ExtResource("4_74p3k")
 
 [node name="Run" type="Node" parent="BeehaveTree/SequenceRandom"]
-script = ExtResource("3_kgdbt")
+script = ExtResource("4_74p3k")
 
 [node name="Attack Meele" type="Node" parent="BeehaveTree/SequenceRandom"]
-script = ExtResource("3_kgdbt")
+script = ExtResource("4_74p3k")
 
 [node name="Attack Ranged" type="Node" parent="BeehaveTree/SequenceRandom"]
-script = ExtResource("3_kgdbt")
+script = ExtResource("4_74p3k")
 
 [connection signal="reset" from="BeehaveTree/SequenceRandom" to="." method="_on_sequence_reset"]
