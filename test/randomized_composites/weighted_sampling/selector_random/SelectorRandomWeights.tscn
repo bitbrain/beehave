@@ -1,0 +1,48 @@
+[gd_scene load_steps=6 format=3 uid="uid://0fdjf2domei1"]
+
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="1_o8soi"]
+[ext_resource type="Script" path="res://test/randomized_composites/weighted_sampling/selector_random/selector_random_weights.gd" id="1_qo3xr"]
+[ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="2_8j410"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector_random.gd" id="2_sx3ne"]
+[ext_resource type="Script" path="res://test/actions/count_up_action.gd" id="5_n64nd"]
+
+[node name="SelectorRandomWeights" type="Node2D"]
+script = ExtResource("1_qo3xr")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Blackboard" type="Node" parent="."]
+script = ExtResource("2_8j410")
+
+[node name="BeehaveTree" type="Node" parent="." node_paths=PackedStringArray("blackboard")]
+script = ExtResource("1_o8soi")
+actor_node_path = NodePath("..")
+blackboard = NodePath("../Blackboard")
+
+[node name="SelectorRandom" type="Node" parent="BeehaveTree"]
+unique_name_in_owner = true
+script = ExtResource("2_sx3ne")
+random_seed = 12345
+use_weights = true
+Weights/Common = 1
+Weights/Uncommon = 1
+Weights/Rare = 1
+Weights/Extraordinary = 1
+
+[node name="Common" type="Node" parent="BeehaveTree/SelectorRandom"]
+script = ExtResource("5_n64nd")
+key = "common_counter"
+
+[node name="Uncommon" type="Node" parent="BeehaveTree/SelectorRandom"]
+script = ExtResource("5_n64nd")
+key = "uncommon_counter"
+
+[node name="Rare" type="Node" parent="BeehaveTree/SelectorRandom"]
+script = ExtResource("5_n64nd")
+key = "rare_counter"
+
+[node name="Extraordinary" type="Node" parent="BeehaveTree/SelectorRandom"]
+script = ExtResource("5_n64nd")
+key = "extraordinary_counter"
