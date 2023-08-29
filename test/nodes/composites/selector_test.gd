@@ -100,3 +100,28 @@ func test_clear_running_child_after_run() -> void:
 	action2.status = BeehaveNode.FAILURE
 	tree.tick()
 	assert_that(selector.running_child).is_equal(null)
+
+
+func test_not_interrupt_first_after_finished() -> void:
+	var action3 = auto_free(load(__count_up_action).new())
+	selector.add_child(action3)
+	var running_action: Node
+	var blackboard_name: String = str(actor.get_instance_id())
+
+	action1.status = BeehaveNode.RUNNING
+	action2.status = BeehaveNode.FAILURE
+	action3.status = BeehaveNode.RUNNING
+
+	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(0)
+	assert_that(action3.count).is_equal(0)
+	
+	action1.status = BeehaveNode.FAILURE
+	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(2)
+	assert_that(action2.count).is_equal(1)
+	assert_that(action3.count).is_equal(1)
+	
+	selector.remove_child(action3)
+
