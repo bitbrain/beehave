@@ -31,12 +31,10 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		match response:
 			SUCCESS:
 				_cleanup_running_task(c, actor, blackboard)
-
 				successful_index += 1
 				c.after_run(actor, blackboard)
 			FAILURE:
 				_cleanup_running_task(c, actor, blackboard)
-
 				# Interrupt any child that was RUNNING before.
 				interrupt(actor, blackboard)
 				c.after_run(actor, blackboard)
