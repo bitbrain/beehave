@@ -38,8 +38,19 @@ In order to avoid bugs creeping into the codebase, every feature is covered by u
 
 1. [Download Latest Release](https://github.com/bitbrain/beehave/releases/latest)
     - (optional) access latest build for [Godot 3.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-3.x.zip), [Godot 4.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-4.x.zip)
+    - (optional) access latest build for [Godot 4.1.x](https://github.com/bitbrain/beehave/archive/refs/heads/godot-4.1.x.zip) (Godot 4.2 breaks compatibility with this branch)
 2. Unpack the `beehave` folder into your `/addons` folder within the Godot project
 3. Enable this addon within the Godot settings: `Project > Project Settings > Plugins`
+
+To better understand what branch to choose from for which Godot version, please refer to this table:
+|Godot Version|Beehave Branch|
+|---|---|
+|`3.x`|`3.x`|
+|`4.0.x`|`4.1.x`|
+|`4.1.x`|`4.1.x`|
+|`4.2.x`|`4.x`|
+
+Refer to [this guide](https://bitbra.in/2023/09/03/godot-addon-compatibility.html) for more details behind this structure.
 
 # 📚 Getting started
 
