@@ -41,7 +41,7 @@ func _ready() -> void:
 	button.pressed.connect(func(): make_floating.emit())
 	button.tooltip_text = "Make floating"
 	button.focus_mode = Control.FOCUS_NONE
-	graph.get_menu_hbox().add_child(button)
+        get_box().add_child(button)
 
 	var toggle_button := Button.new()
 	toggle_button.flat = true
