@@ -49,7 +49,7 @@ func _ready() -> void:
 	toggle_button.pressed.connect(_on_toggle_button_pressed.bind(toggle_button))
 	toggle_button.tooltip_text = "Toggle Panel"
 	toggle_button.focus_mode = Control.FOCUS_NONE
-	graph.get_menu_hbox().add_child(toggle_button)
+	get_box().add_child(toggle_button)
 	graph.get_menu_hbox().move_child(toggle_button, 0)
 
 	stop()
