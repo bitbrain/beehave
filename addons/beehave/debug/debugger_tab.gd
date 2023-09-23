@@ -50,7 +50,7 @@ func _ready() -> void:
 	toggle_button.tooltip_text = "Toggle Panel"
 	toggle_button.focus_mode = Control.FOCUS_NONE
 	get_box().add_child(toggle_button)
-	graph.get_menu_hbox().move_child(toggle_button, 0)
+	get_box().move_child(toggle_button, 0)
 
 	stop()
 	visibility_changed.connect(_on_visibility_changed)
