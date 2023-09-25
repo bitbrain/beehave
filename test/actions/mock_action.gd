@@ -16,7 +16,7 @@ func before_run(actor: Node, blackboard: Blackboard) -> void:
 	started_running.emit(actor, blackboard)
 
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(actor: Node, blackboard: Blackboard, delta: float) -> int:
 	if tick_count < running_frame_count:
 		tick_count += 1
 		return RUNNING

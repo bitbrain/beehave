@@ -14,7 +14,7 @@ class_name BlackboardSetAction extends ActionLeaf
 @onready var _value_expression: Expression = _parse_expression(value)
 
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(actor: Node, blackboard: Blackboard, delta: float) -> int:
 	var key_value: Variant = _key_expression.execute([], blackboard)
 	
 	if _key_expression.has_execute_failed():

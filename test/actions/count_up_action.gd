@@ -5,7 +5,7 @@ class_name CountUpAction extends ActionLeaf
 var count = 0
 var status = SUCCESS
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(actor: Node, blackboard: Blackboard, delta: float) -> int:
 	count += 1
 	blackboard.set_value(key, count)
 	return status

@@ -25,7 +25,7 @@ func _get_random_action():
     rnd -= weights[i]
   return weights.size() - 1
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(actor: Node, blackboard: Blackboard, delta: float) -> int:
   var step = Time.get_ticks_msec() / reset_duration_msec
   if step != last_step:
     action = _get_random_action()

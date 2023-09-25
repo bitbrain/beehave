@@ -6,7 +6,7 @@ Beehave is an addon for the Godot Engine, designed to help you build Artificial 
 
 At a high level, a Behavior Tree is a Godot Node that can be added as a child to other Godot nodes within the scene tree. It runs its logic every frame tick and modifies the parent node accordingly.
 
-More specifically, a Behavior Tree is composed of **nodes** that can have various types and purposes, each with its own custom logic. Every node has a `tick(actor, blackboard)` method. When the `tick` function is called, Beehave expects a return status of either `SUCCESS`, `RUNNING`, or `FAILURE`.
+More specifically, a Behavior Tree is composed of **nodes** that can have various types and purposes, each with its own custom logic. Every node has a `tick(actor, blackboard, delta)` method. When the `tick` function is called, Beehave expects a return status of either `SUCCESS`, `RUNNING`, or `FAILURE`.
 
 In Beehave, every Behavior Tree is of type `BeehaveTree`. Attach this node to any other node you want to apply the Behavior Tree to.
 

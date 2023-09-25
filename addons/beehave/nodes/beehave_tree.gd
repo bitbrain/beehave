@@ -113,7 +113,7 @@ func _physics_process(delta: float) -> void:
 		BeehaveDebuggerMessages.process_begin(get_instance_id())
 
 	if self.get_child_count() == 1:
-		tick()
+		tick(delta)
 
 	if _can_send_message:
 		BeehaveDebuggerMessages.process_end(get_instance_id())
@@ -122,12 +122,12 @@ func _physics_process(delta: float) -> void:
 	_process_time_metric_value = Time.get_ticks_usec() - start_time
 
 
-func tick() -> int:
+func tick(delta: float) -> int:
 	var child := self.get_child(0)
 	if status != RUNNING:
 		child.before_run(actor, blackboard)
 
-	status = child.tick(actor, blackboard)
+	status = child.tick(actor, blackboard, delta)
 	if _can_send_message:
 		BeehaveDebuggerMessages.process_tick(child.get_instance_id(), status)
 		BeehaveDebuggerMessages.process_tick(get_instance_id(), status)

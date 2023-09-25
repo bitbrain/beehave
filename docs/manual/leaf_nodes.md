@@ -21,7 +21,7 @@ var target: NodePath
 func _init(target: NodePath):
 	self.target = target
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(actor: Node, blackboard: Blackboard, delta: float) -> int:
 	var target_node = blackboard.get_node(self.target)
 	if target_node == null:
 		return FAILURE
@@ -68,7 +68,7 @@ func before_run(actor: Node, blackboard: Blackboard) -> void:
     print(actor.name + " equipping " + item_name + "...")
     
     # Execute the action and return the status code
-    action_node.tick(actor, blackboard)
+    action_node.tick(actor, blackboard, delta)
 ```
 
 ## `after_run` Method Example
@@ -85,5 +85,5 @@ func after_run(actor: Node, blackboard: Blackboard) -> void:
     print(actor.name + " gained " + str(exp_gained) + " experience points!")
     
     # Execute the action
-    action_node.tick(actor, blackboard)
+    action_node.tick(actor, blackboard, delta)
 ```

@@ -6,12 +6,12 @@
 @icon("../../icons/selector_reactive.svg")
 class_name SelectorReactiveComposite extends Composite
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(actor: Node, blackboard: Blackboard, delta: float) -> int:
 	for c in get_children():
 		if c != running_child:
 			c.before_run(actor, blackboard)
 
-		var response = c.tick(actor, blackboard)
+		var response = c.tick(actor, blackboard, delta)
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
 

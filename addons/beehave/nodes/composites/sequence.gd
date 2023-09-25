@@ -11,7 +11,7 @@ class_name SequenceComposite extends Composite
 var successful_index: int = 0
 
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(actor: Node, blackboard: Blackboard, delta: float) -> int:
 	for c in get_children():
 
 		if c.get_index() < successful_index:
@@ -20,7 +20,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		if c != running_child:
 			c.before_run(actor, blackboard)
 
-		var response = c.tick(actor, blackboard)
+		var response = c.tick(actor, blackboard, delta)
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
 

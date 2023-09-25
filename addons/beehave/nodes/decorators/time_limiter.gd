@@ -12,10 +12,10 @@ var time_left: = 0.0
 @onready var child: BeehaveNode = get_child(0)
 
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(actor: Node, blackboard: Blackboard, delta: float) -> int:
 	if time_left < wait_time:
 		time_left += get_physics_process_delta_time()
-		var response = child.tick(actor, blackboard)
+		var response = child.tick(actor, blackboard, delta)
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(child.get_instance_id(), response)
 		

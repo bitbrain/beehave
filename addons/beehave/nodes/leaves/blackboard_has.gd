@@ -10,7 +10,7 @@ class_name BlackboardHasCondition extends ConditionLeaf
 @onready var _key_expression: Expression = _parse_expression(key)
 
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(actor: Node, blackboard: Blackboard, delta: float) -> int:
 	var key_value: Variant = _key_expression.execute([], blackboard)
 	
 	if _key_expression.has_execute_failed():
