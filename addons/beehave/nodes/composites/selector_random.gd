@@ -57,7 +57,7 @@ func after_run(actor: Node, blackboard: Blackboard) -> void:
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	after_run(actor, blackboard)
+	_reset()
 	super(actor, blackboard)
 
 

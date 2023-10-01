@@ -50,7 +50,7 @@ func after_run(actor: Node, blackboard: Blackboard) -> void:
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	after_run(actor, blackboard)
+	last_execution_index = 0
 	super(actor, blackboard)
 
 
