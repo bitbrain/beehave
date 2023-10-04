@@ -40,14 +40,14 @@ var layout_button: Button
 
 func _ready() -> void:
 	custom_minimum_size = Vector2(100, 300)
-	arrange_nodes_button_hidden = true
+	show_arrange_button = true
 	minimap_enabled = false
 
 	layout_button = Button.new()
 	layout_button.flat = true
 	layout_button.focus_mode = Control.FOCUS_NONE
 	layout_button.pressed.connect(func(): horizontal_layout = not horizontal_layout)
-	get_zoom_hbox().add_child(layout_button)
+	get_menu_hbox().add_child(layout_button)
 	_update_layout_button()
 
 
@@ -59,7 +59,7 @@ func _update_graph() -> void:
 
 	clear_connections()
 
-	for child in get_children():
+	for child in _get_child_nodes():
 		remove_child(child)
 		child.queue_free()
 
@@ -134,6 +134,15 @@ func _get_icon(type: StringName) -> Texture2D:
 	return null
 
 
+func get_menu_container() -> Control:
+	# Godot 4.0+
+	if has_method("get_zoom_hbox"):
+		return call("get_zoom_hbox")
+
+	# Godot 4.1+
+	return call("get_menu_hbox").get_parent()
+
+
 func get_status(status: int) -> String:
 	if status == 0:
 		return "SUCCESS"
@@ -146,7 +155,7 @@ func process_begin(instance_id: int) -> void:
 	if not _is_same_tree(instance_id):
 		return
 
-	for child in get_children():
+	for child in _get_child_nodes():
 		child.set_meta("status", -1)
 
 
@@ -165,7 +174,7 @@ func process_end(instance_id: int) -> void:
 	if not _is_same_tree(instance_id):
 		return
 
-	for child in get_children():
+	for child in _get_child_nodes():
 		var status := child.get_meta("status", -1)
 		match status:
 			0:
@@ -184,6 +193,10 @@ func process_end(instance_id: int) -> void:
 
 func _is_same_tree(instance_id: int) -> bool:
 	return str(instance_id) == beehave_tree.get("id", "")
+
+
+func _get_child_nodes() -> Array[Node]:
+	return get_children().filter(func(child): return child is BeehaveGraphNode)
 
 
 func _get_connection_line(from_position: Vector2, to_position: Vector2) -> PackedVector2Array:
@@ -224,15 +237,15 @@ func _draw() -> void:
 
 	var connections := get_connection_list()
 	for c in connections:
-		if not c.from in active_nodes or not c.to in active_nodes:
+		if not c.from_node in active_nodes or not c.to_node in active_nodes:
 			continue
-		var from := get_node(String(c.from))
-		var to := get_node(String(c.to))
+		var from := get_node(String(c.from_node))
+		var to := get_node(String(c.to_node))
 
 		if from.get_meta("status", -1) < 0 or to.get_meta("status", -1) < 0:
 			return
 
-		var line := _get_connection_line(from.position + from.get_connection_output_position(c.from_port), to.position + to.get_connection_input_position(c.to_port))
+		var line := _get_connection_line(from.position + from.get_output_port_position(c.from_port), to.position + to.get_input_port_position(c.to_port))
 
 		var curve = Curve2D.new()
 		for l in line:

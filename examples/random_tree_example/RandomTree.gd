@@ -39,8 +39,8 @@ func _make_random_tree():
 func _parse_tree_node(parent, node, index: int):
   var n
   if node.children.size() > 1:
-    n = SelectorStarComposite.new()
-    n.name = "SelectorStarComposite%s-%d" % [get_name_suffix(), index]
+    n = SelectorReactiveComposite.new()
+    n.name = "SelectorReactiveComposite%s-%d" % [get_name_suffix(), index]
   elif node.children.size() == 1:
     n = InverterDecorator.new()
     n.name = "InverterDecorator%s-%d" % [get_name_suffix(), index]
