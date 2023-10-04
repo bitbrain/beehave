@@ -237,15 +237,40 @@ func _draw() -> void:
 
 	var connections := get_connection_list()
 	for c in connections:
-		if not c.from_node in active_nodes or not c.to_node in active_nodes:
+		var from_node: StringName
+		var to_node: StringName
+
+		# Godot 4.0+
+		if c.has("from"):
+			from_node = c.from
+			to_node = c.to
+		# Godot 4.1+
+		else:
+			from_node = c.from_node
+			to_node = c.to_node
+
+		if not from_node in active_nodes or not c.to_node in active_nodes:
 			continue
-		var from := get_node(String(c.from_node))
-		var to := get_node(String(c.to_node))
+
+		var from := get_node(String(from_node))
+		var to := get_node(String(to_node))
 
 		if from.get_meta("status", -1) < 0 or to.get_meta("status", -1) < 0:
 			return
 
-		var line := _get_connection_line(from.position + from.get_output_port_position(c.from_port), to.position + to.get_input_port_position(c.to_port))
+		var output_port_position: Vector2
+		var input_port_position: Vector2
+
+		# Godot 4.0+
+		if from.has_method("get_connection_output_position"):
+			output_port_position = from.position + from.call("get_connection_output_position", c.from_port)
+			input_port_position = to.position + to.call("get_connection_input_position", c.to_port)
+		# Godot 4.1+
+		else:
+			output_port_position = from.position + from.call("get_output_port_position", c.from_port)
+			input_port_position = to.position + to.call("get_input_port_position", c.to_port)
+
+		var line := _get_connection_line(output_port_position, input_port_position)
 
 		var curve = Curve2D.new()
 		for l in line:
