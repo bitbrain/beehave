@@ -146,7 +146,7 @@ func get_menu_container() -> Control:
 	if has_method("get_zoom_hbox"):
 		return call("get_zoom_hbox")
 
-	# Godot 4.1+
+	# Godot 4.2+
 	return call("get_menu_hbox").get_parent()
 
 
@@ -251,7 +251,7 @@ func _draw() -> void:
 		if c.has("from"):
 			from_node = c.from
 			to_node = c.to
-		# Godot 4.1+
+		# Godot 4.2+
 		else:
 			from_node = c.from_node
 			to_node = c.to_node
@@ -272,7 +272,7 @@ func _draw() -> void:
 		if from.has_method("get_connection_output_position"):
 			output_port_position = from.position + from.call("get_connection_output_position", c.from_port)
 			input_port_position = to.position + to.call("get_connection_input_position", c.to_port)
-		# Godot 4.1+
+		# Godot 4.2+
 		else:
 			output_port_position = from.position + from.call("get_output_port_position", c.from_port)
 			input_port_position = to.position + to.call("get_input_port_position", c.to_port)
