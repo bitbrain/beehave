@@ -11,8 +11,11 @@ func _initialize():
 
 
 func _finalize():
-	prints("Finalize scanner ..")
+	if Engine.get_version_info().hex < 0x40100 or Engine.get_version_info().hex > 0x40101:
+		print("Finalize scanner ..")
 	scanner.free()
+	if Engine.get_version_info().hex < 0x40100 or Engine.get_version_info().hex > 0x40101:
+		prints("done")
 
 
 class ProjectScanner extends Node:
@@ -48,7 +51,7 @@ class ProjectScanner extends Node:
 			_console.prints_color("======================================", Color.CORNFLOWER_BLUE)
 			_console.new_line()
 			await get_tree().process_frame
-			get_tree().quit()
+			get_tree().quit(0)
 	
 	
 	func scan_project() -> void:

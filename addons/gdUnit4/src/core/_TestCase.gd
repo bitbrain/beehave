@@ -6,6 +6,8 @@ signal completed()
 # default timeout 5min
 const DEFAULT_TIMEOUT := -1
 const ARGUMENT_TIMEOUT := "timeout"
+const ARGUMENT_SKIP := "do_skip"
+const ARGUMENT_SKIP_REASON := "skip_reason"
 
 var _iterations: int = 1
 var _current_iteration :int = -1
@@ -16,7 +18,7 @@ var _test_param_index := -1
 var _line_number: int = -1
 var _script_path: String
 var _skipped := false
-var _skip_info := ""
+var _skip_reason := ""
 var _expect_to_interupt := false
 var _timer : Timer
 var _interupted :bool = false
@@ -157,7 +159,8 @@ func report() -> GdUnitReport:
 
 
 func skip_info() -> String:
-	return _skip_info
+	return _skip_reason
+
 
 func line_number() -> int:
 	return _line_number
@@ -196,9 +199,9 @@ func generate_seed() -> void:
 		seed(_seed)
 
 
-func skip(skipped :bool, error :String = "") -> void:
+func skip(skipped :bool, reason :String = "") -> void:
 	_skipped = skipped
-	_skip_info = error
+	_skip_reason = reason
 
 
 func set_test_parameters(p_test_parameters :Array) -> void:

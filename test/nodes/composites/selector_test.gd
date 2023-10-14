@@ -9,6 +9,7 @@ const __source = "res://addons/beehave/nodes/composites/selector.gd"
 const __count_up_action = "res://test/actions/count_up_action.gd"
 const __blackboard = "res://addons/beehave/blackboard.gd"
 const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
+const __selector_reactive = "res://addons/beehave/nodes/composites/selector_reactive.gd"
 
 var tree: BeehaveTree
 var selector: SelectorComposite
@@ -100,3 +101,54 @@ func test_clear_running_child_after_run() -> void:
 	action2.status = BeehaveNode.FAILURE
 	tree.tick()
 	assert_that(selector.running_child).is_equal(null)
+
+
+func test_not_interrupt_first_after_finished() -> void:
+	var action3 = auto_free(load(__count_up_action).new())
+	selector.add_child(action3)
+	var running_action: Node
+	var blackboard_name: String = str(actor.get_instance_id())
+
+	action1.status = BeehaveNode.RUNNING
+	action2.status = BeehaveNode.FAILURE
+	action3.status = BeehaveNode.RUNNING
+
+	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(0)
+	assert_that(action3.count).is_equal(0)
+	
+	action1.status = BeehaveNode.FAILURE
+	assert_that(selector.tick(actor, blackboard)).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(2)
+	assert_that(action2.count).is_equal(1)
+	assert_that(action3.count).is_equal(1)
+	
+	selector.remove_child(action3)
+
+
+func test_interrupt_when_nested() -> void:
+	var selector_reactive = auto_free(load(__selector_reactive).new())
+	var fake_condition = auto_free(load(__count_up_action).new())
+	
+	tree.remove_child(selector)
+	tree.add_child(selector_reactive)
+	selector_reactive.add_child(fake_condition)
+	selector_reactive.add_child(selector)
+	
+	fake_condition.status = BeehaveNode.FAILURE
+	action1.status = BeehaveNode.RUNNING
+	
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(0)
+	
+	fake_condition.status = BeehaveNode.SUCCESS
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_that(action1.count).is_equal(0)
+	assert_that(action2.count).is_equal(0)
+	
+	# clean up...
+	selector_reactive.remove_child(selector)
+	tree.remove_child(selector_reactive)
+	tree.add_child(selector)

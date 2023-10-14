@@ -14,7 +14,7 @@ var _error_count := 0
 var _orphan_count := 0
 var _skipped_count := 0
 var _duration := 0
-var _reports:Array = Array()
+var _reports :Array[GdUnitReportSummary] = []
 
 
 func name() -> String:
@@ -104,7 +104,10 @@ func calculate_state(p_error_count :int, p_failure_count :int, p_orphan_count :i
 func calculate_succes_rate(p_test_count :int, p_error_count :int, p_failure_count :int) -> String:
 	if p_failure_count == 0:
 		return "100%"
-	return "%d" % ((p_test_count-p_failure_count-p_error_count) * 100.0 / p_test_count) + "%"
+	var count = p_test_count-p_failure_count-p_error_count
+	if count < 0:
+		return "0%"
+	return "%d" % (( 0 if count < 0 else count) * 100.0 / p_test_count) + "%"
 
 
 func create_summary(_report_dir :String) -> String:
@@ -115,3 +118,12 @@ func html_encode(value :String) -> String:
 	for key in CHARACTERS_TO_ENCODE.keys():
 		value =value.replace(key, CHARACTERS_TO_ENCODE[key])
 	return value
+
+
+func convert_rtf_to_html(bbcode :String) -> String:
+	var as_text: = GdUnitTools.richtext_normalize(bbcode)
+	var converted := PackedStringArray()
+	var lines := as_text.split("\n")
+	for line in lines:
+		converted.append("<p>%s</p>" % line)
+	return "\n".join(converted)

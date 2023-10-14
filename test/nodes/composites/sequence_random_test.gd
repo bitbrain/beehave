@@ -21,7 +21,9 @@ var action2: ActionLeaf
 func before_test() -> void:
 	tree = auto_free(load(__tree).new())
 	action1 = auto_free(load(__count_up_action).new())
+	action1.name = 'Action 1'
 	action2 = auto_free(load(__count_up_action).new())
+	action2.name = 'Action 2'
 	sequence = auto_free(load(__source).new())
 	sequence.random_seed = RANDOM_SEED
 	var actor = auto_free(Node2D.new())
@@ -63,14 +65,45 @@ func test_random_even_execution() -> void:
 	assert_that(action2.count).is_equal(2)
 
 
+func test_weighted_random_sampling() -> void:
+	sequence.use_weights = true
+	sequence._weights[action1.name] = 2
+	assert_dict(sequence._weights).contains_key_value(action1.name, 2)
+	assert_dict(sequence._weights).contains_key_value(action2.name, 1)
+	
+	action1.status = BeehaveNode.RUNNING
+	action2.status = BeehaveNode.RUNNING
+	
+	assert_array(sequence._children_bag).is_empty()
+	
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	
+	# Children are in reverse order; aka action1 will run first.
+	assert_array(sequence._children_bag)\
+			.contains_exactly([action2, action1])
+	
+	# Only action 1 should have executed.
+	assert_that(action1.count).is_equal(1)
+	assert_that(action2.count).is_equal(0)
+	
+	action1.status = BeehaveNode.SUCCESS
+	
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	
+	assert_that(action1.count).is_equal(2)
+	assert_that(action2.count).is_equal(1)
+	
+	sequence.use_weights = false
+
+
 func test_return_failure_of_none_is_succeeding() -> void:
 	action1.status = BeehaveNode.FAILURE
 	action2.status = BeehaveNode.FAILURE
 	
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	
-	assert_that(action1.count).is_equal(1)
-	assert_that(action2.count).is_equal(0)
+	assert_that(action1.count).is_equal(0)
+	assert_that(action2.count).is_equal(1)
 
 
 func test_clear_running_child_after_run() -> void:

@@ -6,6 +6,7 @@
 @icon("../../icons/selector.svg")
 class_name SelectorComposite extends Composite
 
+
 var last_execution_index: int = 0
 
 
@@ -27,9 +28,11 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 		match response:
 			SUCCESS:
+				_cleanup_running_task(c, actor, blackboard)
 				c.after_run(actor, blackboard)
 				return SUCCESS
 			FAILURE:
+				_cleanup_running_task(c, actor, blackboard)
 				last_execution_index += 1
 				c.after_run(actor, blackboard)
 			RUNNING:
@@ -47,8 +50,17 @@ func after_run(actor: Node, blackboard: Blackboard) -> void:
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	after_run(actor, blackboard)
+	last_execution_index = 0
 	super(actor, blackboard)
+
+
+## Changes `running_action` and `running_child` after the node finishes executing.
+func _cleanup_running_task(finished_action: Node, actor: Node, blackboard: Blackboard):
+	var blackboard_name = str(actor.get_instance_id())
+	if finished_action == running_child:
+		running_child = null
+		if finished_action == blackboard.get_value("running_action", null, blackboard_name):
+			blackboard.set_value("running_action", null, blackboard_name)
 
 
 func get_class_name() -> Array[StringName]:
