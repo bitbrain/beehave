@@ -1,5 +1,5 @@
 @tool
-extends PanelContainer
+class_name BeehaveDebuggerTab extends PanelContainer
 
 signal make_floating()
 
@@ -25,7 +25,7 @@ func _ready() -> void:
 	item_list.item_selected.connect(_on_item_selected)
 	container.add_child(item_list)
 
-	graph = BeehaveGraphEdit.new()
+	graph = BeehaveGraphEdit.new(BeehaveUtils.get_frames())
 	container.add_child(graph)
 
 	message = Label.new()
@@ -100,8 +100,10 @@ func _on_item_selected(idx: int) -> void:
 	graph.beehave_tree = active_trees.get(id, {})
 
 	active_tree_id = id.to_int()
-	session.send_message("beehave:activate_tree", [active_tree_id])
+	if session != null:
+		session.send_message("beehave:activate_tree", [active_tree_id])
 
 
 func _on_visibility_changed() -> void:
-	session.send_message("beehave:visibility_changed", [visible and is_visible_in_tree()])
+	if session != null:
+		session.send_message("beehave:visibility_changed", [visible and is_visible_in_tree()])

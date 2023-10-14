@@ -33,9 +33,14 @@ var horizontal_layout: bool = false:
 		_update_graph()
 
 
+var frames:RefCounted
 var active_nodes: Array[String]
 var progress: int = 0
 var layout_button: Button
+
+
+func _init(frames:RefCounted) -> void:
+	self.frames = frames
 
 
 func _ready() -> void:
@@ -81,7 +86,7 @@ func _update_graph() -> void:
 func _add_nodes(node: Dictionary) -> void:
 	if node.is_empty():
 		return
-	var gnode := BeehaveGraphNode.new(horizontal_layout)
+	var gnode := BeehaveGraphNode.new(frames, horizontal_layout)
 	add_child(gnode)
 	gnode.title_text = node.name
 	gnode.name = node.id
