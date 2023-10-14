@@ -38,11 +38,12 @@ var title_label: Label
 var container: VBoxContainer
 var label: Label
 
-var frames: RefCounted = BeehaveUtils.get_frames()
+var frames: RefCounted
 var horizontal: bool = false
 
 
-func _init(horizontal: bool = false) -> void:
+func _init(frames:RefCounted, horizontal: bool = false) -> void:
+	self.frames = frames
 	self.horizontal = horizontal
 
 
@@ -50,8 +51,8 @@ func _ready() -> void:
 	custom_minimum_size = Vector2(50, 50) * BeehaveUtils.get_editor_scale()
 	draggable = false
 
-	add_theme_stylebox_override("frame", frames.empty)
-	add_theme_stylebox_override("selected_frame", frames.empty)
+	add_theme_stylebox_override("frame", frames.empty if frames != null else null)
+	add_theme_stylebox_override("selected_frame", frames.empty if frames != null else null)
 	add_theme_color_override("close_color", Color.TRANSPARENT)
 	add_theme_icon_override("close", ImageTexture.new())
 
@@ -60,7 +61,7 @@ func _ready() -> void:
 
 	panel = PanelContainer.new()
 	panel.mouse_filter = Control.MOUSE_FILTER_PASS
-	panel.add_theme_stylebox_override("panel", frames.normal)
+	panel.add_theme_stylebox_override("panel", frames.normal if frames != null else null)
 	add_child(panel)
 
 	var vbox_container := VBoxContainer.new()
