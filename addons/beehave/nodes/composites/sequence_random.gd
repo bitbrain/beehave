@@ -1,9 +1,10 @@
-## This node will attempt to execute all of its children just like a
-## [code]SequenceStar[/code] would, with the exception that the children
-## will be executed in a random order.
 @tool
 @icon("../../icons/sequence_random.svg")
 class_name SequenceRandomComposite extends RandomizedComposite
+
+## This node will attempt to execute all of its children just like a
+## [code]SequenceStar[/code] would, with the exception that the children
+## will be executed in a random order.
 
 # Emitted whenever the children are shuffled.
 signal reset(new_order: Array[Node])

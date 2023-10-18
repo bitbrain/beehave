@@ -1,7 +1,8 @@
-## Controls the flow of execution of the entire behavior tree.
 @tool
 @icon("../icons/tree.svg")
 class_name BeehaveTree extends Node
+
+## Controls the flow of execution of the entire behavior tree.
 
 enum {
 	SUCCESS,

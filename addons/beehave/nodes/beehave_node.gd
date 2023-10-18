@@ -1,7 +1,8 @@
-## A node in the behavior tree. Every node must return `SUCCESS`, `FAILURE` or
-## `RUNNING` when ticked.
 @tool
 class_name BeehaveNode extends Node
+
+## A node in the behavior tree. Every node must return `SUCCESS`, `FAILURE` or
+## `RUNNING` when ticked.
 
 enum {
 	SUCCESS,

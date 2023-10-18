@@ -1,8 +1,8 @@
-## Sets the specified key to the specified value.
-## Returns [code]FAILURE[/code] if expression execution fails, otherwise [code]SUCCESS[/code].
 @tool
 class_name BlackboardSetAction extends ActionLeaf
 
+## Sets the specified key to the specified value.
+## Returns [code]FAILURE[/code] if expression execution fails, otherwise [code]SUCCESS[/code].
 
 ## Expression representing a blackboard key.
 @export_placeholder(EXPRESSION_PLACEHOLDER) var key: String = ""

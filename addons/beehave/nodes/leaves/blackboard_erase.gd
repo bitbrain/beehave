@@ -1,8 +1,8 @@
-## Erases the specified key from the blackboard.
-## Returns [code]FAILURE[/code] if expression execution fails, otherwise [code]SUCCESS[/code].
 @tool
 class_name BlackboardEraseAction extends ActionLeaf
 
+## Erases the specified key from the blackboard.
+## Returns [code]FAILURE[/code] if expression execution fails, otherwise [code]SUCCESS[/code].
 
 ## Expression representing a blackboard key.
 @export_placeholder(EXPRESSION_PLACEHOLDER) var key: String = ""
