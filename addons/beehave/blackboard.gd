@@ -1,7 +1,8 @@
-## The blackboard is an object that can be used to store and access data between
-## multiple nodes of the behavior tree.
 @icon("icons/blackboard.svg")
 class_name Blackboard extends Node
+
+## The blackboard is an object that can be used to store and access data between
+## multiple nodes of the behavior tree.
 
 var blackboard: Dictionary = {}
 

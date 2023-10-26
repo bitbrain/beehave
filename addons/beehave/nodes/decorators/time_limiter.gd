@@ -1,9 +1,10 @@
-## The Time Limit Decorator will give its child a set amount of time to finish
-## before interrupting it and return a `FAILURE` status code. The timer is reset
-## every time before the node runs.
 @tool
 @icon("../../icons/limiter.svg")
 class_name TimeLimiterDecorator extends Decorator
+
+## The Time Limit Decorator will give its child a set amount of time to finish
+## before interrupting it and return a `FAILURE` status code. The timer is reset
+## every time before the node runs.
 
 @export var wait_time: = 0.0
 
