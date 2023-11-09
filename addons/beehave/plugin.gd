@@ -7,8 +7,8 @@ var frames: RefCounted
 
 func _init():
 	name = "BeehavePlugin"
-	add_autoload_singleton("BeehaveGlobalMetrics", "res://addons/beehave/metrics/beehave_global_metrics.gd")
-	add_autoload_singleton("BeehaveGlobalDebugger", "res://addons/beehave/debug/global_debugger.gd")
+	add_autoload_singleton("BeehaveGlobalMetrics", "./metrics/beehave_global_metrics.gd")
+	add_autoload_singleton("BeehaveGlobalDebugger", "./debug/global_debugger.gd")
 	print("Beehave initialized!")
 
 
