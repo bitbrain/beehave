@@ -9,7 +9,7 @@ signal gdunit_event(event :GdUnitEvent)
 signal gdunit_event_debug(event :GdUnitEvent)
 signal gdunit_add_test_suite(test_suite :GdUnitTestSuiteDto)
 signal gdunit_message(message :String)
-signal gdunit_report(report :GdUnitReport)
+signal gdunit_report(execution_context_id :int, report :GdUnitReport)
 signal gdunit_set_test_failed(is_failed :bool)
 
 signal gdunit_settings_changed(property :GdUnitProperty)

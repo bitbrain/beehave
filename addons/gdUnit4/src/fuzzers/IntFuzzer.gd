@@ -19,7 +19,7 @@ func _init(from: int, to: int, mode :int = NORMAL):
 	_mode = mode
 
 
-func next_value() -> int:
+func next_value() -> Variant:
 	var value := randi_range(_from, _to)
 	match _mode:
 		NORMAL:

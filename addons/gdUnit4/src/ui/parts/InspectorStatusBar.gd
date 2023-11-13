@@ -17,9 +17,9 @@ func _ready():
 	_failures.text = "0"
 	_errors.text = "0"
 	var editor :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
-	var editiorTheme := editor.get_editor_interface().get_base_control().theme
-	_button_failure_up.icon = editiorTheme.get_icon("ArrowUp", "EditorIcons")
-	_button_failure_down.icon = editiorTheme.get_icon("ArrowDown", "EditorIcons")
+	var editior_control := editor.get_editor_interface().get_base_control()
+	_button_failure_up.icon = GodotVersionFixures.get_icon(editior_control, "ArrowUp")
+	_button_failure_down.icon = GodotVersionFixures.get_icon(editior_control, "ArrowDown")
 
 
 func status_changed(errors :int, failed :int):

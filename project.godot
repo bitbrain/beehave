@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Beehave"
 run/main_scene="res://examples/BeehaveTestScene.tscn"
-config/features=PackedStringArray("4.1")
+config/features=PackedStringArray("4.2")
 boot_splash/image="res://splash.png"
 boot_splash/fullsize=false
 config/icon="res://icon.png"
@@ -36,7 +36,7 @@ import/blender/enabled=false
 
 [gdunit4]
 
-settings/test/test_root_folder="test/"
+settings/test/test_lookup_folder="test/"
 
 [input]
 

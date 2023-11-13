@@ -1,6 +1,4 @@
-class_name GdUnitGodotErrorAssertImpl
 extends GdUnitGodotErrorAssert
-
 
 var _current_error_message :String
 var _callable :Callable
@@ -37,7 +35,7 @@ func _report_success() -> GdUnitAssert:
 
 
 func _report_error(error_message :String, failure_line_number: int = -1) -> GdUnitAssert:
-	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssertImpl._get_line_number()
+	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssert._get_line_number()
 	_current_error_message = error_message
 	GdAssertReports.report_error(error_message, line_number)
 	return self

@@ -5,6 +5,8 @@ signal gdunit_runner_start()
 signal gdunit_runner_stop(client_id :int)
 
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
 const CMD_RUN_OVERALL = "Debug Overall TestSuites"
 const CMD_RUN_TESTCASE = "Run TestCases"
 const CMD_RUN_TESTCASE_DEBUG = "Run TestCases (Debug)"
@@ -54,7 +56,8 @@ func _init():
 	assert_shortcut_mappings(SETTINGS_SHORTCUT_MAPPING)
 	
 	if Engine.is_editor_hint():
-		_editor_interface = Engine.get_meta("GdUnitEditorPlugin").get_editor_interface()
+		var editor :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
+		_editor_interface = editor.get_editor_interface()
 	GdUnitSignals.instance().gdunit_event.connect(_on_event)
 	GdUnitSignals.instance().gdunit_client_connected.connect(_on_client_connected)
 	GdUnitSignals.instance().gdunit_client_disconnected.connect(_on_client_disconnected)
@@ -63,8 +66,8 @@ func _init():
 	_runner_config.load_config()
 
 	init_shortcuts()
-	var is_running = func(_script :GDScript) : return _is_running
-	var is_not_running = func(_script :GDScript) : return !_is_running
+	var is_running = func(_script :Script) : return _is_running
+	var is_not_running = func(_script :Script) : return !_is_running
 	register_command(GdUnitCommand.new(CMD_RUN_OVERALL, is_not_running, cmd_run_overall.bind(true), GdUnitShortcut.ShortCut.RUN_TESTS_OVERALL))
 	register_command(GdUnitCommand.new(CMD_RUN_TESTCASE, is_not_running, cmd_editor_run_test.bind(false), GdUnitShortcut.ShortCut.RUN_TESTCASE))
 	register_command(GdUnitCommand.new(CMD_RUN_TESTCASE_DEBUG, is_not_running, cmd_editor_run_test.bind(true), GdUnitShortcut.ShortCut.RUN_TESTCASE_DEBUG))
@@ -186,7 +189,7 @@ func cmd_run_test_case(test_suite_resource_path :String, test_case :String, test
 
 
 func cmd_run_overall(debug :bool) -> void:
-	var test_suite_paths :PackedStringArray = GdUnitCommandHandler.scan_test_directorys("res://", [])
+	var test_suite_paths :PackedStringArray = GdUnitCommandHandler.scan_test_directorys("res://" , GdUnitSettings.test_root_folder(), [])
 	var result := _runner_config.clear()\
 		.add_test_suites(test_suite_paths)\
 		.save_config()
@@ -259,18 +262,28 @@ func cmd_create_test() -> void:
 	ScriptEditorControls.edit_script(info.get("path"), info.get("line"))
 
 
-static func scan_test_directorys(base_directory :String, test_suite_paths :PackedStringArray) -> PackedStringArray:
-	prints("Scannning for test directories", base_directory)
+static func scan_test_directorys(base_directory :String, test_directory: String, test_suite_paths :PackedStringArray) -> PackedStringArray:
+	print_verbose("Scannning for test directory '%s' at %s" % [test_directory, base_directory])
 	for directory in DirAccess.get_directories_at(base_directory):
 		if directory.begins_with("."):
 			continue
-		var current_directory := base_directory + "/" + directory
-		if directory == "test":
-			prints(".. ", current_directory)
+		var current_directory := normalize_path(base_directory + "/" + directory)
+		if GdUnitTestSuiteScanner.exclude_scan_directories.has(current_directory):
+			continue
+		if match_test_directory(directory, test_directory):
+			prints("Collect tests at:", current_directory)
 			test_suite_paths.append(current_directory)
 		else:
-			scan_test_directorys(current_directory, test_suite_paths)
+			scan_test_directorys(current_directory, test_directory, test_suite_paths)
 	return test_suite_paths
+
+
+static func normalize_path(path :String) -> String:
+	return path.replace("///", "//")
+
+
+static func match_test_directory(directory :String, test_directory: String) -> bool:
+	return directory == test_directory or test_directory.is_empty() or test_directory == "/" or test_directory == "res://"
 
 
 func run_debug_mode():

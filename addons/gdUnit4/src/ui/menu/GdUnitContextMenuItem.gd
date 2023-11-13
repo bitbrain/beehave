@@ -50,11 +50,11 @@ func shortcut() -> Shortcut:
 	return GdUnitCommandHandler.instance().get_shortcut(command.shortcut)
 
 
-func is_enabled(script :GDScript) -> bool:
+func is_enabled(script :Script) -> bool:
 	return command.is_enabled.call(script)
 
 
-func is_visible(script :GDScript) -> bool:
+func is_visible(script :Script) -> bool:
 	return visible.call(script)
 
 

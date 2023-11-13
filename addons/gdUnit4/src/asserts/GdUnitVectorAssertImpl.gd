@@ -1,4 +1,3 @@
-class_name GdUnitVectorAssertImpl
 extends GdUnitVectorAssert
 
 var _base: GdUnitAssert
@@ -6,7 +5,7 @@ var _current_type :int
 
 
 func _init(current :Variant):
-	_base = GdUnitAssertImpl.new(current)
+	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
 	if not _validate_value_type(current):

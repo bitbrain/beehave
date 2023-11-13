@@ -15,10 +15,10 @@ signal run_testsuite
 
 # tree icons
 @onready var ICON_SPINNER = load("res://addons/gdUnit4/src/ui/assets/spinner.tres")
-@onready var ICON_TEST_DEFAULT = load_resized_texture("res://addons/gdUnit4/src/ui/assets/TestCase.svg")
-@onready var ICON_TEST_SUCCESS = load_resized_texture("res://addons/gdUnit4/src/ui/assets/TestCaseSuccess.svg")
-@onready var ICON_TEST_FAILED = load_resized_texture("res://addons/gdUnit4/src/ui/assets/TestCaseFailed.svg")
-@onready var ICON_TEST_ERROR = load_resized_texture("res://addons/gdUnit4/src/ui/assets/TestCaseError.svg")
+@onready var ICON_TEST_DEFAULT = load("res://addons/gdUnit4/src/ui/assets/TestCase.svg")
+@onready var ICON_TEST_SUCCESS = load("res://addons/gdUnit4/src/ui/assets/TestCaseSuccess.svg")
+@onready var ICON_TEST_FAILED = load("res://addons/gdUnit4/src/ui/assets/TestCaseFailed.svg")
+@onready var ICON_TEST_ERROR = load("res://addons/gdUnit4/src/ui/assets/TestCaseError.svg")
 @onready var ICON_TEST_SUCCESS_ORPHAN = load("res://addons/gdUnit4/src/ui/assets/TestCase_success_orphan.tres")
 @onready var ICON_TEST_FAILED_ORPHAN = load("res://addons/gdUnit4/src/ui/assets/TestCase_failed_orphan.tres")
 @onready var ICON_TEST_ERRORS_ORPHAN = load("res://addons/gdUnit4/src/ui/assets/TestCase_error_orphan.tres")
@@ -126,9 +126,9 @@ func is_test_suite(item :TreeItem) -> bool:
 
 
 func _ready():
-	init_tree()
 	if Engine.is_editor_hint():
 		_editor = Engine.get_meta("GdUnitEditorPlugin")
+	init_tree()
 	GdUnitSignals.instance().gdunit_add_test_suite.connect(_on_gdunit_add_test_suite)
 	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
 	var command_handler := GdUnitCommandHandler.instance()
@@ -144,20 +144,15 @@ func _process(_delta):
 		queue_redraw()
 
 
-func load_resized_texture(path :String, width :int = 16, height :int = 16) -> Texture2D:
-	var texture :Texture2D = load(path)
-	var image := texture.get_image()
-	if width > 0 && height > 0:
-		image.resize(width, height)
-	return ImageTexture.create_from_image(image)
-
-
 func init_tree() -> void:
 	cleanup_tree()
 	_tree.set_hide_root(true)
 	_tree.ensure_cursor_is_visible()
 	_tree.allow_rmb_select = true
 	_tree_root = _tree.create_item()
+	# fix tree icon scaling
+	var scale_factor := _editor.get_editor_interface().get_editor_scale() if Engine.is_editor_hint() else 1.0
+	_tree.set("theme_override_constants/icon_max_width", 16*scale_factor)
 
 
 func cleanup_tree() -> void:

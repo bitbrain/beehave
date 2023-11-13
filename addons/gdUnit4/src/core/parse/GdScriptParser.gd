@@ -1,6 +1,7 @@
 class_name GdScriptParser
 extends RefCounted
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 
 const ALLOWED_CHARACTERS := "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\""
 

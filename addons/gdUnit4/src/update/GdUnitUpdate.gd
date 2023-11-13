@@ -1,7 +1,9 @@
 @tool
 extends ConfirmationDialog
 
-const GdUnitUpdateClient = preload("res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd")
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+const GdUnitUpdateClient := preload("res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd")
+
 const spinner_icon := "res://addons/gdUnit4/src/ui/assets/spinner.tres"
 
 
@@ -219,7 +221,7 @@ func download_release() -> void:
 	_update_client.queue_free()
 	if response.code() != 200:
 		push_warning("Update information cannot be retrieved from GitHub! \n Error code: %d : %s" % [response.code(), response.response()])
-		await message_h4("Update failed! Try it later again.", Color.RED)
+		message_h4("Update failed! Try it later again.", Color.RED)
 		await get_tree().create_timer(3).timeout
 		return
 

@@ -59,7 +59,7 @@ func collect_testsuites(_menu_item :GdUnitContextMenuItem, file_tree :Tree) -> P
 		var is_dir := DirAccess.dir_exists_absolute(resource_path)
 		if is_dir:
 			selected_test_suites.append(resource_path)
-		elif is_dir or file_type == "GDScript":
+		elif is_dir or file_type == "GDScript" or file_type == "CSharpScript":
 			# find a performant way to check if the selected item a testsuite
 			#var resource := ResourceLoader.load(resource_path, "GDScript", ResourceLoader.CACHE_MODE_REUSE)
 			#prints("loaded", resource)

@@ -1,6 +1,8 @@
 #!/usr/bin/env -S godot -s
 extends MainLoop
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
 const NO_LOG_TEMPLATE = """
 <!DOCTYPE html>
 <html>

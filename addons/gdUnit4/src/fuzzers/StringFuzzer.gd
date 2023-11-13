@@ -52,7 +52,7 @@ static func build_chars(from :int, to :int) -> Array:
 		characters.append(character)
 	return characters
 
-func next_value():
+func next_value() -> Variant:
 	var value := PackedByteArray()
 	var max_char := len(_charset)
 	var length :int = max(_min_length, randi() % _max_length)

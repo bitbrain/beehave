@@ -9,9 +9,9 @@ func _init(
 		p_suite_name :String,
 		test_name :String,
 		is_error := false,
-		is_failed := false,
+		_is_failed := false,
 		failed_count :int = 0,
-		orphan_count :int = 0,
+		orphan_count_ :int = 0,
 		is_skipped := false,
 		failure_reports :Array = [],
 		p_duration :int = 0):
@@ -21,7 +21,7 @@ func _init(
 	_test_count = 1
 	_error_count = is_error
 	_failure_count = failed_count
-	_orphan_count = orphan_count
+	_orphan_count = orphan_count_
 	_skipped_count = is_skipped
 	_failure_reports = failure_reports
 	_duration = p_duration
