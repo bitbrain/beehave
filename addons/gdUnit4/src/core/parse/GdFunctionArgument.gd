@@ -5,7 +5,7 @@ var _name: String
 var _type: int
 var _default_value :Variant
 
-const UNDEFINED = "<-NO_ARG->"
+const UNDEFINED :Variant = "<-NO_ARG->"
 const ARG_PARAMETERIZED_TEST := "test_parameters"
 
 
@@ -34,7 +34,7 @@ func type() -> int:
 
 
 func has_default() -> bool:
-	return _default_value != UNDEFINED
+	return not is_same(_default_value, UNDEFINED)
 
 
 func is_parameter_set() -> bool:

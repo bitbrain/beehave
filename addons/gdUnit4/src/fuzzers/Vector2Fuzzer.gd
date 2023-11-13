@@ -10,7 +10,7 @@ func _init(from: Vector2,to: Vector2):
 	_from = from
 	_to = to
 
-func next_value() -> Vector2:
+func next_value() -> Variant:
 	var x = randf_range(_from.x, _to.x)
 	var y = randf_range(_from.y, _to.y)
 	return Vector2(x, y)

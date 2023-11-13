@@ -24,7 +24,8 @@ var _download_zip_url :String
 
 
 func _ready():
-	_editor_interface = Engine.get_meta("GdUnitEditorPlugin").get_editor_interface()
+	var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
+	_editor_interface = plugin.get_editor_interface()
 	_update_button.disabled = true
 	_md_reader.set_http_client(_update_client)
 	GdUnitFonts.init_fonts(_content)

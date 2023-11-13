@@ -1,5 +1,4 @@
 # This class defines a value extractor by given function name and args
-class_name GdUnitFuncValueExtractor
 extends GdUnitValueExtractor
 
 var _func_names :Array
@@ -53,14 +52,18 @@ func _call_func(value, func_name :String):
 	if GdArrayTools.is_array_type(value) and func_name == "empty":
 		return value.is_empty()
 	
-	if not (value is Object):
-		if GdUnitSettings.is_verbose_assert_warnings():
-			push_warning("Extracting value from element '%s' by func '%s' failed! Converting to \"n.a.\"" % [value, func_name])
-		return "n.a."
-	var extract := Callable(value, func_name)
-	if extract.is_valid():
-		return value.call(func_name) if args().is_empty() else value.callv(func_name, args())
-	else:
-		if GdUnitSettings.is_verbose_assert_warnings():
-			push_warning("Extracting value from element '%s' by func '%s' failed! Converting to \"n.a.\"" % [value, func_name])
-		return "n.a."
+	if is_instance_valid(value):
+		# extract from function
+		if value.has_method(func_name):
+			var extract := Callable(value, func_name)
+			if extract.is_valid():
+				return value.call(func_name) if args().is_empty() else value.callv(func_name, args())
+		else:
+			# if no function exists than try to extract form parmeters
+			var parameter = value.get(func_name)
+			if parameter != null:
+				return parameter
+	# nothing found than return 'n.a.'
+	if GdUnitSettings.is_verbose_assert_warnings():
+		push_warning("Extracting value from element '%s' by func '%s' failed! Converting to \"n.a.\"" % [value, func_name])
+	return "n.a."

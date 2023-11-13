@@ -1,7 +1,7 @@
 # Base interface for fuzz testing
 # https://en.wikipedia.org/wiki/Fuzzing
 class_name Fuzzer
-extends Resource
+extends RefCounted
 # To run a test with a specific fuzzer you have to add defailt argument checked your test case
 # all arguments are optional []
 # syntax:
@@ -21,15 +21,18 @@ const ARGUMENT_SEED := "fuzzer_seed"
 var _iteration_index :int = 0
 var _iteration_limit :int = ITERATION_DEFAULT_COUNT
 
+
 # generates the next fuzz value
 # needs to be implement 
-func next_value():
+func next_value() -> Variant:
 	push_error("Invalid vall. Fuzzer not implemented 'next_value()'")
 	return null
+
 
 # returns the current iteration index
 func iteration_index() -> int:
 	return _iteration_index
+
 
 # returns the amount of iterations where the fuzzer will be run
 func iteration_limit() -> int:

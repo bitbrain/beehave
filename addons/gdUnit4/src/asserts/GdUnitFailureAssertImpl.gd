@@ -1,5 +1,6 @@
-class_name GdUnitFailureAssertImpl
 extends GdUnitFailureAssert
+
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 
 var _is_failed := false
 var _failure_message :String
@@ -75,7 +76,7 @@ func has_line(expected :int) -> GdUnitFailureAssert:
 
 func has_message(expected :String) -> GdUnitFailureAssert:
 	var expected_error := GdUnitTools.normalize_text(expected)
-	var current_error := GdUnitAssertImpl._normalize_bbcode(_failure_message)
+	var current_error := GdUnitTools.normalize_text(GdUnitTools.richtext_normalize(_failure_message))
 	if current_error != expected_error:
 		var diffs := GdDiffTool.string_diff(current_error, expected_error)
 		var current := GdAssertMessages._colored_array_div(diffs[1])
@@ -85,7 +86,7 @@ func has_message(expected :String) -> GdUnitFailureAssert:
 
 func starts_with_message(expected :String) -> GdUnitFailureAssert:
 	var expected_error := GdUnitTools.normalize_text(expected)
-	var current_error := GdUnitAssertImpl._normalize_bbcode(_failure_message)
+	var current_error := GdUnitTools.normalize_text(GdUnitTools.richtext_normalize(_failure_message))
 	if current_error.find(expected_error) != 0:
 		var diffs := GdDiffTool.string_diff(current_error, expected_error)
 		var current := GdAssertMessages._colored_array_div(diffs[1])
@@ -94,7 +95,7 @@ func starts_with_message(expected :String) -> GdUnitFailureAssert:
 
 
 func _report_error(error_message :String, failure_line_number: int = -1) -> GdUnitAssert:
-	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssertImpl._get_line_number()
+	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssert._get_line_number()
 	GdAssertReports.report_error(error_message, line_number)
 	return self
 

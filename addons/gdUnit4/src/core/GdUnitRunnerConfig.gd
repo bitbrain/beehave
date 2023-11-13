@@ -1,6 +1,8 @@
 class_name GdUnitRunnerConfig
 extends Resource
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
 const CONFIG_VERSION = "1.0"
 const VERSION = "version"
 const INCLUDED = "included"

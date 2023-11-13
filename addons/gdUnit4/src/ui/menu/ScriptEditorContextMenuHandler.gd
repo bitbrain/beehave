@@ -39,8 +39,8 @@ func has_editor_focus() -> bool:
 	return Engine.get_main_loop().root.gui_get_focus_owner() == active_base_editor()
 
 
-func on_script_changed(script):
-	if script is GDScript:
+func on_script_changed(script :Script):
+	if script is Script:
 		var popups :Array[Node] = GdObjects.find_nodes_by_class(active_editor(), "PopupMenu", true)
 		for popup in popups:
 			if not popup.about_to_popup.is_connected(on_context_menu_show):
@@ -49,7 +49,7 @@ func on_script_changed(script):
 				popup.id_pressed.connect(on_context_menu_pressed)
 
 
-func on_context_menu_show(script :GDScript, context_menu :PopupMenu):
+func on_context_menu_show(script :Script, context_menu :PopupMenu):
 	#prints("on_context_menu_show", _context_menus.keys(), context_menu, self)
 	context_menu.add_separator()
 	var current_index := context_menu.get_item_count()

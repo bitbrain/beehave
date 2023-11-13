@@ -2,6 +2,8 @@
 class_name GdObjects
 extends Resource
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
 const TYPE_VOID 	= TYPE_MAX + 1000
 const TYPE_VARARG 	= TYPE_MAX + 1001
 const TYPE_VARIANT	= TYPE_MAX + 1002
@@ -373,7 +375,7 @@ static func is_script(value) -> bool:
 
 
 static func is_test_suite(script :Script) -> bool:
-	return is_gd_testsuite(script) or GdUnit3MonoAPI.is_test_suite(script.resource_path)
+	return is_gd_testsuite(script) or GdUnit4MonoApiLoader.is_test_suite(script.resource_path)
 
 
 static func is_native_class(value) -> bool:
@@ -395,10 +397,6 @@ static func is_gd_script(script :Script) -> bool:
 static func is_cs_script(script :Script) -> bool:
 	# we need to check by stringify name because checked non mono Godot the class CSharpScript is not available
 	return str(script).find("CSharpScript") != -1
-
-
-static func is_cs_test_suite(instance :Node) -> bool:
-	return instance.get("IsCsTestSuite") == true
 
 
 static func is_gd_testsuite(script :Script) -> bool:

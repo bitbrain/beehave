@@ -23,7 +23,6 @@ var _expect_to_interupt := false
 var _timer : Timer
 var _interupted :bool = false
 var _failed := false
-var _timeout :int
 var _report :GdUnitReport = null
 
 
@@ -36,22 +35,31 @@ var monitor : GodotGdErrorMonitor = null:
 		return monitor
 
 
+var timeout : int = DEFAULT_TIMEOUT:
+	set (value):
+		timeout = value
+	get:
+		if timeout == DEFAULT_TIMEOUT:
+			timeout = GdUnitSettings.test_timeout()
+		return timeout
+
+
 @warning_ignore("shadowed_variable_base_class")
-func configure(p_name: String, p_line_number: int, p_script_path: String, p_timeout :int = DEFAULT_TIMEOUT, p_fuzzers :Array = [], p_iterations: int = 1, p_seed :int = -1) -> _TestCase:
+func configure(p_name: String, p_line_number: int, p_script_path: String, p_timeout :int = DEFAULT_TIMEOUT, p_fuzzers :Array[GdFunctionArgument] = [], p_iterations: int = 1, p_seed :int = -1) -> _TestCase:
 	set_name(p_name)
 	_line_number = p_line_number
 	_fuzzers = p_fuzzers
 	_iterations = p_iterations
 	_seed = p_seed
 	_script_path = p_script_path
-	_timeout = p_timeout if p_timeout != DEFAULT_TIMEOUT else GdUnitSettings.test_timeout()
+	timeout = p_timeout
 	return self
 
 
 func execute(p_test_parameter := Array(), p_iteration := 0):
 	_failure_received(false)
 	_current_iteration = p_iteration - 1
-	if p_iteration == 0:
+	if _current_iteration == -1:
 		_set_failure_handler()
 		set_timeout()
 	monitor.start()
@@ -68,19 +76,37 @@ func execute(p_test_parameter := Array(), p_iteration := 0):
 			_interupted = true
 
 
+func execute_paramaterized(p_test_parameter :Array):
+	_failure_received(false)
+	set_timeout()
+	monitor.start()
+	_execute_test_case(name, p_test_parameter)
+	await completed
+	monitor.stop()
+	for report_ in monitor.reports():
+		if report_.is_error():
+			_report = report_
+			_interupted = true
+
+
+var _is_disposed := false
+
 func dispose():
-	# unreference last used assert form the test to prevent memory leaks
-	GdUnitThreadManager.get_current_context().set_assert(null)
+	if _is_disposed:
+		return
+	_is_disposed = true
+	Engine.remove_meta("GD_TEST_FAILURE")
 	stop_timer()
 	_remove_failure_handler()
 	_fuzzers.clear()
+	_report = null
 
 
 @warning_ignore("shadowed_variable_base_class", "redundant_await")
 func _execute_test_case(name :String, test_parameter :Array):
-	# needs at least on await otherwise it braks the awaiting chain
+	# needs at least on await otherwise it breaks the awaiting chain
 	await get_parent().callv(name, test_parameter)
-	await get_tree().create_timer(0.0001).timeout
+	await Engine.get_main_loop().process_frame
 	completed.emit()
 
 
@@ -91,18 +117,20 @@ func update_fuzzers(input_values :Array, iteration :int):
 
 
 func set_timeout():
-	var time :float = _timeout * 0.001
+	if is_instance_valid(_timer):
+		return
+	var time :float = timeout / 1000.0
 	_timer = Timer.new()
 	add_child(_timer)
 	_timer.set_name("gdunit_test_case_timer_%d" % _timer.get_instance_id())
 	_timer.timeout.connect(func do_interrupt():
-		if has_fuzzer():
+		if is_fuzzed():
 			_report = GdUnitReport.new().create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.fuzzer_interuped(_current_iteration, "timedout"))
 		else:
-			_report = GdUnitReport.new().create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.test_timeout(timeout()))
+			_report = GdUnitReport.new().create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.test_timeout(timeout))
 		_interupted = true
 		completed.emit()
-		, CONNECT_REFERENCE_COUNTED)
+		, CONNECT_DEFERRED)
 	_timer.set_one_shot(true)
 	_timer.set_wait_time(time)
 	_timer.set_autostart(false)
@@ -132,6 +160,7 @@ func stop_timer() :
 	if is_instance_valid(_timer):
 		_timer.stop()
 		_timer.call_deferred("free")
+		_timer = null
 
 
 func expect_to_interupt() -> void:
@@ -170,15 +199,11 @@ func iterations() -> int:
 	return _iterations
 
 
-func timeout() -> int:
-	return _timeout
-
-
 func seed_value() -> int:
 	return _seed
 
 
-func has_fuzzer() -> bool:
+func is_fuzzed() -> bool:
 	return not _fuzzers.is_empty()
 
 
@@ -224,9 +249,9 @@ func test_case_names() -> PackedStringArray:
 	var test_cases :=  PackedStringArray()
 	var test_name = get_name()
 	for index in _test_parameters.size():
-		test_cases.append("%s:%d %s" % [test_name, index, str(_test_parameters[index]).replace('"', "'")])
+		test_cases.append("%s:%d %s" % [test_name, index, str(_test_parameters[index]).replace('"', "'").replace("&'", "'")])
 	return test_cases
 
 
 func _to_string():
-	return "%s :%d (%dms)" % [get_name(), _line_number, _timeout]
+	return "%s :%d (%dms)" % [get_name(), _line_number, timeout]

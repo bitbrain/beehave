@@ -2,6 +2,10 @@
 class_name GdUnitSceneRunnerImpl
 extends GdUnitSceneRunner
 
+
+var GdUnitFuncAssertImpl := ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitFuncAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE)
+
+
 # mapping of mouse buttons and his masks
 const MAP_MOUSE_BUTTON_MASKS := {
 	MOUSE_BUTTON_LEFT : MOUSE_BUTTON_MASK_LEFT,
@@ -16,6 +20,7 @@ const MAP_MOUSE_BUTTON_MASKS := {
 
 var _scene_tree :SceneTree = null
 var _current_scene :Node = null
+var _awaiter :GdUnitAwaiter = GdUnitAwaiter.new()
 var _verbose :bool
 var _simulate_start_time :LocalTime
 var _last_input_event :InputEvent = null
@@ -73,7 +78,7 @@ func _notification(what):
 		if is_instance_valid(_current_scene):
 			_scene_tree.root.remove_child(_current_scene)
 			# don't free already memory managed instances
-			if not GdUnitMemoryPool.is_auto_free_registered(_current_scene):
+			if not GdUnitMemoryObserver.is_marked_auto_free(_current_scene):
 				_current_scene.free()
 		_scene_tree = null
 		_current_scene = null
@@ -208,13 +213,13 @@ func simulate_frames(frames: int, delta_milli :int = -1) -> GdUnitSceneRunner:
 
 func simulate_until_signal(signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG) -> GdUnitSceneRunner:
 	var args = GdArrayTools.filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
-	await GdUnitAwaiter.await_signal_idle_frames(_current_scene, signal_name, args, 10000)
+	await _awaiter.await_signal_idle_frames(_current_scene, signal_name, args, 10000)
 	return self
 
 
 func simulate_until_object_signal(source :Object, signal_name :String, arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg4=NO_ARG, arg5=NO_ARG, arg6=NO_ARG, arg7=NO_ARG, arg8=NO_ARG, arg9=NO_ARG) -> GdUnitSceneRunner:
 	var args = GdArrayTools.filter_value([arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9], NO_ARG)
-	await GdUnitAwaiter.await_signal_idle_frames(source, signal_name, args, 10000)
+	await _awaiter.await_signal_idle_frames(source, signal_name, args, 10000)
 	return self
 
 
@@ -227,11 +232,11 @@ func await_func_on(instance :Object, func_name :String, args := []) -> GdUnitFun
 
 
 func await_signal(signal_name :String, args := [], timeout := 2000 ):
-	await GdUnitAwaiter.await_signal_on(_current_scene, signal_name, args, timeout)
+	await _awaiter.await_signal_on(_current_scene, signal_name, args, timeout)
 
 
 func await_signal_on(source :Object, signal_name :String, args := [], timeout := 2000 ):
-	await GdUnitAwaiter.await_signal_on(source, signal_name, args, timeout)
+	await _awaiter.await_signal_on(source, signal_name, args, timeout)
 
 
 # maximizes the window to bring the scene visible

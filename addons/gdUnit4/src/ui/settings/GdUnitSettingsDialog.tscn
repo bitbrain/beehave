@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dwgat6j2u77g4"]
+[gd_scene load_steps=7 format=3 uid="uid://dwgat6j2u77g4"]
 
 [ext_resource type="Script" path="res://addons/gdUnit4/src/ui/settings/GdUnitSettingsDialog.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://c7sk0yhd52lg3" path="res://addons/gdUnit4/src/ui/assets/icon.png" id="2_w63lb"]
@@ -6,11 +6,28 @@
 [ext_resource type="PackedScene" path="res://addons/gdUnit4/src/ui/settings/GdUnitInputCapture.tscn" id="5_xu3j8"]
 [ext_resource type="Script" path="res://addons/gdUnit4/src/update/GdUnitUpdateClient.gd" id="8_2ggr0"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hbbq5"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(0.172549, 0.113725, 0.141176, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.87451, 0.0705882, 0.160784, 1)
+border_blend = true
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.756863)
+shadow_size = 10
+shadow_offset = Vector2(10, 10)
+
 [node name="Control" type="Window"]
 disable_3d = true
-gui_embed_subwindows = true
+title = "GdUnitSettings"
 initial_position = 1
-size = Vector2i(384, 384)
 visible = false
 wrap_controls = true
 transient = true
@@ -186,7 +203,7 @@ layout_mode = 2
 [node name="common-content" type="VBoxContainer" parent="Panel/v/MarginContainer/GridContainer/Properties/Common"]
 unique_name_in_owner = true
 clip_contents = true
-custom_minimum_size = Vector2(1431, 0)
+custom_minimum_size = Vector2(1445, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -210,7 +227,7 @@ layout_mode = 2
 [node name="shortcut-content" type="VBoxContainer" parent="Panel/v/MarginContainer/GridContainer/Properties/Shortcuts"]
 unique_name_in_owner = true
 clip_contents = true
-custom_minimum_size = Vector2(941, 0)
+custom_minimum_size = Vector2(983, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -218,7 +235,7 @@ size_flags_vertical = 3
 [node name="GdUnitInputCapture" parent="Panel/v/MarginContainer/GridContainer/Properties/Shortcuts/shortcut-content" instance=ExtResource("5_xu3j8")]
 unique_name_in_owner = true
 visible = false
-modulate = Color(0.543351, 0.543351, 0.543351, 0.589016)
+modulate = Color(0.000201742, 0.000201742, 0.000201742, 0.100182)
 z_index = 1
 z_as_relative = false
 layout_mode = 2
@@ -240,6 +257,21 @@ size_flags_vertical = 3
 [node name="Templates" parent="Panel/v/MarginContainer/GridContainer/Properties" instance=ExtResource("4")]
 visible = false
 layout_mode = 2
+
+[node name="propertyError" type="PopupPanel" parent="Panel/v/MarginContainer/GridContainer/Properties"]
+unique_name_in_owner = true
+initial_position = 1
+size = Vector2i(400, 100)
+theme_override_styles/panel = SubResource("StyleBoxFlat_hbbq5")
+
+[node name="Label" type="Label" parent="Panel/v/MarginContainer/GridContainer/Properties/propertyError"]
+offset_left = 10.0
+offset_top = 4.0
+offset_right = 390.0
+offset_bottom = 96.0
+theme_override_colors/font_color = Color(0.858824, 0, 0.109804, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="MarginContainer2" type="MarginContainer" parent="Panel/v"]
 layout_mode = 2
