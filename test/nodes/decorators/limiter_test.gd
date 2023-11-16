@@ -32,12 +32,14 @@ func before_test() -> void:
 
 func test_max_count(count: int, test_parameters: Array = [[2], [0]]) -> void:
 	limiter.max_count = count
-
+	action.status = BeehaveNode.RUNNING
 	for i in range(count):
-		assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+		assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 
 	assert_that(action.count).is_equal(count)
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	# ensure it resets its child after it reached max count
+	assert_that(action.count).is_equal(0)
 	
 
 func test_interrupt_after_run() -> void:

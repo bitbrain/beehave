@@ -124,7 +124,7 @@ func _physics_process(delta: float) -> void:
 
 
 func tick() -> int:
-	if actor == null:
+	if actor == null or get_child_count() == 0:
 		return FAILURE
 	var child := self.get_child(0)
 	if status != RUNNING:
