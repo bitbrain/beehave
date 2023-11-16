@@ -17,11 +17,15 @@ An `Inverter` node reverses the outcome of its child node. It returns `FAILURE` 
 **Example:** An NPC is patrolling an area and should change its path if it *doesn't* detect an enemy.
 
 ## Limiter
-The `Limiter` node executes its child a specified number of times (x). When the maximum number of ticks is reached, it returns a `FAILURE` status code. This can be beneficial when you want to limit the number of times an action or condition is executed, such as limiting the number of attempts an NPC makes to perform a task. Once a limiter reaches its maximum number of ticks, it will start interrupting its child on every tick.
+The `Limiter` node executes its `RUNNING` child a specified number of times (x). When the maximum number of ticks is reached, it returns a `FAILURE` status code. The limiter resets its counter after its child returns either `SUCCESS` or `FAILURE`.
+
+This node can be beneficial when you want to limit the number of times an action or condition is executed, such as limiting the number of attempts an NPC makes to perform a task. Once a limiter reaches its maximum number of ticks, it will start interrupting its child on every tick.
 
 **Example:** An NPC tries to unlock a door with lockpicks but will give up after three attempts if unsuccessful.
 
 ## TimeLimiter
-The `TimeLimiter` node only gives its child a set amount of time to finish. When the time is up, it interrupts its child and returns a `FAILURE` status code. This is useful when you want to limit the execution time of a long running action. Once a time limiter reaches its time limit, it will start interrupting its child on every tick.
+The `TimeLimiter` node only gives its `RUNNING` child a set amount of time to finish. When the time is up, it interrupts its child and returns a `FAILURE` status code. The time limiter resets its time after its child returns either `SUCCESS` or `FAILURE`.
+
+This note is useful when you want to limit the execution time of a long running action. Once a time limiter reaches its time limit, it will start interrupting its child on every tick.
 
 **Example:** A mob aggros and tries to chase you, the chase action will last a maximum of 10 seconds before being aborted if not complete.
