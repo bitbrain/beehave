@@ -18,10 +18,12 @@ With composite nodes, you can craft unique and dynamic Behavior Trees for your g
 
 ## Restarting a composite
 
-If a parent node restarts a child node, it means that the parent node will start the child node from scratch the next time it is ticked. This means that any progress made by the child node will be reset, and it will start its execution from the beginning.
+When a parent node restarts, it means the whole composite node begins its evaluation again from the beginning. This does not interrupt the child nodes.
+
+## Interrupting child nodes
+
+A sequence may interrupt any `RUNNING` child node in case a child returns a `FAILURE`. The `interrupt` method will be called on all child nodes of the currently evaluated child node.
 
 ## Ticking again a composite
 
 If a parent node ticks a child node again, it means that the parent node will immediately tick the child node again on the next frame, without waiting for the current frame to finish executing. This allows the child node to continue its execution from where it left off without resetting its progress.
-
-In other words, restarting a child node means that the parent node will give the child node a fresh start, while ticking it again means that the parent node will let the child node continue its execution from where it left off.
