@@ -13,6 +13,8 @@ const __blackboard = "res://addons/beehave/blackboard.gd"
 var tree: BeehaveTree
 var action: ActionLeaf
 var time_limiter: TimeLimiterDecorator
+var actor: Node2D
+var blackboard: Blackboard
 
 
 func before_test() -> void:
@@ -20,11 +22,11 @@ func before_test() -> void:
 	action = auto_free(load(__action).new())
 	time_limiter = auto_free(load(__source).new())
 	
-	var actor = auto_free(Node2D.new())
-	var blackboard = auto_free(load(__blackboard).new())
+	actor = auto_free(Node2D.new())
+	blackboard = auto_free(load(__blackboard).new())
 	
 	tree.add_child(time_limiter)
-	time_limiter.child = action
+	time_limiter.add_child(action)
 	
 	tree.actor = actor
 	tree.blackboard = blackboard
@@ -34,9 +36,9 @@ func test_return_failure_when_child_exceeds_time_limiter() -> void:
 	time_limiter.wait_time = 1.0
 	action.status = BeehaveNode.RUNNING
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	time_limiter.time_left = 0.5
+	blackboard.set_value(time_limiter.cache_key, 0.5, str(actor.get_instance_id()))
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	time_limiter.time_left = 1.0
+	blackboard.set_value(time_limiter.cache_key, 1.0, str(actor.get_instance_id()))
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 
 
@@ -44,7 +46,7 @@ func test_reset_when_child_finishes() -> void:
 	time_limiter.wait_time = 1.0
 	action.status = BeehaveNode.RUNNING
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	time_limiter.time_left = 0.5
+	blackboard.set_value(time_limiter.cache_key, 0.5, str(actor.get_instance_id()))
 	action.status = BeehaveNode.SUCCESS
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
 
