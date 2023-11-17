@@ -18,6 +18,7 @@ enum ProcessThread {
 signal tree_enabled
 signal tree_disabled
 
+
 ## Wether this behavior tree should be enabled or not.
 @export var enabled: bool = true:
 	set(value):
@@ -35,9 +36,18 @@ signal tree_disabled
 
 
 ## An optional node path this behavior tree should apply to.
-@export_node_path var actor_node_path : NodePath
+@export_node_path var actor_node_path : NodePath:
+	set(anp):
+		actor_node_path = anp
+		if actor_node_path:
+			actor = get_node(actor_node_path)
+		else:
+			actor = get_parent()
+		if Engine.is_editor_hint():
+			update_configuration_warnings()
 
 
+## Whether to run this tree in a physics or idle thread.
 @export var process_thread:ProcessThread = ProcessThread.PHYSICS:
 	set(value):
 		process_thread = value
@@ -77,6 +87,7 @@ signal tree_disabled
 
 			BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
+
 var actor : Node
 var status : int = -1
 
@@ -85,34 +96,36 @@ var _process_time_metric_name : String
 var _process_time_metric_value : float = 0.0
 var _can_send_message: bool = false
 
+
 func _ready() -> void:
 	if not process_thread:
 		process_thread = ProcessThread.PHYSICS
 	
-	if Engine.is_editor_hint():
-		return
+	if actor_node_path:
+		actor = get_node(actor_node_path)
+	else:
+		actor = get_parent()
 
 	if not blackboard:
 		_internal_blackboard = Blackboard.new()
 		add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
-
-	actor = get_parent()
-	if actor_node_path:
-		actor = get_node(actor_node_path)
-
+	
 	# Get the name of the parent node name for metric
-	var parent_name = actor.name
-	_process_time_metric_name = "beehave [microseconds]/process_time_%s-%s" % [parent_name, get_instance_id()]
-
-	# Register custom metric to the engine
-	if custom_monitor:
-		Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
-		BeehaveGlobalMetrics.register_tree(self)
+	_process_time_metric_name = "beehave [microseconds]/process_time_%s-%s" % [actor.name, get_instance_id()]
 
 	set_physics_process(enabled and process_thread == ProcessThread.PHYSICS)
 	set_process(enabled and process_thread == ProcessThread.IDLE)
-	BeehaveGlobalDebugger.register_tree(self)
-	BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
+	
+	# Register custom metric to the engine
+	if custom_monitor and not Engine.is_editor_hint():
+		Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
+		BeehaveGlobalMetrics.register_tree(self)
+
+	if Engine.is_editor_hint():
+		update_configuration_warnings.call_deferred()
+	else:
+		BeehaveGlobalDebugger.register_tree(self)
+		BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
 
 func _physics_process(delta: float) -> void:

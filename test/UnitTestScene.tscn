@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=8 format=3 uid="uid://diw3kjj050wdy"]
 
 [ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="1_27ukk"]
 [ext_resource type="Script" path="res://test/UnitTestScene.gd" id="1_embiv"]
@@ -17,9 +17,10 @@ script = ExtResource("1_27ukk")
 
 [node name="Node2D" type="Node2D" parent="."]
 
-[node name="BeehaveTree" type="Node" parent="Node2D"]
+[node name="BeehaveTree" type="Node" parent="Node2D" node_paths=PackedStringArray("blackboard")]
 unique_name_in_owner = true
 script = ExtResource("2_phgmn")
+blackboard = NodePath("@Node@22048")
 
 [node name="SequenceComposite" type="Node" parent="Node2D/BeehaveTree"]
 script = ExtResource("4_px6t4")
@@ -80,7 +81,7 @@ script = ExtResource("6_brhwp")
 
 [node name="BeehaveTree" type="Node" parent="EmptyTree" node_paths=PackedStringArray("blackboard")]
 script = ExtResource("2_phgmn")
-blackboard = NodePath("")
+blackboard = NodePath("@Node@22045")
 
 [node name="OnlyOneActionTree" type="Node2D" parent="."]
 
@@ -88,7 +89,7 @@ blackboard = NodePath("")
 script = ExtResource("2_phgmn")
 enabled = false
 actor_node_path = NodePath("..")
-blackboard = NodePath("")
+blackboard = NodePath("@Node@22046")
 
 [node name="CountUpAction" type="Node" parent="OnlyOneActionTree/BeehaveTree"]
 script = ExtResource("6_brhwp")
@@ -98,7 +99,7 @@ script = ExtResource("6_brhwp")
 [node name="BeehaveTree" type="Node" parent="DeactivatedTree" node_paths=PackedStringArray("blackboard")]
 script = ExtResource("2_phgmn")
 actor_node_path = NodePath("..")
-blackboard = NodePath("")
+blackboard = NodePath("@Node@22047")
 
 [node name="CountUpAction" type="Node" parent="DeactivatedTree/BeehaveTree"]
 script = ExtResource("6_brhwp")
