@@ -7,14 +7,6 @@ class_name Composite extends BeehaveNode
 var running_child: BeehaveNode = null
 
 
-func _ready():
-	if Engine.is_editor_hint():
-		return
-
-	if self.get_child_count() < 1:
-		push_warning("BehaviorTree Error: Composite %s should have at least one child (NodePath: %s)" % [self.name, self.get_path()])
-
-
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings: PackedStringArray = super._get_configuration_warnings()
 
