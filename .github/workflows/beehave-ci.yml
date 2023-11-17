@@ -31,7 +31,7 @@ jobs:
       fail-fast: false
       max-parallel: 10
       matrix:
-        godot-version: ['4.0.3', '4.1.1']
+        godot-version: ['4.0.4', '4.1.3']
 
     name: "🤖 CI on Godot ${{ matrix.godot-version }}"
     uses: ./.github/workflows/unit-tests.yml
