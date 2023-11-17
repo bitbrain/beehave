@@ -50,6 +50,9 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				c.after_run(actor, blackboard)
 			FAILURE:
 				_children_bag.erase(c)
+				# Interrupt any child that was RUNNING before
+				# but do not reset!
+				super.interrupt(actor, blackboard)
 				c.after_run(actor, blackboard)
 				return FAILURE
 			RUNNING:
