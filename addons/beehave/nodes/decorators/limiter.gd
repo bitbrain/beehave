@@ -55,5 +55,5 @@ func get_class_name() -> Array[StringName]:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	if not get_child_count() == 1:
-		return ["Requires at least one child node"]
+		return ["Requires exactly one child node"]
 	return []
