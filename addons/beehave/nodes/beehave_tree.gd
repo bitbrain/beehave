@@ -74,11 +74,6 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 
-	if self.get_child_count() > 0 and not self.get_child(0) is BeehaveNode:
-		push_warning("Beehave error: Root %s should have only one child of type BeehaveNode (NodePath: %s)" % [self.name, self.get_path()])
-		disable()
-		return
-
 	if not blackboard:
 		_internal_blackboard = Blackboard.new()
 		add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
@@ -124,6 +119,8 @@ func _physics_process(delta: float) -> void:
 
 
 func tick() -> int:
+	if actor == null or get_child_count() == 0:
+		return FAILURE
 	var child := self.get_child(0)
 	if status != RUNNING:
 		child.before_run(actor, blackboard)
@@ -143,6 +140,9 @@ func tick() -> int:
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var warnings:PackedStringArray = []
+	
+	if actor == null:
+		warnings.append("Configure target node on tree")
 
 	if get_children().any(func(x): return not (x is BeehaveNode)):
 		warnings.append("All children of this node should inherit from BeehaveNode class.")
