@@ -10,6 +10,11 @@ enum {
 	RUNNING
 }
 
+enum ProcessThread {
+	IDLE,
+	PHYSICS
+}
+
 signal tree_enabled
 signal tree_disabled
 
@@ -17,8 +22,8 @@ signal tree_disabled
 @export var enabled: bool = true:
 	set(value):
 		enabled = value
-		set_physics_process(enabled)
-
+		set_physics_process(enabled and process_thread == ProcessThread.PHYSICS)
+		set_process(enabled and process_thread == ProcessThread.IDLE)
 		if value:
 			tree_enabled.emit()
 		else:
@@ -28,8 +33,18 @@ signal tree_disabled
 	get:
 		return enabled
 
+
 ## An optional node path this behavior tree should apply to.
 @export_node_path var actor_node_path : NodePath
+
+
+@export var process_thread:ProcessThread = ProcessThread.PHYSICS:
+	set(value):
+		process_thread = value
+		set_physics_process(enabled and process_thread == ProcessThread.PHYSICS)
+		set_process(enabled and process_thread == ProcessThread.IDLE)
+		
+
 
 ## Custom blackboard node. An internal blackboard will be used
 ## if no blackboard is provided explicitly.
@@ -71,6 +86,9 @@ var _process_time_metric_value : float = 0.0
 var _can_send_message: bool = false
 
 func _ready() -> void:
+	if not process_thread:
+		process_thread = ProcessThread.PHYSICS
+	
 	if Engine.is_editor_hint():
 		return
 
@@ -91,12 +109,21 @@ func _ready() -> void:
 		Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
 		BeehaveGlobalMetrics.register_tree(self)
 
-	set_physics_process(enabled)
+	set_physics_process(enabled and process_thread == ProcessThread.PHYSICS)
+	set_process(enabled and process_thread == ProcessThread.IDLE)
 	BeehaveGlobalDebugger.register_tree(self)
 	BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
 
 func _physics_process(delta: float) -> void:
+	_process_internally(delta)
+	
+	
+func _process(delta: float) -> void:
+	_process_internally(delta)
+
+
+func _process_internally(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 
