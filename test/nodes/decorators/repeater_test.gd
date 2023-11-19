@@ -42,7 +42,7 @@ func after_test():
 	tree.blackboard.set_value("ended", 0)
 
 
-func test_repetitions(count: int, test_parameters: Array = [[2], [0]]) -> void:
+func test_repetitions(count: int, _test_parameters: Array = [[2], [0]]) -> void:
 	repeater.repetitions = count
 	action.final_result = BeehaveNode.SUCCESS
 
@@ -88,11 +88,11 @@ func test_failure():
 	assert_int(times_ended).is_equal(2)
 
 
-func _on_action_started(actor, blackboard):
+func _on_action_started(_actor, blackboard):
 	var started = blackboard.get_value("started", 0)
 	blackboard.set_value("started", started + 1)
 
 
-func _on_action_ended(actor, blackboard):
+func _on_action_ended(_actor, blackboard):
 	var ended = blackboard.get_value("ended", 0)
 	blackboard.set_value("ended", ended + 1)

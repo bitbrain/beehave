@@ -39,7 +39,7 @@ signal tree_disabled
 @export_node_path var actor_node_path : NodePath:
 	set(anp):
 		actor_node_path = anp
-		if actor_node_path:
+		if actor_node_path and str(actor_node_path) != "..":
 			actor = get_node(actor_node_path)
 		else:
 			actor = get_parent()
