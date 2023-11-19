@@ -54,10 +54,10 @@ func test_reset_when_child_finishes() -> void:
 
 
 func test_clear_running_child_after_run() -> void:
-	time_limiter.wait_time = 1.5
+	time_limiter.wait_time = 0.1
 	action.status = BeehaveNode.RUNNING
-	await runner.simulate_frames(1, 1)
+	await runner.simulate_frames(1)
 	assert_that(time_limiter.running_child).is_equal(action)
 	action.status = BeehaveNode.SUCCESS
-	await runner.simulate_frames(1, 1500)
+	await runner.simulate_frames(1, 110)
 	assert_that(time_limiter.running_child).is_null()

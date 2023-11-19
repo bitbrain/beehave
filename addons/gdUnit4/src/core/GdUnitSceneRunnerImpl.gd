@@ -204,10 +204,9 @@ func set_time_factor(time_factor := 1.0) -> GdUnitSceneRunner:
 func simulate_frames(frames: int, delta_milli :int = -1) -> GdUnitSceneRunner:
 	var time_shift_frames :int = max(1, frames / _time_factor)
 	for frame in time_shift_frames:
-		if delta_milli == -1:
-			await _scene_tree.process_frame
-		else:
+		if delta_milli != -1:
 			await _scene_tree.create_timer(delta_milli * 0.001).timeout
+		await _scene_tree.process_frame
 	return self
 
 
