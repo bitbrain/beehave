@@ -4,5 +4,6 @@
 
 [node name="Node2D" type="Node2D"]
 
-[node name="BeehaveTree" type="Node" parent="."]
+[node name="BeehaveTree" type="Node" parent="." node_paths=PackedStringArray("blackboard")]
 script = ExtResource("1_ehk4d")
+blackboard = NodePath("@Node@22284")
