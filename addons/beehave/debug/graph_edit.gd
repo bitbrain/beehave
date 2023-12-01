@@ -152,7 +152,7 @@ func get_menu_container() -> Control:
 		return call("get_zoom_hbox")
 
 	# Godot 4.2+
-	return call("get_menu_hbox").get_parent()
+	return call("get_menu_hbox")
 
 
 func get_status(status: int) -> String:
