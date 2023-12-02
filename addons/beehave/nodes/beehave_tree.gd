@@ -19,7 +19,7 @@ signal tree_enabled
 signal tree_disabled
 
 
-## Wether this behavior tree should be enabled or not.
+## Whether this behavior tree should be enabled or not.
 @export var enabled: bool = true:
 	set(value):
 		enabled = value
@@ -33,6 +33,11 @@ signal tree_disabled
 
 	get:
 		return enabled
+
+
+## How often the tree should tick, in frames. The default value of 1 means 
+## tick() runs every frame.
+@export var tick_rate: int = 1
 
 
 ## An optional node path this behavior tree should apply to.
@@ -90,6 +95,7 @@ signal tree_disabled
 
 var actor : Node
 var status : int = -1
+var last_tick : int = 0
 
 var _internal_blackboard: Blackboard
 var _process_time_metric_name : String
@@ -127,18 +133,27 @@ func _ready() -> void:
 		BeehaveGlobalDebugger.register_tree(self)
 		BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
+	# Randomize at what frames tick() will happen to avoid stutters
+	last_tick = randi_range(0, tick_rate - 1)
 
-func _physics_process(delta: float) -> void:
-	_process_internally(delta)
+
+func _physics_process(_delta: float) -> void:
+	_process_internally()
 	
 	
-func _process(delta: float) -> void:
-	_process_internally(delta)
+func _process(_delta: float) -> void:
+	_process_internally()
 
 
-func _process_internally(delta: float) -> void:
+func _process_internally() -> void:
 	if Engine.is_editor_hint():
 		return
+
+	if last_tick < tick_rate - 1:
+		last_tick += 1 
+		return
+	
+	last_tick = 0
 
 	# Start timing for metric
 	var start_time = Time.get_ticks_usec()
@@ -245,7 +260,7 @@ func _exit_tree() -> void:
 
 # Called by the engine to profile this tree
 func _get_process_time_metric_value() -> int:
-	return _process_time_metric_value
+	return int(_process_time_metric_value)
 
 
 func _get_debugger_data(node: Node) -> Dictionary:
