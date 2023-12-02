@@ -163,6 +163,6 @@ func _on_gdunit_event(event :GdUnitEvent):
 
 
 # Event bridge from C# GdUnit4.ITestEventListener.cs
-func PublishEvent(data) -> void:
-	var event := GdUnitEvent.new().deserialize(data.AsDictionary())
+func PublishEvent(data :Dictionary) -> void:
+	var event := GdUnitEvent.new().deserialize(data)
 	_client.rpc_send(RPCGdUnitEvent.of(event))

@@ -778,9 +778,9 @@ func extract_functions(script :GDScript, clazz_name :String, clazz_path :PackedS
 	return parse_functions(source_code, clazz_name, clazz_path)
 
 
-func parse(clazz_name :String, clazz_path :PackedStringArray) -> Result:
+func parse(clazz_name :String, clazz_path :PackedStringArray) -> GdUnitResult:
 	if clazz_path.is_empty():
-		return Result.error("Invalid script path '%s'" % clazz_path)
+		return GdUnitResult.error("Invalid script path '%s'" % clazz_path)
 	var is_inner_class_ := is_inner_class(clazz_path)
 	var script :GDScript = load(clazz_path[0])
 	var function_descriptors := extract_functions(script, clazz_name, clazz_path)
@@ -792,4 +792,4 @@ func parse(clazz_name :String, clazz_path :PackedStringArray) -> Result:
 		function_descriptors = extract_functions(script, clazz_name, clazz_path)
 		gd_class.set_parent_clazz(GdClassDescriptor.new(clazz_name, is_inner_class_, function_descriptors))
 		script = script.get_base_script()
-	return Result.success(gd_class)
+	return GdUnitResult.success(gd_class)
