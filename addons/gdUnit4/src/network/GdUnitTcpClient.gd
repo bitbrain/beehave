@@ -32,19 +32,19 @@ func stop() -> void:
 	_connected = false
 
 
-func start(host :String, port :int) -> Result:
+func start(host :String, port :int) -> GdUnitResult:
 	_host = host
 	_port = port
 	if _connected:
-		return Result.warn("Client already connected ... %s:%d" % [_host, _port])
+		return GdUnitResult.warn("Client already connected ... %s:%d" % [_host, _port])
 	
 	# Connect client to server
 	if _stream.get_status() != StreamPeerTCP.STATUS_CONNECTED:
 		var err := _stream.connect_to_host(host, port)
 		#prints("connect_to_host", host, port, err)
 		if err != OK:
-			return Result.error("GdUnit3: Can't establish client, error code: %s" % err)
-	return Result.success("GdUnit3: Client connected checked port %d" % port)
+			return GdUnitResult.error("GdUnit3: Can't establish client, error code: %s" % err)
+	return GdUnitResult.success("GdUnit3: Client connected checked port %d" % port)
 
 
 func _process(_delta):

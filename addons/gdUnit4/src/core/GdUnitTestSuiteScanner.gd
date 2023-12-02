@@ -261,18 +261,18 @@ static func normalize_path(path :String) -> String:
 	return path.replace("///", "/")
 
 
-static func create_test_suite(test_suite_path :String, source_path :String) -> Result:
+static func create_test_suite(test_suite_path :String, source_path :String) -> GdUnitResult:
 	# create directory if not exists
 	if not DirAccess.dir_exists_absolute(test_suite_path.get_base_dir()):
 		var error := DirAccess.make_dir_recursive_absolute(test_suite_path.get_base_dir())
 		if error != OK:
-			return Result.error("Can't create directoy  at: %s. Error code %s" % [test_suite_path.get_base_dir(), error])
+			return GdUnitResult.error("Can't create directoy  at: %s. Error code %s" % [test_suite_path.get_base_dir(), error])
 	var script := GDScript.new()
 	script.source_code = GdUnitTestSuiteTemplate.build_template(source_path)
 	var error := ResourceSaver.save(script, test_suite_path)
 	if error != OK:
-		return Result.error("Can't create test suite at: %s. Error code %s" % [test_suite_path, error])
-	return Result.success(test_suite_path)
+		return GdUnitResult.error("Can't create test suite at: %s. Error code %s" % [test_suite_path, error])
+	return GdUnitResult.success(test_suite_path)
 
 
 static func get_test_case_line_number(resource_path :String, func_name :String) -> int:
@@ -292,7 +292,7 @@ static func get_test_case_line_number(resource_path :String, func_name :String) 
 	return -1
 
 
-static func add_test_case(resource_path :String, func_name :String)  -> Result:
+static func add_test_case(resource_path :String, func_name :String)  -> GdUnitResult:
 	var script := load(resource_path) as GDScript
 	# count all exiting lines and add two as space to add new test case
 	var line_number := count_lines(script) + 2
@@ -307,8 +307,8 @@ static func add_test_case(resource_path :String, func_name :String)  -> Result:
 	script.source_code += func_body
 	var error := ResourceSaver.save(script, resource_path)
 	if error != OK:
-		return Result.error("Can't add test case at: %s to '%s'. Error code %s" % [func_name, resource_path, error])
-	return Result.success({ "path" : resource_path, "line" : line_number})
+		return GdUnitResult.error("Can't add test case at: %s to '%s'. Error code %s" % [func_name, resource_path, error])
+	return GdUnitResult.success({ "path" : resource_path, "line" : line_number})
 
 
 static func count_lines(script : GDScript) -> int:
@@ -327,10 +327,10 @@ static func test_case_exists(test_suite_path :String, func_name :String) -> bool
 			return true
 	return false
 
-static func create_test_case(test_suite_path :String, func_name :String, source_script_path :String) -> Result:
+static func create_test_case(test_suite_path :String, func_name :String, source_script_path :String) -> GdUnitResult:
 	if test_case_exists(test_suite_path, func_name):
 		var line_number := get_test_case_line_number(test_suite_path, func_name)
-		return Result.success({ "path" : test_suite_path, "line" : line_number})
+		return GdUnitResult.success({ "path" : test_suite_path, "line" : line_number})
 	
 	if not test_suite_exists(test_suite_path):
 		var result := create_test_suite(test_suite_path, source_script_path)

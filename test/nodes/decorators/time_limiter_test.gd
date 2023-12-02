@@ -35,11 +35,11 @@ func before_test() -> void:
 
 
 func test_return_failure_when_child_exceeds_time_limiter() -> void:
-	time_limiter.wait_time = 0.1
+	time_limiter.wait_time = 1.0
 	action.status = BeehaveNode.RUNNING
-	await runner.simulate_frames(1, 10)
+	await runner.simulate_frames(1)
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	await runner.simulate_frames(5, 100)
+	await runner.simulate_frames(1, 1500)
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 
 
