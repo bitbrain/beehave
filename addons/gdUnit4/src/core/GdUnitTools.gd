@@ -56,16 +56,16 @@ static func delete_directory(path :String, only_content := false) -> void:
 				push_error("Delete %s failed: %s" % [path, error_as_string(err)])
 
 
-static func copy_file(from_file :String, to_dir :String) -> Result:
+static func copy_file(from_file :String, to_dir :String) -> GdUnitResult:
 	var dir := DirAccess.open(to_dir)
 	if dir != null:
 		var to_file := to_dir + "/" + from_file.get_file()
 		prints("Copy %s to %s" % [from_file, to_file])
 		var error = dir.copy(from_file, to_file)
 		if error != OK:
-			return Result.error("Can't copy file form '%s' to '%s'. Error: '%s'" % [from_file, to_file, error_as_string(error)])
-		return Result.success(to_file)
-	return Result.error("Directory not found: " + to_dir)
+			return GdUnitResult.error("Can't copy file form '%s' to '%s'. Error: '%s'" % [from_file, to_file, error_as_string(error)])
+		return GdUnitResult.success(to_file)
+	return GdUnitResult.error("Directory not found: " + to_dir)
 
 
 static func copy_directory(from_dir :String, to_dir :String, recursive :bool = false) -> bool:
@@ -303,11 +303,11 @@ static func register_expect_interupted_by_timeout(test_suite :Node, test_case_na
 	test_case.expect_to_interupt()
 
 
-static func extract_zip(zip_package :String, dest_path :String) -> Result:
+static func extract_zip(zip_package :String, dest_path :String) -> GdUnitResult:
 	var zip: ZIPReader = ZIPReader.new()
 	var err := zip.open(zip_package)
 	if err != OK:
-		return Result.error("Extracting `%s` failed! Please collect the error log and report this. Error Code: %s" % [zip_package, err])
+		return GdUnitResult.error("Extracting `%s` failed! Please collect the error log and report this. Error Code: %s" % [zip_package, err])
 	var zip_entries: PackedStringArray = zip.get_files()
 	# Get base path and step over archive folder
 	var archive_path = zip_entries[0]
@@ -321,4 +321,4 @@ static func extract_zip(zip_package :String, dest_path :String) -> Result:
 		var file: FileAccess = FileAccess.open(new_file_path, FileAccess.WRITE)
 		file.store_buffer(zip.read_file(zip_entry))
 	zip.close()
-	return Result.success(dest_path)
+	return GdUnitResult.success(dest_path)

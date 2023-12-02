@@ -19,11 +19,11 @@ func _notification(event):
 
 
 func __validate_value_type(value) -> bool:
-	return value == null or value is Result
+	return value == null or value is GdUnitResult
 
 
-func __current() -> Result:
-	return _base.__current() as Result
+func __current() -> GdUnitResult:
+	return _base.__current() as GdUnitResult
 
 
 func report_success() -> GdUnitResultAssert:

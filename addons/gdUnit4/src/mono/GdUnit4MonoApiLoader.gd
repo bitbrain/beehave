@@ -26,13 +26,13 @@ static func version() -> String:
 	return instance().Version()
 
 
-static func create_test_suite(source_path :String, line_number :int, test_suite_path :String) -> Result:
+static func create_test_suite(source_path :String, line_number :int, test_suite_path :String) -> GdUnitResult:
 	if not GdUnit4MonoApiLoader.is_mono_supported():
-		return  Result.error("Can't create test suite. No c# support found.")
+		return  GdUnitResult.error("Can't create test suite. No c# support found.")
 	var result := instance().CreateTestSuite(source_path, line_number, test_suite_path) as Dictionary
 	if result.has("error"):
-		return Result.error(result.get("error"))
-	return  Result.success(result)
+		return GdUnitResult.error(result.get("error"))
+	return  GdUnitResult.success(result)
 
 
 static func is_test_suite(resource_path :String) -> bool:

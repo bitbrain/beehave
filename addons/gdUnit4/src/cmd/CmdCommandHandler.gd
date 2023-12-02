@@ -47,7 +47,7 @@ func register_cbv(cmd_name: String, cb: Callable) -> CmdCommandHandler:
 	return self
 
 
-func _validate() -> Result:
+func _validate() -> GdUnitResult:
 	var errors: = PackedStringArray()
 	var registered_cbs: = Dictionary()
 	
@@ -66,12 +66,12 @@ func _validate() -> Result:
 			else:
 				registered_cbs[cb_method] = cmd_name
 	if errors.is_empty():
-		return Result.success(true)
+		return GdUnitResult.success(true)
 	else:
-		return Result.error("\n".join(errors))
+		return GdUnitResult.error("\n".join(errors))
 
 
-func execute(commands :Array) -> Result:
+func execute(commands :Array) -> GdUnitResult:
 	var result := _validate()
 	if result.is_error():
 		return result
@@ -89,4 +89,4 @@ func execute(commands :Array) -> Result:
 					cb_s.call(cmd.arguments()[CB_SINGLE_ARG])
 				else:
 					cb_m.callv(cmd.arguments())
-	return Result.success(true)
+	return GdUnitResult.success(true)

@@ -289,8 +289,8 @@ class CLIRunner extends Node:
 		return total
 	
 	
-	func PublishEvent(data) -> void:
-		_on_gdunit_event(GdUnitEvent.new().deserialize(data.AsDictionary()))
+	func PublishEvent(data :Dictionary) -> void:
+		_on_gdunit_event(GdUnitEvent.new().deserialize(data))
 	
 	
 	func _on_gdunit_event(event :GdUnitEvent):
@@ -398,8 +398,6 @@ func _initialize():
 
 func _finalize():
 	prints("Finallize ..")
-	if is_instance_valid(_cli_runner):
-		_cli_runner.free()
 	prints("-Orphan nodes report-----------------------")
 	Window.print_orphan_nodes()
 	prints("Finallize .. done")

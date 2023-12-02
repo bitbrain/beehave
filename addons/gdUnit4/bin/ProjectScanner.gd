@@ -11,11 +11,6 @@ func _initialize():
 	root.add_child(scanner)
 
 
-func _process(_delta):
-	if not is_instance_valid(scanner):
-		quit(0)
-
-
 func _finalize():
 	prints("__finalize")
 
@@ -58,7 +53,7 @@ class SourceScanner extends Node:
 			_console.prints_color("======================================", Color.CORNFLOWER_BLUE)
 			_console.new_line()
 			await get_tree().process_frame
-			queue_free()
+			get_tree().quit(0)
 	
 	
 	func scan_project() -> void:
@@ -90,4 +85,6 @@ class SourceScanner extends Node:
 			_console.progressBar(fs.get_scanning_progress() * 100 as int)
 		_console.progressBar(100)
 		_console.new_line()
+		await get_tree().process_frame
 		plugin.queue_free()
+		await get_tree().process_frame

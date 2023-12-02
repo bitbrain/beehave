@@ -225,7 +225,7 @@ static func error_not_same_error(current, expected) -> String:
 	return "%s\n %s\n but was\n %s" % [_error("Expecting error message:"), _colored_value(expected), _colored_value(current)]
 
 
-static func error_is_instanceof(current: Result, expected :Result) -> String:
+static func error_is_instanceof(current: GdUnitResult, expected :GdUnitResult) -> String:
 	return "%s\n %s\n But it was %s" % [_error("Expected instance of:"),\
 		_colored_value(expected.or_else(null)), _colored_value(current.or_else(null))]
 
@@ -408,20 +408,20 @@ static func error_contains_key_value(key, value, current_value, compare_mode :Gd
 
 
 # - ResultAssert specific errors ----------------------------------------------------
-static func error_result_is_empty(current :Result) -> String:
-	return _result_error_message(current, Result.EMPTY)
+static func error_result_is_empty(current :GdUnitResult) -> String:
+	return _result_error_message(current, GdUnitResult.EMPTY)
 
 
-static func error_result_is_success(current :Result) -> String:
-	return _result_error_message(current, Result.SUCCESS)
+static func error_result_is_success(current :GdUnitResult) -> String:
+	return _result_error_message(current, GdUnitResult.SUCCESS)
 
 
-static func error_result_is_warning(current :Result) -> String:
-	return _result_error_message(current, Result.WARN)
+static func error_result_is_warning(current :GdUnitResult) -> String:
+	return _result_error_message(current, GdUnitResult.WARN)
 
 
-static func error_result_is_error(current :Result) -> String:
-	return _result_error_message(current, Result.ERROR)
+static func error_result_is_error(current :GdUnitResult) -> String:
+	return _result_error_message(current, GdUnitResult.ERROR)
 
 
 static func error_result_has_message(current :String, expected :String) -> String:
@@ -429,14 +429,14 @@ static func error_result_has_message(current :String, expected :String) -> Strin
 
 
 static func error_result_has_message_on_success(expected :String) -> String:
-	return "%s\n %s\n but the Result is a success." % [_error("Expecting:"), _colored_value(expected)]
+	return "%s\n %s\n but the GdUnitResult is a success." % [_error("Expecting:"), _colored_value(expected)]
 
 
 static func error_result_is_value(current, expected) -> String:
 	return "%s\n %s\n but was\n %s." % [_error("Expecting to contain same value:"), _colored_value(expected), _colored_value(current)]
 
 
-static func _result_error_message(current :Result, expected_type :int) -> String:
+static func _result_error_message(current :GdUnitResult, expected_type :int) -> String:
 	if current == null:
 		return _error("Expecting the result must be a %s but was <null>." % result_type(expected_type))
 	if current.is_success():
@@ -468,19 +468,19 @@ static func error_await_signal_on_invalid_instance(source, signal_name :String, 
 
 static func result_type(type :int) -> String:
 	match type:
-		Result.SUCCESS: return "SUCCESS"
-		Result.WARN: return "WARNING"
-		Result.ERROR: return "ERROR"
-		Result.EMPTY: return "EMPTY"
+		GdUnitResult.SUCCESS: return "SUCCESS"
+		GdUnitResult.WARN: return "WARNING"
+		GdUnitResult.ERROR: return "ERROR"
+		GdUnitResult.EMPTY: return "EMPTY"
 	return "UNKNOWN"
 
 
-static func result_message(result :Result) -> String:
+static func result_message(result :GdUnitResult) -> String:
 	match result._state:
-		Result.SUCCESS: return ""
-		Result.WARN: return result.warn_message()
-		Result.ERROR: return result.error_message()
-		Result.EMPTY: return ""
+		GdUnitResult.SUCCESS: return ""
+		GdUnitResult.WARN: return result.warn_message()
+		GdUnitResult.ERROR: return result.error_message()
+		GdUnitResult.EMPTY: return ""
 	return "UNKNOWN"
 # -----------------------------------------------------------------------------------
 

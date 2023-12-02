@@ -16,7 +16,7 @@ func _init(task_name :String,instance :Object,func_name :String):
 func name() -> String:
 	return _task_name
 
-func execute(args :Array) -> Result:
+func execute(args :Array) -> GdUnitResult:
 	if args.is_empty():
 		return _fref.call()
 	return _fref.callv(args)

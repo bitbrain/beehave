@@ -31,8 +31,6 @@ script = ExtResource("3_4a21r")
 [node name="BeehaveTree" type="Node" parent="ColorChangingSprite" node_paths=PackedStringArray("blackboard")]
 unique_name_in_owner = true
 script = ExtResource("3_hid2l")
-actor_node_path = null
-process_thread = null
 blackboard = NodePath("../../Blackboard")
 custom_monitor = true
 
@@ -69,8 +67,6 @@ texture = SubResource("CompressedTexture2D_atdvc")
 
 [node name="AnotherTree" type="Node" parent="AnotherSprite" node_paths=PackedStringArray("blackboard")]
 script = ExtResource("3_hid2l")
-actor_node_path = null
-process_thread = null
 blackboard = NodePath("../../Blackboard")
 custom_monitor = null
 
