@@ -1,4 +1,4 @@
-class_name Result
+class_name GdUnitResult
 extends RefCounted
 
 enum {
@@ -14,32 +14,32 @@ var _error_message := ""
 var _value :Variant = null
 
 
-static func empty() -> Result:
-	var result := Result.new()
+static func empty() -> GdUnitResult:
+	var result := GdUnitResult.new()
 	result._state = EMPTY
 	return result
 
 
-static func success(p_value :Variant) -> Result:
+static func success(p_value :Variant) -> GdUnitResult:
 	assert(p_value != null, "The value must not be NULL")
-	var result := Result.new()
+	var result := GdUnitResult.new()
 	result._value = p_value
 	result._state = SUCCESS
 	return result
 
 
-static func warn(p_warn_message :String, p_value :Variant = null) -> Result:
+static func warn(p_warn_message :String, p_value :Variant = null) -> GdUnitResult:
 	assert(not p_warn_message.is_empty()) #,"The message must not be empty")
-	var result := Result.new()
+	var result := GdUnitResult.new()
 	result._value = p_value
 	result._warn_message = p_warn_message
 	result._state = WARN
 	return result
 
 
-static func error(p_error_message :String) -> Result:
+static func error(p_error_message :String) -> GdUnitResult:
 	assert(not p_error_message.is_empty(), "The message must not be empty")
-	var result := Result.new()
+	var result := GdUnitResult.new()
 	result._value = null
 	result._error_message = p_error_message
 	result._state = ERROR
@@ -81,12 +81,12 @@ func warn_message() -> String:
 
 
 func _to_string() -> String:
-	return str(Result.serialize(self))
+	return str(GdUnitResult.serialize(self))
 
 
-static func serialize(result :Result) -> Dictionary:
+static func serialize(result :GdUnitResult) -> Dictionary:
 	if result == null:
-		push_error("Can't serialize a Null object from type Result")
+		push_error("Can't serialize a Null object from type GdUnitResult")
 	return {
 		"state" : result._state,
 		"value" : var_to_str(result._value),
@@ -95,8 +95,8 @@ static func serialize(result :Result) -> Dictionary:
 	}
 
 
-static func deserialize(config :Dictionary) -> Result:
-	var result := Result.new()
+static func deserialize(config :Dictionary) -> GdUnitResult:
+	var result := GdUnitResult.new()
 	result._value = str_to_var(config.get("value", ""))
 	result._warn_message = config.get("warn_msg", null)
 	result._error_message = config.get("err_msg", null)

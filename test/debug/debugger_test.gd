@@ -14,8 +14,8 @@ func create_scene() -> Node2D:
 	
 func test_debugger_renders_correctly():
 	var scene = create_scene()
-	var scene_runner = scene_runner(scene)
-	await scene_runner.simulate_frames(20)
-	await scene_runner.set_mouse_pos(Vector2(20, 20))
-	await scene_runner.simulate_mouse_button_press(1)
-	await scene_runner.simulate_frames(10)
+	var runner = scene_runner(scene)
+	await runner.simulate_frames(20)
+	runner.set_mouse_pos(Vector2(20, 20))
+	runner.simulate_mouse_button_press(1)
+	await runner.simulate_frames(10)

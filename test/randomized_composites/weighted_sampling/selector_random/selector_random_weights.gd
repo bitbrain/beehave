@@ -14,7 +14,7 @@ func _ready():
 			_counter_keys[action.name] = action.key
 
 
-func _process(delta):
+func _process(_delta:float):
 	var debug_text = ""
 	
 	var sample_size = 0
@@ -37,7 +37,6 @@ func get_final_results() -> Dictionary:
 		sample_size += count
 	
 	for action_name in _counter_keys.keys():
-		var a = _counter_keys[action_name]
 		var value = blackboard.get_value(_counter_keys[action_name], 0)
 		var perc = (float(value) / float(sample_size)) * 100.0
 		results[action_name] = perc

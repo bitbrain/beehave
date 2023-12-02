@@ -11,7 +11,7 @@ func _init(p_options :CmdOptions, p_tool_name :String):
 	_tool_name = p_tool_name
 
 
-func parse(args :Array, ignore_unknown_cmd := false) -> Result:
+func parse(args :Array, ignore_unknown_cmd := false) -> GdUnitResult:
 	_parsed_commands.clear()
 	
 	# parse until first program argument
@@ -21,7 +21,7 @@ func parse(args :Array, ignore_unknown_cmd := false) -> Result:
 			break
 	
 	if args.is_empty():
-		return Result.empty()
+		return GdUnitResult.empty()
 	
 	# now parse all arguments
 	while not args.is_empty():
@@ -30,10 +30,10 @@ func parse(args :Array, ignore_unknown_cmd := false) -> Result:
 		
 		if option:
 			if _parse_cmd_arguments(option, args) == -1:
-				return Result.error("The '%s' command requires an argument!" % option.short_command())
+				return GdUnitResult.error("The '%s' command requires an argument!" % option.short_command())
 		elif not ignore_unknown_cmd:
-			return Result.error("Unknown '%s' command!" % cmd)
-	return Result.success(_parsed_commands.values())
+			return GdUnitResult.error("Unknown '%s' command!" % cmd)
+	return GdUnitResult.success(_parsed_commands.values())
 
 
 func options() -> CmdOptions:
