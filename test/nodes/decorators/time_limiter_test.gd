@@ -48,7 +48,7 @@ func test_reset_when_child_finishes() -> void:
 	action.status = BeehaveNode.RUNNING
 	await runner.simulate_frames(1)
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	await runner.simulate_frames(5, 100)
+	await runner.simulate_frames(2, 500)
 	action.status = BeehaveNode.SUCCESS
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
 
