@@ -13,14 +13,14 @@ func create_scene() -> Node2D:
 
 func test_normal_tick() -> void:
 	var scene = create_scene()
-	var runner := scene_runner(scene)
+	scene_runner(scene)
 	scene.beehave_tree._physics_process(1.0)
 	assert_that(scene.beehave_tree.status).is_equal(BeehaveNode.SUCCESS)
 
 
 func test_nothing_running_before_first_tick() -> void:
 	var scene = create_scene()
-	var runner := scene_runner(scene)
+	scene_runner(scene)
 	assert_that(scene.beehave_tree.get_running_action()).is_null()
 	assert_that(scene.beehave_tree.get_last_condition()).is_null()
 	assert_that(scene.beehave_tree.get_last_condition_status()).is_equal("")
@@ -55,7 +55,7 @@ func test_reenabled() -> void:
 
 func test_interrupt_running_action() -> void:
 	var scene = create_scene()
-	var runner := scene_runner(scene)
+	scene_runner(scene)
 	scene.count_up_action.status = BeehaveNode.RUNNING
 	scene.beehave_tree._physics_process(1.0)
 	scene.beehave_tree._physics_process(1.0)

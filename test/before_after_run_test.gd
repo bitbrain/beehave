@@ -28,10 +28,10 @@ func before_test() -> void:
 
 
 func test_action_after_run() -> void:
-	var before_run_callback = func (actor, blackboard):
+	var before_run_callback = func (_actor, blackboard):
 		blackboard.set_value("entered", true)
 	
-	var after_run_callback = func (actor, blackboard):
+	var after_run_callback = func (_actor, blackboard):
 		blackboard.set_value("exited", true)
 	
 	action.started_running.connect(before_run_callback)

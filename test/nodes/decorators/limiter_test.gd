@@ -30,7 +30,7 @@ func before_test() -> void:
 	tree.blackboard = blackboard
 
 
-func test_max_count(count: int, test_parameters: Array = [[2], [0]]) -> void:
+func test_max_count(count: int, _test_parameters: Array = [[2], [0]]) -> void:
 	limiter.max_count = count
 	action.status = BeehaveNode.RUNNING
 	for i in range(count):
