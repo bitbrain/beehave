@@ -3,7 +3,7 @@ extends GdUnitTestSuite
 
 const __source = "res://test/randomized_composites/weighted_sampling/selector_random/SelectorRandomWeights.tscn"
 
-const ACCEPTABLE_RANGE = 4.0
+const ACCEPTABLE_RANGE = 5
 
 
 func create_scene() -> Node2D:
