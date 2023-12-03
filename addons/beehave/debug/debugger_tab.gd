@@ -37,6 +37,7 @@ func _ready() -> void:
 
 	var button := Button.new()
 	button.flat = true
+	button.name = "MakeFloatingButton"
 	button.icon = get_theme_icon(&"ExternalLink", &"EditorIcons")
 	button.pressed.connect(func(): make_floating.emit())
 	button.tooltip_text = "Make floating"
@@ -45,6 +46,7 @@ func _ready() -> void:
 
 	var toggle_button := Button.new()
 	toggle_button.flat = true
+	toggle_button.name = "TogglePanelButton"
 	toggle_button.icon = get_theme_icon(&"Back", &"EditorIcons")
 	toggle_button.pressed.connect(_on_toggle_button_pressed.bind(toggle_button))
 	toggle_button.tooltip_text = "Toggle Panel"

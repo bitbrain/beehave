@@ -55,11 +55,7 @@ func _ready() -> void:
 	layout_button.flat = true
 	layout_button.focus_mode = Control.FOCUS_NONE
 	layout_button.pressed.connect(func(): horizontal_layout = not horizontal_layout)
-	# Godot 4.2+
-	if has_method("get_menu_hbox"):
-		call("get_menu_hbox").add_child(layout_button)
-	else:
-		call("get_zoom_hbox").add_child(layout_button)
+	get_menu_container().add_child(layout_button)
 	_update_layout_button()
 
 
@@ -152,7 +148,7 @@ func get_menu_container() -> Control:
 		return call("get_zoom_hbox")
 
 	# Godot 4.2+
-	return call("get_menu_hbox").get_parent()
+	return call("get_menu_hbox")
 
 
 func get_status(status: int) -> String:
