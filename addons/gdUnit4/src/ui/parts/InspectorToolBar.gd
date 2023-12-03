@@ -38,15 +38,15 @@ func _ready():
 
 
 func init_buttons() -> void:
-	var editor :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
-	var editiorTheme := editor.get_editor_interface().get_base_control().theme
+	var editor :EditorPlugin = EditorPlugin.new()
+	var editior_control := editor.get_editor_interface().get_base_control()
 	_button_run_overall.icon = overall_icon_image
 	_button_run_overall.visible = GdUnitSettings.is_inspector_toolbar_button_show()
-	_button_run.icon = editiorTheme.get_icon("Play", "EditorIcons")
+	_button_run.icon = GodotVersionFixures.get_icon(editior_control, "Play")
 	_button_run_debug.icon = debug_icon_image
-	_button_stop.icon = editiorTheme.get_icon("Stop", "EditorIcons")
-	_tool_button.icon = editiorTheme.get_icon("Tools", "EditorIcons")
-	_button_wiki.icon = editiorTheme.get_icon("HelpSearch", "EditorIcons")
+	_button_stop.icon = GodotVersionFixures.get_icon(editior_control, "Stop")
+	_tool_button.icon = GodotVersionFixures.get_icon(editior_control, "Tools")
+	_button_wiki.icon = GodotVersionFixures.get_icon(editior_control, "HelpSearch")
 
 
 func init_shortcuts(command_handler :GdUnitCommandHandler) -> void:

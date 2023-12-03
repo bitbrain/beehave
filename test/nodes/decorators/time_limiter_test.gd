@@ -13,47 +13,51 @@ const __blackboard = "res://addons/beehave/blackboard.gd"
 var tree: BeehaveTree
 var action: ActionLeaf
 var time_limiter: TimeLimiterDecorator
+var actor: Node2D
+var blackboard: Blackboard
+var runner:GdUnitSceneRunner
 
 
 func before_test() -> void:
 	tree = auto_free(load(__tree).new())
-	action = auto_free(load(__action).new())
-	time_limiter = auto_free(load(__source).new())
-	
-	var actor = auto_free(Node2D.new())
-	var blackboard = auto_free(load(__blackboard).new())
-	
-	tree.add_child(time_limiter)
-	time_limiter.child = action
+	actor = auto_free(Node2D.new())
+	blackboard = auto_free(load(__blackboard).new())
 	
 	tree.actor = actor
 	tree.blackboard = blackboard
+	action = auto_free(load(__action).new())
+	time_limiter = auto_free(load(__source).new())
+	
+	time_limiter.add_child(action)
+	tree.add_child(time_limiter)
+	
+	runner = scene_runner(tree)
 
 
 func test_return_failure_when_child_exceeds_time_limiter() -> void:
 	time_limiter.wait_time = 1.0
 	action.status = BeehaveNode.RUNNING
+	tree.tick()
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	time_limiter.time_left = 0.5
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	time_limiter.time_left = 1.0
+	await runner.simulate_frames(1, 1500)
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 
 
 func test_reset_when_child_finishes() -> void:
-	time_limiter.wait_time = 1.0
+	time_limiter.wait_time = 0.5
 	action.status = BeehaveNode.RUNNING
+	tree.tick()
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	time_limiter.time_left = 0.5
+	await runner.simulate_frames(2, 500)
 	action.status = BeehaveNode.SUCCESS
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
 
 
 func test_clear_running_child_after_run() -> void:
-	time_limiter.wait_time = 1.0
+	time_limiter.wait_time = 1.5
 	action.status = BeehaveNode.RUNNING
 	tree.tick()
 	assert_that(time_limiter.running_child).is_equal(action)
 	action.status = BeehaveNode.SUCCESS
-	tree.tick()
-	assert_that(time_limiter.running_child).is_equal(null)
+	await runner.simulate_frames(1, 1600)
+	assert_that(time_limiter.running_child).is_null()

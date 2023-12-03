@@ -1,12 +1,12 @@
+@tool
+@icon("../../icons/sequence_reactive.svg")
+class_name SequenceReactiveComposite extends Composite
+
 ## Reactive Sequence nodes will attempt to execute all of its children and report
 ## `SUCCESS` in case all of the children report a `SUCCESS` status code.
 ## If at least one child reports a `FAILURE` status code, this node will also
 ## return `FAILURE` and restart.
 ## In case a child returns `RUNNING` this node will restart.
-@tool
-@icon("../../icons/sequence_reactive.svg")
-class_name SequenceReactiveComposite extends Composite
-
 
 var successful_index: int = 0
 

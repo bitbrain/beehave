@@ -55,7 +55,7 @@ func _getEditorThemes(interface :EditorInterface) -> void:
 
 # Context menu registrations ----------------------------------------------------------------------
 func add_file_system_dock_context_menu() -> void:
-	var is_test_suite := func is_visible(script :GDScript, is_test_suite :bool):
+	var is_test_suite := func is_visible(script :Script, is_test_suite :bool):
 		if script == null:
 			return true
 		return GdObjects.is_test_suite(script) == is_test_suite
@@ -67,7 +67,7 @@ func add_file_system_dock_context_menu() -> void:
 
 
 func add_script_editor_context_menu():
-	var is_test_suite := func is_visible(script :GDScript, is_test_suite :bool):
+	var is_test_suite := func is_visible(script :Script, is_test_suite :bool):
 		return GdObjects.is_test_suite(script) == is_test_suite
 	var menu :Array[GdUnitContextMenuItem] = [
 		GdUnitContextMenuItem.new(GdUnitContextMenuItem.MENU_ID.TEST_RUN, "Run Tests", is_test_suite.bind(true), _command_handler.command(GdUnitCommandHandler.CMD_RUN_TESTCASE)),

@@ -8,6 +8,7 @@ class_name GdUnitSingleton
 extends RefCounted
 
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 const MEATA_KEY := "GdUnitSingletons"
 
 
@@ -30,10 +31,10 @@ static func unregister(p_singleton :String) -> void:
 		var index := singletons.find(p_singleton)
 		singletons.remove_at(index)
 		var instance_ :Variant = Engine.get_meta(p_singleton)
-		GdUnitTools.prints_verbose("	Free singeleton instance '%s:%s'" % [p_singleton, instance_])
+		GdUnitTools.prints_verbose("	Free singleton instance '%s:%s'" % [p_singleton, instance_])
 		GdUnitTools.free_instance(instance_)
 		Engine.remove_meta(p_singleton)
-		GdUnitTools.prints_verbose("	Succesfully freed '%s'" % p_singleton)
+		GdUnitTools.prints_verbose("	Successfully freed '%s'" % p_singleton)
 	Engine.set_meta(MEATA_KEY, singletons)
 
 

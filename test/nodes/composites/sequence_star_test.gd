@@ -91,11 +91,13 @@ func test_keeps_running_child_until_failure() -> void:
 	
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	assert_that(action1.count).is_equal(1)
-	assert_that(action2.count).is_equal(3)
+	# action2 will reset as it failed
+	assert_that(action2.count).is_equal(0)
 	
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	assert_that(action1.count).is_equal(1)
-	assert_that(action2.count).is_equal(4)
+	# action2 has reset previously but sequence star will tick again
+	assert_that(action2.count).is_equal(1)
 
 
 func test_tick_again_when_child_returns_failure() -> void:

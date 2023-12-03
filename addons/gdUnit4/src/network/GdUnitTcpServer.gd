@@ -103,23 +103,23 @@ func _notification(what):
 		stop()
 
 
-func start() -> Result:
+func start() -> GdUnitResult:
 	var server_port := GdUnitServerConstants.GD_TEST_SERVER_PORT
 	var err := OK
 	for retry in GdUnitServerConstants.DEFAULT_SERVER_START_RETRY_TIMES:
 		err = _server.listen(server_port, "127.0.0.1")
 		if err != OK:
-			prints("GdUnit3: Can't establish server checked port: %d, Error: %s" % [server_port, error_string(err)])
+			prints("GdUnit4: Can't establish server checked port: %d, Error: %s" % [server_port, error_string(err)])
 			server_port += 1
-			prints("GdUnit3: Retry (%d) ..." % retry)
+			prints("GdUnit4: Retry (%d) ..." % retry)
 		else:
 			break
 	if err != OK:
 		if err == ERR_ALREADY_IN_USE:
-			return Result.error("GdUnit3: Can't establish server, the server is already in use. Error: %s, " % error_string(err))
-		return Result.error("GdUnit3: Can't establish server. Error: %s." % error_string(err))
+			return GdUnitResult.error("GdUnit3: Can't establish server, the server is already in use. Error: %s, " % error_string(err))
+		return GdUnitResult.error("GdUnit3: Can't establish server. Error: %s." % error_string(err))
 	prints("GdUnit4: Test server successfully started checked port: %d" % server_port)
-	return Result.success(server_port)
+	return GdUnitResult.success(server_port)
 
 
 func stop() -> void:

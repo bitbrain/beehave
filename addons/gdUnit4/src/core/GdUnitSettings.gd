@@ -12,7 +12,7 @@ const SERVER_TIMEOUT = GROUP_COMMON + "/server_connection_timeout_minutes"
 
 const GROUP_TEST = COMMON_SETTINGS + "/test"
 const TEST_TIMEOUT = GROUP_TEST + "/test_timeout_seconds"
-const TEST_ROOT_FOLDER = GROUP_TEST + "/test_root_folder"
+const TEST_LOOKUP_FOLDER = GROUP_TEST + "/test_lookup_folder"
 const TEST_SITE_NAMING_CONVENTION = GROUP_TEST + "/test_suite_naming_convention"
 
 
@@ -74,7 +74,10 @@ const DEFAULT_SERVER_TIMEOUT :int = 30
 # test case runtime timeout in seconds
 const DEFAULT_TEST_TIMEOUT :int = 60*5
 # the folder to create new test-suites
-const DEFAULT_TEST_ROOT_FOLDER := "test"
+const DEFAULT_TEST_LOOKUP_FOLDER := "test"
+
+# help texts
+const HELP_TEST_LOOKUP_FOLDER := "Sets the subfolder for the search/creation of test suites. (leave empty to use source folder)"
 
 enum NAMING_CONVENTIONS {
 	AUTO_DETECT,
@@ -87,7 +90,7 @@ static func setup():
 	create_property_if_need(UPDATE_NOTIFICATION_ENABLED, true, "Enables/Disables the update notification checked startup.")
 	create_property_if_need(SERVER_TIMEOUT, DEFAULT_SERVER_TIMEOUT, "Sets the server connection timeout in minutes.")
 	create_property_if_need(TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT, "Sets the test case runtime timeout in seconds.")
-	create_property_if_need(TEST_ROOT_FOLDER, DEFAULT_TEST_ROOT_FOLDER, "Sets the root folder where test-suites located/generated.")
+	create_property_if_need(TEST_LOOKUP_FOLDER, DEFAULT_TEST_LOOKUP_FOLDER, HELP_TEST_LOOKUP_FOLDER)
 	create_property_if_need(TEST_SITE_NAMING_CONVENTION, NAMING_CONVENTIONS.AUTO_DETECT, "Sets test-suite genrate script name convention.", NAMING_CONVENTIONS.keys())
 	create_property_if_need(REPORT_PUSH_ERRORS, false, "Enables/Disables report of push_error() as failure!")
 	create_property_if_need(REPORT_SCRIPT_ERRORS, true, "Enables/Disables report of script errors as failure!")
@@ -99,6 +102,17 @@ static func setup():
 	create_property_if_need(INSPECTOR_TOOLBAR_BUTTON_RUN_OVERALL, false, "Shows/Hides the 'Run overall Tests' button in the inspector toolbar.")
 	create_property_if_need(TEMPLATE_TS_GD, GdUnitTestSuiteTemplate.default_GD_template(), "Defines the test suite template")
 	create_shortcut_properties_if_need()
+	migrate_properties()
+
+
+static func migrate_properties() -> void:
+	var TEST_ROOT_FOLDER := "gdunit4/settings/test/test_root_folder"
+	if get_property(TEST_ROOT_FOLDER) != null:
+		migrate_property(TEST_ROOT_FOLDER,\
+			TEST_LOOKUP_FOLDER,\
+			DEFAULT_TEST_LOOKUP_FOLDER,\
+			HELP_TEST_LOOKUP_FOLDER,\
+			func(value): return DEFAULT_TEST_LOOKUP_FOLDER if value == null else value)
 
 
 static func create_shortcut_properties_if_need() -> void:
@@ -118,18 +132,21 @@ static func create_shortcut_properties_if_need() -> void:
 
 static func create_property_if_need(name :String, default :Variant, help :="", value_set := PackedStringArray()) -> void:
 	if not ProjectSettings.has_setting(name):
-		#prints("GdUnit3: Set inital settings '%s' to '%s'." % [name, str(default)])
+		#prints("GdUnit4: Set inital settings '%s' to '%s'." % [name, str(default)])
 		ProjectSettings.set_setting(name, default)
-		
+
 	ProjectSettings.set_initial_value(name, default)
-	var hint_string := help + ("" if value_set.is_empty() else " %s" % value_set)
-	var info = {
-			"name": name,
-			"type": typeof(default),
-			"hint": PROPERTY_HINT_TYPE_STRING,
-			"hint_string": hint_string
-		}
-	ProjectSettings.add_property_info(info)
+	help += "" if value_set.is_empty() else " %s" % value_set
+	set_help(name, default, help)
+
+
+static func set_help(property_name :String, value :Variant, help :String) -> void:
+	ProjectSettings.add_property_info({
+		"name": property_name,
+		"type": typeof(value),
+		"hint": PROPERTY_HINT_TYPE_STRING,
+		"hint_string": help
+	})
 
 
 static func get_setting(name :String, default :Variant) -> Variant:
@@ -171,7 +188,7 @@ static func test_timeout() -> int:
 
 # the root folder to store/generate test-suites
 static func test_root_folder() -> String:
-	return get_setting(TEST_ROOT_FOLDER, DEFAULT_TEST_ROOT_FOLDER) 
+	return get_setting(TEST_LOOKUP_FOLDER, DEFAULT_TEST_LOOKUP_FOLDER)
 
 
 static func is_verbose_assert_warnings() -> bool:
@@ -233,29 +250,55 @@ static func extract_value_set_from_help(value :String) -> PackedStringArray:
 	return values.replacen(" ", "").replacen("\"", "").split(",", false)
 
 
-static func update_property(property :GdUnitProperty) -> void:
-	if get_property(property.name()).value() != property.value():
+static func update_property(property :GdUnitProperty) -> Variant:
+	var current_value :Variant = ProjectSettings.get_setting(property.name())
+	if current_value != property.value():
+		var error :Variant = validate_property_value(property)
+		if error != null:
+			return error
 		ProjectSettings.set_setting(property.name(), property.value())
 		GdUnitSignals.instance().gdunit_settings_changed.emit(property)
-		save()
+		_save_settings()
+	return null
 
 
 static func reset_property(property :GdUnitProperty) -> void:
 	ProjectSettings.set_setting(property.name(), property.default())
 	GdUnitSignals.instance().gdunit_settings_changed.emit(property)
-	save()
+	_save_settings()
+
+
+static func validate_property_value(property :GdUnitProperty) -> Variant:
+	match property.name():
+		TEST_LOOKUP_FOLDER:
+			return validate_lookup_folder(property.value())
+		_: return null
+
+
+static func validate_lookup_folder(value :String) -> Variant:
+	if value.is_empty() or value == "/":
+		return null
+	if value.contains("res:"):
+		return "Test Lookup Folder: do not allowed to contains 'res://'"
+	if not value.is_valid_filename():
+		return "Test Lookup Folder: contains invalid characters! e.g (: / \\ ? * \" | % < >)"
+	return null
 
 
 static func save_property(name :String, value) -> void:
 	ProjectSettings.set_setting(name, value)
-	save()
+	_save_settings()
 
 
-static func save() -> void:
-	var err := ProjectSettings.save()
+static func _save_settings() -> void:
+	var err = ProjectSettings.save()
 	if err != OK:
-		push_error("Save GdUnit3 settings failed : %s" % GdUnitTools.error_as_string(err))
+		push_error("Save GdUnit4 settings failed : %s" % error_string(err))
 		return
+
+
+static func has_property(name :String) -> bool:
+	return ProjectSettings.get_property_list().any( func(property): return property["name"] == name)
 
 
 static func get_property(name :String) -> GdUnitProperty:
@@ -270,14 +313,15 @@ static func get_property(name :String) -> GdUnitProperty:
 	return null
 
 
-static func migrate_property(old_property :String, new_property :String, converter := Callable()) -> void:
+static func migrate_property(old_property :String, new_property :String, default_value :Variant, help :String, converter := Callable()) -> void:
 	var property := get_property(old_property)
 	if property == null:
-		prints("Migration not possible, property '%s' not found", old_property)
+		prints("Migration not possible, property '%s' not found" % old_property)
 		return
 	var value = converter.call(property.value()) if converter.is_valid() else property.value()
-	create_property_if_need(new_property, property.default(), property.help(), property.value_set())
 	ProjectSettings.set_setting(new_property, value)
+	ProjectSettings.set_initial_value(new_property, default_value)
+	set_help(new_property, value, help)
 	ProjectSettings.clear(old_property)
 	prints("Succesfull migrated property '%s' -> '%s' value: %s" % [old_property, new_property, value])
 

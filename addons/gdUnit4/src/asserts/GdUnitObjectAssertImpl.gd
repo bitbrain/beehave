@@ -1,11 +1,10 @@
-class_name GdUnitObjectAssertImpl
 extends GdUnitObjectAssert
 
 var _base :GdUnitAssert
 
 
 func _init(current):
-	_base = GdUnitAssertImpl.new(current)
+	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
 	if (current != null

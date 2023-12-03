@@ -1,10 +1,10 @@
-class_name GdUnitResultAssertImpl
 extends GdUnitResultAssert
 
 var _base :GdUnitAssert
 
+
 func _init(current):
-	_base = GdUnitAssertImpl.new(current)
+	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
 	if not __validate_value_type(current):
@@ -19,11 +19,11 @@ func _notification(event):
 
 
 func __validate_value_type(value) -> bool:
-	return value == null or value is Result
+	return value == null or value is GdUnitResult
 
 
-func __current() -> Result:
-	return _base.__current() as Result
+func __current() -> GdUnitResult:
+	return _base.__current() as GdUnitResult
 
 
 func report_success() -> GdUnitResultAssert:

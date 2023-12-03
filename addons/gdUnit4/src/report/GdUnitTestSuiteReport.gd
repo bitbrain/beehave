@@ -85,8 +85,8 @@ func set_failed(failed :bool, count :int) -> void:
 		_failure_count += count
 
 
-func set_reports(reports :Array) -> void:
-	_failure_reports = reports
+func set_reports(reports_ :Array) -> void:
+	_failure_reports = reports_
 
 
 func update(test_report :GdUnitTestCaseReport) -> void:

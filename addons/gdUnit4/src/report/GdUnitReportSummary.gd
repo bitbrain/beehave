@@ -1,6 +1,8 @@
 class_name GdUnitReportSummary
 extends RefCounted
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
 const CHARACTERS_TO_ENCODE := {
 	'<' : '&lt;',
 	'>' : '&gt;'

@@ -1,19 +1,11 @@
-## Decorator nodes are used to transform the result received by its child.
-## Must only have one child.
 @tool
 @icon("../../icons/category_decorator.svg")
 class_name Decorator extends BeehaveNode
 
+## Decorator nodes are used to transform the result received by its child.
+## Must only have one child.
 
 var running_child: BeehaveNode = null
-
-
-func _ready():
-	if Engine.is_editor_hint():
-		return
-
-	if self.get_child_count() != 1:
-		push_warning("Beehave Error: Decorator %s should have only one child (NodePath: %s)" % [self.name, self.get_path()])
 
 
 func _get_configuration_warnings() -> PackedStringArray:

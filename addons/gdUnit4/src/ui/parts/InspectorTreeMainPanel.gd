@@ -15,10 +15,10 @@ signal run_testsuite
 
 # tree icons
 @onready var ICON_SPINNER = load("res://addons/gdUnit4/src/ui/assets/spinner.tres")
-@onready var ICON_TEST_DEFAULT = load_resized_texture("res://addons/gdUnit4/src/ui/assets/TestCase.svg")
-@onready var ICON_TEST_SUCCESS = load_resized_texture("res://addons/gdUnit4/src/ui/assets/TestCaseSuccess.svg")
-@onready var ICON_TEST_FAILED = load_resized_texture("res://addons/gdUnit4/src/ui/assets/TestCaseFailed.svg")
-@onready var ICON_TEST_ERROR = load_resized_texture("res://addons/gdUnit4/src/ui/assets/TestCaseError.svg")
+@onready var ICON_TEST_DEFAULT = load("res://addons/gdUnit4/src/ui/assets/TestCase.svg")
+@onready var ICON_TEST_SUCCESS = load("res://addons/gdUnit4/src/ui/assets/TestCaseSuccess.svg")
+@onready var ICON_TEST_FAILED = load("res://addons/gdUnit4/src/ui/assets/TestCaseFailed.svg")
+@onready var ICON_TEST_ERROR = load("res://addons/gdUnit4/src/ui/assets/TestCaseError.svg")
 @onready var ICON_TEST_SUCCESS_ORPHAN = load("res://addons/gdUnit4/src/ui/assets/TestCase_success_orphan.tres")
 @onready var ICON_TEST_FAILED_ORPHAN = load("res://addons/gdUnit4/src/ui/assets/TestCase_failed_orphan.tres")
 @onready var ICON_TEST_ERRORS_ORPHAN = load("res://addons/gdUnit4/src/ui/assets/TestCase_error_orphan.tres")
@@ -126,9 +126,9 @@ func is_test_suite(item :TreeItem) -> bool:
 
 
 func _ready():
-	init_tree()
 	if Engine.is_editor_hint():
 		_editor = Engine.get_meta("GdUnitEditorPlugin")
+	init_tree()
 	GdUnitSignals.instance().gdunit_add_test_suite.connect(_on_gdunit_add_test_suite)
 	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
 	var command_handler := GdUnitCommandHandler.instance()
@@ -144,20 +144,15 @@ func _process(_delta):
 		queue_redraw()
 
 
-func load_resized_texture(path :String, width :int = 16, height :int = 16) -> Texture2D:
-	var texture :Texture2D = load(path)
-	var image := texture.get_image()
-	if width > 0 && height > 0:
-		image.resize(width, height)
-	return ImageTexture.create_from_image(image)
-
-
 func init_tree() -> void:
 	cleanup_tree()
 	_tree.set_hide_root(true)
 	_tree.ensure_cursor_is_visible()
 	_tree.allow_rmb_select = true
 	_tree_root = _tree.create_item()
+	# fix tree icon scaling
+	var scale_factor := _editor.get_editor_interface().get_editor_scale() if Engine.is_editor_hint() else 1.0
+	_tree.set("theme_override_constants/icon_max_width", 16*scale_factor)
 
 
 func cleanup_tree() -> void:
@@ -213,6 +208,9 @@ func set_state_skipped(item :TreeItem) -> void:
 
 
 func set_state_warnings(item :TreeItem) -> void:
+	# Do not overwrite higher states
+	if is_state_error(item) or is_state_failed(item):
+		return
 	item.set_meta(META_GDUNIT_STATE, STATE.WARNING)
 	item.set_custom_color(0, Color.YELLOW)
 	item.set_icon(0, ICON_TEST_SUCCESS)
@@ -220,6 +218,9 @@ func set_state_warnings(item :TreeItem) -> void:
 
 
 func set_state_failed(item :TreeItem) -> void:
+	# Do not overwrite higher states
+	if is_state_error(item):
+		return
 	item.set_meta(META_GDUNIT_STATE, STATE.FAILED)
 	item.set_custom_color(0, Color.LIGHT_BLUE)
 	item.set_icon(0, ICON_TEST_FAILED)
@@ -256,12 +257,12 @@ func set_state_orphan(item :TreeItem, event: GdUnitEvent) -> void:
 	item.set_meta(META_GDUNIT_ORPHAN, orphan_count)
 	item.set_custom_color(0, Color.YELLOW)
 	item.set_tooltip_text(0, "Total <%d> orphan nodes detected." % orphan_count)
-	if is_state_warning(item):
-		item.set_icon(0, ICON_TEST_SUCCESS_ORPHAN)
+	if is_state_error(item):
+		item.set_icon(0, ICON_TEST_ERRORS_ORPHAN)
 	elif is_state_failed(item):
 		item.set_icon(0, ICON_TEST_FAILED_ORPHAN)
-	elif is_state_error(item):
-		item.set_icon(0, ICON_TEST_ERRORS_ORPHAN)
+	elif is_state_warning(item):
+		item.set_icon(0, ICON_TEST_SUCCESS_ORPHAN)
 
 
 func update_state(item: TreeItem, event :GdUnitEvent) -> void:
@@ -270,12 +271,12 @@ func update_state(item: TreeItem, event :GdUnitEvent) -> void:
 	else:
 		if event.is_skipped():
 			set_state_skipped(item)
-		elif event.is_warning():
-			set_state_warnings(item)
-		elif event.is_failed():
-			set_state_failed(item)
 		elif event.is_error():
 			set_state_error(item)
+		elif event.is_failed():
+			set_state_failed(item)
+		elif event.is_warning():
+			set_state_warnings(item)
 		for report in event.reports():
 			add_report(item, report)
 	set_state_orphan(item, event)

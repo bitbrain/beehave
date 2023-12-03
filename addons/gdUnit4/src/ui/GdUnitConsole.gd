@@ -58,6 +58,13 @@ func init_statistics(event :GdUnitEvent) :
 	_summary["total_count"] += event.total_count()
 
 
+func reset_statistics() -> void:
+	for k in _statistics.keys():
+		_statistics[k] = 0
+	for k in _summary.keys():
+		_summary[k] = 0
+
+
 func update_statistics(event :GdUnitEvent) :
 	_statistics["error_count"] += event.error_count()
 	_statistics["failed_count"] += event.failed_count()
@@ -87,7 +94,8 @@ func println_message(message :String, color :Color = _text_color, indent :int = 
 func _on_gdunit_event(event :GdUnitEvent):
 	match event.type():
 		GdUnitEvent.INIT:
-			_summary["total_count"] = 0
+			reset_statistics()
+		
 		GdUnitEvent.STOP:
 			print_message("Summary:", Color.DODGER_BLUE)
 			println_message("| %d total | %d error | %d failed | %d skipped | %d orphans |" % [_summary["total_count"], _summary["error_count"], _summary["failed_count"], _summary["skipped_count"], _summary["orphan_nodes"]], _text_color, 1)
@@ -96,9 +104,14 @@ func _on_gdunit_event(event :GdUnitEvent):
 		GdUnitEvent.TESTSUITE_BEFORE:
 			init_statistics(event)
 			print_message("Execute: ", Color.DODGER_BLUE)
-			println_message( event._suite_name, _engine_type_color)
+			println_message(event._suite_name, _engine_type_color)
 		
 		GdUnitEvent.TESTSUITE_AFTER:
+			update_statistics(event)
+			if not event.reports().is_empty():
+				var report :GdUnitReport = event.reports().front()
+				println_message("\t" +event._suite_name, _engine_type_color)
+				println_message("line %d %s" % [report._line_number, report._message], _text_color, 2)
 			if event.is_success():
 				print_message("[wave]PASSED[/wave]", Color.LIGHT_GREEN)
 			else:

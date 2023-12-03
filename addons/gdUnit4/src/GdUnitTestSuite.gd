@@ -3,23 +3,56 @@
 ## You have to extend and implement your test cases as described[br]
 ## e.g MyTests.gd [br]
 ## [codeblock]
-## 	extends GdUnitTestSuite
-## 	# testcase
-## 	func test_testCaseA():
-## 	    assert_that("value").is_equal("value")
-## [/codeblock][br]
+##    extends GdUnitTestSuite
+##    # testcase
+##    func test_case_a():
+##       assert_that("value").is_equal("value")
+## [/codeblock]
 ## @tutorial:  https://mikeschulze.github.io/gdUnit4/faq/test-suite/
 
 @icon("res://addons/gdUnit4/src/ui/assets/TestSuite.svg")
 class_name GdUnitTestSuite
 extends Node
 
-
-const NO_ARG = GdUnitConstants.NO_ARG
+const NO_ARG :Variant = GdUnitConstants.NO_ARG
 
 ### internal runtime variables that must not be overwritten!!!
+@warning_ignore("unused_private_class_variable")
 var __is_skipped := false
+@warning_ignore("unused_private_class_variable")
 var __skip_reason :String = "Unknow."
+var __active_test_case :String
+var __awaiter := __gdunit_awaiter()
+# holds the actual execution context
+var __execution_context
+
+
+### We now load all used asserts and tool scripts into the cache according to the principle of "lazy loading"
+### in order to noticeably reduce the loading time of the test suite.
+# We go this hard way to increase the loading performance to avoid reparsing all the used scripts
+# for more detailed info -> https://github.com/godotengine/godot/issues/67400
+func __lazy_load(script_path :String) -> GDScript:
+	return GdUnitAssertions.__lazy_load(script_path)
+
+
+func __gdunit_assert() -> GDScript:
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd")
+
+
+func __gdunit_tools() -> GDScript:
+	return __lazy_load("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
+
+func __gdunit_awaiter() -> Object:
+	return __lazy_load("res://addons/gdUnit4/src/GdUnitAwaiter.gd").new()
+
+
+func __gdunit_argument_matchers():
+	return __lazy_load("res://addons/gdUnit4/src/matchers/GdUnitArgumentMatchers.gd")
+
+
+func __gdunit_object_interactions():
+	return __lazy_load("res://addons/gdUnit4/src/core/GdUnitObjectInteractions.gd")
 
 
 ## This function is called before a test suite starts[br]
@@ -50,7 +83,6 @@ func is_failure(_expected_failure :String = NO_ARG) -> bool:
 	return Engine.get_meta("GD_TEST_FAILURE") if Engine.has_meta("GD_TEST_FAILURE") else false
 
 
-var __active_test_case :String
 func set_active_test_case(test_case :String) -> void:
 	__active_test_case = test_case
 
@@ -59,60 +91,67 @@ func set_active_test_case(test_case :String) -> void:
 # Mapps Godot error number to a readable error message. See at ERROR
 # https://docs.godotengine.org/de/stable/classes/class_@globalscope.html#enum-globalscope-error
 func error_as_string(error_number :int) -> String:
-	return GdUnitTools.error_as_string(error_number)
+	return __gdunit_tools().error_as_string(error_number)
 
 
 ## A litle helper to auto freeing your created objects after test execution
 func auto_free(obj) -> Variant:
-	return GdUnitMemoryPool.register_auto_free(obj, get_meta(GdUnitMemoryPool.META_PARAM))
+	return __execution_context.register_auto_free(obj)
+
+
+@warning_ignore("native_method_override")
+func add_child(node :Node, force_readable_name := false, internal := Node.INTERNAL_MODE_DISABLED) -> void:
+	super.add_child(node, force_readable_name, internal)
+	if __execution_context != null:
+		__execution_context.orphan_monitor_start()
 
 
 ## Discard the error message triggered by a timeout (interruption).[br]
 ## By default, an interrupted test is reported as an error.[br]
 ## This function allows you to change the message to Success when an interrupted error is reported.
 func discard_error_interupted_by_timeout() -> void:
-	GdUnitTools.register_expect_interupted_by_timeout(self, __active_test_case)
+	__gdunit_tools().register_expect_interupted_by_timeout(self, __active_test_case)
 
 
 ## Creates a new directory under the temporary directory *user://tmp*[br]
 ## Useful for storing data during test execution. [br]
 ## The directory is automatically deleted after test suite execution
 func create_temp_dir(relative_path :String) -> String:
-	return GdUnitTools.create_temp_dir(relative_path)
+	return __gdunit_tools().create_temp_dir(relative_path)
 
 
 ## Deletes the temporary base directory[br]
 ## Is called automatically after each execution of the test suite
 func clean_temp_dir():
-	GdUnitTools.clear_tmp()
+	__gdunit_tools().clear_tmp()
 
 
 ## Creates a new file under the temporary directory *user://tmp* + <relative_path>[br]
 ## with given name <file_name> and given file <mode> (default = File.WRITE)[br]
 ## If success the returned File is automatically closed after the execution of the test suite
 func create_temp_file(relative_path :String, file_name :String, mode := FileAccess.WRITE) -> FileAccess:
-	return GdUnitTools.create_temp_file(relative_path, file_name, mode)
+	return __gdunit_tools().create_temp_file(relative_path, file_name, mode)
 
 
 ## Reads a resource by given path <resource_path> into a PackedStringArray.
 func resource_as_array(resource_path :String) -> PackedStringArray:
-	return GdUnitTools.resource_as_array(resource_path)
+	return __gdunit_tools().resource_as_array(resource_path)
 
 
 ## Reads a resource by given path <resource_path> and returned the content as String.
 func resource_as_string(resource_path :String) -> String:
-	return GdUnitTools.resource_as_string(resource_path)
+	return __gdunit_tools().resource_as_string(resource_path)
 
 
 ## Reads a resource by given path <resource_path> and return Variand translated by str_to_var
 func resource_as_var(resource_path :String):
-	return str_to_var(GdUnitTools.resource_as_string(resource_path))
+	return str_to_var(__gdunit_tools().resource_as_string(resource_path))
 
 
 ## clears the debuger error list[br]
 ## PROTOTYPE!!!! Don't use it for now
 func clear_push_errors() -> void:
-	GdUnitTools.clear_push_errors()
+	__gdunit_tools().clear_push_errors()
 
 
 ## Waits for given signal is emited by the <source> until a specified timeout to fail[br]
@@ -121,17 +160,12 @@ func clear_push_errors() -> void:
 ## args: the expected signal arguments as an array[br]
 ## timeout: the timeout in ms, default is set to 2000ms
 func await_signal_on(source :Object, signal_name :String, args :Array = [], timeout :int = 2000) -> Variant:
-	# fail fast if the given source instance invalid
-	if not is_instance_valid(source):
-		GdUnitAssertImpl.new(signal_name)\
-			.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), GdUnitAssertImpl._get_line_number())
-		return await GdUnitAwaiter.await_idle_frame()
-	return await GdUnitAwaiter.await_signal_on(source, signal_name, args, timeout)
+	return await __awaiter.await_signal_on(source, signal_name, args, timeout)
 
 
 ## Waits until the next idle frame
 func await_idle_frame():
-	await GdUnitAwaiter.await_idle_frame()
+	await __awaiter.await_idle_frame()
 
 
 ## Waits for for a given amount of milliseconds[br]
@@ -142,7 +176,7 @@ func await_idle_frame():
 ## [/codeblock][br]
 ## use this waiter and not `await get_tree().create_timer().timeout to prevent errors when a test case is timed out
 func await_millis(timeout :int):
-	await GdUnitAwaiter.await_millis(timeout)
+	await __awaiter.await_millis(timeout)
 
 
 ## Creates a new scene runner to allow simulate interactions checked a scene.[br]
@@ -157,7 +191,7 @@ func await_millis(timeout :int):
 ##    var runner := scene_runner("res://foo/my_scne.tscn")
 ## [/codeblock]
 func scene_runner(scene, verbose := false) -> GdUnitSceneRunner:
-	return auto_free(GdUnitSceneRunnerImpl.new(scene, verbose))
+	return auto_free(__lazy_load("res://addons/gdUnit4/src/core/GdUnitSceneRunnerImpl.gd").new(scene, verbose))
 
 
 # === Mocking  & Spy ===========================================================
@@ -173,12 +207,12 @@ const RETURN_DEEP_STUB = GdUnitMock.RETURN_DEEP_STUB
 
 ## Creates a mock for given class name
 func mock(clazz, mock_mode := RETURN_DEFAULTS) -> Object:
-	return GdUnitMockBuilder.build(self, clazz, mock_mode)
+	return __lazy_load("res://addons/gdUnit4/src/mocking/GdUnitMockBuilder.gd").build(clazz, mock_mode)
 
 
 ## Creates a spy checked given object instance
-func spy(instance):
-	return GdUnitSpyBuilder.build(self, instance)
+func spy(instance) -> Object:
+	return __lazy_load("res://addons/gdUnit4/src/spy/GdUnitSpyBuilder.gd").build(instance)
 
 
 ## Configures a return value for the specified function and used arguments.[br]
@@ -193,22 +227,22 @@ func do_return(value) -> GdUnitMock:
 
 ## Verifies certain behavior happened at least once or exact number of times
 func verify(obj, times := 1):
-	return GdUnitObjectInteractions.verify(obj, times)
+	return __gdunit_object_interactions().verify(obj, times)
 
 
 ## Verifies no interactions is happen checked this mock or spy
 func verify_no_interactions(obj) -> GdUnitAssert:
-	return GdUnitObjectInteractions.verify_no_interactions(obj)
+	return __gdunit_object_interactions().verify_no_interactions(obj)
 
 
 ## Verifies the given mock or spy has any unverified interaction.
 func verify_no_more_interactions(obj) -> GdUnitAssert:
-	return GdUnitObjectInteractions.verify_no_more_interactions(obj)
+	return __gdunit_object_interactions().verify_no_more_interactions(obj)
 
 
 ## Resets the saved function call counters checked a mock or spy
 func reset(obj) -> void:
-	GdUnitObjectInteractions.reset(obj)
+	__gdunit_object_interactions().reset(obj)
 
 
 ## Starts monitoring the specified source to collect all transmitted signals.[br]
@@ -224,45 +258,47 @@ func reset(obj) -> void:
 ##		await assert_signal(emitter).is_emitted('my_signal')
 ##	[/codeblock]
 func monitor_signals(source :Object, _auto_free := true) -> Object:
-	var signal_collector := GdUnitThreadManager.get_current_context().get_signal_collector()
-	signal_collector.register_emitter(source)
+	__lazy_load("res://addons/gdUnit4/src/core/thread/GdUnitThreadManager.gd")\
+		.get_current_context()\
+		.get_signal_collector()\
+		.register_emitter(source)
 	return auto_free(source) if _auto_free else source
 
 
 # === Argument matchers ========================================================
 ## Argument matcher to match any argument
 func any() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.any()
+	return __gdunit_argument_matchers().any()
 
 
 ## Argument matcher to match any boolean value
 func any_bool() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_BOOL)
+	return __gdunit_argument_matchers().by_type(TYPE_BOOL)
 
 
 ## Argument matcher to match any integer value
 func any_int() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_INT)
+	return __gdunit_argument_matchers().by_type(TYPE_INT)
 
 
 ## Argument matcher to match any float value
 func any_float() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_FLOAT)
+	return __gdunit_argument_matchers().by_type(TYPE_FLOAT)
 
 
 ## Argument matcher to match any string value
 func any_string() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_STRING)
+	return __gdunit_argument_matchers().by_type(TYPE_STRING)
 
 
 ## Argument matcher to match any Color value
 func any_color() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_COLOR)
+	return __gdunit_argument_matchers().by_type(TYPE_COLOR)
 
 
 ## Argument matcher to match any Vector typed value
 func any_vector() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_types([
+	return __gdunit_argument_matchers().by_types([
 		TYPE_VECTOR2,
 		TYPE_VECTOR2I,
 		TYPE_VECTOR3,
@@ -274,142 +310,151 @@ func any_vector() -> GdUnitArgumentMatcher:
 
 ## Argument matcher to match any Vector2 value
 func any_vector2() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR2)
+	return __gdunit_argument_matchers().by_type(TYPE_VECTOR2)
 
 
 ## Argument matcher to match any Vector2i value
 func any_vector2i() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR2I)
+	return __gdunit_argument_matchers().by_type(TYPE_VECTOR2I)
 
 
 ## Argument matcher to match any Vector3 value
 func any_vector3() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR3)
+	return __gdunit_argument_matchers().by_type(TYPE_VECTOR3)
 
 
 ## Argument matcher to match any Vector3i value
 func any_vector3i() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR3I)
+	return __gdunit_argument_matchers().by_type(TYPE_VECTOR3I)
 
 
 ## Argument matcher to match any Vector4 value
 func any_vector4() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR4)
+	return __gdunit_argument_matchers().by_type(TYPE_VECTOR4)
 
 
 ## Argument matcher to match any Vector3i value
 func any_vector4i() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_VECTOR4I)
+	return __gdunit_argument_matchers().by_type(TYPE_VECTOR4I)
 
 
 ## Argument matcher to match any Rect2 value
 func any_rect2() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_RECT2)
+	return __gdunit_argument_matchers().by_type(TYPE_RECT2)
 
 
 ## Argument matcher to match any Plane value
 func any_plane() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_PLANE)
+	return __gdunit_argument_matchers().by_type(TYPE_PLANE)
 
 
 ## Argument matcher to match any Quaternion value
 func any_quat() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_QUATERNION)
+	return __gdunit_argument_matchers().by_type(TYPE_QUATERNION)
 
 
 ## Argument matcher to match any AABB value
 func any_aabb() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_AABB)
+	return __gdunit_argument_matchers().by_type(TYPE_AABB)
 
 
 ## Argument matcher to match any Basis value
 func any_basis() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_BASIS)
+	return __gdunit_argument_matchers().by_type(TYPE_BASIS)
 
 
 ## Argument matcher to match any Transform3D value
 func any_transform() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_TRANSFORM3D)
+	return __gdunit_argument_matchers().by_type(TYPE_TRANSFORM3D)
 
 
 ## Argument matcher to match any Transform2D value
 func any_transform_2d() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_TRANSFORM2D)
+	return __gdunit_argument_matchers().by_type(TYPE_TRANSFORM2D)
 
 
 ## Argument matcher to match any NodePath value
 func any_node_path() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_NODE_PATH)
+	return __gdunit_argument_matchers().by_type(TYPE_NODE_PATH)
 
 
 ## Argument matcher to match any RID value
 func any_rid() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_RID)
+	return __gdunit_argument_matchers().by_type(TYPE_RID)
 
 
 ## Argument matcher to match any Object value
 func any_object() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_OBJECT)
+	return __gdunit_argument_matchers().by_type(TYPE_OBJECT)
 
 
 ## Argument matcher to match any Dictionary value
 func any_dictionary() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_DICTIONARY)
+	return __gdunit_argument_matchers().by_type(TYPE_DICTIONARY)
 
 
 ## Argument matcher to match any Array value
 func any_array() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_ARRAY)
+	return __gdunit_argument_matchers().by_type(TYPE_ARRAY)
 
 
 ## Argument matcher to match any PackedByteArray value
 func any_pool_byte_array() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_PACKED_BYTE_ARRAY)
+	return __gdunit_argument_matchers().by_type(TYPE_PACKED_BYTE_ARRAY)
 
 
 ## Argument matcher to match any PackedInt32Array value
 func any_pool_int_array() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_PACKED_INT32_ARRAY)
+	return __gdunit_argument_matchers().by_type(TYPE_PACKED_INT32_ARRAY)
 
 
 ## Argument matcher to match any PackedFloat32Array value
 func any_pool_float_array() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_PACKED_FLOAT32_ARRAY)
+	return __gdunit_argument_matchers().by_type(TYPE_PACKED_FLOAT32_ARRAY)
 
 
 ## Argument matcher to match any PackedStringArray value
 func any_pool_string_array() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_PACKED_STRING_ARRAY)
+	return __gdunit_argument_matchers().by_type(TYPE_PACKED_STRING_ARRAY)
 
 
 ## Argument matcher to match any PackedVector2Array value
 func any_pool_vector2_array() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_PACKED_VECTOR2_ARRAY)
+	return __gdunit_argument_matchers().by_type(TYPE_PACKED_VECTOR2_ARRAY)
 
 
 ## Argument matcher to match any PackedVector3Array value
 func any_pool_vector3_array() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_PACKED_VECTOR3_ARRAY)
+	return __gdunit_argument_matchers().by_type(TYPE_PACKED_VECTOR3_ARRAY)
 
 
 ## Argument matcher to match any PackedColorArray value
 func any_pool_color_array() -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.by_type(TYPE_PACKED_COLOR_ARRAY)
+	return __gdunit_argument_matchers().by_type(TYPE_PACKED_COLOR_ARRAY)
 
 
 ## Argument matcher to match any instance of given class
 func any_class(clazz :Object) -> GdUnitArgumentMatcher:
-	return GdUnitArgumentMatchers.any_class(clazz)
+	return __gdunit_argument_matchers().any_class(clazz)
 
 
 # === value extract utils ======================================================
 ## Builds an extractor by given function name and optional arguments
 func extr(func_name :String, args := Array()) -> GdUnitValueExtractor:
-	return GdUnitFuncValueExtractor.new(func_name, args)
+	return __lazy_load("res://addons/gdUnit4/src/extractors/GdUnitFuncValueExtractor.gd").new(func_name, args)
 
 
 ## Constructs a tuple by given arguments
-func tuple(arg0, arg1=GdUnitTuple.NO_ARG, arg2=GdUnitTuple.NO_ARG, arg3=GdUnitTuple.NO_ARG, arg4=GdUnitTuple.NO_ARG, arg5=GdUnitTuple.NO_ARG, arg6=GdUnitTuple.NO_ARG, arg7=GdUnitTuple.NO_ARG, arg8=GdUnitTuple.NO_ARG, arg9=GdUnitTuple.NO_ARG) -> GdUnitTuple:
+func tuple(arg0 :Variant,
+	arg1 :Variant=NO_ARG,
+	arg2 :Variant=NO_ARG,
+	arg3 :Variant=NO_ARG,
+	arg4 :Variant=NO_ARG,
+	arg5 :Variant=NO_ARG,
+	arg6 :Variant=NO_ARG,
+	arg7 :Variant=NO_ARG,
+	arg8 :Variant=NO_ARG,
+	arg9 :Variant=NO_ARG) -> GdUnitTuple:
 	return GdUnitTuple.new(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
 
 
@@ -418,10 +463,6 @@ func tuple(arg0, arg1=GdUnitTuple.NO_ARG, arg2=GdUnitTuple.NO_ARG, arg3=GdUnitTu
 ## The common assertion tool to verify values.
 ## It checks the given value by type to fit to the best assert
 func assert_that(current) -> GdUnitAssert:
-	
-	if GdArrayTools.is_array_type(current):
-		return assert_array(current)
-	
 	match typeof(current):
 		TYPE_BOOL:
 			return assert_bool(current)
@@ -435,32 +476,34 @@ func assert_that(current) -> GdUnitAssert:
 			return assert_vector(current)
 		TYPE_DICTIONARY:
 			return assert_dict(current)
-		TYPE_ARRAY:
+		TYPE_ARRAY, TYPE_PACKED_BYTE_ARRAY, TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY,\
+		TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_FLOAT64_ARRAY, TYPE_PACKED_STRING_ARRAY,\
+		TYPE_PACKED_VECTOR2_ARRAY, TYPE_PACKED_VECTOR3_ARRAY, TYPE_PACKED_COLOR_ARRAY:
 			return assert_array(current)
 		TYPE_OBJECT, TYPE_NIL:
 			return assert_object(current)
 		_:
-			return GdUnitAssertImpl.new(current)
+			return __gdunit_assert().new(current)
 
 
 ## An assertion tool to verify boolean values.
 func assert_bool(current) -> GdUnitBoolAssert:
-	return GdUnitBoolAssertImpl.new(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitBoolAssertImpl.gd").new(current)
 
 
 ## An assertion tool to verify String values.
 func assert_str(current) -> GdUnitStringAssert:
-	return GdUnitStringAssertImpl.new(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitStringAssertImpl.gd").new(current)
 
 
 ## An assertion tool to verify integer values.
 func assert_int(current) -> GdUnitIntAssert:
-	return GdUnitIntAssertImpl.new(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitIntAssertImpl.gd").new(current)
 
 
 ## An assertion tool to verify float values.
 func assert_float(current) -> GdUnitFloatAssert:
-	return GdUnitFloatAssertImpl.new(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitFloatAssertImpl.gd").new(current)
 
 
 ## An assertion tool to verify Vector values.[br]
@@ -470,55 +513,41 @@ func assert_float(current) -> GdUnitFloatAssert:
 ##		assert_vector(Vector2(1.2, 1.000001)).is_equal(Vector2(1.2, 1.000001))
 ##     [/codeblock]
 func assert_vector(current) -> GdUnitVectorAssert:
-	return GdUnitVectorAssertImpl.new(current)
-
-
-## An assertion tool to verify Vector2 values.[br]
-## This function is [b]deprecated[/b] you have to use [method assert_vector] instead
-func assert_vector2(current) -> GdUnitVectorAssert:
-	push_warning("assert_vector2 is deprecated, Use 'assert_vector' instead.")
-	return assert_vector(current)
-
-
-## An assertion tool to verify Vector3 values.[br]
-## This function is [b]deprecated[/b] you have to use [method assert_vector] instead
-func assert_vector3(current) -> GdUnitVectorAssert:
-	push_warning("assert_vector3 is deprecated, Use 'assert_vector' instead.")
-	return assert_vector(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitVectorAssertImpl.gd").new(current)
 
 
 ## An assertion tool to verify arrays.
 func assert_array(current) -> GdUnitArrayAssert:
-	return GdUnitArrayAssertImpl.new(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitArrayAssertImpl.gd").new(current)
 
 
 ## An assertion tool to verify dictionaries.
 func assert_dict(current) -> GdUnitDictionaryAssert:
-	return GdUnitDictionaryAssertImpl.new(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitDictionaryAssertImpl.gd").new(current)
 
 
 ## An assertion tool to verify FileAccess.
 func assert_file(current) -> GdUnitFileAssert:
-	return GdUnitFileAssertImpl.new(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitFileAssertImpl.gd").new(current)
 
 
 ## An assertion tool to verify Objects.
 func assert_object(current) -> GdUnitObjectAssert:
-	return GdUnitObjectAssertImpl.new(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitObjectAssertImpl.gd").new(current)
 
 
 func assert_result(current) -> GdUnitResultAssert:
-	return GdUnitResultAssertImpl.new(current)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitResultAssertImpl.gd").new(current)
 
 
 ## An assertion tool that waits until a certain time for an expected function return value
 func assert_func(instance :Object, func_name :String, args := Array()) -> GdUnitFuncAssert:
-	return GdUnitFuncAssertImpl.new(instance, func_name, args)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitFuncAssertImpl.gd").new(instance, func_name, args)
 
 
 ## An Assertion Tool to verify for emitted signals until a certain time.
 func assert_signal(instance :Object) -> GdUnitSignalAssert:
-	return GdUnitSignalAssertImpl.new(instance)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitSignalAssertImpl.gd").new(instance)
 
 
 ## An assertion tool to test for failing assertions.[br]
@@ -529,7 +558,7 @@ func assert_signal(instance :Object) -> GdUnitSignalAssert:
 ##		    .has_message("Expecting:\n 'true'\n not equal to\n 'true'")
 ##     [/codeblock]
 func assert_failure(assertion :Callable) -> GdUnitFailureAssert:
-	return GdUnitFailureAssertImpl.new().execute(assertion)
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitFailureAssertImpl.gd").new().execute(assertion)
 
 
 ## An assertion tool to test for failing assertions.[br]
@@ -540,7 +569,7 @@ func assert_failure(assertion :Callable) -> GdUnitFailureAssert:
 ##		    .has_message("Expecting:\n 'true'\n not equal to\n 'true'")
 ##     [/codeblock]
 func assert_failure_await(assertion :Callable) -> GdUnitFailureAssert:
-	return await GdUnitFailureAssertImpl.new().execute_and_await(assertion)
+	return await __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitFailureAssertImpl.gd").new().execute_and_await(assertion)
 
 
 ## An assertion tool to verify for Godot errors.[br]
@@ -556,26 +585,15 @@ func assert_failure_await(assertion :Callable) -> GdUnitFailureAssert:
 ##		    .is_push_error('test error')
 ##     [/codeblock]
 func assert_error(current :Callable) -> GdUnitGodotErrorAssert:
-	return GdUnitGodotErrorAssertImpl.new(current)
-
-
-## Utility to check if a test has failed in a particular line and if there is an error message
-func assert_failed_at(line_number :int, expected_failure :String) -> bool:
-	var is_failed = is_failure()
-	var last_failure = GdAssertReports.current_failure()
-	var last_failure_line = GdAssertReports.get_last_error_line_number()
-	assert_str(last_failure).is_equal(expected_failure)
-	assert_int(last_failure_line).is_equal(line_number)
-	GdAssertReports.expect_fail(true)
-	return is_failed
+	return __lazy_load("res://addons/gdUnit4/src/asserts/GdUnitGodotErrorAssertImpl.gd").new(current)
 
 
 func assert_not_yet_implemented():
-	GdUnitAssertImpl.new(null).test_fail()
+	__gdunit_assert().new(null).test_fail()
 
 
 func fail(message :String):
-	GdUnitAssertImpl.new(null).report_error(message)
+	__gdunit_assert().new(null).report_error(message)
 
 
 # --- internal stuff do not override!!!

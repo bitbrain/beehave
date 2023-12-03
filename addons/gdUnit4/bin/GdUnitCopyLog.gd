@@ -1,6 +1,8 @@
 #!/usr/bin/env -S godot -s
 extends MainLoop
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
 const NO_LOG_TEMPLATE = """
 <!DOCTYPE html>
 <html>
@@ -89,13 +91,13 @@ func _patch_report(report_path :String, godot_log :String) -> void:
 	index_file.seek(0)
 	index_file.store_string(content)
 	
-func _copy_and_pach(from_file: String, to_dir: String) -> Result:
+func _copy_and_pach(from_file: String, to_dir: String) -> GdUnitResult:
 	var result := GdUnitTools.copy_file(from_file, to_dir)
 	if result.is_error():
 		return result
 	var file := FileAccess.open(from_file, FileAccess.READ)
 	if file == null:
-		return Result.error("Can't find file '%s'. Error: %s" % [from_file, GdUnitTools.error_as_string(FileAccess.get_open_error())])
+		return GdUnitResult.error("Can't find file '%s'. Error: %s" % [from_file, GdUnitTools.error_as_string(FileAccess.get_open_error())])
 	var content := file.get_as_text()
 	# patch out console format codes
 	for color_index in range(0, 256):
@@ -108,9 +110,9 @@ func _copy_and_pach(from_file: String, to_dir: String) -> Result:
 	var to_file := to_dir + "/" + from_file.get_file()
 	file = FileAccess.open(to_file, FileAccess.WRITE)
 	if file == null:
-		return Result.error("Can't open to write '%s'. Error: %s" % [to_file, GdUnitTools.error_as_string(FileAccess.get_open_error())])
+		return GdUnitResult.error("Can't open to write '%s'. Error: %s" % [to_file, GdUnitTools.error_as_string(FileAccess.get_open_error())])
 	file.store_string(content)
-	return Result.empty()
+	return GdUnitResult.empty()
 
 func reports_available() -> bool:
 	return DirAccess.dir_exists_absolute(_report_root_path)

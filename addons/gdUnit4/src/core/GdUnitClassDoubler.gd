@@ -2,6 +2,9 @@
 class_name GdUnitClassDoubler
 extends RefCounted
 
+
+const DOUBLER_INSTANCE_ID_PREFIX := "gdunit_doubler_instance_id_"
+const DOUBLER_TEMPLATE :GDScript = preload("res://addons/gdUnit4/src/core/GdUnitObjectInteractionsTemplate.gd")
 const EXCLUDE_VIRTUAL_FUNCTIONS = [
 	# we have to exclude notifications because NOTIFICATION_PREDELETE is try
 	# to delete already freed spy/mock resources and will result in a conflict
@@ -11,7 +14,6 @@ const EXCLUDE_VIRTUAL_FUNCTIONS = [
 	"get_path",
 	"duplicate",
 	]
-
 # define functions to be exclude when spy or mock checked a scene
 const EXLCUDE_SCENE_FUNCTIONS = [
 	# needs to exclude get/set script functions otherwise it endsup in recursive endless loop
@@ -20,28 +22,30 @@ const EXLCUDE_SCENE_FUNCTIONS = [
 	# needs to exclude otherwise verify fails checked collection arguments checked calling to string
 	"_to_string",
 ]
-
 const EXCLUDE_FUNCTIONS = ["new", "free", "get_instance_id", "get_tree"]
+
+
+static func check_leaked_instances() -> void:
+	## we check that all registered spy/mock instances are removed from the engine meta data
+	for key in Engine.get_meta_list():
+		if key.begins_with(DOUBLER_INSTANCE_ID_PREFIX):
+			var instance =  Engine.get_meta(key)
+			push_error("GdUnit internal error: an spy/mock instance '%s', class:'%s' is not removed from the engine and will lead in a leaked instance!" % [instance, instance.__SOURCE_CLASS])
 
 
 # loads the doubler template
 # class_info = { "class_name": <>, "class_path" : <>}
-static func load_template(template :Object, class_info :Dictionary, instance :Object) -> PackedStringArray:
-	var source_code = template.new().get_script().source_code
+static func load_template(template :String, class_info :Dictionary, instance :Object) -> PackedStringArray:
 	# store instance id
-	source_code = source_code.replace("${instance_id}", "instance_%d" % instance.get_instance_id())
+	var source_code = template\
+		.replace("${instance_id}", "%s%d" % [DOUBLER_INSTANCE_ID_PREFIX, abs(instance.get_instance_id())])\
+		.replace("${source_class}", class_info.get("class_name"))
 	var lines := GdScriptParser.to_unix_format(source_code).split("\n")
 	# replace template class_name with Doubled<class> name and extends form source class
-	lines.remove_at(2)
-	lines.insert(2, "class_name Doubled%s" % class_info.get("class_name").replace(".", "_"))
-	lines.insert(3, extends_clazz(class_info))
-	
-	var eol := lines.size()
+	lines.insert(0, "class_name Doubled%s" % class_info.get("class_name").replace(".", "_"))
+	lines.insert(1, extends_clazz(class_info))
 	# append Object interactions stuff
-	source_code = GdUnitObjectInteractionsTemplate.new().get_script().source_code
-	lines.append_array(GdScriptParser.to_unix_format(source_code).split("\n"))
-	# remove_at the class header from GdUnitObjectInteractionsTemplate
-	lines.remove_at(eol)
+	lines.append_array(GdScriptParser.to_unix_format(DOUBLER_TEMPLATE.source_code).split("\n"))
 	return lines
 
 

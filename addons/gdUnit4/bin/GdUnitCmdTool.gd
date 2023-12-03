@@ -1,6 +1,8 @@
 #!/usr/bin/env -S godot -s
 extends SceneTree
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
 #warning-ignore-all:return_value_discarded
 class CLIRunner extends Node:
 	
@@ -21,12 +23,12 @@ class CLIRunner extends Node:
 	var _state = READY
 	var _test_suites_to_process :Array
 	var _executor
+	var _cs_executor
 	var _report :GdUnitHtmlReport
 	var _report_dir: String
 	var _report_max: int = DEFAULT_REPORT_COUNT
 	var _runner_config := GdUnitRunnerConfig.new()
 	var _console := CmdConsole.new()
-	var _cs_executor
 	var _cmd_options: = CmdOptions.new([
 			CmdOption.new("-a, --add", "-a <directory|path of testsuite>", "Adds the given test suite or directory to the execution pipeline.", TYPE_STRING),
 			CmdOption.new("-i, --ignore", "-i <testsuite_name|testsuite_name:test-name>", "Adds the given test suite or test case to the ignore list.", TYPE_STRING),
@@ -48,19 +50,18 @@ class CLIRunner extends Node:
 	func _ready():
 		_state = INIT
 		_report_dir = GdUnitTools.current_dir() + "reports"
-		_executor = load("res://addons/gdUnit4/src/core/GdUnitExecutor.gd").new()
+		_executor = load("res://addons/gdUnit4/src/core/execution/GdUnitTestSuiteExecutor.gd").new()
 		# stop checked first test failure to fail fast
 		_executor.fail_fast(true)
 		
-		if GdUnitTools.is_mono_supported():
-			_cs_executor = GdUnit3MonoAPI.create_executor(self)
-		
+		if GdUnit4MonoApiLoader.is_mono_supported():
+			prints("GdUnit4Mono Version %s loaded." % GdUnit4MonoApiLoader.version())
+			_cs_executor = GdUnit4MonoApiLoader.create_executor(self)
 		var err = GdUnitSignals.instance().gdunit_event.connect(Callable(self, "_on_gdunit_event"))
 		if err != OK:
 			prints("gdUnitSignals failed")
 			push_error("Error checked startup, can't connect executor for 'send_event'")
 			quit(RETURN_ERROR)
-		add_child(_executor)
 	
 	
 	func _process(_delta):
@@ -76,10 +77,11 @@ class CLIRunner extends Node:
 					set_process(false)
 					# process next test suite
 					var test_suite := _test_suites_to_process.pop_front() as Node
-					add_child(test_suite)
-					var executor = _cs_executor if GdObjects.is_cs_test_suite(test_suite) else _executor
-					executor.Execute(test_suite)
-					await executor.ExecutionCompleted
+					if _cs_executor != null and _cs_executor.IsExecutable(test_suite):
+						_cs_executor.Execute(test_suite)
+						await _cs_executor.ExecutionCompleted
+					else:
+						await _executor.execute(test_suite)
 					set_process(true)
 			STOP:
 				_state = EXIT
@@ -88,9 +90,8 @@ class CLIRunner extends Node:
 	
 	
 	func quit(code :int) -> void:
-		if is_instance_valid(_executor):
-			_executor.free()
 		GdUnitTools.dispose_all()
+		await GdUnitMemoryObserver.gc_on_guarded_instances()
 		await get_tree().physics_frame
 		get_tree().quit(code)
 	
@@ -288,8 +289,8 @@ class CLIRunner extends Node:
 		return total
 	
 	
-	func PublishEvent(data) -> void:
-		_on_gdunit_event(GdUnitEvent.new().deserialize(data.AsDictionary()))
+	func PublishEvent(data :Dictionary) -> void:
+		_on_gdunit_event(GdUnitEvent.new().deserialize(data))
 	
 	
 	func _on_gdunit_event(event :GdUnitEvent):
@@ -397,9 +398,6 @@ func _initialize():
 
 func _finalize():
 	prints("Finallize ..")
-	_cli_runner.free()
 	prints("-Orphan nodes report-----------------------")
 	Window.print_orphan_nodes()
-	prints("-SceneTree report-----------------------")
-	root.print_tree_pretty()
 	prints("Finallize .. done")

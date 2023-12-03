@@ -18,10 +18,15 @@ With composite nodes, you can craft unique and dynamic Behavior Trees for your g
 
 ## Restarting a composite
 
-If a parent node restarts a child node, it means that the parent node will start the child node from scratch the next time it is ticked. This means that any progress made by the child node will be reset, and it will start its execution from the beginning.
+When a parent node restarts, it means the whole composite node begins its evaluation again from the beginning. This does not interrupt the running child node.
 
 ## Ticking again a composite
 
-If a parent node ticks a child node again, it means that the parent node will immediately tick the child node again on the next frame, without waiting for the current frame to finish executing. This allows the child node to continue its execution from where it left off without resetting its progress.
+When a composite node ticks again, it will "jump" to the currently `RUNNING` child node and tick it.
 
-In other words, restarting a child node means that the parent node will give the child node a fresh start, while ticking it again means that the parent node will let the child node continue its execution from where it left off.
+For [sequence nodes](sequence.md), on the first frame it starts ticking all its children in order, starting from the first one, until either all of them return `SUCCESS` or one of them returns `RUNNING`. If one of them returned `RUNNING`, on the next frame, the sequence will only tick the running child node. Not all of them, just the running one - and possibly the child nodes following it, if the running child has completed and returned `SUCCESS`. 
+For [selector nodes](selector.md), on the first frame it starts ticking each child in order until one of them returns `SUCCESS` or one of them returns `RUNNING`. If one of them returned `RUNNING`, on the next frame, the selector will only tick the running child node, skipping all the previous ones, and possibly the child nodes following it, if the running child has completed and returned `FAILURE`. 
+
+## Interrupting child nodes
+
+A sequence may interrupt any `RUNNING` child node. The `interrupt` method will be called recursively on all descendant nodes of the interrupted child node.

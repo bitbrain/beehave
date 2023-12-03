@@ -9,7 +9,7 @@ static func verify(obj :Object, times):
 
 
 static func verify_no_interactions(obj :Object) -> GdUnitAssert:
-	var gd_assert := GdUnitAssertImpl.new("")
+	var gd_assert = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new("")
 	if not _is_mock_or_spy(obj, "__verify"):
 		return gd_assert.report_success()
 	var summary :Dictionary = obj.__verify_no_interactions()
@@ -19,7 +19,7 @@ static func verify_no_interactions(obj :Object) -> GdUnitAssert:
 
 
 static func verify_no_more_interactions(obj :Object) -> GdUnitAssert:
-	var gd_assert := GdUnitAssertImpl.new("")
+	var gd_assert = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new("")
 	if not _is_mock_or_spy(obj, "__verify_no_more_interactions"):
 		return gd_assert
 	var summary :Dictionary = obj.__verify_no_more_interactions()

@@ -1,6 +1,8 @@
 class_name GdUnitRunnerConfig
 extends Resource
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
 const CONFIG_VERSION = "1.0"
 const VERSION = "version"
 const INCLUDED = "included"
@@ -102,35 +104,35 @@ func skipped() -> Dictionary:
 	return _config.get(SKIPPED, PackedStringArray())
 
 
-func save_config(path :String = CONFIG_FILE) -> Result:
+func save_config(path :String = CONFIG_FILE) -> GdUnitResult:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		var error = FileAccess.get_open_error()
-		return Result.error("Can't write test runner configuration '%s'! %s" % [path, GdUnitTools.error_as_string(error)])
+		return GdUnitResult.error("Can't write test runner configuration '%s'! %s" % [path, GdUnitTools.error_as_string(error)])
 	_config[VERSION] = CONFIG_VERSION
 	file.store_string(JSON.stringify(_config))
-	return Result.success(path)
+	return GdUnitResult.success(path)
 
 
-func load_config(path :String = CONFIG_FILE) -> Result:
+func load_config(path :String = CONFIG_FILE) -> GdUnitResult:
 	if not FileAccess.file_exists(path):
-		return Result.error("Can't find test runner configuration '%s'! Please select a test to run." % path)
+		return GdUnitResult.error("Can't find test runner configuration '%s'! Please select a test to run." % path)
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		var error = FileAccess.get_open_error()
-		return Result.error("Can't load test runner configuration '%s'! ERROR: %s." % [path, GdUnitTools.error_as_string(error)])
+		return GdUnitResult.error("Can't load test runner configuration '%s'! ERROR: %s." % [path, GdUnitTools.error_as_string(error)])
 	var content := file.get_as_text()
 	if not content.is_empty() and content[0] == '{':
 		# Parse as json
 		var test_json_conv := JSON.new()
 		var error := test_json_conv.parse(content)
 		if error != OK:
-			return Result.error("The runner configuration '%s' is invalid! The format is changed please delete it manually and start a new test run." % path)
+			return GdUnitResult.error("The runner configuration '%s' is invalid! The format is changed please delete it manually and start a new test run." % path)
 		_config = test_json_conv.get_data() as Dictionary
 		if not _config.has(VERSION):
-			return Result.error("The runner configuration '%s' is invalid! The format is changed please delete it manually and start a new test run." % path)
+			return GdUnitResult.error("The runner configuration '%s' is invalid! The format is changed please delete it manually and start a new test run." % path)
 		fix_value_types()
-	return Result.success(path)
+	return GdUnitResult.success(path)
 
 
 func fix_value_types():

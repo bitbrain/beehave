@@ -1,12 +1,12 @@
-## Sequence Star nodes will attempt to execute all of its children and report
-## `SUCCESS` in case all of the children report a `SUCCESS` status code.
-## If at least one child reports a `FAILURE` status code, this node will also
-## return `FAILURE` and tick again.
-## In case a child returns `RUNNING` this node will restart.
 @tool
 @icon("../../icons/sequence_reactive.svg")
 class_name SequenceStarComposite extends Composite
 
+## Sequence Star nodes will attempt to execute all of its children and report
+## `SUCCESS` in case all of the children report a `SUCCESS` status code.
+## If at least one child reports a `FAILURE` status code, this node will also
+## return `FAILURE` and tick again.
+## In case a child returns `RUNNING` this node will tick again.
 
 var successful_index: int = 0
 
@@ -32,6 +32,9 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				successful_index += 1
 				c.after_run(actor, blackboard)
 			FAILURE:
+				# Interrupt any child that was RUNNING before
+				# but do not reset!
+				super.interrupt(actor, blackboard)
 				c.after_run(actor, blackboard)
 				return FAILURE
 			RUNNING:

@@ -1,18 +1,10 @@
-## A Composite node controls the flow of execution of its children in a specific manner.
 @tool
 @icon("../../icons/category_composite.svg")
 class_name Composite extends BeehaveNode
 
+## A Composite node controls the flow of execution of its children in a specific manner.
 
 var running_child: BeehaveNode = null
-
-
-func _ready():
-	if Engine.is_editor_hint():
-		return
-
-	if self.get_child_count() < 1:
-		push_warning("BehaviorTree Error: Composite %s should have at least one child (NodePath: %s)" % [self.name, self.get_path()])
 
 
 func _get_configuration_warnings() -> PackedStringArray:

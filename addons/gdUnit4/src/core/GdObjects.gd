@@ -2,6 +2,8 @@
 class_name GdObjects
 extends Resource
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+
 const TYPE_VOID 	= TYPE_MAX + 1000
 const TYPE_VARARG 	= TYPE_MAX + 1001
 const TYPE_VARIANT	= TYPE_MAX + 1002
@@ -373,7 +375,7 @@ static func is_script(value) -> bool:
 
 
 static func is_test_suite(script :Script) -> bool:
-	return is_gd_testsuite(script) or GdUnit3MonoAPI.is_test_suite(script.resource_path)
+	return is_gd_testsuite(script) or GdUnit4MonoApiLoader.is_test_suite(script.resource_path)
 
 
 static func is_native_class(value) -> bool:
@@ -395,10 +397,6 @@ static func is_gd_script(script :Script) -> bool:
 static func is_cs_script(script :Script) -> bool:
 	# we need to check by stringify name because checked non mono Godot the class CSharpScript is not available
 	return str(script).find("CSharpScript") != -1
-
-
-static func is_cs_test_suite(instance :Node) -> bool:
-	return instance.get("IsCsTestSuite") == true
 
 
 static func is_gd_testsuite(script :Script) -> bool:
@@ -447,30 +445,30 @@ static func can_be_instantiate(obj :Variant) -> bool:
 	return obj.has_method("new")
 
 
-static func create_instance(clazz) -> Result:
+static func create_instance(clazz) -> GdUnitResult:
 	match typeof(clazz):
 		TYPE_OBJECT:
 			# test is given clazz already an instance
 			if is_instance(clazz):
-				return Result.success(clazz)
-			return Result.success(clazz.new())
+				return GdUnitResult.success(clazz)
+			return GdUnitResult.success(clazz.new())
 		TYPE_STRING:
 			if ClassDB.class_exists(clazz):
 				if Engine.has_singleton(clazz):
-					return Result.error("Not allowed to create a instance for singelton '%s'." % clazz)
+					return GdUnitResult.error("Not allowed to create a instance for singelton '%s'." % clazz)
 				if not ClassDB.can_instantiate(clazz):
-					return  Result.error("Can't instance Engine class '%s'." % clazz)
-				return Result.success(ClassDB.instantiate(clazz))
+					return  GdUnitResult.error("Can't instance Engine class '%s'." % clazz)
+				return GdUnitResult.success(ClassDB.instantiate(clazz))
 			else:
 				var clazz_path :String = extract_class_path(clazz)[0]
 				if not FileAccess.file_exists(clazz_path):
-					return Result.error("Class '%s' not found." % clazz)
+					return GdUnitResult.error("Class '%s' not found." % clazz)
 				var script = load(clazz_path)
 				if script != null:
-					return Result.success(script.new())
+					return GdUnitResult.success(script.new())
 				else:
-					return Result.error("Can't create instance for '%s'." % clazz)
-	return Result.error("Can't create instance for class '%s'." % clazz)
+					return GdUnitResult.error("Can't create instance for '%s'." % clazz)
+	return GdUnitResult.error("Can't create instance for class '%s'." % clazz)
 
 
 static func extract_class_path(clazz) -> PackedStringArray:
@@ -515,38 +513,38 @@ static func extract_class_name_from_class_path(clazz_path :PackedStringArray) ->
 	return  clazz_name
 
 
-static func extract_class_name(clazz) -> Result:
+static func extract_class_name(clazz) -> GdUnitResult:
 	if clazz == null:
-		return Result.error("Can't extract class name form a null value.")
+		return GdUnitResult.error("Can't extract class name form a null value.")
 	
 	if is_instance(clazz):
 		# is instance a script instance?
 		var script := clazz.script as GDScript
 		if script != null:
 			return extract_class_name(script)
-		return Result.success(clazz.get_class())
+		return GdUnitResult.success(clazz.get_class())
 	
 	# extract name form full qualified class path
 	if clazz is String:
 		if ClassDB.class_exists(clazz):
-			return Result.success(clazz)
+			return GdUnitResult.success(clazz)
 		var source_sript :Script = load(clazz)
 		var clazz_name = load("res://addons/gdUnit4/src/core/parse/GdScriptParser.gd").new().get_class_name(source_sript)
-		return Result.success(to_pascal_case(clazz_name))
+		return GdUnitResult.success(to_pascal_case(clazz_name))
 	
 	if is_primitive_type(clazz):
-		return Result.error("Can't extract class name for an primitive '%s'" % type_as_string(typeof(clazz)))
+		return GdUnitResult.error("Can't extract class name for an primitive '%s'" % type_as_string(typeof(clazz)))
 	
 	if is_script(clazz):
 		if clazz.resource_path.is_empty():
 			var class_path = extract_class_name_from_class_path(extract_class_path(clazz))
-			return Result.success(class_path);
+			return GdUnitResult.success(class_path);
 		return extract_class_name(clazz.resource_path)
 	
 	# need to create an instance for a class typ the extract the class name
 	var instance = clazz.new()
 	if instance == null:
-		return Result.error("Can't create a instance for class '%s'" % clazz)
+		return GdUnitResult.error("Can't create a instance for class '%s'" % clazz)
 	var result := extract_class_name(instance)
 	GdUnitTools.free_instance(instance)
 	return result

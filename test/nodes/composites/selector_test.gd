@@ -106,8 +106,6 @@ func test_clear_running_child_after_run() -> void:
 func test_not_interrupt_first_after_finished() -> void:
 	var action3 = auto_free(load(__count_up_action).new())
 	selector.add_child(action3)
-	var running_action: Node
-	var blackboard_name: String = str(actor.get_instance_id())
 
 	action1.status = BeehaveNode.RUNNING
 	action2.status = BeehaveNode.FAILURE

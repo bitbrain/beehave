@@ -1,4 +1,4 @@
-class_name GdUnitObjectInteractionsTemplate
+const GdUnitAssertImpl := preload("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd")
 
 var __expected_interactions :int = -1
 var __saved_interactions := Dictionary()

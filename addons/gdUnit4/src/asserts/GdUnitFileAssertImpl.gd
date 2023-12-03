@@ -1,12 +1,12 @@
-class_name GdUnitFileAssertImpl
 extends GdUnitFileAssert
 
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 
 var _base: GdUnitAssert
 
 
 func _init(current):
-	_base = GdUnitAssertImpl.new(current)
+	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
 	if not _base.__validate_value_type(current, TYPE_STRING):
@@ -89,5 +89,6 @@ func contains_exactly(expected_rows :Array) -> GdUnitFileAssert:
 		var source_code = GdScriptParser.to_unix_format(instance.get_script().source_code)
 		GdUnitTools.free_instance(instance)
 		var rows := Array(source_code.split("\n"))
-		GdUnitArrayAssertImpl.new(rows).contains_exactly(expected_rows)
+		ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitArrayAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(rows)\
+			.contains_exactly(expected_rows)
 	return self

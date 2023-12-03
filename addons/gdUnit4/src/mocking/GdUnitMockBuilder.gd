@@ -1,33 +1,23 @@
 class_name GdUnitMockBuilder
 extends GdUnitClassDoubler
 
-
-# holds mocker runtime configuration
-const KEY_REPORT_PUSH_ERRORS = "report_push_errors"
-
-# only for testing
-static func do_push_errors(enabled :bool) -> void:
-	GdUnitStaticDictionary.add_value(KEY_REPORT_PUSH_ERRORS, enabled)
-
-
-static func is_push_errors_enabled() -> bool:
-	return GdUnitStaticDictionary.get_value(KEY_REPORT_PUSH_ERRORS, false)
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+const MOCK_TEMPLATE :GDScript = preload("res://addons/gdUnit4/src/mocking/GdUnitMockImpl.gd")
 
 
 static func is_push_errors() -> bool:
-	return is_push_errors_enabled() or GdUnitSettings.is_report_push_errors()
+	return GdUnitSettings.is_report_push_errors()
 
 
-static func build(caller :Object, clazz, mock_mode :String, debug_write := false) -> Object:
-	var memory_pool :GdUnitMemoryPool.POOL = caller.get_meta(GdUnitMemoryPool.META_PARAM)
+static func build(clazz, mock_mode :String, debug_write := false) -> Object:
 	var push_errors := is_push_errors()
 	if not is_mockable(clazz, push_errors):
 		return null
 	# mocking a scene?
 	if GdObjects.is_scene(clazz):
-		return mock_on_scene(clazz as PackedScene, memory_pool, debug_write)
+		return mock_on_scene(clazz as PackedScene, debug_write)
 	elif typeof(clazz) == TYPE_STRING and clazz.ends_with(".tscn"):
-		return mock_on_scene(load(clazz), memory_pool, debug_write)
+		return mock_on_scene(load(clazz), debug_write)
 	# mocking a script
 	var instance := create_instance(clazz)
 	var mock := mock_on_script(instance, clazz, [ "get_script"], debug_write)
@@ -39,7 +29,7 @@ static func build(caller :Object, clazz, mock_mode :String, debug_write := false
 	mock_instance.__set_script(mock)
 	mock_instance.__set_singleton()
 	mock_instance.__set_mode(mock_mode)
-	return GdUnitMemoryPool.register_auto_free(mock_instance, memory_pool)
+	return register_auto_free(mock_instance)
 
 
 static func create_instance(clazz) -> Object:
@@ -60,7 +50,7 @@ static func create_instance(clazz) -> Object:
 	return null
 
 
-static func mock_on_scene(scene :PackedScene, memory_pool :int, debug_write :bool) -> Object:
+static func mock_on_scene(scene :PackedScene, debug_write :bool) -> Object:
 	var push_errors := is_push_errors()
 	if not scene.can_instantiate():
 		if push_errors:
@@ -81,7 +71,7 @@ static func mock_on_scene(scene :PackedScene, memory_pool :int, debug_write :boo
 	scene_instance.set_script(mock)
 	scene_instance.__set_singleton()
 	scene_instance.__set_mode(GdUnitMock.CALL_REAL_FUNC)
-	return GdUnitMemoryPool.register_auto_free(scene_instance, memory_pool)
+	return register_auto_free(scene_instance)
 
 
 static func get_class_info(clazz :Variant) -> Dictionary:
@@ -97,7 +87,7 @@ static func mock_on_script(instance :Object, clazz :Variant, function_excludes :
 	var push_errors := is_push_errors()
 	var function_doubler := GdUnitMockFunctionDoubler.new(push_errors)
 	var class_info := get_class_info(clazz)
-	var lines := load_template(GdUnitMockImpl, class_info, instance)
+	var lines := load_template(MOCK_TEMPLATE.source_code, class_info, instance)
 	
 	var clazz_name :String = class_info.get("class_name")
 	var clazz_path :PackedStringArray = class_info.get("class_path", [clazz_name])
@@ -171,3 +161,7 @@ static func is_mockable(clazz :Variant, push_errors :bool=false) -> bool:
 			return false
 	# finally check is extending from script
 	return GdObjects.is_script(resource) or GdObjects.is_scene(resource)
+
+
+static func register_auto_free(obj :Variant) -> Variant:
+	return GdUnitThreadManager.get_current_context().get_execution_context().register_auto_free(obj)

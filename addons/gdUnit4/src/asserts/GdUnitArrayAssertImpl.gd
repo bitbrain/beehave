@@ -1,5 +1,5 @@
-class_name GdUnitArrayAssertImpl
 extends GdUnitArrayAssert
+
 
 var _base :GdUnitAssert
 var _current_value_provider :ValueProvider
@@ -7,7 +7,7 @@ var _current_value_provider :ValueProvider
 
 func _init(current):
 	_current_value_provider = DefaultValueProvider.new(current)
-	_base = GdUnitAssertImpl.new(current)
+	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
 	if not __validate_value_type(current):
@@ -50,6 +50,12 @@ func __current() -> Variant:
 	return _current_value_provider.get_value()
 
 
+func max_length(left, right) -> int:
+	var ls = str(left).length()
+	var rs = str(right).length()
+	return rs if ls < rs else ls
+
+
 func _array_equals_div(current, expected, case_sensitive :bool = false) -> Array:
 	var current_ := PackedStringArray(Array(current))
 	var expected_ := PackedStringArray(Array(expected))
@@ -59,7 +65,7 @@ func _array_equals_div(current, expected, case_sensitive :bool = false) -> Array
 		if index < expected_.size():
 			var e := expected_[index]
 			if not GdObjects.equals(c, e, case_sensitive):
-				var length := GdUnitTools.max_length(c, e)
+				var length := max_length(c, e)
 				current_[index] = GdAssertMessages.format_invalid(c.lpad(length))
 				expected_[index] = e.lpad(length)
 				index_report_.push_back({"index" : index, "current" :c, "expected": e})
@@ -293,7 +299,7 @@ func is_instanceof(expected) -> GdUnitAssert:
 
 func extract(func_name :String, args := Array()) -> GdUnitArrayAssert:
 	var extracted_elements := Array()
-	var extractor := GdUnitFuncValueExtractor.new(func_name, args)
+	var extractor :GdUnitValueExtractor = ResourceLoader.load("res://addons/gdUnit4/src/extractors/GdUnitFuncValueExtractor.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(func_name, args)
 	var current = __current()
 	if current == null:
 		_current_value_provider = DefaultValueProvider.new(null)
