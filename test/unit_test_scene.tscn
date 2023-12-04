@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://diw3kjj050wdy"]
 
 [ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="1_27ukk"]
-[ext_resource type="Script" path="res://test/UnitTestScene.gd" id="1_embiv"]
+[ext_resource type="Script" path="res://test/unit_test_scene.gd" id="1_embiv"]
 [ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="2_phgmn"]
 [ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="4_px6t4"]
 [ext_resource type="Script" path="res://test/conditions/value_reached_condition.gd" id="5_rc0ra"]
