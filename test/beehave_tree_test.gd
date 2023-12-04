@@ -5,10 +5,14 @@ extends GdUnitTestSuite
 @warning_ignore("return_value_discarded")
 
 # TestSuite generated from
-const __source = "res://addons/beehave/beehave_tree.gd"
+const __source = "res://addons/beehave/nodes/beehave_tree.gd"
 
 func create_scene() -> Node2D:
-	return auto_free(load("res://test/UnitTestScene.tscn").instantiate())
+	return auto_free(load("res://test/unit_test_scene.tscn").instantiate())
+
+
+func create_tree() -> BeehaveTree:
+	return auto_free(load(__source).new())
 
 
 func test_normal_tick() -> void:
@@ -63,3 +67,13 @@ func test_interrupt_running_action() -> void:
 	scene.beehave_tree.interrupt()
 	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(0)
 	assert_that(scene.count_up_action.status).is_equal(BeehaveNode.FAILURE)
+
+
+func test_blackboard_not_initialized() -> void:
+	var tree = create_tree()
+	tree.actor = auto_free(Node2D.new())
+	var always_succeed = auto_free(AlwaysSucceedDecorator.new()) as AlwaysSucceedDecorator
+	always_succeed.add_child(auto_free(ActionLeaf.new()))
+	tree.add_child(always_succeed)
+	var result = tree.tick()
+	assert_that(result).is_equal(BeehaveNode.SUCCESS)

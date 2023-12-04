@@ -1,0 +1,116 @@
+[gd_scene load_steps=12 format=3 uid="uid://dxkotdttpvmb0"]
+
+[ext_resource type="Script" path="res://examples/beehave_test_scene.gd" id="1_18xg1"]
+[ext_resource type="Texture2D" uid="uid://uq5muso23nn5" path="res://splash.png" id="2_2q57p"]
+[ext_resource type="Script" path="res://examples/ColorChangingSprite.gd" id="3_shmq8"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="4_yb1gg"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector_reactive.gd" id="5_l2xef"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="6_jtsdg"]
+[ext_resource type="PackedScene" uid="uid://dl8hr0kerrxsv" path="res://examples/conditions/HasPositivePosition.tscn" id="7_iqb0a"]
+[ext_resource type="PackedScene" uid="uid://c3msbcyat8v0n" path="res://examples/actions/SetModulateColor.tscn" id="8_0v48s"]
+[ext_resource type="PackedScene" uid="uid://dgbwmcsll3o7t" path="res://examples/conditions/HasNegativePosition.tscn" id="9_x8ohm"]
+[ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="10_y2p03"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_atdvc"]
+load_path = "res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex"
+
+[node name="BeehaveTestScene" type="Node2D"]
+script = ExtResource("1_18xg1")
+
+[node name="Background" type="Sprite2D" parent="."]
+modulate = Color(0.882353, 0.882353, 0.882353, 0.141176)
+position = Vector2(32, 46)
+scale = Vector2(2.63487, 2.57664)
+texture = ExtResource("2_2q57p")
+
+[node name="ColorChangingSprite" type="Sprite2D" parent="."]
+scale = Vector2(0.1, 0.1)
+texture = SubResource("CompressedTexture2D_atdvc")
+script = ExtResource("3_shmq8")
+
+[node name="BeehaveTree" type="Node" parent="ColorChangingSprite" node_paths=PackedStringArray("blackboard")]
+unique_name_in_owner = true
+script = ExtResource("4_yb1gg")
+blackboard = NodePath("../../Blackboard")
+custom_monitor = true
+
+[node name="SelectorComposite" type="Node" parent="ColorChangingSprite/BeehaveTree"]
+script = ExtResource("5_l2xef")
+
+[node name="SequenceComposite" type="Node" parent="ColorChangingSprite/BeehaveTree/SelectorComposite"]
+script = ExtResource("6_jtsdg")
+
+[node name="HasPositivePosition" parent="ColorChangingSprite/BeehaveTree/SelectorComposite/SequenceComposite" instance=ExtResource("7_iqb0a")]
+
+[node name="SetModulateColor" parent="ColorChangingSprite/BeehaveTree/SelectorComposite/SequenceComposite" instance=ExtResource("8_0v48s")]
+modulate_color = Color(1, 0, 0, 1)
+
+[node name="SequenceComposite2" type="Node" parent="ColorChangingSprite/BeehaveTree/SelectorComposite"]
+script = ExtResource("6_jtsdg")
+
+[node name="HasNegativePosition" parent="ColorChangingSprite/BeehaveTree/SelectorComposite/SequenceComposite2" instance=ExtResource("9_x8ohm")]
+
+[node name="SetModulateColor" parent="ColorChangingSprite/BeehaveTree/SelectorComposite/SequenceComposite2" instance=ExtResource("8_0v48s")]
+modulate_color = Color(0, 0, 1, 1)
+
+[node name="SetModulateColor" parent="ColorChangingSprite/BeehaveTree/SelectorComposite" instance=ExtResource("8_0v48s")]
+
+[node name="Camera2D" type="Camera2D" parent="ColorChangingSprite"]
+
+[node name="Blackboard" type="Node" parent="."]
+script = ExtResource("10_y2p03")
+
+[node name="AnotherSprite" type="Sprite2D" parent="."]
+position = Vector2(182, 180)
+scale = Vector2(0.1, 0.1)
+texture = SubResource("CompressedTexture2D_atdvc")
+
+[node name="AnotherTree" type="Node" parent="AnotherSprite" node_paths=PackedStringArray("blackboard")]
+script = ExtResource("4_yb1gg")
+blackboard = NodePath("../../Blackboard")
+custom_monitor = null
+
+[node name="SelectorComposite" type="Node" parent="AnotherSprite/AnotherTree"]
+script = ExtResource("5_l2xef")
+
+[node name="SequenceComposite" type="Node" parent="AnotherSprite/AnotherTree/SelectorComposite"]
+script = ExtResource("6_jtsdg")
+
+[node name="HasPositivePosition" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite" instance=ExtResource("7_iqb0a")]
+
+[node name="SetModulateColor" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite" instance=ExtResource("8_0v48s")]
+modulate_color = Color(1, 0, 0, 1)
+
+[node name="SequenceComposite2" type="Node" parent="AnotherSprite/AnotherTree/SelectorComposite"]
+script = ExtResource("6_jtsdg")
+
+[node name="HasNegativePosition" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2" instance=ExtResource("9_x8ohm")]
+
+[node name="SetModulateColor" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2" instance=ExtResource("8_0v48s")]
+modulate_color = Color(0, 0, 1, 1)
+
+[node name="SequenceComposite2" type="Node" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2"]
+script = ExtResource("6_jtsdg")
+
+[node name="HasNegativePosition" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2/SequenceComposite2" instance=ExtResource("9_x8ohm")]
+
+[node name="SetModulateColor" parent="AnotherSprite/AnotherTree/SelectorComposite/SequenceComposite2/SequenceComposite2" instance=ExtResource("8_0v48s")]
+modulate_color = Color(0, 0, 1, 1)
+
+[node name="SetModulateColor" parent="AnotherSprite/AnotherTree/SelectorComposite" instance=ExtResource("8_0v48s")]
+
+[node name="Camera2D" type="Camera2D" parent="AnotherSprite"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ConditionLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ActionLabel" type="Label" parent="CanvasLayer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2

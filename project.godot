@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Beehave"
-run/main_scene="res://examples/BeehaveTestScene.tscn"
+run/main_scene="res://examples/beehave_test_scene.tscn"
 config/features=PackedStringArray("4.2")
 boot_splash/image="res://splash.png"
 boot_splash/fullsize=false
