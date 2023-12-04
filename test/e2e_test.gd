@@ -5,7 +5,7 @@ extends GdUnitTestSuite
 @warning_ignore("return_value_discarded")
 
 # TestSuite generated from
-const __source = "res://examples/BeehaveTestScene.tscn"
+const __source = "res://examples/beehave_test_scene.tscn"
 
 func create_scene() -> Node2D:
 	return auto_free(load(__source).instantiate())

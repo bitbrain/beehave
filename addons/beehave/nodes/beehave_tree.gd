@@ -74,6 +74,11 @@ signal tree_disabled
 			_internal_blackboard = Blackboard.new()
 			add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
 	get:
+		# in case blackboard is accessed before this node is,
+		# we need to ensure that the internal blackboard is used.
+		if not blackboard and not _internal_blackboard:
+			_internal_blackboard = Blackboard.new()
+			add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
 		return blackboard if blackboard else _internal_blackboard
 
 ## When enabled, this tree is tracked individually
@@ -113,8 +118,8 @@ func _ready() -> void:
 		actor = get_parent()
 
 	if not blackboard:
-		_internal_blackboard = Blackboard.new()
-		add_child(_internal_blackboard, false, Node.INTERNAL_MODE_BACK)
+		# invoke setter to auto-initialise the blackboard.
+		self.blackboard = null
 	
 	# Get the name of the parent node name for metric
 	_process_time_metric_name = "beehave [microseconds]/process_time_%s-%s" % [actor.name, get_instance_id()]
