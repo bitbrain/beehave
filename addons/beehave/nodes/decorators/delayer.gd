@@ -5,7 +5,7 @@ class_name DelayDecorator
 
 ## The Delay Decorator will return 'RUNNING' for a set amount of time
 ## before executing its child.
-## The timer resets the next time that a child is not `RUNNING`
+## The timer resets when both it and its child are not `RUNNING`
 
 ## The wait time in seconds
 @export var wait_time: = 0.0
@@ -14,17 +14,17 @@ class_name DelayDecorator
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var c = get_child(0)
-	var time_left = blackboard.get_value(cache_key, 0.0, str(actor.get_instance_id()))
+	var total_time = blackboard.get_value(cache_key, 0.0, str(actor.get_instance_id()))
 	var response
 	
 	if c != running_child:
 		c.before_run(actor, blackboard)
 	
-	if time_left < wait_time:
+	if total_time < wait_time:
 		response = RUNNING
 		
-		time_left += get_physics_process_delta_time()
-		blackboard.set_value(cache_key, time_left, str(actor.get_instance_id()))
+		total_time += get_physics_process_delta_time()
+		blackboard.set_value(cache_key, total_time, str(actor.get_instance_id()))
 		
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(self.get_instance_id(), response)
