@@ -1,6 +1,11 @@
 @tool
+@icon("../../icons/delayer.svg")
 extends Decorator
 class_name DelayDecorator
+
+## The Delay Decorator will return 'RUNNING' for a set amount of time
+## before executing its child.
+## The timer resets the next time that a child is not `RUNNING`
 
 ## The wait time in seconds
 @export_range(0.001, 4096.0, 0.001) var time: float = 1.0
