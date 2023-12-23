@@ -31,15 +31,19 @@ func before_test() -> void:
 	runner = scene_runner(tree)
 
 func test_return_success_after_delay() -> void:
+	var delta_time = get_physics_process_delta_time()
+	delayer.wait_time = delta_time
 	action.status = BeehaveNode.SUCCESS
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	await runner.simulate_frames(1, 1000) # One second
+	await runner.simulate_frames(1, delta_time)
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
 
 func test_return_running_after_delay() -> void:
+	var delta_time = get_physics_process_delta_time()
+	delayer.wait_time = delta_time
 	action.status = BeehaveNode.RUNNING
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	await runner.simulate_frames(1, 1000) # One second
+	await runner.simulate_frames(1, delta_time)
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	action.status = BeehaveNode.SUCCESS
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)

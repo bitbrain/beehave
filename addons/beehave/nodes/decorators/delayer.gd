@@ -8,41 +8,42 @@ class_name DelayDecorator
 ## The timer resets the next time that a child is not `RUNNING`
 
 ## The wait time in seconds
-@export_range(0.001, 4096.0, 0.001) var time: float = 1.0
-var timer: SceneTreeTimer = null
+@export var wait_time: = 0.0
+
+@onready var cache_key = 'time_limiter_%s' % self.get_instance_id()
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var c = get_child(0)
+	var time_left = blackboard.get_value(cache_key, 0.0, str(actor.get_instance_id()))
+	var response
 	
 	if c != running_child:
 		c.before_run(actor, blackboard)
 	
-	if timer == null:
-		timer = get_tree().create_timer(time)
-	
-	var response
-	
-	if timer.time_left > 0:
+	if time_left < wait_time:
 		response = RUNNING
+		
+		time_left += get_physics_process_delta_time()
+		blackboard.set_value(cache_key, time_left, str(actor.get_instance_id()))
 		
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(self.get_instance_id(), response)
 	else:
 		response = c.tick(actor, blackboard)
-	
+		
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response)
-
+		
 		if c is ConditionLeaf:
 			blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
 			blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
-	
+		
 		if response == RUNNING and c is ActionLeaf:
 			running_child = c
 			blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 	
 	if response != RUNNING:
-		timer = null
+		blackboard.set_value(cache_key, 0.0, str(actor.get_instance_id()))
 	
 	return response
 
