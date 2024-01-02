@@ -98,7 +98,15 @@ signal tree_disabled
 			BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
 
-var actor : Node
+@export var actor : Node:
+	set(a):
+		actor = a
+		if actor == null:
+			actor = get_parent()
+		if Engine.is_editor_hint():
+			update_configuration_warnings()
+
+
 var status : int = -1
 var last_tick : int = 0
 
