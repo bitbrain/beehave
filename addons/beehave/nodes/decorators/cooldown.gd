@@ -4,7 +4,7 @@ class_name CooldownDecorator
 
 ## The Cooldown Decorator will return 'FAILURE' for a set amount of time
 ## after executing its child.
-## The timer resets when both it and its child are not `RUNNING`
+## The timer resets the next time its child is executed and it is not `RUNNING`
 
 ## The wait time in seconds
 @export var wait_time: = 0.0
