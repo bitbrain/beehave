@@ -1,6 +1,10 @@
 @tool
 extends GraphNode
 
+
+const BeehaveUtils := preload("res://addons/beehave/utils/utils.gd")
+
+
 const DEFAULT_COLOR := Color("#dad4cb")
 
 const PORT_TOP_ICON := preload("icons/port_top.svg")

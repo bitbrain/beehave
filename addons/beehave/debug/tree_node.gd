@@ -6,6 +6,8 @@ extends RefCounted
 const SIBLING_DISTANCE: float = 20.0
 const LEVEL_DISTANCE: float = 40.0
 
+const BeehaveUtils := preload("res://addons/beehave/utils/utils.gd")
+
 var x: float
 var y: float
 var mod: float

@@ -1,7 +1,7 @@
 extends Node
 
 var _registered_trees: Dictionary
-var _active_tree: BeehaveTree
+var _active_tree
 
 
 func _enter_tree() -> void:
@@ -20,7 +20,7 @@ func _on_debug_message(message: String, data: Array) -> bool:
 
 
 func _set_active_tree(tree_id: int) -> void:
-	var tree: BeehaveTree = _registered_trees.get(tree_id, null)
+	var tree = _registered_trees.get(tree_id, null)
 	if not tree:
 		return
 
@@ -30,9 +30,9 @@ func _set_active_tree(tree_id: int) -> void:
 	_active_tree._can_send_message = true
 
 
-func register_tree(tree: BeehaveTree) -> void:
+func register_tree(tree) -> void:
 	_registered_trees[tree.get_instance_id()] = tree
 
 
-func unregister_tree(tree: BeehaveTree) -> void:
+func unregister_tree(tree) -> void:
 	_registered_trees.erase(tree.get_instance_id())

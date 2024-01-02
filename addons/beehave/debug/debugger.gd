@@ -2,6 +2,8 @@
 extends EditorDebuggerPlugin
 
 const DebuggerTab := preload("debugger_tab.gd")
+const BeehaveUtils := preload("res://addons/beehave/utils/utils.gd")
+
 var debugger_tab := DebuggerTab.new()
 var floating_window: Window
 var session: EditorDebuggerSession
