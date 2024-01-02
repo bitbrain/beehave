@@ -28,11 +28,12 @@ scale = Vector2(0.1, 0.1)
 texture = SubResource("CompressedTexture2D_atdvc")
 script = ExtResource("3_shmq8")
 
-[node name="BeehaveTree" type="Node" parent="ColorChangingSprite" node_paths=PackedStringArray("blackboard")]
+[node name="BeehaveTree" type="Node" parent="ColorChangingSprite" node_paths=PackedStringArray("blackboard", "actor")]
 unique_name_in_owner = true
 script = ExtResource("4_yb1gg")
 blackboard = NodePath("../../Blackboard")
 custom_monitor = true
+actor = NodePath("..")
 
 [node name="SelectorComposite" type="Node" parent="ColorChangingSprite/BeehaveTree"]
 script = ExtResource("5_l2xef")
@@ -59,16 +60,20 @@ modulate_color = Color(0, 0, 1, 1)
 
 [node name="Blackboard" type="Node" parent="."]
 script = ExtResource("10_y2p03")
+blackboard = {
+"key": 15.3
+}
 
 [node name="AnotherSprite" type="Sprite2D" parent="."]
 position = Vector2(182, 180)
 scale = Vector2(0.1, 0.1)
 texture = SubResource("CompressedTexture2D_atdvc")
 
-[node name="AnotherTree" type="Node" parent="AnotherSprite" node_paths=PackedStringArray("blackboard")]
+[node name="AnotherTree" type="Node" parent="AnotherSprite" node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("4_yb1gg")
 blackboard = NodePath("../../Blackboard")
 custom_monitor = null
+actor = NodePath("..")
 
 [node name="SelectorComposite" type="Node" parent="AnotherSprite/AnotherTree"]
 script = ExtResource("5_l2xef")
