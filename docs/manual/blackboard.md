@@ -22,7 +22,52 @@ By default, every `BeehaveTree` manages its own instance of a blackboard. Howeve
 >   - When a value is set on a shared blackboard, it becomes 'global' and affects all trees referencing that blackboard.
 >  - However, using a custom blackboard name (as the 3rd argument in the key-value pair) allows for localizing the scope. This means changes to the blackboard will only affect the trees that use that specific custom name, enabling more controlled and isolated behaviors.
 
-## Example Scenarios
+In order to set a value on a blackboard, call the `set_value` method:
+```gd
+func tick(actor:Actor, blackboard:Blackboard) -> int:
+
+   # sets the value to '15.0' for "key" on the default blackboard
+   blackboard.set_value("key", 15.0)
+
+   # sets the value to '20.0' for "key" on the "custom" blackboard
+   # note, that this does NOT override the previous value.
+   # Both co-exist in different blackboards.
+   blackboard.set_value("key", 20.0, "custom")
+
+   return SUCCESS
+```
+Sometimes, we want to initiate a blackboard with values from the get-go. Currently, there are various ways to do this:
+
+### 1. Custom Blackboard
+
+```gdscript
+class_name CustomBlackboard extends Blackboard
+
+func _ready() -> void:
+   set_value("key", 15.0)
+```
+
+### 2. Shared Blackboard
+
+Set up a blackboard node in your scene tree and inject it into your scene script. Ensure to also assign the blackboard to your tree
+
+```gdscript
+# my_scene.ts
+class_name MyScene extends Node2D
+
+@onready var blackboard := $Blackboard
+
+func _ready() -> void:
+   blackboard.set_value("key", 15.0)
+```
+
+### 3. Editor properties
+
+Another option is to set values in the node properties when selecting a `Blackboard` node in your scene tree:
+
+![blackboard-properties](../assets/blackboard-properties.png)
+
+## Examples
 Here are some example scenarios to help you understand the Blackboard better:
 
 ### Example 1: Health Management
