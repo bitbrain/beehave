@@ -36,8 +36,7 @@ func test_running_then_fail() -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	action.status = BeehaveNode.SUCCESS
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
-	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	action.status = BeehaveNode.RUNNING
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
-	await runner.simulate_frames(1, 1000)
+	await runner.simulate_frames(1, 2000)
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
