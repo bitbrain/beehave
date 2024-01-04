@@ -29,3 +29,13 @@ The `TimeLimiter` node only gives its `RUNNING` child a set amount of time to fi
 This note is useful when you want to limit the execution time of a long running action. Once a time limiter reaches its time limit, it will start interrupting its child on every tick.
 
 **Example:** A mob aggros and tries to chase you, the chase action will last a maximum of 10 seconds before being aborted if not complete.
+
+## Delayer
+When first executing the `Delayer` node, it will start an internal timer and return `RUNNING` until the timer is complete, after which it will execute its child node. The delayer resets its time after its child returns either `SUCCESS` or `FAILURE`.
+
+**Example:** You stun a boss mob and it waits a certain amount of time before resuming its attack patterns.
+
+## Cooldown
+The `Cooldown` node executes its child until it either returns `SUCCESS` or `FAILURE`, after which it will start an internal timer and return `FAILURE` until the timer is complete. The cooldown is then able to execute its child again.
+
+**Example:** A mob attacks you and has to wait before it can attack you again.
