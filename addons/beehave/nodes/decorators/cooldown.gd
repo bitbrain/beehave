@@ -1,4 +1,5 @@
 @tool
+@icon("../../icons/cooldown.svg")
 extends Decorator
 class_name CooldownDecorator
 
