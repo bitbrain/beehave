@@ -2,7 +2,7 @@ extends Node
 
 var _tree_count: int = 0
 var _active_tree_count: int = 0
-var _registered_trees: Array[BeehaveTree] = []
+var _registered_trees: Array = []
 
 
 func _enter_tree() -> void:
@@ -10,7 +10,7 @@ func _enter_tree() -> void:
 	Performance.add_custom_monitor("beehave/total_enabled_trees", _get_total_enabled_trees)
 
 
-func register_tree(tree: BeehaveTree) -> void:
+func register_tree(tree) -> void:
 	if _registered_trees.has(tree):
 		return
 	
@@ -24,7 +24,7 @@ func register_tree(tree: BeehaveTree) -> void:
 	tree.tree_disabled.connect(_on_tree_disabled)
 
 
-func unregister_tree(tree: BeehaveTree) -> void:
+func unregister_tree(tree) -> void:
 	if not _registered_trees.has(tree):
 		return
 	

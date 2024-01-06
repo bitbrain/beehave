@@ -1,6 +1,10 @@
 @tool
 class_name BeehaveDebuggerTab extends PanelContainer
 
+
+const BeehaveUtils := preload("res://addons/beehave/utils/utils.gd")
+
+
 signal make_floating()
 
 const BeehaveGraphEdit := preload("graph_edit.gd")
