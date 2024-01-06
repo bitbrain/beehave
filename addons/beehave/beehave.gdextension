@@ -1,0 +1,23 @@
+[configuration]
+entry_symbol = "initialize_beehave_types"
+compatibility_minimum = 4.2
+
+[libraries]
+windows.editor.x86_64 = "res://addons/beehave/libs/windows/beehave.windows.editor.x86_64.dll"
+windows.debug.x86_64 = "res://addons/beehave/libs/windows/beehave.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/beehave/libs/windows/beehave.windows.template_release.x86_64.dll"
+macos.editor = "res://addons/beehave/libs/macos/beehave.macos.editor.framework"
+macos.debug  = "res://addons/beehave/libs/macos/beehave.macos.template_debug.framework"
+macos.release  = "res://addons/beehave/libs/macos/beehave.macos.template_release.framework"
+linux.editor.x86_64 = "res://addons/beehave/libs/linux/beehave.linux.editor.x86_64.so"
+linux.debug.x86_64 = "res://addons/beehave/libs/linux/beehave.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://addons/beehave/libs/linux/beehave.linux.template_release.x86_64.so"
+android.debug.x86_64 = "res://addons/beehave/libs/android/x86_64/beehave.android.template_debug.x86_64.so"
+android.release.x86_64 = "res://addons/beehave/libs/android/x86_64/beehave.android.template_release.x86_64.so"
+android.debug.arm64 = "res://addons/beehave/libs/android/arm64/beehave.android.template_debug.arm64.so"
+android.release.arm64 = "res://addons/beehave/libs/android/arm64/beehave.android.template_release.arm64.so"
+ios.debug  = "res://addons/beehave/libs/ios/beehave.ios.template_debug.universal.dylib"
+ios.release  = "res://addons/beehave/libs/ios/beehave.ios.template_release.universal.dylib"
+
+[icons]
+BeehaveTree = "res://addons/beehave/icons/tree.svg"

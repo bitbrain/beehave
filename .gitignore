@@ -11,3 +11,9 @@ data_*/
 .godot/
 
 reports/
+
+# CPP ignores
+*.dblite
+*.exp
+*.lib
+*.obj
