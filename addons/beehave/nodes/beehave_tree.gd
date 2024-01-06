@@ -88,12 +88,12 @@ signal tree_disabled
 		custom_monitor = b
 		if custom_monitor and _process_time_metric_name != '':
 			Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
-			BeehaveGlobalMetrics.register_tree(self)
+			_get_global_metrics().register_tree(self)
 		else:
 			if _process_time_metric_name != '':
 				# Remove tree metric from the engine
 				Performance.remove_custom_monitor(_process_time_metric_name)
-				BeehaveGlobalMetrics.unregister_tree(self)
+				_get_global_metrics().unregister_tree(self)
 
 			BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
@@ -138,12 +138,12 @@ func _ready() -> void:
 	# Register custom metric to the engine
 	if custom_monitor and not Engine.is_editor_hint():
 		Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
-		BeehaveGlobalMetrics.register_tree(self)
+		_get_global_metrics().register_tree(self)
 
 	if Engine.is_editor_hint():
 		update_configuration_warnings.call_deferred()
 	else:
-		BeehaveGlobalDebugger.register_tree(self)
+		_get_global_debugger().register_tree(self)
 		BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
 	# Randomize at what frames tick() will happen to avoid stutters
@@ -266,7 +266,7 @@ func _exit_tree() -> void:
 		if _process_time_metric_name != '':
 			# Remove tree metric from the engine
 			Performance.remove_custom_monitor(_process_time_metric_name)
-			BeehaveGlobalMetrics.unregister_tree(self)
+			_get_global_metrics().unregister_tree(self)
 
 		BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
@@ -291,3 +291,15 @@ func _get_debugger_data(node: Node) -> Dictionary:
 
 func get_class_name() -> Array[StringName]:
 	return [&"BeehaveTree"]
+	
+
+# required to avoid lifecycle issues on initial load
+# due to loading order problems with autoloads
+func _get_global_metrics() -> Node:
+	return get_tree().root.get_node("BeehaveGlobalMetrics")
+	
+	
+# required to avoid lifecycle issues on initial load
+# due to loading order problems with autoloads
+func _get_global_debugger() -> Node:
+	return get_tree().root.get_node("BeehaveGlobalDebugger")

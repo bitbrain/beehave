@@ -11,7 +11,6 @@ func _init():
 	add_autoload_singleton("BeehaveGlobalDebugger", "debug/global_debugger.gd")
 	print("Beehave initialized!")
 
-
 func _enter_tree() -> void:
 	editor_debugger = BeehaveEditorDebugger.new()
 	frames = preload("debug/frames.gd").new()

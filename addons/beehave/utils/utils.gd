@@ -1,6 +1,4 @@
 @tool
-class_name BeehaveUtils
-
 
 static func get_plugin() -> EditorPlugin:
 	var tree: SceneTree = Engine.get_main_loop()
