@@ -8,6 +8,8 @@
 
 Using behavior trees, Beehave makes it simple to create highly adaptive AI that responds to changes in the game world and overcomes unexpected obstacles. Whether you are a beginner or an experienced developer, Beehave is the perfect tool to take your game AI to the next level.
 
+> ✨ Development of **Beehave 3.0** has started. Read https://github.com/bitbrain/beehave/discussions/285 for more details.
+
 # 🐝 Features
 
 ### 🤖 Node based - build behavior trees within your scene tree
