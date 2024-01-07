@@ -51,3 +51,16 @@ func test_blackboard_shared_between_trees() -> void:
 	assert_that(scene.blackboard.get_value("custom_value")).is_equal(4)
 	assert_that(scene.blackboard.get_value("custom_value")).is_equal(4)
 	assert_that(scene.blackboard.keys().size()).is_equal(3)
+
+
+func test_blackboard_property_shared_between_trees() -> void:
+	var scene = auto_free(load("res://test/blackboard/shared_blackboard_scene.tscn").instantiate())
+	var runner = scene_runner(scene)
+	
+	await runner.simulate_frames(10)
+	
+	var blackboard1:Blackboard = scene.beehave_tree_1.get_child(0).blackboard
+	var blackboard2:Blackboard = scene.beehave_tree_2.get_child(0).blackboard
+	
+	assert_that(blackboard1.get_value("hello")).is_equal("world")
+	assert_that(blackboard2.get_value("hello")).is_equal("world")
