@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://ro5hjc002h0r"]
+
+[ext_resource type="Script" path="res://test/blackboard/shared_blackboard_scene.gd" id="1_8ck4i"]
+[ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="2_fg0hi"]
+[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="3_aaudw"]
+[ext_resource type="Script" path="res://test/blackboard/blackboard_register_action.gd" id="4_ijv65"]
+
+[node name="SharedBlackboardScene" type="Node2D"]
+script = ExtResource("1_8ck4i")
+
+[node name="Blackboard" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_fg0hi")
+blackboard = {
+"hello": "world"
+}
+
+[node name="BeehaveTree1" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
+unique_name_in_owner = true
+script = ExtResource("3_aaudw")
+blackboard = NodePath("../Blackboard")
+actor = NodePath("..")
+
+[node name="ActionLeaf" type="Node" parent="BeehaveTree1"]
+script = ExtResource("4_ijv65")
+
+[node name="BeehaveTree2" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
+unique_name_in_owner = true
+script = ExtResource("3_aaudw")
+blackboard = NodePath("../Blackboard")
+actor = NodePath("..")
+
+[node name="ActionLeaf" type="Node" parent="BeehaveTree2"]
+script = ExtResource("4_ijv65")
