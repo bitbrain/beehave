@@ -39,3 +39,9 @@ When first executing the `Delayer` node, it will start an internal timer and ret
 The `Cooldown` node executes its child until it either returns `SUCCESS` or `FAILURE`, after which it will start an internal timer and return `FAILURE` until the timer is complete. The cooldown is then able to execute its child again.
 
 **Example:** A mob attacks you and has to wait before it can attack you again.
+
+## UntilFail
+
+The `UntilFail` node executes its child and returns `RUNNING` as long as it returns either `RUNNING` or `SUCCESS`. If its child returns `FAILURE`, it will instead return `SUCCESS`.
+
+**Example:** A turret fires upon any NPC in range until it does not detect any more NPCs.
