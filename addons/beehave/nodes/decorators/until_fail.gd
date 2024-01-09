@@ -24,5 +24,5 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	if response == SUCCESS:
 		return RUNNING
 	
-	return FAILURE
+	return SUCCESS
 
