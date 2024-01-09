@@ -1,5 +1,6 @@
 @tool
-class_name UntilFailDecorator extends Decorator
+class_name UntilFailDecorator 
+extends Decorator
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var c = get_child(0)
