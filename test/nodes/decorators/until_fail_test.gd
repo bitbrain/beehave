@@ -41,4 +41,4 @@ func test_failure() -> void:
 		assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	
 	action.status = BeehaveNode.FAILURE
-	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
