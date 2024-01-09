@@ -1,4 +1,5 @@
 @tool
+@icon("../../icons/until_fail.svg")
 class_name UntilFailDecorator 
 extends Decorator
 
