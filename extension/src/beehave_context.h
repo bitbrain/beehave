@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_tree_node.h                                                   */
+/*  beehave_context.h                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,36 +27,25 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_TREE_NODE_H
-#define BEEHAVE_TREE_NODE_H
+#ifndef BEEHAVE_CONTEXT_H
+#define BEEHAVE_CONTEXT_H
 
-#include <classes/node.hpp>
+#include <classes/ref_counted.hpp>
 
 namespace godot {
 
-class BeehaveTreeNode : public Node
-{
-    GDCLASS(BeehaveTreeNode, Node);
+    class BeehaveContext : public RefCounted
+    {
+        GDCLASS(BeehaveContext, RefCounted);
 
-protected:
-    static void _bind_methods();
+    protected:
+        static void _bind_methods();
+    public:
 
-public:
-
-    enum Status {
-        SUCCESS = 0,
-        FAILURE = 1,
-        RUNNING = 2
+        BeehaveContext();
+        ~BeehaveContext();
     };
-
-    BeehaveTreeNode();
-    ~BeehaveTreeNode();
-
-    void test();
-};
 
 }
 
-VARIANT_ENUM_CAST(BeehaveTreeNode::Status);
-
-#endif // BEEHAVE_TREE_NODE_H
+#endif // BEEHAVE_CONTEXT_H

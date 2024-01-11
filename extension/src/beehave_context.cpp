@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_tree_node.h                                                   */
+/*  beehave_context.cpp                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,36 +27,21 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_TREE_NODE_H
-#define BEEHAVE_TREE_NODE_H
+#include "beehave_context.h"
 
-#include <classes/node.hpp>
+using namespace godot;
 
-namespace godot {
-
-class BeehaveTreeNode : public Node
+BeehaveContext::BeehaveContext()
 {
-    GDCLASS(BeehaveTreeNode, Node);
-
-protected:
-    static void _bind_methods();
-
-public:
-
-    enum Status {
-        SUCCESS = 0,
-        FAILURE = 1,
-        RUNNING = 2
-    };
-
-    BeehaveTreeNode();
-    ~BeehaveTreeNode();
-
-    void test();
-};
 
 }
 
-VARIANT_ENUM_CAST(BeehaveTreeNode::Status);
+BeehaveContext::~BeehaveContext()
+{
 
-#endif // BEEHAVE_TREE_NODE_H
+}
+
+void BeehaveContext::_bind_methods()
+{
+    
+}
