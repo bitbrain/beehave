@@ -44,15 +44,15 @@ func after_test():
 
 func test_repetitions(count: int, _test_parameters: Array = [[2], [0]]) -> void:
 	repeater.repetitions = count
-	action.final_result = BeehaveNode.SUCCESS
+	action.final_result = BeehaveTreeNode.SUCCESS
 
 	var frames_to_run = count * (action.running_frame_count + 1)
 
 	# It should return `RUNNING` every frame but the last one.
 	for i in range(frames_to_run - 1):
-		assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+		assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
 
-	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.SUCCESS)
 	
 	var times_started = tree.blackboard.get_value("started", 0)
 	var times_ended = tree.blackboard.get_value("ended", 0)
@@ -63,10 +63,10 @@ func test_repetitions(count: int, _test_parameters: Array = [[2], [0]]) -> void:
 
 func test_failure():
 	repeater.repetitions = 2
-	action.final_result = BeehaveNode.SUCCESS
+	action.final_result = BeehaveTreeNode.SUCCESS
 
 	for i in range(action.running_frame_count + 1):
-		assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+		assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
 	
 	# it should have started and ended normally
 	var times_started = tree.blackboard.get_value("started", 0)
@@ -75,11 +75,11 @@ func test_failure():
 	assert_int(times_started).is_equal(1)
 	assert_int(times_ended).is_equal(1)
 
-	action.final_result = BeehaveNode.FAILURE
+	action.final_result = BeehaveTreeNode.FAILURE
 
 	for i in range(action.running_frame_count):
-		assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+		assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.FAILURE)
 
 	times_started = tree.blackboard.get_value("started", 0)
 	times_ended = tree.blackboard.get_value("ended", 0)

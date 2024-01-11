@@ -25,28 +25,28 @@ func before_test() -> void:
 func test_comparison_operators() -> void:
 	var data: Dictionary = {
 		["0", "0"]: [
-			[BlackboardCompareCondition.Operators.EQUAL, BeehaveNode.SUCCESS],
-			[BlackboardCompareCondition.Operators.NOT_EQUAL, BeehaveNode.FAILURE],
-			[BlackboardCompareCondition.Operators.GREATER, BeehaveNode.FAILURE],
-			[BlackboardCompareCondition.Operators.LESS, BeehaveNode.FAILURE],
-			[BlackboardCompareCondition.Operators.GREATER_EQUAL, BeehaveNode.SUCCESS],
-			[BlackboardCompareCondition.Operators.LESS_EQUAL, BeehaveNode.SUCCESS],
+			[BlackboardCompareCondition.Operators.EQUAL, BeehaveTreeNode.SUCCESS],
+			[BlackboardCompareCondition.Operators.NOT_EQUAL, BeehaveTreeNode.FAILURE],
+			[BlackboardCompareCondition.Operators.GREATER, BeehaveTreeNode.FAILURE],
+			[BlackboardCompareCondition.Operators.LESS, BeehaveTreeNode.FAILURE],
+			[BlackboardCompareCondition.Operators.GREATER_EQUAL, BeehaveTreeNode.SUCCESS],
+			[BlackboardCompareCondition.Operators.LESS_EQUAL, BeehaveTreeNode.SUCCESS],
 		],
 		["0", "1"]: [
-			[BlackboardCompareCondition.Operators.EQUAL, BeehaveNode.FAILURE],
-			[BlackboardCompareCondition.Operators.NOT_EQUAL, BeehaveNode.SUCCESS],
-			[BlackboardCompareCondition.Operators.GREATER, BeehaveNode.FAILURE],
-			[BlackboardCompareCondition.Operators.LESS, BeehaveNode.SUCCESS],
-			[BlackboardCompareCondition.Operators.GREATER_EQUAL, BeehaveNode.FAILURE],
-			[BlackboardCompareCondition.Operators.LESS_EQUAL, BeehaveNode.SUCCESS],
+			[BlackboardCompareCondition.Operators.EQUAL, BeehaveTreeNode.FAILURE],
+			[BlackboardCompareCondition.Operators.NOT_EQUAL, BeehaveTreeNode.SUCCESS],
+			[BlackboardCompareCondition.Operators.GREATER, BeehaveTreeNode.FAILURE],
+			[BlackboardCompareCondition.Operators.LESS, BeehaveTreeNode.SUCCESS],
+			[BlackboardCompareCondition.Operators.GREATER_EQUAL, BeehaveTreeNode.FAILURE],
+			[BlackboardCompareCondition.Operators.LESS_EQUAL, BeehaveTreeNode.SUCCESS],
 		],
 		["1", "0"]: [
-			[BlackboardCompareCondition.Operators.EQUAL, BeehaveNode.FAILURE],
-			[BlackboardCompareCondition.Operators.NOT_EQUAL, BeehaveNode.SUCCESS],
-			[BlackboardCompareCondition.Operators.GREATER, BeehaveNode.SUCCESS],
-			[BlackboardCompareCondition.Operators.LESS, BeehaveNode.FAILURE],
-			[BlackboardCompareCondition.Operators.GREATER_EQUAL, BeehaveNode.SUCCESS],
-			[BlackboardCompareCondition.Operators.LESS_EQUAL, BeehaveNode.FAILURE],
+			[BlackboardCompareCondition.Operators.EQUAL, BeehaveTreeNode.FAILURE],
+			[BlackboardCompareCondition.Operators.NOT_EQUAL, BeehaveTreeNode.SUCCESS],
+			[BlackboardCompareCondition.Operators.GREATER, BeehaveTreeNode.SUCCESS],
+			[BlackboardCompareCondition.Operators.LESS, BeehaveTreeNode.FAILURE],
+			[BlackboardCompareCondition.Operators.GREATER_EQUAL, BeehaveTreeNode.SUCCESS],
+			[BlackboardCompareCondition.Operators.LESS_EQUAL, BeehaveTreeNode.FAILURE],
 		]
 	}
 	
@@ -74,7 +74,7 @@ func test_blackboard_access() -> void:
 	blackboard_compare.right_operand = "1"
 	
 	runner = scene_runner(blackboard_compare)
-	assert_that(blackboard_compare.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
+	assert_that(blackboard_compare.tick(actor, blackboard)).is_equal(BeehaveTreeNode.SUCCESS)
 
 
 func test_invalid_left_operand_expression() -> void:
@@ -83,7 +83,7 @@ func test_invalid_left_operand_expression() -> void:
 	blackboard_compare.right_operand = "1"
 	
 	runner = scene_runner(blackboard_compare)
-	assert_that(blackboard_compare.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
+	assert_that(blackboard_compare.tick(actor, blackboard)).is_equal(BeehaveTreeNode.FAILURE)
 
 
 func test_invalid_right_operand_expression() -> void:
@@ -92,4 +92,4 @@ func test_invalid_right_operand_expression() -> void:
 	blackboard_compare.right_operand = "this is invalid!!!"
 	
 	runner = scene_runner(blackboard_compare)
-	assert_that(blackboard_compare.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
+	assert_that(blackboard_compare.tick(actor, blackboard)).is_equal(BeehaveTreeNode.FAILURE)

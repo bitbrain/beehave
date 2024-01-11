@@ -32,25 +32,25 @@ func before_test() -> void:
 
 func test_return_success_after_delay() -> void:
 	delayer.wait_time = get_physics_process_delta_time()
-	action.status = BeehaveNode.SUCCESS
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	action.status = BeehaveTreeNode.SUCCESS
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.SUCCESS)
 	# Assure that the delayer properly resets
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.SUCCESS)
 
 func test_return_running_after_delay() -> void:
 	delayer.wait_time = 1.0
-	action.status = BeehaveNode.RUNNING
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	action.status = BeehaveTreeNode.RUNNING
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
 	await runner.simulate_frames(1, 1000)
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	action.status = BeehaveNode.SUCCESS
-	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
+	action.status = BeehaveTreeNode.SUCCESS
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.SUCCESS)
 	# Assure that the delayer properly resets
-	action.status = BeehaveNode.RUNNING
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	action.status = BeehaveTreeNode.RUNNING
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
 	await runner.simulate_frames(1, 1000)
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	action.status = BeehaveNode.SUCCESS
-	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
+	action.status = BeehaveTreeNode.SUCCESS
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.SUCCESS)

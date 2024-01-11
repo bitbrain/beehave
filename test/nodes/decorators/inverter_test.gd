@@ -32,19 +32,19 @@ func before_test() -> void:
 
 
 func test_invert_success_to_failure() -> void:
-	action.status = BeehaveNode.SUCCESS
-	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	action.status = BeehaveTreeNode.SUCCESS
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.FAILURE)
 
 
 func test_invert_failure_to_success() -> void:
-	action.status = BeehaveNode.FAILURE
-	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	action.status = BeehaveTreeNode.FAILURE
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.SUCCESS)
 
 
 func test_clear_running_child_after_run() -> void:
-	action.status = BeehaveNode.RUNNING
+	action.status = BeehaveTreeNode.RUNNING
 	tree.tick()
 	assert_that(inverter.running_child).is_equal(action)
-	action.status = BeehaveNode.SUCCESS
+	action.status = BeehaveTreeNode.SUCCESS
 	tree.tick()
 	assert_that(inverter.running_child).is_equal(null)

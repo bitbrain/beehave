@@ -36,28 +36,28 @@ func before_test() -> void:
 
 func test_return_failure_when_child_exceeds_time_limiter() -> void:
 	time_limiter.wait_time = 1.0
-	action.status = BeehaveNode.RUNNING
+	action.status = BeehaveTreeNode.RUNNING
 	tree.tick()
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
 	await runner.simulate_frames(1, 1500)
-	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.FAILURE)
 
 
 func test_reset_when_child_finishes() -> void:
 	time_limiter.wait_time = 0.5
-	action.status = BeehaveNode.RUNNING
+	action.status = BeehaveTreeNode.RUNNING
 	tree.tick()
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
 	await runner.simulate_frames(2, 500)
-	action.status = BeehaveNode.SUCCESS
-	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	action.status = BeehaveTreeNode.SUCCESS
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.SUCCESS)
 
 
 func test_clear_running_child_after_run() -> void:
 	time_limiter.wait_time = 1.5
-	action.status = BeehaveNode.RUNNING
+	action.status = BeehaveTreeNode.RUNNING
 	tree.tick()
 	assert_that(time_limiter.running_child).is_equal(action)
-	action.status = BeehaveNode.SUCCESS
+	action.status = BeehaveTreeNode.SUCCESS
 	await runner.simulate_frames(1, 1600)
 	assert_that(time_limiter.running_child).is_null()

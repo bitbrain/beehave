@@ -32,11 +32,11 @@ func before_test() -> void:
 
 func test_running_then_fail() -> void:
 	cooldown.wait_time = 1.0
-	action.status = BeehaveNode.RUNNING
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
-	action.status = BeehaveNode.SUCCESS
-	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
-	action.status = BeehaveNode.RUNNING
-	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	action.status = BeehaveTreeNode.RUNNING
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
+	action.status = BeehaveTreeNode.SUCCESS
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.SUCCESS)
+	action.status = BeehaveTreeNode.RUNNING
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.FAILURE)
 	await runner.simulate_frames(1, 2000)
-	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)

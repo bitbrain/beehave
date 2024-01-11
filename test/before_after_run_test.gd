@@ -38,10 +38,10 @@ func test_action_after_run() -> void:
 	assert_bool(tree.blackboard.get_value("entered", false)).is_false()
 	assert_bool(tree.blackboard.get_value("exited", false)).is_false()
 	
-	assert_int(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_int(tree.tick()).is_equal(BeehaveTreeNode.RUNNING)
 	assert_bool(tree.blackboard.get_value("entered", false)).is_true()
 	assert_bool(tree.blackboard.get_value("exited", false)).is_false()
 	
-	assert_int(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_int(tree.tick()).is_equal(BeehaveTreeNode.SUCCESS)
 	assert_bool(tree.blackboard.get_value("entered", false)).is_true()
 	assert_bool(tree.blackboard.get_value("exited", false)).is_true()

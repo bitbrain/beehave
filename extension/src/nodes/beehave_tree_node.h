@@ -13,6 +13,13 @@ protected:
     static void _bind_methods();
 
 public:
+
+    enum Status {
+        SUCCESS = 0,
+        FAILURE = 1,
+        RUNNING = 2
+    };
+
     BeehaveTreeNode();
     ~BeehaveTreeNode();
 
@@ -20,5 +27,7 @@ public:
 };
 
 }
+
+VARIANT_ENUM_CAST(BeehaveTreeNode::Status);
 
 #endif // BEEHAVE_TREE_NODE_H

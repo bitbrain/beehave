@@ -31,14 +31,14 @@ func before_test() -> void:
 
 
 func test_tick() -> void:
-	action.status = BeehaveNode.SUCCESS
-	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	action.status = BeehaveTreeNode.SUCCESS
+	assert_that(tree.tick()).is_equal(BeehaveTreeNode.FAILURE)
 
 
 func test_clear_running_child_after_run() -> void:
-	action.status = BeehaveNode.RUNNING
+	action.status = BeehaveTreeNode.RUNNING
 	tree.tick()
 	assert_that(failer.running_child).is_equal(action)
-	action.status = BeehaveNode.SUCCESS
+	action.status = BeehaveTreeNode.SUCCESS
 	tree.tick()
 	assert_that(failer.running_child).is_equal(null)
