@@ -4,8 +4,9 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "nodes/tree.h"
-#include "nodes/blackboard.h"
+#include "nodes/beehave_tree.h"
+#include "nodes/beehave_tree_node.h"
+#include "nodes/beehave_blackboard.h"
 
 using namespace godot;
 
@@ -15,6 +16,7 @@ void initialize_beehave_types(ModuleInitializationLevel p_level)
 		return;
 	}
     ClassDB::register_class<BeehaveTree>();
+	ClassDB::register_class<BeehaveTreeNode>();
     ClassDB::register_class<BeehaveBlackboard>();
 }
 

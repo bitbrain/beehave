@@ -3,7 +3,7 @@
 
 #include <godot_cpp/classes/node.hpp>
 
-using namespace godot;
+namespace godot {
 
 class BeehaveBlackboard : public Node
 {
@@ -15,6 +15,10 @@ protected:
 public:
     BeehaveBlackboard();
     ~BeehaveBlackboard();
+
+    void test();
 };
+
+}
 
 #endif // BEEHAVE_BLACKBOARD_H

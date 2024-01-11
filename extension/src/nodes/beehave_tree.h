@@ -3,7 +3,7 @@
 
 #include <godot_cpp/classes/node.hpp>
 
-using namespace godot;
+namespace godot {
 
 class BeehaveTree : public Node
 {
@@ -15,6 +15,10 @@ protected:
 public:
     BeehaveTree();
     ~BeehaveTree();
+
+    void test();
 };
+
+}
 
 #endif // BEEHAVE_TREE_H
