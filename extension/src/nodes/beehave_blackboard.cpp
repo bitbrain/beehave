@@ -1,5 +1,5 @@
 #include "beehave_blackboard.h"
-#include <godot_cpp/core/class_db.hpp>
+#include <core/class_db.hpp>
 
 using namespace godot;
 

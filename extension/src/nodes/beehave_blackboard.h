@@ -1,7 +1,7 @@
 #ifndef BEEHAVE_BLACKBOARD_H
 #define BEEHAVE_BLACKBOARD_H
 
-#include <godot_cpp/classes/node.hpp>
+#include <classes/node.hpp>
 
 namespace godot {
 

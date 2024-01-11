@@ -5,20 +5,17 @@ extends GdUnitTestSuite
 
 
 const __mock_action = "res://test/actions/mock_action.gd"
-const __succedeer = "res://addons/beehave/nodes/decorators/succeeder.gd"
-const __blackboard = "res://addons/beehave/blackboard.gd"
-const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
 
 var tree: BeehaveTree
 var action: ActionLeaf
 
 
 func before_test() -> void:
-	tree = auto_free(load(__tree).new())
+	tree = auto_free(BeehaveTree.new())
 	action = auto_free(load(__mock_action).new())
-	var succeeder = auto_free(load(__succedeer).new())
+	var succeeder = auto_free(BeehaveSucceeder.new())
 	var actor = auto_free(Node2D.new())
-	var blackboard = auto_free(load(__blackboard).new())
+	var blackboard = auto_free(BeehaveBlackboard.new())
 	
 	tree.add_child(succeeder)
 	succeeder.add_child(action)

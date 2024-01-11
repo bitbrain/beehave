@@ -1,7 +1,7 @@
 #ifndef BEEHAVE_TREE_NODE_H
 #define BEEHAVE_TREE_NODE_H
 
-#include <godot_cpp/classes/node.hpp>
+#include <classes/node.hpp>
 
 namespace godot {
 

@@ -4,15 +4,12 @@ extends GdUnitTestSuite
 @warning_ignore("unused_parameter")
 @warning_ignore("return_value_discarded")
 
-# TestSuite generated from
-const __source = "res://addons/beehave/nodes/beehave_tree.gd"
-
 func create_scene() -> Node2D:
 	return auto_free(load("res://test/unit_test_scene.tscn").instantiate())
 
 
 func create_tree() -> BeehaveTree:
-	return auto_free(load(__source).new())
+	return auto_free(BeehaveTree.new())
 
 
 func test_normal_tick() -> void:

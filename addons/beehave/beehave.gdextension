@@ -1,5 +1,5 @@
 [configuration]
-entry_symbol = "initialize_beehave_types"
+entry_symbol = "beehave_library_init"
 compatibility_minimum = 4.2
 
 [libraries]
