@@ -45,7 +45,7 @@ public:
     BeehaveTree();
     ~BeehaveTree();
 
-    void test();
+    void tick(float delta);
 };
 
 }

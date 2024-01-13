@@ -42,13 +42,13 @@ BeehaveTreeNode::~BeehaveTreeNode()
     
 }
 
-void BeehaveTreeNode::test() {
+void BeehaveTreeNode::tick(BeehaveContext *context) {
 
 }
 
 void BeehaveTreeNode::_bind_methods()
 {
-    ClassDB::bind_method(D_METHOD("test"), &BeehaveTreeNode::test);
+    ClassDB::bind_method(D_METHOD("tick"), &BeehaveTreeNode::tick);
 
     BIND_ENUM_CONSTANT(SUCCESS);
     BIND_ENUM_CONSTANT(FAILURE);

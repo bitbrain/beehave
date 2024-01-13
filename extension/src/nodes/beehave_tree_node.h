@@ -31,6 +31,7 @@
 #define BEEHAVE_TREE_NODE_H
 
 #include <classes/node.hpp>
+#include "beehave_context.h"
 
 namespace godot {
 
@@ -52,7 +53,7 @@ public:
     BeehaveTreeNode();
     ~BeehaveTreeNode();
 
-    void test();
+    void tick(BeehaveContext *context);
 };
 
 }

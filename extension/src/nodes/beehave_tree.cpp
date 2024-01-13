@@ -42,11 +42,12 @@ BeehaveTree::~BeehaveTree()
     
 }
 
-void BeehaveTree::test() {
+void BeehaveTree::tick(float delta)
+{
 
 }
 
 void BeehaveTree::_bind_methods()
 {
-    ClassDB::bind_method(D_METHOD("test"), &BeehaveTree::test);
+    ClassDB::bind_method(D_METHOD("tick"), &BeehaveTree::tick);
 }

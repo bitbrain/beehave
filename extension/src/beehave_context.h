@@ -31,6 +31,8 @@
 #define BEEHAVE_CONTEXT_H
 
 #include <classes/ref_counted.hpp>
+#include <classes/node.hpp>
+#include "nodes/beehave_blackboard.h"
 
 namespace godot {
 
@@ -38,12 +40,20 @@ namespace godot {
     {
         GDCLASS(BeehaveContext, RefCounted);
 
+        BeehaveBlackboard* blackboard;
+        Node* actor;
+        float delta;
     protected:
         static void _bind_methods();
     public:
+        BeehaveBlackboard* get_blackboard() const;
+        void set_blackboard(BeehaveBlackboard* blackboard);
 
-        BeehaveContext();
-        ~BeehaveContext();
+        Node* get_actor() const;
+        void set_actor(Node* actor);
+
+        float get_delta() const;
+        void set_delta(float delta);
     };
 
 }
