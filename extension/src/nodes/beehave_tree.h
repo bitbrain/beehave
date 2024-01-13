@@ -44,8 +44,6 @@ protected:
 public:
     BeehaveTree();
     ~BeehaveTree();
-
-    void tick(float delta);
 };
 
 }
