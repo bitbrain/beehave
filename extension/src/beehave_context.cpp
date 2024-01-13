@@ -31,17 +31,42 @@
 
 using namespace godot;
 
-BeehaveContext::BeehaveContext()
-{
-
-}
-
-BeehaveContext::~BeehaveContext()
-{
-
-}
-
 void BeehaveContext::_bind_methods()
 {
-    
+    ClassDB::bind_method(D_METHOD("set_blackboard", "blackboard"), &BeehaveContext::set_blackboard);
+    ClassDB::bind_method(D_METHOD("get_blackboard"), &BeehaveContext::get_blackboard);
+    ClassDB::bind_method(D_METHOD("set_actor", "actor"), &BeehaveContext::set_actor);
+    ClassDB::bind_method(D_METHOD("get_actor"), &BeehaveContext::get_actor);
+    ClassDB::bind_method(D_METHOD("set_delta", "delta"), &BeehaveContext::set_delta);
+    ClassDB::bind_method(D_METHOD("get_delta"), &BeehaveContext::get_delta);
+}
+
+BeehaveBlackboard* BeehaveContext::get_blackboard() const
+{
+    return this->blackboard;
+}
+
+void BeehaveContext::set_blackboard(BeehaveBlackboard* blackboard)
+{
+    this->blackboard = blackboard;
+}
+
+Node* BeehaveContext::get_actor() const
+{
+    return this->actor;
+}
+
+void BeehaveContext::set_actor(Node* actor)
+{
+    this->actor = actor;
+}
+
+float BeehaveContext::get_delta() const
+{
+    return delta;
+}
+
+void BeehaveContext::set_delta(float delta)
+{
+    this->delta = delta;
 }

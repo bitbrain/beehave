@@ -5,6 +5,7 @@ extends GdUnitTestSuite
 @warning_ignore("return_value_discarded")
 
 func test_has_value() -> void:
+	var context := BeehaveContext.new() as BeehaveContext
 	var blackboard = auto_free(BeehaveBlackboard.new())
 	blackboard.set_value("my-key", 123)
 	assert_bool(blackboard.has_value("my-key")).is_true()
