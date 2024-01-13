@@ -46,3 +46,13 @@ void BeehaveTree::_bind_methods()
 {
     
 }
+
+void BeehaveTree::_process(double delta)
+{
+
+}
+
+void BeehaveTree::_physics_process(double delta)
+{
+
+}

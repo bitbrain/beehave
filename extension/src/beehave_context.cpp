@@ -73,12 +73,12 @@ void BeehaveContext::set_actor(Node* actor)
     this->actor = actor;
 }
 
-float BeehaveContext::get_delta() const
+double BeehaveContext::get_delta() const
 {
     return delta;
 }
 
-void BeehaveContext::set_delta(float delta)
+void BeehaveContext::set_delta(double delta)
 {
     this->delta = delta;
 }

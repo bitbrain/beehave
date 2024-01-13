@@ -44,6 +44,9 @@ protected:
 public:
     BeehaveTree();
     ~BeehaveTree();
+
+    void _process(double delta);
+    void _physics_process(double delta);
 };
 
 }

@@ -44,7 +44,7 @@ namespace godot {
         BeehaveTree* tree;
         BeehaveBlackboard* blackboard;
         Node* actor;
-        float delta;
+        double delta;
     protected:
         static void _bind_methods();
     public:
@@ -57,8 +57,8 @@ namespace godot {
         Node* get_actor() const;
         void set_actor(Node* actor);
 
-        float get_delta() const;
-        void set_delta(float delta);
+        double get_delta() const;
+        void set_delta(double delta);
     };
 
 }
