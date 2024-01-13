@@ -33,12 +33,24 @@ using namespace godot;
 
 void BeehaveContext::_bind_methods()
 {
+    ClassDB::bind_method(D_METHOD("set_tree", "tree"), &BeehaveContext::set_tree);
+    ClassDB::bind_method(D_METHOD("get_tree"), &BeehaveContext::get_tree);
     ClassDB::bind_method(D_METHOD("set_blackboard", "blackboard"), &BeehaveContext::set_blackboard);
     ClassDB::bind_method(D_METHOD("get_blackboard"), &BeehaveContext::get_blackboard);
     ClassDB::bind_method(D_METHOD("set_actor", "actor"), &BeehaveContext::set_actor);
     ClassDB::bind_method(D_METHOD("get_actor"), &BeehaveContext::get_actor);
     ClassDB::bind_method(D_METHOD("set_delta", "delta"), &BeehaveContext::set_delta);
     ClassDB::bind_method(D_METHOD("get_delta"), &BeehaveContext::get_delta);
+}
+
+BeehaveTree* BeehaveContext::get_tree() const
+{
+    return this->tree;
+}
+
+void BeehaveContext::set_tree(BeehaveTree* tree)
+{
+    this->tree = tree;
 }
 
 BeehaveBlackboard* BeehaveContext::get_blackboard() const

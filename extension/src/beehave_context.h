@@ -33,6 +33,7 @@
 #include <classes/ref_counted.hpp>
 #include <classes/node.hpp>
 #include "nodes/beehave_blackboard.h"
+#include "nodes/beehave_tree.h"
 
 namespace godot {
 
@@ -40,12 +41,16 @@ namespace godot {
     {
         GDCLASS(BeehaveContext, RefCounted);
 
+        BeehaveTree* tree;
         BeehaveBlackboard* blackboard;
         Node* actor;
         float delta;
     protected:
         static void _bind_methods();
     public:
+        BeehaveTree* get_tree() const;
+        void set_tree(BeehaveTree* tree);
+
         BeehaveBlackboard* get_blackboard() const;
         void set_blackboard(BeehaveBlackboard* blackboard);
 
