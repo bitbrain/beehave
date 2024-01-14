@@ -44,7 +44,22 @@ BeehaveTree::~BeehaveTree()
 
 void BeehaveTree::_bind_methods()
 {
-    
+    // signals
+    ADD_SIGNAL(MethodInfo("enabled"));
+    ADD_SIGNAL(MethodInfo("disabled"));
+
+    // enums
+    BIND_ENUM_CONSTANT(IDLE);
+    BIND_ENUM_CONSTANT(PHYSICS);
+
+    // methods
+    ClassDB::bind_method(D_METHOD("enable"), &BeehaveTree::enable);
+    ClassDB::bind_method(D_METHOD("disable"), &BeehaveTree::disable);
+}
+
+void BeehaveTree::_ready()
+{
+
 }
 
 void BeehaveTree::_process(double delta)
@@ -53,6 +68,16 @@ void BeehaveTree::_process(double delta)
 }
 
 void BeehaveTree::_physics_process(double delta)
+{
+
+}
+
+void BeehaveTree::enable()
+{
+
+}
+
+void BeehaveTree::disable()
 {
 
 }

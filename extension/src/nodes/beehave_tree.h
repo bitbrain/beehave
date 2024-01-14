@@ -31,12 +31,22 @@
 #define BEEHAVE_TREE_H
 
 #include <classes/node.hpp>
+#include "beehave_blackboard.h"
+#include "beehave_tree_node.h"
 
 namespace godot {
 
 class BeehaveTree : public Node
 {
     GDCLASS(BeehaveTree, Node);
+
+    int tick_rate;
+    bool enabled;
+    Node* actor;
+    BeehaveBlackboard* blackboard;
+    BeehaveTreeNode::TickStatus tick_status;
+
+    int _last_tick;
 
 protected:
     static void _bind_methods();
@@ -45,10 +55,20 @@ public:
     BeehaveTree();
     ~BeehaveTree();
 
+    enum ProcessThread {
+        IDLE = 0,
+        PHYSICS = 1
+    };
+
+    void _ready();
     void _process(double delta);
     void _physics_process(double delta);
+    void enable();
+    void disable();
 };
 
 }
+
+VARIANT_ENUM_CAST(BeehaveTree::ProcessThread);
 
 #endif // BEEHAVE_TREE_H

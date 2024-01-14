@@ -32,10 +32,11 @@
 
 #include <classes/ref_counted.hpp>
 #include <classes/node.hpp>
-#include "nodes/beehave_blackboard.h"
-#include "nodes/beehave_tree.h"
 
 namespace godot {
+
+    class BeehaveTree;
+    class BeehaveBlackboard;
 
     class BeehaveContext : public RefCounted
     {

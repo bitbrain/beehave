@@ -44,7 +44,7 @@ protected:
 
 public:
 
-    enum Status {
+    enum TickStatus {
         SUCCESS = 0,
         FAILURE = 1,
         RUNNING = 2
@@ -58,6 +58,6 @@ public:
 
 }
 
-VARIANT_ENUM_CAST(BeehaveTreeNode::Status);
+VARIANT_ENUM_CAST(BeehaveTreeNode::TickStatus);
 
 #endif // BEEHAVE_TREE_NODE_H

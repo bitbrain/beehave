@@ -28,6 +28,8 @@
 /**************************************************************************/
 
 #include "beehave_context.h"
+#include "nodes/beehave_blackboard.h"
+#include "nodes/beehave_tree.h"
 
 using namespace godot;
 
