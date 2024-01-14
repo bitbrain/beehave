@@ -33,6 +33,7 @@
 #include <classes/node.hpp>
 #include "beehave_blackboard.h"
 #include "beehave_tree_node.h"
+#include "beehave_context.h"
 
 namespace godot {
 
@@ -40,13 +41,24 @@ class BeehaveTree : public Node
 {
     GDCLASS(BeehaveTree, Node);
 
+public:
+    enum ProcessThread {
+        IDLE = 0,
+        PHYSICS = 1
+    };
+
+private:
     int tick_rate;
     bool enabled;
     Node* actor;
     BeehaveBlackboard* blackboard;
+    Ref<BeehaveContext> context;
     BeehaveTreeNode::TickStatus tick_status;
+    ProcessThread process_thread = ProcessThread::PHYSICS;
 
     int _last_tick;
+
+    void process_internally(double delta);
 
 protected:
     static void _bind_methods();
@@ -55,16 +67,12 @@ public:
     BeehaveTree();
     ~BeehaveTree();
 
-    enum ProcessThread {
-        IDLE = 0,
-        PHYSICS = 1
-    };
-
     void _ready();
     void _process(double delta);
     void _physics_process(double delta);
     void enable();
     void disable();
+    BeehaveTreeNode::TickStatus tick();
 };
 
 }

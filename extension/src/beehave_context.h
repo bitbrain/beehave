@@ -35,6 +35,7 @@
 
 namespace godot {
 
+    // Forward declarations to avoid cyclic dependencies.
     class BeehaveTree;
     class BeehaveBlackboard;
 

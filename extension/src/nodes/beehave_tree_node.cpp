@@ -42,8 +42,9 @@ BeehaveTreeNode::~BeehaveTreeNode()
     
 }
 
-void BeehaveTreeNode::tick(BeehaveContext *context) {
-
+BeehaveTreeNode::TickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context)
+{
+    return BeehaveTreeNode::FAILURE;
 }
 
 void BeehaveTreeNode::_bind_methods()

@@ -53,7 +53,7 @@ public:
     BeehaveTreeNode();
     ~BeehaveTreeNode();
 
-    void tick(BeehaveContext *context);
+    TickStatus tick(Ref<BeehaveContext> context);
 };
 
 }
