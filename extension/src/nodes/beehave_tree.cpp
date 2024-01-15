@@ -32,95 +32,73 @@
 
 using namespace godot;
 
-BeehaveTree::BeehaveTree()
-    : context(Ref<BeehaveContext>(memnew(BeehaveContext)))
-{
-
+BeehaveTree::BeehaveTree() :
+		context(Ref<BeehaveContext>(memnew(BeehaveContext))) {
 }
 
-BeehaveTree::~BeehaveTree()
-{
-    
+BeehaveTree::~BeehaveTree() {
 }
 
-void BeehaveTree::_bind_methods()
-{
-    // signals
-    ADD_SIGNAL(MethodInfo("enabled"));
-    ADD_SIGNAL(MethodInfo("disabled"));
+void BeehaveTree::_bind_methods() {
+	// signals
+	ADD_SIGNAL(MethodInfo("enabled"));
+	ADD_SIGNAL(MethodInfo("disabled"));
 
-    // enums
-    BIND_ENUM_CONSTANT(IDLE);
-    BIND_ENUM_CONSTANT(PHYSICS);
+	// enums
+	BIND_ENUM_CONSTANT(IDLE);
+	BIND_ENUM_CONSTANT(PHYSICS);
 
-    // methods
-    ClassDB::bind_method(D_METHOD("enable"), &BeehaveTree::enable);
-    ClassDB::bind_method(D_METHOD("disable"), &BeehaveTree::disable);
+	// methods
+	ClassDB::bind_method(D_METHOD("enable"), &BeehaveTree::enable);
+	ClassDB::bind_method(D_METHOD("disable"), &BeehaveTree::disable);
 }
 
-void BeehaveTree::_ready()
-{
-
+void BeehaveTree::_ready() {
 }
 
-void BeehaveTree::_process(double delta)
-{
-    if (process_thread == BeehaveTree::ProcessThread::IDLE)
-    {
-        process_internally(delta);
-    }
+void BeehaveTree::_process(double delta) {
+	if (process_thread == BeehaveTree::ProcessThread::IDLE) {
+		process_internally(delta);
+	}
 }
 
-void BeehaveTree::_physics_process(double delta)
-{
-    if (process_thread == BeehaveTree::ProcessThread::PHYSICS)
-    {
-        process_internally(delta);
-    }
+void BeehaveTree::_physics_process(double delta) {
+	if (process_thread == BeehaveTree::ProcessThread::PHYSICS) {
+		process_internally(delta);
+	}
 }
 
-void BeehaveTree::enable()
-{
-
+void BeehaveTree::enable() {
 }
 
-void BeehaveTree::disable()
-{
-
+void BeehaveTree::disable() {
 }
 
-void BeehaveTree::process_internally(double delta)
-{
-    // ensure that we consider the current tick rate of the tree
-    if (_last_tick < tick_rate - 1)
-    {
-        _last_tick += 1;
-        return;
-    }
+void BeehaveTree::process_internally(double delta) {
+	// ensure that we consider the current tick rate of the tree
+	if (_last_tick < tick_rate - 1) {
+		_last_tick += 1;
+		return;
+	}
 
-    context->set_delta(delta);
+	context->set_delta(delta);
 
-    tick();
+	tick();
 }
 
-BeehaveTreeNode::TickStatus BeehaveTree::tick()
-{
-    context->set_blackboard(blackboard);
-    context->set_tree(this);
+BeehaveTreeNode::TickStatus BeehaveTree::tick() {
+	context->set_blackboard(blackboard);
+	context->set_tree(this);
 
-    for (int i = 0; i < get_child_count(); i++)
-    {
-        Node* child = get_child(i);
-        if (!child)
-        {
-            continue;
-        }
-        BeehaveTreeNode* tree_node = cast_to<BeehaveTreeNode>(child);
-        if (tree_node)
-        {
-            tick_status = tree_node->tick(context);
-        }
-
-    }
-    return tick_status;
+	for (int i = 0; i < get_child_count(); i++) {
+		Node *child = get_child(i);
+		if (!child) {
+			continue;
+		}
+		BeehaveTreeNode *tree_node = cast_to<BeehaveTreeNode>(child);
+		if (tree_node) {
+			tick_status = tree_node->tick(context);
+		}
+	}
+	return tick_status;
 }

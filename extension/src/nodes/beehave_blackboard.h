@@ -34,20 +34,19 @@
 
 namespace godot {
 
-class BeehaveBlackboard : public Node
-{
-    GDCLASS(BeehaveBlackboard, Node);
+class BeehaveBlackboard : public Node {
+	GDCLASS(BeehaveBlackboard, Node);
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 public:
-    BeehaveBlackboard();
-    ~BeehaveBlackboard();
+	BeehaveBlackboard();
+	~BeehaveBlackboard();
 
-    void test();
+	void test();
 };
 
-}
+} //namespace godot
 
 #endif // BEEHAVE_BLACKBOARD_H

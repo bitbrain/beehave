@@ -32,26 +32,20 @@
 
 using namespace godot;
 
-BeehaveTreeNode::BeehaveTreeNode()
-{
-
+BeehaveTreeNode::BeehaveTreeNode() {
 }
 
-BeehaveTreeNode::~BeehaveTreeNode()
-{
-    
+BeehaveTreeNode::~BeehaveTreeNode() {
 }
 
-BeehaveTreeNode::TickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context)
-{
-    return BeehaveTreeNode::FAILURE;
+BeehaveTreeNode::TickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context) {
+	return BeehaveTreeNode::FAILURE;
 }
 
-void BeehaveTreeNode::_bind_methods()
-{
-    ClassDB::bind_method(D_METHOD("tick"), &BeehaveTreeNode::tick);
+void BeehaveTreeNode::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("tick"), &BeehaveTreeNode::tick);
 
-    BIND_ENUM_CONSTANT(SUCCESS);
-    BIND_ENUM_CONSTANT(FAILURE);
-    BIND_ENUM_CONSTANT(RUNNING);
+	BIND_ENUM_CONSTANT(SUCCESS);
+	BIND_ENUM_CONSTANT(FAILURE);
+	BIND_ENUM_CONSTANT(RUNNING);
 }

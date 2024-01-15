@@ -30,39 +30,40 @@
 #ifndef BEEHAVE_CONTEXT_H
 #define BEEHAVE_CONTEXT_H
 
-#include <classes/ref_counted.hpp>
 #include <classes/node.hpp>
+#include <classes/ref_counted.hpp>
 
 namespace godot {
 
-    // Forward declarations to avoid cyclic dependencies.
-    class BeehaveTree;
-    class BeehaveBlackboard;
+// Forward declarations to avoid cyclic dependencies.
+class BeehaveTree;
+class BeehaveBlackboard;
 
-    class BeehaveContext : public RefCounted
-    {
-        GDCLASS(BeehaveContext, RefCounted);
+class BeehaveContext : public RefCounted {
+	GDCLASS(BeehaveContext, RefCounted);
 
-        BeehaveTree* tree;
-        BeehaveBlackboard* blackboard;
-        Node* actor;
-        double delta;
-    protected:
-        static void _bind_methods();
-    public:
-        BeehaveTree* get_tree() const;
-        void set_tree(BeehaveTree* tree);
+	BeehaveTree *tree;
+	BeehaveBlackboard *blackboard;
+	Node *actor;
+	double delta;
 
-        BeehaveBlackboard* get_blackboard() const;
-        void set_blackboard(BeehaveBlackboard* blackboard);
+protected:
+	static void _bind_methods();
 
-        Node* get_actor() const;
-        void set_actor(Node* actor);
+public:
+	BeehaveTree *get_tree() const;
+	void set_tree(BeehaveTree *tree);
 
-        double get_delta() const;
-        void set_delta(double delta);
-    };
+	BeehaveBlackboard *get_blackboard() const;
+	void set_blackboard(BeehaveBlackboard *blackboard);
 
-}
+	Node *get_actor() const;
+	void set_actor(Node *actor);
+
+	double get_delta() const;
+	void set_delta(double delta);
+};
+
+} //namespace godot
 
 #endif // BEEHAVE_CONTEXT_H

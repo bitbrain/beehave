@@ -30,33 +30,31 @@
 #ifndef BEEHAVE_TREE_NODE_H
 #define BEEHAVE_TREE_NODE_H
 
-#include <classes/node.hpp>
 #include "beehave_context.h"
+#include <classes/node.hpp>
 
 namespace godot {
 
-class BeehaveTreeNode : public Node
-{
-    GDCLASS(BeehaveTreeNode, Node);
+class BeehaveTreeNode : public Node {
+	GDCLASS(BeehaveTreeNode, Node);
 
 protected:
-    static void _bind_methods();
+	static void _bind_methods();
 
 public:
+	enum TickStatus {
+		SUCCESS = 0,
+		FAILURE = 1,
+		RUNNING = 2
+	};
 
-    enum TickStatus {
-        SUCCESS = 0,
-        FAILURE = 1,
-        RUNNING = 2
-    };
+	BeehaveTreeNode();
+	~BeehaveTreeNode();
 
-    BeehaveTreeNode();
-    ~BeehaveTreeNode();
-
-    TickStatus tick(Ref<BeehaveContext> context);
+	TickStatus tick(Ref<BeehaveContext> context);
 };
 
-}
+} //namespace godot
 
 VARIANT_ENUM_CAST(BeehaveTreeNode::TickStatus);
 

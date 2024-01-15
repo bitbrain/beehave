@@ -32,22 +32,15 @@
 
 using namespace godot;
 
-BeehaveBlackboard::BeehaveBlackboard()
-{
-
+BeehaveBlackboard::BeehaveBlackboard() {
 }
 
-BeehaveBlackboard::~BeehaveBlackboard()
-{
-    
+BeehaveBlackboard::~BeehaveBlackboard() {
 }
 
-void BeehaveBlackboard::test()
-{
-    
+void BeehaveBlackboard::test() {
 }
 
-void BeehaveBlackboard::_bind_methods()
-{
-    ClassDB::bind_method(D_METHOD("test"), &BeehaveBlackboard::test);
+void BeehaveBlackboard::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("test"), &BeehaveBlackboard::test);
 }
