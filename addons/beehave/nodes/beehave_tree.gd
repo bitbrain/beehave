@@ -4,20 +4,12 @@ class_name BeehaveTree extends Node
 
 ## Controls the flow of execution of the entire behavior tree.
 
-enum {
-	SUCCESS,
-	FAILURE,
-	RUNNING
-}
+enum { SUCCESS, FAILURE, RUNNING }
 
-enum ProcessThread {
-	IDLE,
-	PHYSICS
-}
+enum ProcessThread { IDLE, PHYSICS }
 
 signal tree_enabled
 signal tree_disabled
-
 
 ## Whether this behavior tree should be enabled or not.
 @export var enabled: bool = true:
@@ -34,14 +26,12 @@ signal tree_disabled
 	get:
 		return enabled
 
-
-## How often the tree should tick, in frames. The default value of 1 means 
+## How often the tree should tick, in frames. The default value of 1 means
 ## tick() runs every frame.
 @export var tick_rate: int = 1
 
-
 ## An optional node path this behavior tree should apply to.
-@export_node_path var actor_node_path : NodePath:
+@export_node_path var actor_node_path: NodePath:
 	set(anp):
 		actor_node_path = anp
 		if actor_node_path != null and str(actor_node_path) != "..":
@@ -51,19 +41,16 @@ signal tree_disabled
 		if Engine.is_editor_hint():
 			update_configuration_warnings()
 
-
 ## Whether to run this tree in a physics or idle thread.
-@export var process_thread:ProcessThread = ProcessThread.PHYSICS:
+@export var process_thread: ProcessThread = ProcessThread.PHYSICS:
 	set(value):
 		process_thread = value
 		set_physics_process(enabled and process_thread == ProcessThread.PHYSICS)
 		set_process(enabled and process_thread == ProcessThread.IDLE)
-		
-
 
 ## Custom blackboard node. An internal blackboard will be used
 ## if no blackboard is provided explicitly.
-@export var blackboard:Blackboard:
+@export var blackboard: Blackboard:
 	set(b):
 		blackboard = b
 		if blackboard and _internal_blackboard:
@@ -86,19 +73,20 @@ signal tree_disabled
 @export var custom_monitor = false:
 	set(b):
 		custom_monitor = b
-		if custom_monitor and _process_time_metric_name != '':
-			Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
+		if custom_monitor and _process_time_metric_name != "":
+			Performance.add_custom_monitor(
+				_process_time_metric_name, _get_process_time_metric_value
+			)
 			_get_global_metrics().register_tree(self)
 		else:
-			if _process_time_metric_name != '':
+			if _process_time_metric_name != "":
 				# Remove tree metric from the engine
 				Performance.remove_custom_monitor(_process_time_metric_name)
 				_get_global_metrics().unregister_tree(self)
 
 			BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
-
-@export var actor : Node:
+@export var actor: Node:
 	set(a):
 		actor = a
 		if actor == null:
@@ -106,20 +94,22 @@ signal tree_disabled
 		if Engine.is_editor_hint():
 			update_configuration_warnings()
 
-
-var status : int = -1
-var last_tick : int = 0
+var status: int = -1
+var last_tick: int = 0
 
 var _internal_blackboard: Blackboard
-var _process_time_metric_name : String
-var _process_time_metric_value : float = 0.0
+var _process_time_metric_name: String
+var _process_time_metric_value: float = 0.0
 var _can_send_message: bool = false
 
 
 func _ready() -> void:
+	get_tree().node_added.connect(_on_scene_tree_node_added_removed.bind(true))
+	get_tree().node_removed.connect(_on_scene_tree_node_added_removed.bind(false))
+
 	if not process_thread:
 		process_thread = ProcessThread.PHYSICS
-	
+
 	if actor_node_path:
 		actor = get_node(actor_node_path)
 	else:
@@ -128,13 +118,15 @@ func _ready() -> void:
 	if not blackboard:
 		# invoke setter to auto-initialise the blackboard.
 		self.blackboard = null
-	
+
 	# Get the name of the parent node name for metric
-	_process_time_metric_name = "beehave [microseconds]/process_time_%s-%s" % [actor.name, get_instance_id()]
+	_process_time_metric_name = (
+		"beehave [microseconds]/process_time_%s-%s" % [actor.name, get_instance_id()]
+	)
 
 	set_physics_process(enabled and process_thread == ProcessThread.PHYSICS)
 	set_process(enabled and process_thread == ProcessThread.IDLE)
-	
+
 	# Register custom metric to the engine
 	if custom_monitor and not Engine.is_editor_hint():
 		Performance.add_custom_monitor(_process_time_metric_name, _get_process_time_metric_value)
@@ -150,10 +142,22 @@ func _ready() -> void:
 	last_tick = randi_range(0, tick_rate - 1)
 
 
+func _on_scene_tree_node_added_removed(node: Node, is_added: bool) -> void:
+	if Engine.is_editor_hint():
+		return
+
+	if node is BeehaveNode and is_ancestor_of(node):
+		var sgnal := node.ready if is_added else node.tree_exited
+		sgnal.connect(
+			func() -> void: BeehaveDebuggerMessages.register_tree(_get_debugger_data(self)),
+			CONNECT_ONE_SHOT
+		)
+
+
 func _physics_process(_delta: float) -> void:
 	_process_internally()
-	
-	
+
+
 func _process(_delta: float) -> void:
 	_process_internally()
 
@@ -163,9 +167,9 @@ func _process_internally() -> void:
 		return
 
 	if last_tick < tick_rate - 1:
-		last_tick += 1 
+		last_tick += 1
 		return
-	
+
 	last_tick = 0
 
 	# Start timing for metric
@@ -207,8 +211,8 @@ func tick() -> int:
 
 
 func _get_configuration_warnings() -> PackedStringArray:
-	var warnings:PackedStringArray = []
-	
+	var warnings: PackedStringArray = []
+
 	if actor == null:
 		warnings.append("Configure target node on tree")
 
@@ -234,7 +238,9 @@ func get_last_condition() -> ConditionLeaf:
 ## Returns the status of the last executed condition
 func get_last_condition_status() -> String:
 	if blackboard.has_value("last_condition_status", str(actor.get_instance_id())):
-		var status = blackboard.get_value("last_condition_status", null, str(actor.get_instance_id()))
+		var status = blackboard.get_value(
+			"last_condition_status", null, str(actor.get_instance_id())
+		)
 		if status == SUCCESS:
 			return "SUCCESS"
 		elif status == FAILURE:
@@ -242,6 +248,7 @@ func get_last_condition_status() -> String:
 		else:
 			return "RUNNING"
 	return ""
+
 
 ## interrupts this tree if anything was running
 func interrupt() -> void:
@@ -263,7 +270,7 @@ func disable() -> void:
 
 func _exit_tree() -> void:
 	if custom_monitor:
-		if _process_time_metric_name != '':
+		if _process_time_metric_name != "":
 			# Remove tree metric from the engine
 			Performance.remove_custom_monitor(_process_time_metric_name)
 			_get_global_metrics().unregister_tree(self)
@@ -277,9 +284,15 @@ func _get_process_time_metric_value() -> int:
 
 
 func _get_debugger_data(node: Node) -> Dictionary:
-	if not node is BeehaveTree and not node is BeehaveNode:
+	if not (node is BeehaveTree or node is BeehaveNode):
 		return {}
-	var data := { path = node.get_path(), name = node.name, type = node.get_class_name(), id = str(node.get_instance_id()) }
+
+	var data := {
+		path = node.get_path(),
+		name = node.name,
+		type = node.get_class_name(),
+		id = str(node.get_instance_id())
+	}
 	if node.get_child_count() > 0:
 		data.children = []
 	for child in node.get_children():
@@ -291,14 +304,14 @@ func _get_debugger_data(node: Node) -> Dictionary:
 
 func get_class_name() -> Array[StringName]:
 	return [&"BeehaveTree"]
-	
+
 
 # required to avoid lifecycle issues on initial load
 # due to loading order problems with autoloads
 func _get_global_metrics() -> Node:
 	return get_tree().root.get_node("BeehaveGlobalMetrics")
-	
-	
+
+
 # required to avoid lifecycle issues on initial load
 # due to loading order problems with autoloads
 func _get_global_debugger() -> Node:

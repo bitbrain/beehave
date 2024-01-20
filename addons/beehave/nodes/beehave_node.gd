@@ -4,11 +4,7 @@ class_name BeehaveNode extends Node
 ## A node in the behavior tree. Every node must return `SUCCESS`, `FAILURE` or
 ## `RUNNING` when ticked.
 
-enum {
-	SUCCESS,
-	FAILURE,
-	RUNNING
-}
+enum { SUCCESS, FAILURE, RUNNING }
 
 
 func _get_configuration_warnings() -> PackedStringArray:
