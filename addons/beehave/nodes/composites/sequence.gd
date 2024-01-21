@@ -16,7 +16,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 		if c.get_index() < successful_index:
 			continue
-		
+
 		if c != running_child:
 			c.before_run(actor, blackboard)
 

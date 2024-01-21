@@ -1,11 +1,9 @@
 @tool
 class_name BeehaveDebuggerTab extends PanelContainer
 
-
 const BeehaveUtils := preload("res://addons/beehave/utils/utils.gd")
 
-
-signal make_floating()
+signal make_floating
 
 const BeehaveGraphEdit := preload("graph_edit.gd")
 const TREE_ICON := preload("../icons/tree.svg")
@@ -77,10 +75,15 @@ func stop() -> void:
 
 
 func register_tree(data: Dictionary) -> void:
-	var idx := item_list.add_item(data.name, TREE_ICON)
-	item_list.set_item_tooltip(idx, data.path)
-	item_list.set_item_metadata(idx, data.id)
+	if not active_trees.has(data.id):
+		var idx := item_list.add_item(data.name, TREE_ICON)
+		item_list.set_item_tooltip(idx, data.path)
+		item_list.set_item_metadata(idx, data.id)
+
 	active_trees[data.id] = data
+
+	if active_tree_id == data.id.to_int():
+		graph.beehave_tree = data
 
 
 func unregister_tree(instance_id: int) -> void:
@@ -98,7 +101,9 @@ func unregister_tree(instance_id: int) -> void:
 
 func _on_toggle_button_pressed(toggle_button: Button) -> void:
 	item_list.visible = !item_list.visible
-	toggle_button.icon = get_theme_icon(&"Back" if item_list.visible else &"Forward", &"EditorIcons")
+	toggle_button.icon = get_theme_icon(
+		&"Back" if item_list.visible else &"Forward", &"EditorIcons"
+	)
 
 
 func _on_item_selected(idx: int) -> void:
