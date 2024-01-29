@@ -23,7 +23,7 @@ By default, every `BeehaveTree` manages its own instance of a blackboard. Howeve
 >  - However, using a custom blackboard name (as the 3rd argument in the key-value pair) allows for localizing the scope. This means changes to the blackboard will only affect the trees that use that specific custom name, enabling more controlled and isolated behaviors.
 
 In order to set a value on a blackboard, call the `set_value` method:
-```gd
+```gdscript
 func tick(actor:Actor, blackboard:Blackboard) -> int:
 
    # sets the value to '15.0' for "key" on the default blackboard
