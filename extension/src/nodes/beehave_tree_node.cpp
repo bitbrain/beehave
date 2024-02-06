@@ -67,7 +67,6 @@ void BeehaveTreeNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("after_run"), &BeehaveTreeNode::after_run);
 	ClassDB::bind_method(D_METHOD("get_class_name"), &BeehaveTreeNode::get_class_name);
 	ClassDB::bind_method(D_METHOD("can_send_message"), &BeehaveTreeNode::can_send_message);
-	/*ClassDB::bind_method(D_METHOD("get_configuration_warnings"), &BeehaveTreeNode::get_configuration_warnings);*/
 
 	BIND_ENUM_CONSTANT(SUCCESS);
 	BIND_ENUM_CONSTANT(FAILURE);
@@ -85,7 +84,7 @@ void BeehaveTreeNode::after_run(Ref<BeehaveContext> context) {
 
 TypedArray<StringName> BeehaveTreeNode::get_class_name() {
 	TypedArray<StringName> class_names;	
-	class_names.push_back("BeehaveNode");
+	class_names.push_back("BeehaveTreeNode");
 	return class_names;
 }
 
