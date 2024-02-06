@@ -31,7 +31,10 @@
 #define BEEHAVE_TREE_NODE_H
 
 #include "beehave_context.h"
+#include "beehave_blackboard.h"
 #include <classes/node.hpp>
+#include <classes/wrapped.hpp>
+#include <variant/typed_array.hpp>
 
 namespace godot {
 
@@ -51,9 +54,16 @@ public:
 	BeehaveTreeNode();
 	~BeehaveTreeNode();
 
+	PackedStringArray _get_configuration_warnings() const override;
 	TickStatus tick(Ref<BeehaveContext> context);
-};
+	void interrupt(Ref<BeehaveContext> context);
+	void before_run(Ref<BeehaveContext> context);
+	void after_run(Ref<BeehaveContext> context);
+	TypedArray<StringName> get_class_name();
+	bool can_send_message(Ref<BeehaveContext> context);
+}
 
+;
 } //namespace godot
 
 VARIANT_ENUM_CAST(BeehaveTreeNode::TickStatus);
