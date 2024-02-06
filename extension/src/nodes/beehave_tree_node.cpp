@@ -29,7 +29,7 @@
 
 #include "beehave_tree_node.h"
 #include <core/class_db.hpp>
-
+#include <variant/typed_array.hpp>
 using namespace godot;
 
 BeehaveTreeNode::BeehaveTreeNode() {
@@ -38,14 +38,59 @@ BeehaveTreeNode::BeehaveTreeNode() {
 BeehaveTreeNode::~BeehaveTreeNode() {
 }
 
+PackedStringArray BeehaveTreeNode::_get_configuration_warnings() const {
+	PackedStringArray warnings = Node::_get_configuration_warnings();
+
+	TypedArray<Node> children = get_children();
+	for (int i = 0; i < children.size(); i++) {
+		Variant x = children[i];
+		Node *child = Object::cast_to<Node>(x);
+
+		if (child && !Object::cast_to<BeehaveTreeNode>(child)) {
+			warnings.append("All children of this node should inherit from BeehaveNode class.");
+			break;
+		}
+	}
+
+	return warnings;
+}
+
 BeehaveTreeNode::TickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context) {
-	return BeehaveTreeNode::FAILURE;
+	return BeehaveTreeNode::SUCCESS;
 }
 
 void BeehaveTreeNode::_bind_methods() {
+
 	ClassDB::bind_method(D_METHOD("tick"), &BeehaveTreeNode::tick);
+	ClassDB::bind_method(D_METHOD("interrupt"), &BeehaveTreeNode::interrupt);
+	ClassDB::bind_method(D_METHOD("before_run"), &BeehaveTreeNode::before_run);
+	ClassDB::bind_method(D_METHOD("after_run"), &BeehaveTreeNode::after_run);
+	ClassDB::bind_method(D_METHOD("get_class_name"), &BeehaveTreeNode::get_class_name);
+	ClassDB::bind_method(D_METHOD("can_send_message"), &BeehaveTreeNode::can_send_message);
+	/*ClassDB::bind_method(D_METHOD("get_configuration_warnings"), &BeehaveTreeNode::get_configuration_warnings);*/
 
 	BIND_ENUM_CONSTANT(SUCCESS);
 	BIND_ENUM_CONSTANT(FAILURE);
 	BIND_ENUM_CONSTANT(RUNNING);
+}
+
+void BeehaveTreeNode::interrupt(Ref<BeehaveContext> context) {
+}
+
+void BeehaveTreeNode::before_run(Ref<BeehaveContext> context) {
+}
+
+void BeehaveTreeNode::after_run(Ref<BeehaveContext> context) {
+}
+
+TypedArray<StringName> BeehaveTreeNode::get_class_name() {
+	TypedArray<StringName> class_names;	
+	class_names.push_back("BeehaveNode");
+	return class_names;
+}
+
+bool BeehaveTreeNode::can_send_message(Ref<BeehaveContext> context) {
+	BeehaveBlackboard *blackboard = context->get_blackboard();
+
+	return false; //TODO: Implement once blackboard is implemented
 }
