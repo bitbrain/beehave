@@ -110,10 +110,11 @@ func _ready() -> void:
 	if not process_thread:
 		process_thread = ProcessThread.PHYSICS
 
-	if actor_node_path:
-		actor = get_node(actor_node_path)
-	else:
-		actor = get_parent()
+	if not actor:
+		if actor_node_path:
+			actor = get_node(actor_node_path)
+		else:
+			actor = get_parent()
 
 	if not blackboard:
 		# invoke setter to auto-initialise the blackboard.

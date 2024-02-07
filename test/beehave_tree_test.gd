@@ -97,3 +97,13 @@ func test_blackboard_not_initialized() -> void:
 	tree.add_child(always_succeed)
 	var result = tree.tick()
 	assert_that(result).is_equal(BeehaveNode.SUCCESS)
+
+
+func test_actor_override() -> void:
+	var scene = create_scene()
+	scene_runner(scene)
+	var tree = create_tree()
+	var actor = auto_free(Node2D.new())
+	tree.actor = actor
+	scene.add_child(tree)
+	assert_that(tree.actor).is_equal(actor)
