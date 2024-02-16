@@ -149,10 +149,15 @@ func _on_scene_tree_node_added_removed(node: Node, is_added: bool) -> void:
 
 	if node is BeehaveNode and is_ancestor_of(node):
 		var sgnal := node.ready if is_added else node.tree_exited
-		sgnal.connect(
-			func() -> void: BeehaveDebuggerMessages.register_tree(_get_debugger_data(self)),
-			CONNECT_ONE_SHOT
-		)
+		if is_added:
+			sgnal.connect(
+				func() -> void: BeehaveDebuggerMessages.register_tree(_get_debugger_data(self)),
+				CONNECT_ONE_SHOT
+			)
+		else:
+			sgnal.connect(
+				func() -> void: BeehaveDebuggerMessages.unregister_tree(get_instance_id())
+			)
 
 
 func _physics_process(_delta: float) -> void:

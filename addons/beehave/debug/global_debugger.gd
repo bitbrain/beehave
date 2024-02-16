@@ -13,7 +13,7 @@ func _on_debug_message(message: String, data: Array) -> bool:
 		_set_active_tree(data[0])
 		return true
 	if message == "visibility_changed":
-		if _active_tree:
+		if _active_tree && is_instance_valid(_active_tree):
 			_active_tree._can_send_message = data[0]
 		return true
 	return false
@@ -24,7 +24,7 @@ func _set_active_tree(tree_id: int) -> void:
 	if not tree:
 		return
 
-	if _active_tree:
+	if _active_tree && is_instance_valid(_active_tree):
 		_active_tree._can_send_message = false
 	_active_tree = tree
 	_active_tree._can_send_message = true
