@@ -12,6 +12,7 @@
 #include "nodes/leaves/beehave_action.h"
 #include "nodes/decorators/beehave_decorator.h"
 #include "nodes/decorators/beehave_succeeder.h"
+#include "nodes/decorators/beehave_failer.h"
 
 using namespace godot;
 
@@ -27,6 +28,7 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<BeehaveAction>();
 	ClassDB::register_class<BeehaveDecorator>();
 	ClassDB::register_class<BeehaveSucceeder>();
+	ClassDB::register_class<BeehaveFailer>();
 }
 
 void uninitialize_beehave_types(ModuleInitializationLevel p_level) {
