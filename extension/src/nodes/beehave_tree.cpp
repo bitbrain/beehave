@@ -57,6 +57,7 @@ void BeehaveTree::_bind_methods() {
 	BIND_ENUM_CONSTANT(PHYSICS);
 
 	// methods
+	ClassDB::bind_method(D_METHOD("tick"), &BeehaveTree::tick);
 	ClassDB::bind_method(D_METHOD("enable"), &BeehaveTree::enable);
 	ClassDB::bind_method(D_METHOD("disable"), &BeehaveTree::disable);
 	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &BeehaveTree::set_enabled);
