@@ -51,7 +51,7 @@ public:
 	BeehaveTreeNode();
 	~BeehaveTreeNode();
 
-	TickStatus tick(Ref<BeehaveContext> context);
+	virtual TickStatus tick(Ref<BeehaveContext> context);
 };
 
 } //namespace godot

@@ -1,5 +1,5 @@
 # GdUnit generated TestSuite
-class_name BlackboardHasConditionTest
+class_name BeehaveBlackboardHasConditionTest
 extends GdUnitTestSuite
 @warning_ignore('unused_parameter')
 @warning_ignore('return_value_discarded')
@@ -11,9 +11,9 @@ const __blackboard = "res://addons/beehave/blackboard.gd"
 
 const KEY: String = "test_key"
 
-var blackboard_has: BlackboardHasCondition
+var blackboard_has: BeehaveBlackboardHasCondition
 var actor: Node
-var blackboard: Blackboard
+var blackboard: BeehaveBlackboard
 
 var runner: GdUnitSceneRunner
 

@@ -8,18 +8,16 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = "res://addons/beehave/nodes/composites/sequence_random.gd"
 const __count_up_action = "res://test/actions/count_up_action.gd"
-const __blackboard = "res://addons/beehave/blackboard.gd"
-const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
 const RANDOM_SEED = 123
 
 var tree: BeehaveTree
 var sequence: SequenceRandomComposite
-var action1: ActionLeaf
-var action2: ActionLeaf
+var action1: BeehaveAction
+var action2: BeehaveAction
 
 
 func before_test() -> void:
-	tree = auto_free(load(__tree).new())
+	tree = auto_free(BeehaveTree.new())
 	action1 = auto_free(load(__count_up_action).new())
 	action1.name = 'Action 1'
 	action2 = auto_free(load(__count_up_action).new())
@@ -27,7 +25,7 @@ func before_test() -> void:
 	sequence = auto_free(load(__source).new())
 	sequence.random_seed = RANDOM_SEED
 	var actor = auto_free(Node2D.new())
-	var blackboard = auto_free(load(__blackboard).new())
+	var blackboard = auto_free(BeehaveBlackboard.new())
 	
 	tree.add_child(sequence)
 	sequence.add_child(action1)

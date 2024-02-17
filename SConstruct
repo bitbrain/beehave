@@ -2,6 +2,14 @@
 import os
 import sys
 
+def recursive_glob(rootdir, pattern):
+    matches = []
+    for root, dirnames, filenames in os.walk(rootdir):
+        for filename in filenames:
+            if filename.endswith(pattern):
+                matches.append(os.path.join(root, filename))
+    return matches
+
 env = SConscript("godot-cpp/SConstruct")
 
 # Add those directory manually, so we can skip the godot_cpp directory when including headers in C++ files
@@ -21,10 +29,8 @@ env.Append(CPPPATH=[env.Dir(d) for d in source_path])
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 env.Append(CPPPATH=["extension/src/"])
-sources = [
-    Glob("extension/src/*.cpp"),
-    Glob("extension/src/nodes/*.cpp")
-]
+
+sources = recursive_glob('extension/src', '.cpp')
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(

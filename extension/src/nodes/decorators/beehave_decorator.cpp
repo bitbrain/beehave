@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_tree.h                                                        */
+/*  beehave_decorator.cpp                                                 */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,57 +27,18 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_TREE_H
-#define BEEHAVE_TREE_H
+#include "beehave_decorator.h"
 
-#include "beehave_blackboard.h"
-#include "beehave_context.h"
-#include "beehave_tree_node.h"
-#include <classes/node.hpp>
+using namespace godot;
 
-namespace godot {
+BeehaveDecorator::BeehaveDecorator() {
 
-class BeehaveTree : public Node {
-	GDCLASS(BeehaveTree, Node);
+}
 
-public:
-	enum ProcessThread {
-		IDLE = 0,
-		PHYSICS = 1
-	};
+BeehaveDecorator::~BeehaveDecorator() {
 
-private:
-	int tick_rate;
-	bool enabled;
-	Node *actor;
-	BeehaveBlackboard *blackboard;
-	BeehaveBlackboard *_internal_blackboard = nullptr;
-	Ref<BeehaveContext> context;
-	BeehaveTreeNode::TickStatus tick_status;
-	ProcessThread process_thread = ProcessThread::PHYSICS;
+}
 
-	int _last_tick;
+void BeehaveDecorator::_bind_methods() {
 
-	void process_internally(double delta);
-
-protected:
-	static void _bind_methods();
-
-public:
-	BeehaveTree();
-	~BeehaveTree();
-
-	void _ready();
-	void _process(double delta);
-	void _physics_process(double delta);
-	void _exit_tree();
-	void enable();
-	void disable();
-	BeehaveTreeNode::TickStatus tick();
-};
-
-} //namespace godot
-
-VARIANT_ENUM_CAST(BeehaveTree::ProcessThread);
-
-#endif // BEEHAVE_TREE_H
+}

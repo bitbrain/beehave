@@ -1,5 +1,5 @@
 # GdUnit generated TestSuite
-class_name BlackboardSetActionTest
+class_name BeehaveBlackboardSetActionTest
 extends GdUnitTestSuite
 @warning_ignore('unused_parameter')
 @warning_ignore('return_value_discarded')
@@ -12,9 +12,9 @@ const __blackboard = "res://addons/beehave/blackboard.gd"
 const KEY: String = "test_key"
 const KEY2: String = "other_key"
 
-var blackboard_set: BlackboardSetAction
+var blackboard_set: BeehaveBlackboardSetAction
 var actor: Node
-var blackboard: Blackboard
+var blackboard: BeehaveBlackboard
 
 
 func before_test() -> void:

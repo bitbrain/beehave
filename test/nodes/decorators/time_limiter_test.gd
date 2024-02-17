@@ -7,21 +7,19 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = "res://addons/beehave/nodes/decorators/time_limiter.gd"
 const __action = "res://test/actions/count_up_action.gd"
-const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
-const __blackboard = "res://addons/beehave/blackboard.gd"
 
 var tree: BeehaveTree
-var action: ActionLeaf
+var action: BeehaveAction
 var time_limiter: TimeLimiterDecorator
 var actor: Node2D
-var blackboard: Blackboard
+var blackboard: BeehaveBlackboard
 var runner:GdUnitSceneRunner
 
 
 func before_test() -> void:
-	tree = auto_free(load(__tree).new())
+	tree = auto_free(BeehaveTree.new())
 	actor = auto_free(Node2D.new())
-	blackboard = auto_free(load(__blackboard).new())
+	blackboard = auto_free(BeehaveBlackboard.new())
 	
 	tree.actor = actor
 	tree.blackboard = blackboard

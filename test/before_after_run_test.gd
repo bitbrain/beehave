@@ -7,7 +7,7 @@ extends GdUnitTestSuite
 const __mock_action = "res://test/actions/mock_action.gd"
 
 var tree: BeehaveTree
-var action: ActionLeaf
+var action: BeehaveAction
 
 
 func before_test() -> void:

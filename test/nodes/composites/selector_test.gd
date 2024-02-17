@@ -7,25 +7,23 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = "res://addons/beehave/nodes/composites/selector.gd"
 const __count_up_action = "res://test/actions/count_up_action.gd"
-const __blackboard = "res://addons/beehave/blackboard.gd"
-const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
 const __selector_reactive = "res://addons/beehave/nodes/composites/selector_reactive.gd"
 
 var tree: BeehaveTree
 var selector: SelectorComposite
-var action1: ActionLeaf
-var action2: ActionLeaf
+var action1: BeehaveAction
+var action2: BeehaveAction
 var actor: Node
-var blackboard: Blackboard
+var blackboard: BeehaveBlackboard
 
 
 func before_test() -> void:
-	tree = auto_free(load(__tree).new())
+	tree = auto_free(BeehaveTree.new())
 	selector = auto_free(load(__source).new())
 	action1 = auto_free(load(__count_up_action).new())
 	action2 = auto_free(load(__count_up_action).new())
 	actor = auto_free(Node2D.new())
-	blackboard = auto_free(load(__blackboard).new())
+	blackboard = auto_free(BeehaveBlackboard.new())
 	
 	tree.add_child(selector)
 	selector.add_child(action1)
