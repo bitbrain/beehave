@@ -13,6 +13,7 @@
 #include "nodes/decorators/beehave_decorator.h"
 #include "nodes/decorators/beehave_succeeder.h"
 #include "nodes/decorators/beehave_failer.h"
+#include "nodes/decorators/beehave_inverter.h"
 
 using namespace godot;
 
@@ -29,6 +30,7 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<BeehaveDecorator>();
 	ClassDB::register_class<BeehaveSucceeder>();
 	ClassDB::register_class<BeehaveFailer>();
+	ClassDB::register_class<BeehaveInverter>();
 }
 
 void uninitialize_beehave_types(ModuleInitializationLevel p_level) {
