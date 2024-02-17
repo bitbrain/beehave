@@ -12,6 +12,15 @@ var _test_case_name: StringName
 var _name :String
 
 
+var error_monitor : GodotGdErrorMonitor = null:
+	set (value):
+		error_monitor = value
+	get:
+		if _parent_context != null:
+			return _parent_context.error_monitor
+		return error_monitor
+
+
 var test_suite : GdUnitTestSuite = null:
 	set (value):
 		test_suite = value
@@ -35,6 +44,7 @@ func _init(name :String, parent_context :GdUnitExecutionContext = null) -> void:
 	_orphan_monitor = GdUnitOrphanNodesMonitor.new(name)
 	_orphan_monitor.start()
 	_memory_observer = GdUnitMemoryObserver.new()
+	error_monitor = GodotGdErrorMonitor.new()
 	_report_collector = GdUnitTestReportCollector.new(get_instance_id())
 	if parent_context != null:
 		parent_context._sub_context.append(self)
@@ -82,6 +92,17 @@ static func of(pe :GdUnitExecutionContext) -> GdUnitExecutionContext:
 
 func test_failed() -> bool:
 	return has_failures() or has_errors()
+
+
+func error_monitor_start() -> void:
+	error_monitor.start()
+
+
+func error_monitor_stop() -> void:
+	await error_monitor.scan()
+	for error_report in error_monitor.to_reports():
+		if error_report.is_error():
+			_report_collector._reports.append(error_report)
 
 
 func orphan_monitor_start() -> void:

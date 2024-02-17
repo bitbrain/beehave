@@ -42,3 +42,7 @@ BeehaveSucceeder::~BeehaveSucceeder() {
 void BeehaveSucceeder::_bind_methods() {
 
 }
+
+BeehaveTreeNode::TickStatus BeehaveSucceeder::tick(Ref<BeehaveContext> context) {
+	return BeehaveTreeNode::SUCCESS;
+}

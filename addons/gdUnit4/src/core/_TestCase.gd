@@ -26,15 +26,6 @@ var _failed := false
 var _report :GdUnitReport = null
 
 
-var monitor : GodotGdErrorMonitor = null:
-	set (value):
-		monitor = value
-	get:
-		if monitor == null:
-			monitor = GodotGdErrorMonitor.new()
-		return monitor
-
-
 var timeout : int = DEFAULT_TIMEOUT:
 	set (value):
 		timeout = value
@@ -62,31 +53,19 @@ func execute(p_test_parameter := Array(), p_iteration := 0):
 	if _current_iteration == -1:
 		_set_failure_handler()
 		set_timeout()
-	monitor.start()
 	if not p_test_parameter.is_empty():
 		update_fuzzers(p_test_parameter, p_iteration)
 		_execute_test_case(name, p_test_parameter) 
 	else:
 		_execute_test_case(name, [])
 	await completed
-	monitor.stop()
-	for report_ in monitor.reports():
-		if report_.is_error():
-			_report = report_
-			_interupted = true
 
 
 func execute_paramaterized(p_test_parameter :Array):
 	_failure_received(false)
 	set_timeout()
-	monitor.start()
 	_execute_test_case(name, p_test_parameter)
 	await completed
-	monitor.stop()
-	for report_ in monitor.reports():
-		if report_.is_error():
-			_report = report_
-			_interupted = true
 
 
 var _is_disposed := false

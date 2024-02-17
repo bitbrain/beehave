@@ -71,9 +71,17 @@ public:
 	void _process(double delta);
 	void _physics_process(double delta);
 	void _exit_tree();
+
 	void enable();
 	void disable();
+	void set_enabled(bool enabled);
+	bool is_enabled() const;
 	BeehaveTreeNode::TickStatus tick();
+	BeehaveTreeNode::TickStatus get_tick_status() const;
+	void set_tick_rate(int tick_rate);
+	int get_tick_rate() const;
+	void set_process_thread(BeehaveTree::ProcessThread thread);
+	BeehaveTree::ProcessThread get_process_thread() const;
 };
 
 } //namespace godot

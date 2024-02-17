@@ -110,10 +110,11 @@ func double(func_descriptor :GdFunctionDescriptor) -> PackedStringArray:
 	# save original constructor arguments
 	if func_name == "_init":
 		var constructor_args := ",".join(GdFunctionDoubler.extract_constructor_args(args))
-		var constructor := "func _init(%s):\n	super(%s)\n	pass\n" % [constructor_args, ", ".join(arg_names)]
+		var constructor := "func _init(%s) -> void:\n	super(%s)\n	pass\n" % [constructor_args, ", ".join(arg_names)]
 		return constructor.split("\n")
 	
 	var double_src := ""
+	double_src += '@warning_ignore("untyped_declaration")\n' if Engine.get_version_info().hex >= 0x40200 else '\n'
 	if func_descriptor.is_engine():
 		double_src += '@warning_ignore("native_method_override")\n'
 	double_src += '@warning_ignore("shadowed_variable")\n'
@@ -148,7 +149,10 @@ static func extract_constructor_args(args :Array) -> PackedStringArray:
 		var a := arg as GdFunctionArgument
 		var arg_name := a._name
 		var default_value = get_default(a)
-		constructor_args.append(arg_name + "=" + default_value)
+		if default_value == "null":
+			constructor_args.append(arg_name + ":Variant=" + default_value)
+		else:
+			constructor_args.append(arg_name + ":=" + default_value)
 	return constructor_args
 
 

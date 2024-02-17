@@ -43,6 +43,7 @@ protected:
 
 public:
 	enum TickStatus {
+		PENDING = -1,
 		SUCCESS = 0,
 		FAILURE = 1,
 		RUNNING = 2

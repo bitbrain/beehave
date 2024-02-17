@@ -34,10 +34,17 @@
 using namespace godot;
 
 BeehaveTree::BeehaveTree() :
-		context(Ref<BeehaveContext>(memnew(BeehaveContext))) {
+	context(Ref<BeehaveContext>(memnew(BeehaveContext))),
+	tick_status(BeehaveTreeNode::TickStatus::PENDING),
+    tick_rate(1) {
 }
 
 BeehaveTree::~BeehaveTree() {
+	context.unref();
+	if (_internal_blackboard) {
+		memfree(_internal_blackboard);
+		_internal_blackboard = nullptr;
+	}
 }
 
 void BeehaveTree::_bind_methods() {
@@ -52,6 +59,18 @@ void BeehaveTree::_bind_methods() {
 	// methods
 	ClassDB::bind_method(D_METHOD("enable"), &BeehaveTree::enable);
 	ClassDB::bind_method(D_METHOD("disable"), &BeehaveTree::disable);
+	ClassDB::bind_method(D_METHOD("set_enabled", "enabled"), &BeehaveTree::set_enabled);
+	ClassDB::bind_method(D_METHOD("is_enabled"), &BeehaveTree::is_enabled);
+	ClassDB::bind_method(D_METHOD("get_tick_status"), &BeehaveTree::get_tick_status);
+	ClassDB::bind_method(D_METHOD("set_tick_rate", "tick_rate"), &BeehaveTree::set_tick_rate);
+	ClassDB::bind_method(D_METHOD("get_tick_rate"), &BeehaveTree::get_tick_rate);
+	ClassDB::bind_method(D_METHOD("set_process_thread", "thread"), &BeehaveTree::set_process_thread);
+	ClassDB::bind_method(D_METHOD("get_process_thread"), &BeehaveTree::get_process_thread);
+
+	// exports
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "process_thread", PROPERTY_HINT_ENUM, "Idle,Physics"), "set_process_thread", "get_process_thread");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enabled"), "set_enabled", "is_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "tick_rate"), "set_tick_rate", "get_tick_rate");
 }
 
 void BeehaveTree::_ready() {
@@ -96,12 +115,41 @@ void BeehaveTree::disable() {
 	enabled = false;
 }
 
+void BeehaveTree::set_enabled(bool enabled) {
+	this->enabled = enabled;
+}
+bool BeehaveTree::is_enabled() const {
+	return enabled;
+}
+
+void BeehaveTree::set_tick_rate(int tick_rate) {
+	this->tick_rate = tick_rate;
+}
+
+int BeehaveTree::get_tick_rate() const {
+	return tick_rate;
+}
+
+BeehaveTreeNode::TickStatus BeehaveTree::get_tick_status() const {
+	return tick_status;
+}
+
+void BeehaveTree::set_process_thread(BeehaveTree::ProcessThread thread) {
+	process_thread = thread;
+}
+
+BeehaveTree::ProcessThread BeehaveTree::get_process_thread() const {
+	return process_thread;
+}
+
 void BeehaveTree::process_internally(double delta) {
 	// ensure that we consider the current tick rate of the tree
 	if (_last_tick < tick_rate - 1) {
 		_last_tick += 1;
 		return;
 	}
+
+	_last_tick = 0;
 
 	context->set_delta(delta);
 
@@ -111,6 +159,11 @@ void BeehaveTree::process_internally(double delta) {
 BeehaveTreeNode::TickStatus BeehaveTree::tick() {
 	context->set_blackboard(blackboard);
 	context->set_tree(this);
+
+	if (get_child_count() == 0 || actor == nullptr) {
+		tick_status = BeehaveTreeNode::FAILURE;
+		return tick_status;
+	}
 
 	for (int i = 0; i < get_child_count(); i++) {
 		Node *child = get_child(i);

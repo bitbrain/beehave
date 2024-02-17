@@ -4,10 +4,11 @@ var _base :GdUnitAssert
 
 
 func _init(current):
-	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(current)
+	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript",
+								ResourceLoader.CACHE_MODE_REUSE).new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
-	if not _base.__validate_value_type(current, TYPE_DICTIONARY):
+	if not GdUnitAssertions.validate_value_type(current, TYPE_DICTIONARY):
 		report_error("GdUnitDictionaryAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 
@@ -28,7 +29,7 @@ func report_error(error :String) -> GdUnitDictionaryAssert:
 	return self
 
 
-func _failure_message() -> String:
+func failure_message() -> String:
 	return _base._current_error_message
 
 
@@ -37,8 +38,8 @@ func override_failure_message(message :String) -> GdUnitDictionaryAssert:
 	return self
 
 
-func __current() -> Variant:
-	return _base.__current()
+func current_value() -> Variant:
+	return _base.current_value()
 
 
 func is_null() -> GdUnitDictionaryAssert:
@@ -52,20 +53,20 @@ func is_not_null() -> GdUnitDictionaryAssert:
 
 
 func is_equal(expected) -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	if current == null:
-		return report_error(GdAssertMessages.error_equal(null, GdAssertMessages._format_dict(expected)))
+		return report_error(GdAssertMessages.error_equal(null, GdAssertMessages.format_dict(expected)))
 	if not GdObjects.equals(current, expected):
-		var c := GdAssertMessages._format_dict(current)
-		var e := GdAssertMessages._format_dict(expected)
+		var c := GdAssertMessages.format_dict(current)
+		var e := GdAssertMessages.format_dict(expected)
 		var diff := GdDiffTool.string_diff(c, e)
-		var curent_ = GdAssertMessages._colored_array_div(diff[1])
-		return report_error(GdAssertMessages.error_equal(curent_, e))
+		var curent_diff := GdAssertMessages.colored_array_div(diff[1])
+		return report_error(GdAssertMessages.error_equal(curent_diff, e))
 	return report_success()
 
 
 func is_not_equal(expected) -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	if GdObjects.equals(current, expected):
 		return report_error(GdAssertMessages.error_not_equal(current, expected))
 	return report_success()
@@ -73,44 +74,42 @@ func is_not_equal(expected) -> GdUnitDictionaryAssert:
 
 @warning_ignore("unused_parameter", "shadowed_global_identifier")
 func is_same(expected) -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	if current == null:
-		return report_error(GdAssertMessages.error_equal(null, GdAssertMessages._format_dict(expected)))
+		return report_error(GdAssertMessages.error_equal(null, GdAssertMessages.format_dict(expected)))
 	if not is_same(current, expected):
-		var c := GdAssertMessages._format_dict(current)
-		var e := GdAssertMessages._format_dict(expected)
+		var c := GdAssertMessages.format_dict(current)
+		var e := GdAssertMessages.format_dict(expected)
 		var diff := GdDiffTool.string_diff(c, e)
-		var curent_ = GdAssertMessages._colored_array_div(diff[1])
-		return report_error(GdAssertMessages.error_is_same(curent_, e))
+		var curent_diff := GdAssertMessages.colored_array_div(diff[1])
+		return report_error(GdAssertMessages.error_is_same(curent_diff, e))
 	return report_success()
-
 
 
 @warning_ignore("unused_parameter", "shadowed_global_identifier")
 func is_not_same(expected) -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	if is_same(current, expected):
 		return report_error(GdAssertMessages.error_not_same(current, expected))
 	return report_success()
 
 
-
 func is_empty() -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	if current == null or not current.is_empty():
 		return report_error(GdAssertMessages.error_is_empty(current))
 	return report_success()
 
 
 func is_not_empty() -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	if current == null or current.is_empty():
 		return report_error(GdAssertMessages.error_is_not_empty())
 	return report_success()
 
 
 func has_size(expected: int) -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
 	if current.size() != expected:
@@ -119,32 +118,22 @@ func has_size(expected: int) -> GdUnitDictionaryAssert:
 
 
 func _contains_keys(expected :Array, compare_mode :GdObjects.COMPARE_MODE) -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
 	# find expected keys
-	var keys_not_found :Array = expected.filter(func(expected_key):
-		for current_key in current.keys():
-			if GdObjects.equals(current_key, expected_key, false, compare_mode):
-				return false
-		return true
-	)
+	var keys_not_found :Array = expected.filter(_filter_by_key.bind(current.keys(), compare_mode))
 	if not keys_not_found.is_empty():
 		return report_error(GdAssertMessages.error_contains_keys(current.keys(), expected, keys_not_found, compare_mode))
 	return report_success()
 
 
 func _contains_key_value(key, value, compare_mode :GdObjects.COMPARE_MODE) -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	var expected := [key]
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
-	var keys_not_found :Array = expected.filter(func(expected_key):
-		for current_key in current.keys():
-			if GdObjects.equals(current_key, expected_key, false, compare_mode):
-				return false
-		return true
-	)
+	var keys_not_found :Array = expected.filter(_filter_by_key.bind(current.keys(), compare_mode))
 	if not keys_not_found.is_empty():
 		return report_error(GdAssertMessages.error_contains_key_value(key, value, current.keys(), compare_mode))
 	if not GdObjects.equals(current[key], value, false, compare_mode):
@@ -153,15 +142,10 @@ func _contains_key_value(key, value, compare_mode :GdObjects.COMPARE_MODE) -> Gd
 
 
 func _not_contains_keys(expected :Array, compare_mode :GdObjects.COMPARE_MODE) -> GdUnitDictionaryAssert:
-	var current = __current()
+	var current = current_value()
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
-	var keys_found :Array = current.keys().filter(func(current_key):
-		for expected_key in expected:
-			if GdObjects.equals(current_key, expected_key, false, compare_mode):
-				return true
-		return false
-	)
+	var keys_found :Array = current.keys().filter(_filter_by_key.bind(expected, compare_mode, true))
 	if not keys_found.is_empty():
 		return report_error(GdAssertMessages.error_not_contains_keys(current.keys(), expected, keys_found, compare_mode))
 	return report_success()
@@ -189,3 +173,10 @@ func contains_same_key_value(key, value) -> GdUnitDictionaryAssert:
 
 func not_contains_same_keys(expected :Array) -> GdUnitDictionaryAssert:
 	return _not_contains_keys(expected, GdObjects.COMPARE_MODE.OBJECT_REFERENCE)
+
+
+func _filter_by_key(element :Variant, values :Array, compare_mode :GdObjects.COMPARE_MODE, is_not :bool = false) -> bool:
+	for key in values:
+		if GdObjects.equals(key, element, false, compare_mode):
+			return is_not
+	return !is_not
