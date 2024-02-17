@@ -49,8 +49,8 @@ public:
 private:
 	int tick_rate;
 	bool enabled;
-	Node *actor;
-	BeehaveBlackboard *blackboard;
+	Ref<Node> actor;
+	Ref<BeehaveBlackboard> blackboard;
 	BeehaveBlackboard *_internal_blackboard = nullptr;
 	Ref<BeehaveContext> context;
 	BeehaveTreeNode::TickStatus tick_status;
@@ -76,6 +76,10 @@ public:
 	void disable();
 	void set_enabled(bool enabled);
 	bool is_enabled() const;
+	void set_actor(Ref<Node> actor);
+	Ref<Node> get_actor() const;
+	void set_blackboard(Ref<BeehaveBlackboard> blackboard);
+	Ref<BeehaveBlackboard> get_blackboard() const;
 	BeehaveTreeNode::TickStatus tick();
 	BeehaveTreeNode::TickStatus get_tick_status() const;
 	void set_tick_rate(int tick_rate);

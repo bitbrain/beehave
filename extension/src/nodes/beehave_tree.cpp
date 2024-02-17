@@ -40,7 +40,6 @@ BeehaveTree::BeehaveTree() :
 }
 
 BeehaveTree::~BeehaveTree() {
-	context.unref();
 	if (_internal_blackboard) {
 		memfree(_internal_blackboard);
 		_internal_blackboard = nullptr;
@@ -67,20 +66,22 @@ void BeehaveTree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_tick_rate"), &BeehaveTree::get_tick_rate);
 	ClassDB::bind_method(D_METHOD("set_process_thread", "thread"), &BeehaveTree::set_process_thread);
 	ClassDB::bind_method(D_METHOD("get_process_thread"), &BeehaveTree::get_process_thread);
+	ClassDB::bind_method(D_METHOD("set_actor", "actor"), &BeehaveTree::set_actor);
+	ClassDB::bind_method(D_METHOD("get_actor"), &BeehaveTree::get_actor);
+	ClassDB::bind_method(D_METHOD("set_blackboard", "blackboard"), &BeehaveTree::set_blackboard);
+	ClassDB::bind_method(D_METHOD("get_blackboard"), &BeehaveTree::get_blackboard);
 
 	// exports
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "process_thread", PROPERTY_HINT_ENUM, "Idle,Physics"), "set_process_thread", "get_process_thread");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enabled"), "set_enabled", "is_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "tick_rate"), "set_tick_rate", "get_tick_rate");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "actor", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT), "set_actor", "get_actor");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "blackboard", PROPERTY_HINT_RESOURCE_TYPE, "BeehaveBlackboard", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT), "set_blackboard", "get_blackboard");
 }
 
 void BeehaveTree::_ready() {
-	if (!actor) {
-		actor = get_parent();
-	}
-	if (!blackboard) {
+	if (blackboard.is_null()) {
 		_internal_blackboard = memnew(BeehaveBlackboard);
-		blackboard = _internal_blackboard;
 	}
 	set_physics_process(enabled && process_thread == ProcessThread::PHYSICS);
 	set_process(enabled && process_thread == ProcessThread::IDLE);
@@ -106,6 +107,30 @@ void BeehaveTree::_physics_process(double delta) {
 	if (process_thread == BeehaveTree::ProcessThread::PHYSICS) {
 		process_internally(delta);
 	}
+}
+
+void BeehaveTree::set_actor(Ref<Node> actor) {
+	this->actor = actor;
+}
+
+Ref<Node> BeehaveTree::get_actor() const {
+	return actor;
+}
+
+void BeehaveTree::set_blackboard(Ref<BeehaveBlackboard> blackboard) {
+	if (blackboard.is_valid() && _internal_blackboard) {
+		memfree(_internal_blackboard);
+		_internal_blackboard = nullptr;
+	} else if (blackboard.is_null()) {
+		_internal_blackboard = memnew(BeehaveBlackboard);
+	} else {
+		this->blackboard = blackboard;
+	}
+	
+}
+
+Ref<BeehaveBlackboard> BeehaveTree::get_blackboard() const {
+	return blackboard;
 }
 
 void BeehaveTree::enable() {
@@ -158,10 +183,11 @@ void BeehaveTree::process_internally(double delta) {
 }
 
 BeehaveTreeNode::TickStatus BeehaveTree::tick() {
-	context->set_blackboard(blackboard);
+	context->set_blackboard(blackboard.ptr());
 	context->set_tree(this);
+	context->set_actor(get_actor().ptr());
 
-	if (get_child_count() == 0 || actor == nullptr) {
+	if (get_child_count() == 0 || get_actor() == nullptr) {
 		tick_status = BeehaveTreeNode::FAILURE;
 		return tick_status;
 	}

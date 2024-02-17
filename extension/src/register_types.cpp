@@ -14,6 +14,7 @@
 #include "nodes/decorators/beehave_succeeder.h"
 #include "nodes/decorators/beehave_failer.h"
 #include "nodes/decorators/beehave_inverter.h"
+#include "nodes/decorators/beehave_cooldown.h"
 
 using namespace godot;
 
@@ -31,6 +32,7 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<BeehaveSucceeder>();
 	ClassDB::register_class<BeehaveFailer>();
 	ClassDB::register_class<BeehaveInverter>();
+	ClassDB::register_class<BeehaveCooldown>();
 }
 
 void uninitialize_beehave_types(ModuleInitializationLevel p_level) {

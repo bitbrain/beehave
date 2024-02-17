@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_inverter.cpp                                                  */
+/*  beehave_cooldown.h                                                    */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,36 +27,33 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_inverter.h"
+#ifndef BEEHAVE_COOLDOWN_H
+#define BEEHAVE_COOLDOWN_H
 
-using namespace godot;
+#include "nodes/decorators/beehave_decorator.h"
 
-BeehaveInverter::BeehaveInverter() {
+namespace godot {
+
+class BeehaveCooldown : public BeehaveDecorator {
+	GDCLASS(BeehaveCooldown, BeehaveDecorator);
+
+	float wait_time = 0.0f;
+	int64_t previous_time = -1;
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveCooldown();
+	~BeehaveCooldown();
+
+	void set_wait_time(float wait_time);
+	float get_wait_time() const;
+
+	virtual BeehaveTreeNode::TickStatus tick(Ref<BeehaveContext> context);
+
+};
 
 }
 
-BeehaveInverter::~BeehaveInverter() {
-
-}
-
-void BeehaveInverter::_bind_methods() {
-
-}
-
-BeehaveTreeNode::TickStatus BeehaveInverter::tick(Ref<BeehaveContext> context) {
-
-	BeehaveTreeNode *tree_node = get_wrapped_child();
-	if (!tree_node) {
-		return BeehaveTreeNode::FAILURE;
-	}
-
-	BeehaveTreeNode::TickStatus tick_status = tree_node->tick(context);
-
-	if (tick_status == BeehaveTreeNode::FAILURE) {
-		return BeehaveTreeNode::SUCCESS;
-	} else if (tick_status == BeehaveTreeNode::SUCCESS) {
-		return BeehaveTreeNode::FAILURE;
-	}
-
-	return tick_status;
-}
+#endif//BEEHAVE_COOLDOWN_H
