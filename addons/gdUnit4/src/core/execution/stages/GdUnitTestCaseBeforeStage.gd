@@ -22,6 +22,7 @@ func _execute(context :GdUnitExecutionContext) -> void:
 	if _call_stage:
 		@warning_ignore("redundant_await")
 		await test_suite.before_test()
+	context.error_monitor_start()
 
 
 func set_test_name(test_name :StringName):

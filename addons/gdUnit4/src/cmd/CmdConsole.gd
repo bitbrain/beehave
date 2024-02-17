@@ -35,6 +35,16 @@ func color(p_color :Color) -> CmdConsole:
 	return self
 
 
+func save_cursor() -> CmdConsole:
+	printraw("[s")
+	return self
+
+
+func restore_cursor() -> CmdConsole:
+	printraw("[u")
+	return self
+
+
 func end_color() -> CmdConsole:
 	printraw("[0m")
 	return self

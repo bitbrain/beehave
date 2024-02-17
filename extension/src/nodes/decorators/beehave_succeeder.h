@@ -43,6 +43,7 @@ protected:
 public:
 	BeehaveSucceeder();
 	~BeehaveSucceeder();
+	virtual TickStatus tick(Ref<BeehaveContext> context);
 };
 }
 

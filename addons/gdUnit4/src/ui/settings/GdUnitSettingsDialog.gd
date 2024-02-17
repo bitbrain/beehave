@@ -174,7 +174,7 @@ func _install_examples() -> void:
 	_init_progress(5)
 	update_progress("Downloading examples")
 	await get_tree().process_frame
-	var tmp_path := GdUnitTools.create_temp_dir("download")
+	var tmp_path := GdUnitFileAccess.create_temp_dir("download")
 	var zip_file := tmp_path + "/examples.zip"
 	var response :GdUnitUpdateClient.HttpResponse = await _update_client.request_zip_package(EAXAMPLE_URL, zip_file)
 	if response.code() != 200:
@@ -185,7 +185,7 @@ func _install_examples() -> void:
 		return
 	# extract zip to tmp
 	update_progress("Install examples into project")
-	var result := GdUnitTools.extract_zip(zip_file, "res://gdUnit4-examples/")
+	var result := GdUnitFileAccess.extract_zip(zip_file, "res://gdUnit4-examples/")
 	if result.is_error():
 		update_progress("Install examples failed! %s" % result.error_message())
 		await get_tree().create_timer(3).timeout

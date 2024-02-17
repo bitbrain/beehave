@@ -6,7 +6,10 @@
 script = ExtResource("1_1kcjy")
 
 [node name="BeehaveTree" type="BeehaveTree" parent="."]
+process_thread = 0
 unique_name_in_owner = true
+
+[node name="BeehaveSucceeder" type="BeehaveSucceeder" parent="BeehaveTree"]
 
 [node name="BeehaveBlackboard" type="BeehaveBlackboard" parent="."]
 unique_name_in_owner = true

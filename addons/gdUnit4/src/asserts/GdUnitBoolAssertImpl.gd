@@ -4,10 +4,11 @@ var _base: GdUnitAssert
 
 
 func _init(current):
-	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript", ResourceLoader.CACHE_MODE_REUSE).new(current)
+	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript",
+								ResourceLoader.CACHE_MODE_REUSE).new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
-	if not _base.__validate_value_type(current, TYPE_BOOL):
+	if not GdUnitAssertions.validate_value_type(current, TYPE_BOOL):
 		report_error("GdUnitBoolAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 
@@ -18,8 +19,8 @@ func _notification(event):
 			_base = null
 
 
-func __current():
-	return _base.__current()
+func current_value():
+	return _base.current_value()
 
 
 func report_success() -> GdUnitBoolAssert:
@@ -32,7 +33,7 @@ func report_error(error :String) -> GdUnitBoolAssert:
 	return self
 
 
-func _failure_message() -> String:
+func failure_message() -> String:
 	return _base._current_error_message
 
 
@@ -64,12 +65,12 @@ func is_not_equal(expected) -> GdUnitBoolAssert:
 
 
 func is_true() -> GdUnitBoolAssert:
-	if __current() != true:
-		return report_error(GdAssertMessages.error_is_true(__current()))
+	if current_value() != true:
+		return report_error(GdAssertMessages.error_is_true(current_value()))
 	return report_success()
 
 
 func is_false() -> GdUnitBoolAssert:
-	if __current() == true || __current() == null:
-		return report_error(GdAssertMessages.error_is_false(__current()))
+	if current_value() == true || current_value() == null:
+		return report_error(GdAssertMessages.error_is_false(current_value()))
 	return report_success()

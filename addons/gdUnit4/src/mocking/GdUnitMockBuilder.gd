@@ -96,7 +96,7 @@ static func mock_on_script(instance :Object, clazz :Variant, function_excludes :
 	var mock := GDScript.new()
 	mock.source_code = "\n".join(lines)
 	mock.resource_name = "Mock%s.gd" % clazz_name
-	mock.resource_path = GdUnitTools.create_temp_dir("mock") + "/Mock%s_%d.gd" % [clazz_name, Time.get_ticks_msec()]
+	mock.resource_path = GdUnitFileAccess.create_temp_dir("mock") + "/Mock%s_%d.gd" % [clazz_name, Time.get_ticks_msec()]
 	
 	if debug_write:
 		DirAccess.remove_absolute(mock.resource_path)

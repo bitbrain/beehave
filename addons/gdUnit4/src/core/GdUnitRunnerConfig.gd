@@ -72,10 +72,10 @@ func add_test_case(p_resource_path :String, test_name :StringName, test_param_in
 # '/path/path', res://path/path', 'res://path/path/testsuite.gd' or 'testsuite'
 # 'res://path/path/testsuite.gd:test_case' or 'testsuite:test_case'
 func skip_test_suite(value :StringName) -> GdUnitRunnerConfig:
-	var parts :Array =  GdUnitTools.make_qualified_path(value).rsplit(":")
+	var parts :Array =  GdUnitFileAccess.make_qualified_path(value).rsplit(":")
 	if parts[0] == "res":
 		parts.pop_front()
-	parts[0] = GdUnitTools.make_qualified_path(parts[0])
+	parts[0] = GdUnitFileAccess.make_qualified_path(parts[0])
 	match parts.size():
 		1: skipped()[parts[0]] = PackedStringArray()
 		2: skip_test_case(parts[0], parts[1])
@@ -108,7 +108,7 @@ func save_config(path :String = CONFIG_FILE) -> GdUnitResult:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		var error = FileAccess.get_open_error()
-		return GdUnitResult.error("Can't write test runner configuration '%s'! %s" % [path, GdUnitTools.error_as_string(error)])
+		return GdUnitResult.error("Can't write test runner configuration '%s'! %s" % [path, error_string(error)])
 	_config[VERSION] = CONFIG_VERSION
 	file.store_string(JSON.stringify(_config))
 	return GdUnitResult.success(path)
@@ -120,7 +120,7 @@ func load_config(path :String = CONFIG_FILE) -> GdUnitResult:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		var error = FileAccess.get_open_error()
-		return GdUnitResult.error("Can't load test runner configuration '%s'! ERROR: %s." % [path, GdUnitTools.error_as_string(error)])
+		return GdUnitResult.error("Can't load test runner configuration '%s'! ERROR: %s." % [path, error_string(error)])
 	var content := file.get_as_text()
 	if not content.is_empty() and content[0] == '{':
 		# Parse as json
