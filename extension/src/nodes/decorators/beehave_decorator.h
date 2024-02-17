@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_leaf.cpp                                                      */
+/*  beehave_decorator.h                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,17 +27,26 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_leaf.h"
+#ifndef BEEHAVE_DECORATOR_H
+#define BEEHAVE_DECORATOR_H
 
-using namespace godot;
+#include "nodes/beehave_tree_node.h"
 
-void BeehaveLeaf::_bind_methods() {
+namespace godot {
+
+class BeehaveDecorator : public BeehaveTreeNode {
+	GDCLASS(BeehaveDecorator, BeehaveTreeNode);
+
+protected:
+	BeehaveTreeNode *running_child;
+
+	static void _bind_methods();
+
+public:
+	BeehaveDecorator();
+	~BeehaveDecorator();
+};
+
 }
 
-BeehaveLeaf::BeehaveLeaf() {
-
-}
-
-BeehaveLeaf ::~BeehaveLeaf() {
-
-}
+#endif//BEEHAVE_DECORATOR_H

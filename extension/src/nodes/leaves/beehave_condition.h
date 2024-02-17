@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_leaf.cpp                                                      */
+/*  beehave_condition.h                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -26,18 +26,3 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
-
-#include "beehave_leaf.h"
-
-using namespace godot;
-
-void BeehaveLeaf::_bind_methods() {
-}
-
-BeehaveLeaf::BeehaveLeaf() {
-
-}
-
-BeehaveLeaf ::~BeehaveLeaf() {
-
-}

@@ -8,24 +8,22 @@ extends GdUnitTestSuite
 # TestSuite generated from
 const __source = "res://addons/beehave/nodes/composites/sequence_star.gd"
 const __count_up_action = "res://test/actions/count_up_action.gd"
-const __blackboard = "res://addons/beehave/blackboard.gd"
-const __tree = "res://addons/beehave/nodes/beehave_tree.gd"
 
 var tree: BeehaveTree
-var action1: ActionLeaf
-var action2: ActionLeaf
+var action1: BeehaveAction
+var action2: BeehaveAction
 var actor: Node
-var blackboard: Blackboard
+var blackboard: BeehaveBlackboard
 var sequence: SequenceStarComposite
 
 
 func before_test() -> void:
-	tree = auto_free(load(__tree).new())
+	tree = auto_free(BeehaveTree.new())
 	action1 = auto_free(load(__count_up_action).new())
 	action2 = auto_free(load(__count_up_action).new())
 	sequence = auto_free(load(__source).new())
 	actor = auto_free(Node2D.new())
-	blackboard = auto_free(load(__blackboard).new())
+	blackboard = auto_free(BeehaveBlackboard.new())
 	
 	tree.add_child(sequence)
 	sequence.add_child(action1)

@@ -43,7 +43,8 @@ BeehaveTreeNode::TickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context) {
 }
 
 void BeehaveTreeNode::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("tick"), &BeehaveTreeNode::tick);
+
+	BIND_VIRTUAL_METHOD(BeehaveTreeNode, tick);
 
 	BIND_ENUM_CONSTANT(SUCCESS);
 	BIND_ENUM_CONSTANT(FAILURE);

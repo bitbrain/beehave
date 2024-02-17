@@ -1,5 +1,5 @@
 # GdUnit generated TestSuite
-class_name BlackboardCompareConditionTest
+class_name BeehaveBlackboardCompareConditionTest
 extends GdUnitTestSuite
 @warning_ignore("unused_parameter")
 @warning_ignore("return_value_discarded")
@@ -9,9 +9,9 @@ const __source = "res://addons/beehave/nodes/leaves/blackboard_compare.gd"
 const __blackboard = "res://addons/beehave/blackboard.gd"
 
 
-var blackboard_compare: BlackboardCompareCondition
+var blackboard_compare: BeehaveBlackboardCompareCondition
 var actor: Node
-var blackboard: Blackboard
+var blackboard: BeehaveBlackboard
 
 var runner: GdUnitSceneRunner
 
@@ -54,7 +54,7 @@ func test_comparison_operators() -> void:
 		for pair in data[operands]:
 			blackboard_compare = auto_free(load(__source).new())
 			
-			var operator: BlackboardCompareCondition.Operators = pair[0]
+			var operator: BeehaveBlackboardCompareCondition.Operators = pair[0]
 			var expected_status: int = pair[1]
 			
 			blackboard_compare.left_operand = operands[0]
@@ -70,7 +70,7 @@ func test_blackboard_access() -> void:
 	blackboard.set_value("direction", Vector3.FORWARD)
 	
 	blackboard_compare.left_operand = "get_value(\"direction\").length()"
-	blackboard_compare.operator = BlackboardCompareCondition.Operators.EQUAL
+	blackboard_compare.operator = BeehaveBlackboardCompareCondition.Operators.EQUAL
 	blackboard_compare.right_operand = "1"
 	
 	runner = scene_runner(blackboard_compare)
@@ -79,7 +79,7 @@ func test_blackboard_access() -> void:
 
 func test_invalid_left_operand_expression() -> void:
 	blackboard_compare.left_operand = "this is invalid!!!"
-	blackboard_compare.operator = BlackboardCompareCondition.Operators.EQUAL
+	blackboard_compare.operator = BeehaveBlackboardCompareCondition.Operators.EQUAL
 	blackboard_compare.right_operand = "1"
 	
 	runner = scene_runner(blackboard_compare)
@@ -88,7 +88,7 @@ func test_invalid_left_operand_expression() -> void:
 
 func test_invalid_right_operand_expression() -> void:
 	blackboard_compare.left_operand = "1"
-	blackboard_compare.operator = BlackboardCompareCondition.Operators.EQUAL
+	blackboard_compare.operator = BeehaveBlackboardCompareCondition.Operators.EQUAL
 	blackboard_compare.right_operand = "this is invalid!!!"
 	
 	runner = scene_runner(blackboard_compare)

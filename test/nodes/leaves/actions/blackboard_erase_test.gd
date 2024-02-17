@@ -1,5 +1,5 @@
 # GdUnit generated TestSuite
-class_name BlackboardEraseActionTest
+class_name BeehaveBlackboardEraseActionTest
 extends GdUnitTestSuite
 @warning_ignore("unused_parameter")
 @warning_ignore("return_value_discarded")
@@ -10,9 +10,9 @@ const __blackboard = "res://addons/beehave/blackboard.gd"
 
 const KEY: String = "test_key"
 
-var blackboard_erase: BlackboardEraseAction
+var blackboard_erase: BeehaveBlackboardEraseAction
 var actor: Node
-var blackboard: Blackboard
+var blackboard: BeehaveBlackboard
 
 var runner: GdUnitSceneRunner
 

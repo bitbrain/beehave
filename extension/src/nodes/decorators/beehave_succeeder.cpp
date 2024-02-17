@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_leaf.cpp                                                      */
+/*  beehave_succeeder.cpp                                                 */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,17 +27,18 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_leaf.h"
+#include "beehave_succeeder.h"
 
 using namespace godot;
 
-void BeehaveLeaf::_bind_methods() {
-}
-
-BeehaveLeaf::BeehaveLeaf() {
+BeehaveSucceeder::BeehaveSucceeder() {
 
 }
 
-BeehaveLeaf ::~BeehaveLeaf() {
+BeehaveSucceeder::~BeehaveSucceeder() {
+
+}
+
+void BeehaveSucceeder::_bind_methods() {
 
 }

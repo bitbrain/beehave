@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_leaf.cpp                                                      */
+/*  beehave_succeeder.h                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,17 +27,23 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_leaf.h"
+#ifndef BEEHAVE_SUCCEEDER
+#define BEEHAVE_SUCCEEDER
 
-using namespace godot;
+#include "nodes/decorators/beehave_decorator.h"
 
-void BeehaveLeaf::_bind_methods() {
+namespace godot {
+
+class BeehaveSucceeder : public BeehaveDecorator {
+	GDCLASS(BeehaveSucceeder, BeehaveDecorator);
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveSucceeder();
+	~BeehaveSucceeder();
+};
 }
 
-BeehaveLeaf::BeehaveLeaf() {
-
-}
-
-BeehaveLeaf ::~BeehaveLeaf() {
-
-}
+#endif //BEEHAVE_SUCCEEDER

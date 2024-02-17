@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_leaf.cpp                                                      */
+/*  beehave_decorator.cpp                                                 */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,17 +27,18 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_leaf.h"
+#include "beehave_decorator.h"
 
 using namespace godot;
 
-void BeehaveLeaf::_bind_methods() {
-}
-
-BeehaveLeaf::BeehaveLeaf() {
+BeehaveDecorator::BeehaveDecorator() {
 
 }
 
-BeehaveLeaf ::~BeehaveLeaf() {
+BeehaveDecorator::~BeehaveDecorator() {
+
+}
+
+void BeehaveDecorator::_bind_methods() {
 
 }

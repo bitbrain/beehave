@@ -1,17 +1,17 @@
-class_name CountUpAction extends ActionLeaf
+class_name CountUpAction extends BeehaveAction
 
 @export var key = "custom_value"
 
 var count = 0
 var status = SUCCESS
 
-func tick(_actor: Node, blackboard: Blackboard) -> int:
+func tick(context: BeehaveContext) -> int:
 	count += 1
-	blackboard.set_value(key, count)
+	context.get_blackboard().set_value(key, count)
 	return status
 
 
-func interrupt(_actor: Node, blackboard: Blackboard) -> void:
+func interrupt(context: BeehaveContext) -> void:
 	count = 0
-	blackboard.set_value(key, count)
+	context.get_blackboard().set_value(key, count)
 	status = FAILURE
