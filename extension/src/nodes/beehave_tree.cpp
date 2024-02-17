@@ -36,14 +36,15 @@ using namespace godot;
 BeehaveTree::BeehaveTree() :
 	context(Ref<BeehaveContext>(memnew(BeehaveContext))),
 	tick_status(BeehaveTreeNode::TickStatus::PENDING),
-    tick_rate(1) {
+    tick_rate(1),
+	_internal_blackboard(memnew(BeehaveBlackboard)),
+	blackboard(nullptr),
+	actor(nullptr) {
 }
 
 BeehaveTree::~BeehaveTree() {
-	if (_internal_blackboard) {
-		memfree(_internal_blackboard);
-		_internal_blackboard = nullptr;
-	}
+	memfree(_internal_blackboard);
+	_internal_blackboard = nullptr;
 }
 
 void BeehaveTree::_bind_methods() {
@@ -75,14 +76,11 @@ void BeehaveTree::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "process_thread", PROPERTY_HINT_ENUM, "Idle,Physics"), "set_process_thread", "get_process_thread");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enabled"), "set_enabled", "is_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "tick_rate"), "set_tick_rate", "get_tick_rate");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "actor", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT), "set_actor", "get_actor");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "blackboard", PROPERTY_HINT_RESOURCE_TYPE, "BeehaveBlackboard", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_EDITOR_INSTANTIATE_OBJECT), "set_blackboard", "get_blackboard");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "actor", PROPERTY_HINT_NODE_TYPE, "Node"), "set_actor", "get_actor");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "blackboard", PROPERTY_HINT_NODE_TYPE, "BeehaveBlackboard"), "set_blackboard", "get_blackboard");
 }
 
 void BeehaveTree::_ready() {
-	if (blackboard.is_null()) {
-		_internal_blackboard = memnew(BeehaveBlackboard);
-	}
 	set_physics_process(enabled && process_thread == ProcessThread::PHYSICS);
 	set_process(enabled && process_thread == ProcessThread::IDLE);
 
@@ -109,27 +107,20 @@ void BeehaveTree::_physics_process(double delta) {
 	}
 }
 
-void BeehaveTree::set_actor(Ref<Node> actor) {
+void BeehaveTree::set_actor(Node* actor) {
 	this->actor = actor;
 }
 
-Ref<Node> BeehaveTree::get_actor() const {
+Node* BeehaveTree::get_actor() const {
 	return actor;
 }
 
-void BeehaveTree::set_blackboard(Ref<BeehaveBlackboard> blackboard) {
-	if (blackboard.is_valid() && _internal_blackboard) {
-		memfree(_internal_blackboard);
-		_internal_blackboard = nullptr;
-	} else if (blackboard.is_null()) {
-		_internal_blackboard = memnew(BeehaveBlackboard);
-	} else {
-		this->blackboard = blackboard;
-	}
+void BeehaveTree::set_blackboard(BeehaveBlackboard *blackboard) {
+	this->blackboard = blackboard;
 	
 }
 
-Ref<BeehaveBlackboard> BeehaveTree::get_blackboard() const {
+BeehaveBlackboard *BeehaveTree::get_blackboard() const {
 	return blackboard;
 }
 
@@ -183,11 +174,11 @@ void BeehaveTree::process_internally(double delta) {
 }
 
 BeehaveTreeNode::TickStatus BeehaveTree::tick() {
-	context->set_blackboard(blackboard.ptr());
 	context->set_tree(this);
-	context->set_actor(get_actor().ptr());
+	context->set_actor(actor ? actor : get_parent());
+	context->set_blackboard(blackboard ? blackboard : _internal_blackboard);
 
-	if (get_child_count() == 0 || get_actor() == nullptr) {
+	if (get_child_count() == 0 || context->get_actor() == nullptr) {
 		tick_status = BeehaveTreeNode::FAILURE;
 		return tick_status;
 	}

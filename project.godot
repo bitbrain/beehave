@@ -17,11 +17,6 @@ boot_splash/image="res://splash.png"
 boot_splash/fullsize=false
 config/icon="res://icon.png"
 
-[autoload]
-
-BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
-BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
-
 [dotnet]
 
 project/assembly_name="Beehave"

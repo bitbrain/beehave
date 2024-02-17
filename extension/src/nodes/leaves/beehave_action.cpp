@@ -32,7 +32,6 @@
 using namespace godot;
 
 void BeehaveAction::_bind_methods() {
-
 }
 
 BeehaveAction::BeehaveAction() {
