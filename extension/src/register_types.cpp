@@ -8,6 +8,8 @@
 #include "nodes/beehave_blackboard.h"
 #include "nodes/beehave_tree.h"
 #include "nodes/beehave_tree_node.h"
+#include "nodes/leaves/beehave_leaf.h"
+#include "nodes/leaves/beehave_action.h"
 
 using namespace godot;
 
@@ -19,6 +21,8 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<BeehaveTree>();
 	ClassDB::register_class<BeehaveTreeNode>();
 	ClassDB::register_class<BeehaveBlackboard>();
+	ClassDB::register_class<BeehaveLeaf>();
+	ClassDB::register_class<BeehaveAction>();
 }
 
 void uninitialize_beehave_types(ModuleInitializationLevel p_level) {

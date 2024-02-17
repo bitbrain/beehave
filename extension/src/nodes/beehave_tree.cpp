@@ -28,6 +28,7 @@
 /**************************************************************************/
 
 #include "beehave_tree.h"
+#include "beehave_blackboard.h"
 #include <core/class_db.hpp>
 
 using namespace godot;
@@ -54,6 +55,25 @@ void BeehaveTree::_bind_methods() {
 }
 
 void BeehaveTree::_ready() {
+	if (!actor) {
+		actor = get_parent();
+	}
+	if (!blackboard) {
+		_internal_blackboard = memnew(BeehaveBlackboard);
+		blackboard = _internal_blackboard;
+	}
+	set_physics_process(enabled && process_thread == ProcessThread::PHYSICS);
+	set_process(enabled && process_thread == ProcessThread::IDLE);
+
+	// Randomize at what frames tick() will happen to avoid stutters
+	_last_tick = rand() % tick_rate;
+}
+
+void BeehaveTree::_exit_tree() {
+	if (_internal_blackboard) {
+		memfree(_internal_blackboard);
+		_internal_blackboard = nullptr;
+	}
 }
 
 void BeehaveTree::_process(double delta) {
@@ -69,9 +89,11 @@ void BeehaveTree::_physics_process(double delta) {
 }
 
 void BeehaveTree::enable() {
+	enabled = true;
 }
 
 void BeehaveTree::disable() {
+	enabled = false;
 }
 
 void BeehaveTree::process_internally(double delta) {
