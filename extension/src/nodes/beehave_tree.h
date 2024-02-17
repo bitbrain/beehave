@@ -74,6 +74,7 @@ public:
 	void enable();
 	void disable();
 	BeehaveTreeNode::TickStatus tick();
+	BeehaveTreeNode::TickStatus get_tick_status() const;
 };
 
 } //namespace godot

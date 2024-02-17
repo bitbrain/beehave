@@ -52,6 +52,7 @@ void BeehaveTree::_bind_methods() {
 	// methods
 	ClassDB::bind_method(D_METHOD("enable"), &BeehaveTree::enable);
 	ClassDB::bind_method(D_METHOD("disable"), &BeehaveTree::disable);
+	ClassDB::bind_method(D_METHOD("get_tick_status"), &BeehaveTree::get_tick_status);
 }
 
 void BeehaveTree::_ready() {
@@ -94,6 +95,10 @@ void BeehaveTree::enable() {
 
 void BeehaveTree::disable() {
 	enabled = false;
+}
+
+BeehaveTreeNode::TickStatus BeehaveTree::get_tick_status() const {
+	return tick_status;
 }
 
 void BeehaveTree::process_internally(double delta) {
