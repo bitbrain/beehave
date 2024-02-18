@@ -26,3 +26,22 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
+#include "beehave_time_limiter.h"
+
+using namespace godot;
+
+BeehaveTimeLimiter::BeehaveTimeLimiter() {
+
+}
+
+BeehaveTimeLimiter::~BeehaveTimeLimiter() {
+}
+
+void BeehaveTimeLimiter::_bind_methods() {
+
+}
+
+BeehaveTreeNode::TickStatus BeehaveTimeLimiter::tick(Ref<BeehaveContext> context) {
+	return BeehaveTreeNode::FAILURE;
+}
