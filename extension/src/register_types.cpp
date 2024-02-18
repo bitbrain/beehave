@@ -16,6 +16,7 @@
 #include "nodes/decorators/beehave_inverter.h"
 #include "nodes/decorators/beehave_cooldown.h"
 #include "nodes/decorators/beehave_limiter.h"
+#include "nodes/decorators/beehave_delayer.h"
 
 using namespace godot;
 
@@ -23,18 +24,29 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+	// base nodes
 	ClassDB::register_class<BeehaveContext>();
 	ClassDB::register_class<BeehaveTree>();
 	ClassDB::register_class<BeehaveTreeNode>();
 	ClassDB::register_class<BeehaveBlackboard>();
+
+	// leafs
 	ClassDB::register_class<BeehaveLeaf>();
 	ClassDB::register_class<BeehaveAction>();
 	ClassDB::register_class<BeehaveDecorator>();
+
+	// decorators
 	ClassDB::register_class<BeehaveSucceeder>();
 	ClassDB::register_class<BeehaveFailer>();
 	ClassDB::register_class<BeehaveInverter>();
 	ClassDB::register_class<BeehaveCooldown>();
 	ClassDB::register_class<BeehaveLimiter>();
+	ClassDB::register_class<BeehaveDelayer>();
+	//repeater
+	//timelimiter
+
+	// composites
+	// TODO
 }
 
 void uninitialize_beehave_types(ModuleInitializationLevel p_level) {

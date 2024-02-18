@@ -37,8 +37,8 @@ namespace godot {
 class BeehaveCooldown : public BeehaveDecorator {
 	GDCLASS(BeehaveCooldown, BeehaveDecorator);
 
-	float wait_time = 0.0f;
-	int64_t previous_time = -1;
+	float wait_time;
+	int64_t previous_time;
 
 protected:
 	static void _bind_methods();

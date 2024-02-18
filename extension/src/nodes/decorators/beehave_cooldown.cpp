@@ -32,7 +32,9 @@
 
 using namespace godot;
 
-BeehaveCooldown::BeehaveCooldown():wait_time(1) {
+BeehaveCooldown::BeehaveCooldown():
+wait_time(1),
+previous_time(-1) {
 
 }
 
@@ -67,6 +69,7 @@ BeehaveTreeNode::TickStatus BeehaveCooldown::tick(Ref<BeehaveContext> context) {
 
 	if (previous_time == -1) {
 		previous_time = current_time;
+		status = tree_node->tick(context);
 	}
 
 	uint64_t passed_time = current_time - previous_time;
