@@ -7,6 +7,8 @@ class_name TimeLimiterDecorator extends Decorator
 ## The timer resets the next time that a child is not `RUNNING`
 
 @export var wait_time: = 0.0
+@export var max_wait_time: = 0.0
+var current_wait_time: = 0.0
 
 @onready var cache_key = 'time_limiter_%s' % self.get_instance_id()
 
@@ -18,7 +20,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 	var child = self.get_child(0)
 	var time_left = blackboard.get_value(cache_key, 0.0, str(actor.get_instance_id()))
 
-	if time_left < wait_time:
+	if time_left < current_wait_time:
 		time_left += get_physics_process_delta_time()
 		blackboard.set_value(cache_key, time_left, str(actor.get_instance_id()))
 		var response = child.tick(actor, blackboard)
@@ -43,6 +45,11 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 
 func before_run(actor: Node, blackboard: Blackboard) -> void:
+	if max_wait_time > 0.0 && wait_time < max_wait_time:
+		current_wait_time = randf_range(wait_time, max_wait_time)
+	else:
+		current_wait_time = wait_time
+
 	blackboard.set_value(cache_key, 0.0, str(actor.get_instance_id()))
 	if get_child_count() > 0:
 		get_child(0).before_run(actor, blackboard)
