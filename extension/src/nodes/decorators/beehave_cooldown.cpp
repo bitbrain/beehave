@@ -52,6 +52,7 @@ void BeehaveCooldown::_bind_methods() {
 
 void BeehaveCooldown::set_wait_time(float wait_time) {
 	this->wait_time = wait_time;
+	previous_time = -1;
 }
 
 float BeehaveCooldown::get_wait_time() const {

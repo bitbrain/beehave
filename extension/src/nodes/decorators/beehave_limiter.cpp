@@ -42,7 +42,21 @@ BeehaveLimiter::~BeehaveLimiter() {
 }
 
 void BeehaveLimiter::_bind_methods() {
+	// methods
+	ClassDB::bind_method(D_METHOD("set_max_count", "max_count"), &BeehaveLimiter::set_max_count);
+	ClassDB::bind_method(D_METHOD("get_max_count"), &BeehaveLimiter::get_max_count);
 
+	// exports
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "max_count"), "set_max_count", "get_max_count");
+}
+
+void BeehaveLimiter::set_max_count(int max_count) {
+	this->max_count = max_count;
+	current_count = 0;
+}
+
+int BeehaveLimiter::get_max_count() const {
+	return max_count;
 }
 
 BeehaveTreeNode::TickStatus BeehaveLimiter::tick(Ref<BeehaveContext> context) {

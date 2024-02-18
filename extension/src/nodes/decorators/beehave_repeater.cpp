@@ -43,7 +43,22 @@ BeehaveRepeater::~BeehaveRepeater() {
 }
 
 void BeehaveRepeater::_bind_methods() {
+	// methods
+	ClassDB::bind_method(D_METHOD("set_repetitions", "repetitions"), &BeehaveRepeater::set_repetitions);
+	ClassDB::bind_method(D_METHOD("get_repetitions"), &BeehaveRepeater::get_repetitions);
 
+	// exports
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "repetitions"), "set_repetitions", "get_repetitions");
+}
+
+
+void BeehaveRepeater::set_repetitions(int repetitions) {
+	this->repetitions = repetitions;
+	current_count = 0;
+}
+
+int BeehaveRepeater::get_repetitions() const {
+	return repetitions;
 }
 
 BeehaveTreeNode::TickStatus BeehaveRepeater::tick(Ref<BeehaveContext> context) {

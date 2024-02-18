@@ -47,6 +47,9 @@ public:
 	BeehaveLimiter();
 	~BeehaveLimiter();
 
+	void set_max_count(int max_count);
+	int get_max_count() const;
+
 	TickStatus tick(Ref<BeehaveContext> context);
 };
 

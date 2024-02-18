@@ -47,6 +47,9 @@ public:
 	BeehaveDelayer();
 	~BeehaveDelayer();
 
+	void set_wait_time(float wait_time);
+	float get_wait_time() const;
+
 	TickStatus tick(Ref<BeehaveContext> context);
 };
 

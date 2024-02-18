@@ -43,7 +43,22 @@ BeehaveDelayer::~BeehaveDelayer() {
 }
 
 void BeehaveDelayer::_bind_methods() {
+	// methods
+	ClassDB::bind_method(D_METHOD("set_wait_time", "wait_time"), &BeehaveDelayer::set_wait_time);
+	ClassDB::bind_method(D_METHOD("get_wait_time"), &BeehaveDelayer::get_wait_time);
 
+	// exports
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "wait_time"), "set_wait_time", "get_wait_time");
+}
+	
+
+void BeehaveDelayer::set_wait_time(float wait_time) {
+	this->wait_time = wait_time;
+	previous_time = -1;
+}
+
+float BeehaveDelayer::get_wait_time() const {
+	return wait_time;
 }
 
 BeehaveTreeNode::TickStatus BeehaveDelayer::tick(Ref<BeehaveContext> context) {

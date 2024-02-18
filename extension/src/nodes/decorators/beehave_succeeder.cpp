@@ -44,5 +44,10 @@ void BeehaveSucceeder::_bind_methods() {
 }
 
 BeehaveTreeNode::TickStatus BeehaveSucceeder::tick(Ref<BeehaveContext> context) {
+	BeehaveTreeNode *tree_node = get_wrapped_child();
+	if (!tree_node) {
+		return BeehaveTreeNode::FAILURE;
+	}
+	tree_node->tick(context);
 	return BeehaveTreeNode::SUCCESS;
 }
