@@ -17,6 +17,7 @@
 #include "nodes/decorators/beehave_cooldown.h"
 #include "nodes/decorators/beehave_limiter.h"
 #include "nodes/decorators/beehave_delayer.h"
+#include "nodes/decorators/beehave_repeater.h"
 
 using namespace godot;
 
@@ -42,7 +43,7 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<BeehaveCooldown>();
 	ClassDB::register_class<BeehaveLimiter>();
 	ClassDB::register_class<BeehaveDelayer>();
-	//repeater
+	ClassDB::register_class<BeehaveRepeater>();
 	//timelimiter
 
 	// composites
