@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_failer.h                                                      */
+/*  beehave_limiter.h                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,26 +27,29 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_FAILER_H
-#define BEEHAVE_FAILER_H
+#ifndef BEEHAVE_LIMITER_H
+#define BEEHAVE_LIMITER_H
 
 #include "nodes/decorators/beehave_decorator.h"
 
 namespace godot {
 
-class BeehaveFailer : public BeehaveDecorator {
-	GDCLASS(BeehaveFailer, BeehaveDecorator);
+class BeehaveLimiter : public BeehaveDecorator {
+	GDCLASS(BeehaveLimiter, BeehaveDecorator);
+
+	int max_count;
+	int current_count;
 
 protected:
 	static void _bind_methods();
 
 public:
-	BeehaveFailer();
-	~BeehaveFailer();
+	BeehaveLimiter();
+	~BeehaveLimiter();
 
 	TickStatus tick(Ref<BeehaveContext> context);
 };
 
 }
 
-#endif//BEEHAVE_FAILER_H
+#endif//BEEHAVE_LIMITER_H

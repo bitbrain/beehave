@@ -50,7 +50,7 @@ public:
 	void set_wait_time(float wait_time);
 	float get_wait_time() const;
 
-	virtual BeehaveTreeNode::TickStatus tick(Ref<BeehaveContext> context);
+	BeehaveTreeNode::TickStatus tick(Ref<BeehaveContext> context);
 
 };
 

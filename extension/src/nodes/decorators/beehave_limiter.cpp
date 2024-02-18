@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_failer.h                                                      */
+/*  beehave_limiter.h                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,26 +27,35 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_FAILER_H
-#define BEEHAVE_FAILER_H
+#include "beehave_limiter.h"
 
-#include "nodes/decorators/beehave_decorator.h"
+using namespace godot;
 
-namespace godot {
-
-class BeehaveFailer : public BeehaveDecorator {
-	GDCLASS(BeehaveFailer, BeehaveDecorator);
-
-protected:
-	static void _bind_methods();
-
-public:
-	BeehaveFailer();
-	~BeehaveFailer();
-
-	TickStatus tick(Ref<BeehaveContext> context);
-};
+BeehaveLimiter::BeehaveLimiter():
+max_count(1),
+current_count(0) {
 
 }
 
-#endif//BEEHAVE_FAILER_H
+BeehaveLimiter::~BeehaveLimiter() {
+
+}
+
+void BeehaveLimiter::_bind_methods() {
+
+}
+
+BeehaveTreeNode::TickStatus BeehaveLimiter::tick(Ref<BeehaveContext> context) {
+	BeehaveTreeNode *tree_node = get_wrapped_child();
+	if (!tree_node) {
+		return BeehaveTreeNode::FAILURE;
+	}
+
+	if (current_count < max_count) {
+		BeehaveTreeNode::TickStatus tick_status = tree_node->tick(context);
+		++current_count;
+		return tick_status;
+	}
+
+	return BeehaveTreeNode::FAILURE;
+}
