@@ -38,7 +38,7 @@ namespace godot {
 class BeehaveBlackboard : public Node {
 	GDCLASS(BeehaveBlackboard, Node);
 
-	Dictionary data = Dictionary();
+	Dictionary values = Dictionary();
 
 protected:
 	static void _bind_methods();
@@ -52,6 +52,9 @@ public:
 	bool has_value(const String &key) const;
 	bool erase_value(const String &key);
 	int get_size() const;
+
+	Dictionary get_values() const;
+	void set_values(Dictionary values);
 };
 
 } //namespace godot
