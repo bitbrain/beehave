@@ -36,6 +36,9 @@ namespace godot {
 
 class BeehaveTimeLimiter : public BeehaveDecorator {
 	GDCLASS(BeehaveTimeLimiter, BeehaveDecorator);
+	
+	float wait_time;
+	int64_t previous_time;
 
 protected:
 	static void _bind_methods();
@@ -45,6 +48,9 @@ public:
 	~BeehaveTimeLimiter();
 
 	TickStatus tick(Ref<BeehaveContext> context);
+
+	void set_wait_time(float wait_time);
+	float get_wait_time() const;
 };
 
 }

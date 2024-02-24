@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_time_limiter.cpp                                              */
+/*  beehave_until_fail.h                                                  */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,58 +27,25 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_time_limiter.h"
-#include <classes/time.hpp>
+#ifndef BEEHAVE_UNTIL_FAIL_H
+#define BEEHAVE_UNTIL_FAIL_H
 
-using namespace godot;
+#include "nodes/decorators/beehave_decorator.h"
 
-BeehaveTimeLimiter::BeehaveTimeLimiter():
-	wait_time(1.0),
-	previous_time(-1) {
+namespace godot {
 
+class BeehaveUntilFail : public BeehaveDecorator {
+	GDCLASS(BeehaveUntilFail, BeehaveDecorator);
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveUntilFail();
+	~BeehaveUntilFail();
+
+	TickStatus tick(Ref<BeehaveContext> context);
+};
 }
 
-BeehaveTimeLimiter::~BeehaveTimeLimiter() {
-}
-
-void BeehaveTimeLimiter::_bind_methods() {
-	// methods
-	ClassDB::bind_method(D_METHOD("set_wait_time", "wait_time"), &BeehaveTimeLimiter::set_wait_time);
-	ClassDB::bind_method(D_METHOD("get_wait_time"), &BeehaveTimeLimiter::get_wait_time);
-
-	// exports
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "wait_time"), "set_wait_time", "get_wait_time");
-}
-
-void BeehaveTimeLimiter::set_wait_time(float wait_time) {
-	this->wait_time = wait_time;
-}
-
-float BeehaveTimeLimiter::get_wait_time() const {
-	return wait_time;
-}
-
-BeehaveTreeNode::TickStatus BeehaveTimeLimiter::tick(Ref<BeehaveContext> context) {
-	BeehaveTreeNode *tree_node = get_wrapped_child();
-	if (!tree_node) {
-		return BeehaveTreeNode::FAILURE;
-	}
-
-	BeehaveTreeNode::TickStatus status = BeehaveTreeNode::FAILURE;
-	uint64_t current_time = Time::get_singleton()->get_ticks_msec();
-
-	if (previous_time == -1) {
-		previous_time = current_time;
-	}
-
-	uint64_t passed_time = current_time - previous_time;
-
-	// the wait time has been reached, time to reset
-	if (passed_time >= wait_time * 1000.0) {
-		status = tree_node->tick(context);
-		// avoid time drift by carrying over miliseconds from previous iteration.
-		previous_time = current_time - (passed_time - (wait_time * 1000.0));
-	}
-
-	return status;
-}
+#endif

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_time_limiter.cpp                                              */
+/*  beehave_until_fail.cpp                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,58 +27,33 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_time_limiter.h"
-#include <classes/time.hpp>
+#include "beehave_until_fail.h"
 
 using namespace godot;
 
-BeehaveTimeLimiter::BeehaveTimeLimiter():
-	wait_time(1.0),
-	previous_time(-1) {
+BeehaveUntilFail::BeehaveUntilFail() {
 
 }
 
-BeehaveTimeLimiter::~BeehaveTimeLimiter() {
+BeehaveUntilFail::~BeehaveUntilFail() {
+
 }
 
-void BeehaveTimeLimiter::_bind_methods() {
-	// methods
-	ClassDB::bind_method(D_METHOD("set_wait_time", "wait_time"), &BeehaveTimeLimiter::set_wait_time);
-	ClassDB::bind_method(D_METHOD("get_wait_time"), &BeehaveTimeLimiter::get_wait_time);
+void BeehaveUntilFail::_bind_methods() {
 
-	// exports
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "wait_time"), "set_wait_time", "get_wait_time");
 }
 
-void BeehaveTimeLimiter::set_wait_time(float wait_time) {
-	this->wait_time = wait_time;
-}
-
-float BeehaveTimeLimiter::get_wait_time() const {
-	return wait_time;
-}
-
-BeehaveTreeNode::TickStatus BeehaveTimeLimiter::tick(Ref<BeehaveContext> context) {
+BeehaveTreeNode::TickStatus BeehaveUntilFail::tick(Ref<BeehaveContext> context) {
 	BeehaveTreeNode *tree_node = get_wrapped_child();
 	if (!tree_node) {
 		return BeehaveTreeNode::FAILURE;
 	}
+	
+	BeehaveTreeNode::TickStatus status = tree_node->tick(context);
 
-	BeehaveTreeNode::TickStatus status = BeehaveTreeNode::FAILURE;
-	uint64_t current_time = Time::get_singleton()->get_ticks_msec();
-
-	if (previous_time == -1) {
-		previous_time = current_time;
+	if (status == BeehaveTreeNode::SUCCESS) {
+		return BeehaveTreeNode::RUNNING;
 	}
 
-	uint64_t passed_time = current_time - previous_time;
-
-	// the wait time has been reached, time to reset
-	if (passed_time >= wait_time * 1000.0) {
-		status = tree_node->tick(context);
-		// avoid time drift by carrying over miliseconds from previous iteration.
-		previous_time = current_time - (passed_time - (wait_time * 1000.0));
-	}
-
-	return status;
+	return BeehaveTreeNode::FAILURE;
 }

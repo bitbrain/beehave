@@ -48,7 +48,7 @@ void BeehaveDelayer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_wait_time"), &BeehaveDelayer::get_wait_time);
 
 	// exports
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "wait_time"), "set_wait_time", "get_wait_time");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "wait_time"), "set_wait_time", "get_wait_time");
 }
 	
 
