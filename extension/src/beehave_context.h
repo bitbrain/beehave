@@ -51,6 +51,8 @@ protected:
 	static void _bind_methods();
 
 public:
+	BeehaveContext();
+	~BeehaveContext();
 	BeehaveTree *get_tree() const;
 	void set_tree(BeehaveTree *tree);
 

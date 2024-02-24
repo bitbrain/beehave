@@ -33,6 +33,15 @@
 
 using namespace godot;
 
+BeehaveContext::BeehaveContext() {
+
+}
+BeehaveContext ::~BeehaveContext() {
+	this->blackboard = nullptr;
+	this->tree = nullptr;
+	this->actor = nullptr;
+}
+
 void BeehaveContext::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_tree", "tree"), &BeehaveContext::set_tree);
 	ClassDB::bind_method(D_METHOD("get_tree"), &BeehaveContext::get_tree);

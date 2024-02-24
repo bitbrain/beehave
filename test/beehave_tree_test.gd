@@ -9,7 +9,9 @@ func create_scene() -> Node2D:
 
 
 func create_tree() -> BeehaveTree:
-	return auto_free(BeehaveTree.new())
+	var tree = auto_free(BeehaveTree.new()) as BeehaveTree
+	tree.process_thread = BeehaveTree.IDLE
+	return tree
 
 
 func test_normal_tick() -> void:

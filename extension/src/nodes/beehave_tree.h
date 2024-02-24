@@ -70,7 +70,6 @@ public:
 	void _ready();
 	void _process(double delta);
 	void _physics_process(double delta);
-	void _exit_tree();
 
 	void enable();
 	void disable();

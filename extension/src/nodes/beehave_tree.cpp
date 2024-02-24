@@ -37,14 +37,14 @@ BeehaveTree::BeehaveTree() :
 	context(Ref<BeehaveContext>(memnew(BeehaveContext))),
 	tick_status(BeehaveTreeNode::TickStatus::PENDING),
     tick_rate(1),
-	_internal_blackboard(memnew(BeehaveBlackboard)),
 	blackboard(nullptr),
 	actor(nullptr) {
 }
 
 BeehaveTree::~BeehaveTree() {
-	memfree(_internal_blackboard);
 	_internal_blackboard = nullptr;
+	blackboard = nullptr;
+	actor = nullptr;
 }
 
 void BeehaveTree::_bind_methods() {
@@ -81,18 +81,14 @@ void BeehaveTree::_bind_methods() {
 }
 
 void BeehaveTree::_ready() {
+	this->_internal_blackboard = memnew(BeehaveBlackboard);
+	add_child(_internal_blackboard, false, Node::INTERNAL_MODE_FRONT);
+
 	set_physics_process(enabled && process_thread == ProcessThread::PHYSICS);
 	set_process(enabled && process_thread == ProcessThread::IDLE);
 
 	// Randomize at what frames tick() will happen to avoid stutters
 	_last_tick = rand() % tick_rate;
-}
-
-void BeehaveTree::_exit_tree() {
-	if (_internal_blackboard) {
-		memfree(_internal_blackboard);
-		_internal_blackboard = nullptr;
-	}
 }
 
 void BeehaveTree::_process(double delta) {
@@ -178,7 +174,7 @@ BeehaveTreeNode::TickStatus BeehaveTree::tick() {
 	context->set_actor(actor ? actor : get_parent());
 	context->set_blackboard(blackboard ? blackboard : _internal_blackboard);
 
-	if (get_child_count() == 0 || context->get_actor() == nullptr) {
+	if (get_child_count() == 0) {
 		tick_status = BeehaveTreeNode::FAILURE;
 		return tick_status;
 	}
