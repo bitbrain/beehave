@@ -36,11 +36,33 @@ BeehaveBlackboard::BeehaveBlackboard() {
 }
 
 BeehaveBlackboard::~BeehaveBlackboard() {
-}
-
-void BeehaveBlackboard::test() {
+	
 }
 
 void BeehaveBlackboard::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("test"), &BeehaveBlackboard::test);
+	ClassDB::bind_method(D_METHOD("set_value", "key", "value"), &BeehaveBlackboard::set_value);
+	ClassDB::bind_method(D_METHOD("get_value", "key", "default_value"), &BeehaveBlackboard::get_value);
+	ClassDB::bind_method(D_METHOD("has_value", "key"), &BeehaveBlackboard::has_value);
+	ClassDB::bind_method(D_METHOD("erase_value", "key"), &BeehaveBlackboard::erase_value);
+	ClassDB::bind_method(D_METHOD("get_size"), &BeehaveBlackboard::get_size);
+}
+
+void BeehaveBlackboard::set_value(const String &key, Variant value) {
+	this->data[key] = value;
+}
+
+Variant BeehaveBlackboard::get_value(const String &key, Variant default_value) const {
+	return data.get(key, default_value);
+}
+
+bool BeehaveBlackboard::has_value(const String &key) const {
+	return data.has(key);
+}
+
+bool BeehaveBlackboard::erase_value(const String &key) {
+	return data.erase(key);
+}
+
+int BeehaveBlackboard::get_size() const {
+	return data.size();
 }
