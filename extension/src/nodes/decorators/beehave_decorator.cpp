@@ -48,13 +48,7 @@ BeehaveTreeNode* BeehaveDecorator::get_wrapped_child() const {
 		return nullptr;
 	}
 
-	Node *child = get_child(0);
-
-	if (!child) {
-		return nullptr;
-	}
-
-	BeehaveTreeNode *tree_node = cast_to<BeehaveTreeNode>(child);
+	BeehaveTreeNode *tree_node = cast_to<BeehaveTreeNode>(get_child(0));
 	if (!tree_node) {
 		return nullptr;
 	}

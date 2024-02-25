@@ -32,6 +32,7 @@
 using namespace godot;
 
 void BeehaveLeaf::_bind_methods() {
+	BIND_VIRTUAL_METHOD(BeehaveLeaf, tick);
 }
 
 BeehaveLeaf::BeehaveLeaf() {
@@ -40,4 +41,8 @@ BeehaveLeaf::BeehaveLeaf() {
 
 BeehaveLeaf ::~BeehaveLeaf() {
 
+}
+
+BeehaveTreeNode::TickStatus BeehaveLeaf::tick(Ref<BeehaveContext> context) {
+	return BeehaveTreeNode::FAILURE;
 }

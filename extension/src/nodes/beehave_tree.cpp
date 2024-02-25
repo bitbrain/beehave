@@ -30,6 +30,7 @@
 #include "beehave_tree.h"
 #include "beehave_blackboard.h"
 #include <core/class_db.hpp>
+#include "variant/utility_functions.hpp"
 
 using namespace godot;
 

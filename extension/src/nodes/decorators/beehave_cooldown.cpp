@@ -27,14 +27,14 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include <classes/time.hpp>
 #include "beehave_cooldown.h"
+#include "variant/utility_functions.hpp"
 
 using namespace godot;
 
 BeehaveCooldown::BeehaveCooldown():
 wait_time(1),
-previous_time(-1) {
+passed_time(0) {
 
 }
 
@@ -52,7 +52,7 @@ void BeehaveCooldown::_bind_methods() {
 
 void BeehaveCooldown::set_wait_time(float wait_time) {
 	this->wait_time = wait_time;
-	previous_time = -1;
+	passed_time = 0;
 }
 
 float BeehaveCooldown::get_wait_time() const {
@@ -66,21 +66,20 @@ BeehaveTreeNode::TickStatus BeehaveCooldown::tick(Ref<BeehaveContext> context) {
 	}
 
 	BeehaveTreeNode::TickStatus status = BeehaveTreeNode::FAILURE;
-	uint64_t current_time = Time::get_singleton()->get_ticks_msec();
 
-	if (previous_time == -1) {
-		previous_time = current_time;
+	if (passed_time == 0) {
 		status = tree_node->tick(context);
+		UtilityFunctions::print(vformat("cooldown72 status=%s", status));
 	}
 
-	uint64_t passed_time = current_time - previous_time;
-
+	passed_time += context->get_delta();
 	// the wait time has been reached, time to reset
-	if (passed_time >= wait_time * 1000.0) {
+	if (passed_time >= wait_time) {
 		status = tree_node->tick(context);
+		UtilityFunctions::print(vformat("cooldown79 status=%s", status));
 		// avoid time drift by carrying over miliseconds from previous iteration.
-		previous_time = current_time - (passed_time - (wait_time * 1000.0));
+		passed_time -= wait_time;
 	}
-
+	UtilityFunctions::print(vformat("cooldown83 status=%s", status));
 	return status;
 }

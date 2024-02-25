@@ -7,6 +7,7 @@ var status = SUCCESS
 
 
 func tick(context: BeehaveContext) -> int:
+	print("WTF???")
 	count += 1
 	context.get_blackboard().set_value(key, count)
 	return status

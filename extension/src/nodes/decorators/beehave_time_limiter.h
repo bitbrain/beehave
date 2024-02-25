@@ -38,7 +38,7 @@ class BeehaveTimeLimiter : public BeehaveDecorator {
 	GDCLASS(BeehaveTimeLimiter, BeehaveDecorator);
 	
 	float wait_time;
-	int64_t previous_time;
+	double passed_time;
 
 protected:
 	static void _bind_methods();

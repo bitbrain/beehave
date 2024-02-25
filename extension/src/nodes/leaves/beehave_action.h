@@ -42,6 +42,8 @@ namespace godot {
 	public:
 		BeehaveAction();
 		~BeehaveAction();
+
+		virtual TickStatus tick(Ref<BeehaveContext> context) override;
 	};
 }
 

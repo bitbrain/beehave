@@ -29,6 +29,7 @@
 
 #include "beehave_tree_node.h"
 #include <core/class_db.hpp>
+#include "variant/utility_functions.hpp"
 
 using namespace godot;
 

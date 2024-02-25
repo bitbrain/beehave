@@ -28,13 +28,12 @@
 /**************************************************************************/
 
 #include "beehave_delayer.h"
-#include <classes/time.hpp>
 
 using namespace godot;
 
 BeehaveDelayer::BeehaveDelayer():
 wait_time(1),
-previous_time(-1) {
+passed_time(0) {
 
 }
 
@@ -54,7 +53,7 @@ void BeehaveDelayer::_bind_methods() {
 
 void BeehaveDelayer::set_wait_time(float wait_time) {
 	this->wait_time = wait_time;
-	previous_time = -1;
+	passed_time = 0;
 }
 
 float BeehaveDelayer::get_wait_time() const {
@@ -67,18 +66,12 @@ BeehaveTreeNode::TickStatus BeehaveDelayer::tick(Ref<BeehaveContext> context) {
 		return BeehaveTreeNode::FAILURE;
 	}
 
-	uint64_t current_time = Time::get_singleton()->get_ticks_msec();
-
-	if (previous_time == -1) {
-		previous_time = current_time;
-	}
-
-	uint64_t passed_time = current_time - previous_time;
+	passed_time += context->get_delta();
 
 	// the wait time has been reached, time to reset
 	if (passed_time >= wait_time * 1000.0) {
 		// avoid time drift by carrying over miliseconds from previous iteration.
-		previous_time = current_time - (passed_time - (wait_time * 1000.0));
+		passed_time -= wait_time * 1000.0;
 		return tree_node->tick(context);
 	}
 

@@ -38,7 +38,7 @@ class BeehaveCooldown : public BeehaveDecorator {
 	GDCLASS(BeehaveCooldown, BeehaveDecorator);
 
 	float wait_time;
-	int64_t previous_time;
+	double passed_time;
 
 protected:
 	static void _bind_methods();

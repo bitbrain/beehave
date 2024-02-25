@@ -43,6 +43,8 @@ class BeehaveLeaf : public BeehaveTreeNode {
 	public:
 		BeehaveLeaf();
 		~BeehaveLeaf();
+
+		virtual TickStatus tick(Ref<BeehaveContext> context) override;
 };
 }
 

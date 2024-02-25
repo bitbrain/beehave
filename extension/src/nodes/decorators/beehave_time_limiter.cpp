@@ -28,13 +28,12 @@
 /**************************************************************************/
 
 #include "beehave_time_limiter.h"
-#include <classes/time.hpp>
 
 using namespace godot;
 
 BeehaveTimeLimiter::BeehaveTimeLimiter():
 	wait_time(1.0),
-	previous_time(-1) {
+	passed_time(0) {
 
 }
 
@@ -65,19 +64,14 @@ BeehaveTreeNode::TickStatus BeehaveTimeLimiter::tick(Ref<BeehaveContext> context
 	}
 
 	BeehaveTreeNode::TickStatus status = BeehaveTreeNode::FAILURE;
-	uint64_t current_time = Time::get_singleton()->get_ticks_msec();
 
-	if (previous_time == -1) {
-		previous_time = current_time;
-	}
-
-	uint64_t passed_time = current_time - previous_time;
+	passed_time += context->get_delta();
 
 	// the wait time has been reached, time to reset
 	if (passed_time >= wait_time * 1000.0) {
 		status = tree_node->tick(context);
 		// avoid time drift by carrying over miliseconds from previous iteration.
-		previous_time = current_time - (passed_time - (wait_time * 1000.0));
+		passed_time -= wait_time * 1000.0;
 	}
 
 	return status;
