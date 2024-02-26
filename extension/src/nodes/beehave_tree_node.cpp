@@ -40,12 +40,14 @@ BeehaveTreeNode::~BeehaveTreeNode() {
 }
 
 BeehaveTreeNode::TickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context) {
-	return BeehaveTreeNode::FAILURE;
+	BeehaveTreeNode::TickStatus status = BeehaveTreeNode::PENDING;
+	GDVIRTUAL_CALL(_tick, context, status);
+	return status;
 }
 
 void BeehaveTreeNode::_bind_methods() {
 
-	BIND_VIRTUAL_METHOD(BeehaveTreeNode, tick);
+	GDVIRTUAL_BIND(_tick, "context");
 
 	BIND_ENUM_CONSTANT(PENDING);
 	BIND_ENUM_CONSTANT(SUCCESS);

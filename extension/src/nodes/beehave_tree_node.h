@@ -32,6 +32,11 @@
 
 #include "beehave_context.h"
 #include <classes/node.hpp>
+#include <classes/global_constants.hpp>
+#include <classes/ref.hpp>
+#include <core/binder_common.hpp>
+#include <variant/variant.hpp>
+#include <core/gdvirtual.gen.inc>
 
 namespace godot {
 
@@ -52,7 +57,9 @@ public:
 	BeehaveTreeNode();
 	~BeehaveTreeNode();
 
-	virtual TickStatus tick(Ref<BeehaveContext> context);
+	virtual BeehaveTreeNode::TickStatus tick(Ref<BeehaveContext> context);
+
+	GDVIRTUAL1RC(BeehaveTreeNode::TickStatus, _tick, Ref<BeehaveContext>);
 };
 
 } //namespace godot
