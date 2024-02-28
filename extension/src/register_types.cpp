@@ -30,13 +30,14 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	// base nodes
 	ClassDB::register_class<BeehaveContext>();
 	ClassDB::register_class<BeehaveTree>();
-	ClassDB::register_class<BeehaveTreeNode>();
+	ClassDB::register_abstract_class<BeehaveTreeNode>();
+	ClassDB::register_abstract_class<BeehaveTreeNodeEnums>();
 	ClassDB::register_class<BeehaveBlackboard>();
 
 	// leafs
-	ClassDB::register_class<BeehaveLeaf>();
-	ClassDB::register_class<BeehaveAction>();
-	ClassDB::register_class<BeehaveDecorator>();
+	ClassDB::register_abstract_class<BeehaveLeaf>();
+	ClassDB::register_abstract_class<BeehaveAction>();
+	ClassDB::register_abstract_class<BeehaveDecorator>();
 
 	// decorators
 	ClassDB::register_class<BeehaveSucceeder>();
