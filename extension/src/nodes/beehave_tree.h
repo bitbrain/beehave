@@ -53,7 +53,7 @@ private:
 	BeehaveBlackboard *blackboard;
 	BeehaveBlackboard *_internal_blackboard = nullptr;
 	Ref<BeehaveContext> context;
-	BeehaveTreeNode::TickStatus tick_status;
+	BeehaveTickStatus tick_status;
 	ProcessThread process_thread = ProcessThread::PHYSICS;
 
 	int _last_tick;
@@ -79,8 +79,8 @@ public:
 	Node *get_actor() const;
 	void set_blackboard(BeehaveBlackboard *blackboard);
 	BeehaveBlackboard *get_blackboard() const;
-	BeehaveTreeNode::TickStatus tick();
-	BeehaveTreeNode::TickStatus get_tick_status() const;
+	BeehaveTickStatus tick();
+	BeehaveTickStatus get_tick_status() const;
 	void set_tick_rate(int tick_rate);
 	int get_tick_rate() const;
 	void set_process_thread(BeehaveTree::ProcessThread thread);

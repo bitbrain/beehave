@@ -57,13 +57,13 @@ float BeehaveTimeLimiter::get_wait_time() const {
 	return wait_time;
 }
 
-BeehaveTreeNode::TickStatus BeehaveTimeLimiter::tick(Ref<BeehaveContext> context) {
+BeehaveTickStatus BeehaveTimeLimiter::tick(Ref<BeehaveContext> context) {
 	BeehaveTreeNode *tree_node = get_wrapped_child();
 	if (!tree_node) {
-		return BeehaveTreeNode::FAILURE;
+		return BeehaveTickStatus::FAILURE;
 	}
 
-	BeehaveTreeNode::TickStatus status = BeehaveTreeNode::FAILURE;
+	BeehaveTickStatus status = BeehaveTickStatus::FAILURE;
 
 	passed_time += context->get_delta();
 

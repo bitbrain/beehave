@@ -59,13 +59,13 @@ float BeehaveCooldown::get_wait_time() const {
 	return wait_time;
 }
 
-BeehaveTreeNode::TickStatus BeehaveCooldown::tick(Ref<BeehaveContext> context) {
+BeehaveTickStatus BeehaveCooldown::tick(Ref<BeehaveContext> context) {
 	BeehaveTreeNode *tree_node = get_wrapped_child();
 	if (!tree_node) {
-		return BeehaveTreeNode::FAILURE;
+		return BeehaveTickStatus::FAILURE;
 	}
 
-	BeehaveTreeNode::TickStatus status = BeehaveTreeNode::FAILURE;
+	BeehaveTickStatus status = BeehaveTickStatus::FAILURE;
 
 	if (passed_time == 0) {
 		status = tree_node->tick(context);

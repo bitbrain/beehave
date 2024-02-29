@@ -31,7 +31,6 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<BeehaveContext>();
 	ClassDB::register_class<BeehaveTree>();
 	ClassDB::register_abstract_class<BeehaveTreeNode>();
-	ClassDB::register_abstract_class<BeehaveTreeNodeEnums>();
 	ClassDB::register_class<BeehaveBlackboard>();
 
 	// leafs

@@ -44,7 +44,7 @@ public:
 	BeehaveUntilFail();
 	~BeehaveUntilFail();
 
-	TickStatus tick(Ref<BeehaveContext> context);
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
 };
 }
 

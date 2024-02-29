@@ -39,8 +39,8 @@ BeehaveTreeNode::BeehaveTreeNode() {
 BeehaveTreeNode::~BeehaveTreeNode() {
 }
 
-BeehaveTreeNode::TickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context) {
-	BeehaveTreeNode::TickStatus status = BeehaveTreeNode::PENDING;
+BeehaveTickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context) {
+	BeehaveTickStatus status = BeehaveTickStatus::PENDING;
 	GDVIRTUAL_CALL(_tick, context, status);
 	return status;
 }

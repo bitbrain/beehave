@@ -38,33 +38,17 @@
 #include <variant/variant.hpp>
 #include <core/gdvirtual.gen.inc>
 
-
 namespace godot {
-	class BeehaveTreeNodeEnums : public Node {
-		GDCLASS(BeehaveTreeNodeEnums, Node);
-
-	public:
-		enum TickStatus {
-			PENDING = -1,
-			SUCCESS = 0,
-			FAILURE = 1,
-			RUNNING = 2
-		};
-
-	protected:
-		static void _bind_methods() {
-			BIND_ENUM_CONSTANT(PENDING);
-			BIND_ENUM_CONSTANT(SUCCESS);
-			BIND_ENUM_CONSTANT(FAILURE);
-			BIND_ENUM_CONSTANT(RUNNING);
-		}
+	enum BeehaveTickStatus {
+		PENDING = -1,
+		SUCCESS = 0,
+		FAILURE = 1,
+		RUNNING = 2
 	};
 
 } //namespace godot
 
-
-VARIANT_ENUM_CAST(BeehaveTreeNodeEnums::TickStatus);
-
+VARIANT_ENUM_CAST(BeehaveTickStatus);
 
 namespace godot {
 
@@ -75,19 +59,12 @@ protected:
 	static void _bind_methods();
 
 public:
-	using TickStatus = BeehaveTreeNodeEnums::TickStatus;
-
-	static const TickStatus PENDING = BeehaveTreeNodeEnums::PENDING;
-	static const TickStatus SUCCESS = BeehaveTreeNodeEnums::SUCCESS;
-	static const TickStatus FAILURE = BeehaveTreeNodeEnums::FAILURE;
-	static const TickStatus RUNNING = BeehaveTreeNodeEnums::RUNNING;
-
 	BeehaveTreeNode();
 	~BeehaveTreeNode();
 
-	virtual TickStatus tick(Ref<BeehaveContext> context);
+	virtual BeehaveTickStatus tick(Ref<BeehaveContext> context);
 
-	GDVIRTUAL1RC(TickStatus, _tick, Ref<BeehaveContext>);
+	GDVIRTUAL1RC(BeehaveTickStatus, _tick, Ref<BeehaveContext>);
 };
 
 } //namespace godot

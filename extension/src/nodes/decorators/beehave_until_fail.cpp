@@ -43,17 +43,17 @@ void BeehaveUntilFail::_bind_methods() {
 
 }
 
-BeehaveTreeNode::TickStatus BeehaveUntilFail::tick(Ref<BeehaveContext> context) {
+BeehaveTickStatus BeehaveUntilFail::tick(Ref<BeehaveContext> context) {
 	BeehaveTreeNode *tree_node = get_wrapped_child();
 	if (!tree_node) {
-		return BeehaveTreeNode::FAILURE;
+		return BeehaveTickStatus::FAILURE;
 	}
 	
-	BeehaveTreeNode::TickStatus status = tree_node->tick(context);
+	BeehaveTickStatus status = tree_node->tick(context);
 
-	if (status == BeehaveTreeNode::SUCCESS) {
-		return BeehaveTreeNode::RUNNING;
+	if (status == BeehaveTickStatus::SUCCESS) {
+		return BeehaveTickStatus::RUNNING;
 	}
 
-	return BeehaveTreeNode::FAILURE;
+	return BeehaveTickStatus::FAILURE;
 }

@@ -59,17 +59,17 @@ int BeehaveLimiter::get_max_count() const {
 	return max_count;
 }
 
-BeehaveTreeNode::TickStatus BeehaveLimiter::tick(Ref<BeehaveContext> context) {
+BeehaveTickStatus BeehaveLimiter::tick(Ref<BeehaveContext> context) {
 	BeehaveTreeNode *tree_node = get_wrapped_child();
 	if (!tree_node) {
-		return BeehaveTreeNode::FAILURE;
+		return BeehaveTickStatus::FAILURE;
 	}
 
 	if (current_count < max_count) {
-		BeehaveTreeNode::TickStatus tick_status = tree_node->tick(context);
+		BeehaveTickStatus tick_status = tree_node->tick(context);
 		++current_count;
 		return tick_status;
 	}
 
-	return BeehaveTreeNode::FAILURE;
+	return BeehaveTickStatus::FAILURE;
 }

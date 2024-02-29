@@ -60,10 +60,10 @@ float BeehaveDelayer::get_wait_time() const {
 	return wait_time;
 }
 
-BeehaveTreeNode::TickStatus BeehaveDelayer::tick(Ref<BeehaveContext> context) {
+BeehaveTickStatus BeehaveDelayer::tick(Ref<BeehaveContext> context) {
 	BeehaveTreeNode *tree_node = get_wrapped_child();
 	if (!tree_node) {
-		return BeehaveTreeNode::FAILURE;
+		return BeehaveTickStatus::FAILURE;
 	}
 
 	passed_time += context->get_delta();
@@ -75,5 +75,5 @@ BeehaveTreeNode::TickStatus BeehaveDelayer::tick(Ref<BeehaveContext> context) {
 		return tree_node->tick(context);
 	}
 
-	return BeehaveTreeNode::RUNNING;
+	return BeehaveTickStatus::RUNNING;
 }

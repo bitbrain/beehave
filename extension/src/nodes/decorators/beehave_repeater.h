@@ -50,7 +50,7 @@ public:
 	void set_repetitions(int repetitions);
 	int get_repetitions() const;
 
-	TickStatus tick(Ref<BeehaveContext> context);
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
 };
 
 }

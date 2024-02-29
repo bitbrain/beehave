@@ -36,7 +36,7 @@ using namespace godot;
 
 BeehaveTree::BeehaveTree() :
 	context(Ref<BeehaveContext>(memnew(BeehaveContext))),
-	tick_status(BeehaveTreeNode::TickStatus::PENDING),
+	tick_status(BeehaveTickStatus::PENDING),
     tick_rate(1),
 	blackboard(nullptr),
 	actor(nullptr) {
@@ -144,7 +144,7 @@ int BeehaveTree::get_tick_rate() const {
 	return tick_rate;
 }
 
-BeehaveTreeNode::TickStatus BeehaveTree::get_tick_status() const {
+BeehaveTickStatus BeehaveTree::get_tick_status() const {
 	return tick_status;
 }
 
@@ -170,13 +170,13 @@ void BeehaveTree::process_internally(double delta) {
 	tick();
 }
 
-BeehaveTreeNode::TickStatus BeehaveTree::tick() {
+BeehaveTickStatus BeehaveTree::tick() {
 	context->set_tree(this);
 	context->set_actor(actor ? actor : get_parent());
 	context->set_blackboard(blackboard ? blackboard : _internal_blackboard);
 
 	if (get_child_count() == 0) {
-		tick_status = BeehaveTreeNode::FAILURE;
+		tick_status = BeehaveTickStatus::FAILURE;
 		return tick_status;
 	}
 

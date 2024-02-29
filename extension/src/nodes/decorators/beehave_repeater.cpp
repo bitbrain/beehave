@@ -61,17 +61,17 @@ int BeehaveRepeater::get_repetitions() const {
 	return repetitions;
 }
 
-BeehaveTreeNode::TickStatus BeehaveRepeater::tick(Ref<BeehaveContext> context) {
+BeehaveTickStatus BeehaveRepeater::tick(Ref<BeehaveContext> context) {
 	BeehaveTreeNode *tree_node = get_wrapped_child();
 	if (!tree_node) {
-		return BeehaveTreeNode::FAILURE;
+		return BeehaveTickStatus::FAILURE;
 	}
 
 	if (current_count < repetitions) {
 		++current_count;
-		BeehaveTreeNode::TickStatus tick_status = tree_node->tick(context);
+		BeehaveTickStatus tick_status = tree_node->tick(context);
 		return tick_status;
 	}
 
-	return BeehaveTreeNode::FAILURE;
+	return BeehaveTickStatus::FAILURE;
 }

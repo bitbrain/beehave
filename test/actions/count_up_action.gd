@@ -5,7 +5,7 @@ class_name CountUpAction extends BeehaveAction
 var count = 0
 var status = SUCCESS
 
-func _tick(context) -> BeehaveTreeNodeEnums.TickStatus:
+func _tick(context) -> BeehaveTickStatus:
 	count += 1
 	context.get_blackboard().set_value(key, count)
 	return status

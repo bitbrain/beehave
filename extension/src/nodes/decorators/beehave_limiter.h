@@ -50,7 +50,7 @@ public:
 	void set_max_count(int max_count);
 	int get_max_count() const;
 
-	TickStatus tick(Ref<BeehaveContext> context);
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
 };
 
 }
