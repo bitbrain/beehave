@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_time_limiter.cpp                                              */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,52 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#include "beehave_time_limiter.h"
 
 using namespace godot;
 
-void BeehaveAction::_bind_methods() {
+BeehaveTimeLimiter::BeehaveTimeLimiter():
+	wait_time(1.0),
+	passed_time(0) {
+
 }
 
-BeehaveAction::BeehaveAction() {
-
+BeehaveTimeLimiter::~BeehaveTimeLimiter() {
 }
-BeehaveAction::~BeehaveAction() {
 
+void BeehaveTimeLimiter::_bind_methods() {
+	// methods
+	ClassDB::bind_method(D_METHOD("set_wait_time", "wait_time"), &BeehaveTimeLimiter::set_wait_time);
+	ClassDB::bind_method(D_METHOD("get_wait_time"), &BeehaveTimeLimiter::get_wait_time);
+
+	// exports
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "wait_time"), "set_wait_time", "get_wait_time");
+}
+
+void BeehaveTimeLimiter::set_wait_time(float wait_time) {
+	this->wait_time = wait_time;
+}
+
+float BeehaveTimeLimiter::get_wait_time() const {
+	return wait_time;
+}
+
+BeehaveTickStatus BeehaveTimeLimiter::tick(Ref<BeehaveContext> context) {
+	BeehaveTreeNode *tree_node = get_wrapped_child();
+	if (!tree_node) {
+		return BeehaveTickStatus::FAILURE;
+	}
+
+	BeehaveTickStatus status = BeehaveTickStatus::FAILURE;
+
+	passed_time += context->get_delta();
+
+	// the wait time has been reached, time to reset
+	if (passed_time >= wait_time * 1000.0) {
+		status = tree_node->tick(context);
+		// avoid time drift by carrying over miliseconds from previous iteration.
+		passed_time -= wait_time * 1000.0;
+	}
+
+	return status;
 }

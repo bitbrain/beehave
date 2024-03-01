@@ -42,3 +42,16 @@ BeehaveDecorator::~BeehaveDecorator() {
 void BeehaveDecorator::_bind_methods() {
 
 }
+
+BeehaveTreeNode* BeehaveDecorator::get_wrapped_child() const {
+	if (get_child_count() != 1) {
+		return nullptr;
+	}
+
+	BeehaveTreeNode *tree_node = cast_to<BeehaveTreeNode>(get_child(0));
+	if (!tree_node) {
+		return nullptr;
+	}
+
+	return tree_node;
+}

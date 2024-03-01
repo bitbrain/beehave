@@ -32,6 +32,23 @@
 
 #include "beehave_context.h"
 #include <classes/node.hpp>
+#include <classes/global_constants.hpp>
+#include <classes/ref.hpp>
+#include <core/binder_common.hpp>
+#include <variant/variant.hpp>
+#include <core/gdvirtual.gen.inc>
+
+namespace godot {
+	enum BeehaveTickStatus {
+		PENDING = -1,
+		SUCCESS = 0,
+		FAILURE = 1,
+		RUNNING = 2
+	};
+
+} //namespace godot
+
+VARIANT_ENUM_CAST(BeehaveTickStatus);
 
 namespace godot {
 
@@ -42,21 +59,14 @@ protected:
 	static void _bind_methods();
 
 public:
-	enum TickStatus {
-		PENDING = -1,
-		SUCCESS = 0,
-		FAILURE = 1,
-		RUNNING = 2
-	};
-
 	BeehaveTreeNode();
 	~BeehaveTreeNode();
 
-	virtual TickStatus tick(Ref<BeehaveContext> context);
+	virtual BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+	GDVIRTUAL1RC(BeehaveTickStatus, _tick, Ref<BeehaveContext>);
 };
 
 } //namespace godot
-
-VARIANT_ENUM_CAST(BeehaveTreeNode::TickStatus);
 
 #endif // BEEHAVE_TREE_NODE_H

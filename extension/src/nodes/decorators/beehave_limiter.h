@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_limiter.h                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,32 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#ifndef BEEHAVE_LIMITER_H
+#define BEEHAVE_LIMITER_H
 
-using namespace godot;
+#include "nodes/decorators/beehave_decorator.h"
 
-void BeehaveAction::_bind_methods() {
+namespace godot {
+
+class BeehaveLimiter : public BeehaveDecorator {
+	GDCLASS(BeehaveLimiter, BeehaveDecorator);
+
+	int max_count;
+	int current_count;
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveLimiter();
+	~BeehaveLimiter();
+
+	void set_max_count(int max_count);
+	int get_max_count() const;
+
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+};
+
 }
 
-BeehaveAction::BeehaveAction() {
-
-}
-BeehaveAction::~BeehaveAction() {
-
-}
+#endif//BEEHAVE_LIMITER_H

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_until_fail.h                                                  */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,25 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#ifndef BEEHAVE_UNTIL_FAIL_H
+#define BEEHAVE_UNTIL_FAIL_H
 
-using namespace godot;
+#include "nodes/decorators/beehave_decorator.h"
 
-void BeehaveAction::_bind_methods() {
+namespace godot {
+
+class BeehaveUntilFail : public BeehaveDecorator {
+	GDCLASS(BeehaveUntilFail, BeehaveDecorator);
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveUntilFail();
+	~BeehaveUntilFail();
+
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+};
 }
 
-BeehaveAction::BeehaveAction() {
-
-}
-BeehaveAction::~BeehaveAction() {
-
-}
+#endif

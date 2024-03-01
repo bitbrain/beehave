@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_repeater.h                                                    */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,32 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#ifndef BEEHAVE_REPEATER_H
+#define BEEHAVE_REPEATER_H
 
-using namespace godot;
+#include "nodes/decorators/beehave_decorator.h"
 
-void BeehaveAction::_bind_methods() {
+namespace godot {
+
+class BeehaveRepeater : public BeehaveDecorator {
+	GDCLASS(BeehaveRepeater, BeehaveDecorator);
+
+	int repetitions;
+	int current_count;
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveRepeater();
+	~BeehaveRepeater();
+
+	void set_repetitions(int repetitions);
+	int get_repetitions() const;
+
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+};
+
 }
 
-BeehaveAction::BeehaveAction() {
-
-}
-BeehaveAction::~BeehaveAction() {
-
-}
+#endif

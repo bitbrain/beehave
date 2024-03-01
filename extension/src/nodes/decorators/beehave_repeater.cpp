@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_repeater.cpp                                                  */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,51 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#include "beehave_repeater.h"
 
 using namespace godot;
 
-void BeehaveAction::_bind_methods() {
+BeehaveRepeater::BeehaveRepeater():
+repetitions(1),
+current_count(0) {
+
 }
 
-BeehaveAction::BeehaveAction() {
+
+BeehaveRepeater::~BeehaveRepeater() {
 
 }
-BeehaveAction::~BeehaveAction() {
 
+void BeehaveRepeater::_bind_methods() {
+	// methods
+	ClassDB::bind_method(D_METHOD("set_repetitions", "repetitions"), &BeehaveRepeater::set_repetitions);
+	ClassDB::bind_method(D_METHOD("get_repetitions"), &BeehaveRepeater::get_repetitions);
+
+	// exports
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "repetitions"), "set_repetitions", "get_repetitions");
+}
+
+
+void BeehaveRepeater::set_repetitions(int repetitions) {
+	this->repetitions = repetitions;
+	current_count = 0;
+}
+
+int BeehaveRepeater::get_repetitions() const {
+	return repetitions;
+}
+
+BeehaveTickStatus BeehaveRepeater::tick(Ref<BeehaveContext> context) {
+	BeehaveTreeNode *tree_node = get_wrapped_child();
+	if (!tree_node) {
+		return BeehaveTickStatus::FAILURE;
+	}
+
+	if (current_count < repetitions) {
+		++current_count;
+		BeehaveTickStatus tick_status = tree_node->tick(context);
+		return tick_status;
+	}
+
+	return BeehaveTickStatus::FAILURE;
 }

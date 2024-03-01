@@ -42,6 +42,8 @@ protected:
 
 	static void _bind_methods();
 
+	BeehaveTreeNode *get_wrapped_child() const;
+
 public:
 	BeehaveDecorator();
 	~BeehaveDecorator();

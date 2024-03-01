@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_delayer.h                                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,32 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#ifndef BEEHAVE_DELAYER_H
+#define BEEHAVE_DELAYER_H
 
-using namespace godot;
+#include "nodes/decorators/beehave_decorator.h"
 
-void BeehaveAction::_bind_methods() {
+namespace godot {
+
+class BeehaveDelayer : public BeehaveDecorator {
+	GDCLASS(BeehaveDelayer, BeehaveDecorator);
+
+	float wait_time = 0.0f;
+	double passed_time;
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveDelayer();
+	~BeehaveDelayer();
+
+	void set_wait_time(float wait_time);
+	float get_wait_time() const;
+
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+};
+
 }
 
-BeehaveAction::BeehaveAction() {
-
-}
-BeehaveAction::~BeehaveAction() {
-
-}
+#endif//BEEHAVE_DELAYER_H

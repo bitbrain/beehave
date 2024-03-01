@@ -5,19 +5,17 @@ extends GdUnitTestSuite
 @warning_ignore("return_value_discarded")
 
 
-# TestSuite generated from
-const __source = "res://addons/beehave/nodes/decorators/repeater.gd"
 const __action = "res://test/actions/mock_action.gd"
 
 var tree: BeehaveTree
 var action: MockAction
-var repeater: RepeaterDecorator
+var repeater: BeehaveRepeater
 
 
 func before_test() -> void:
 	tree = auto_free(BeehaveTree.new())
 	action = auto_free(load(__action).new())
-	repeater = auto_free(load(__source).new())
+	repeater = auto_free(BeehaveRepeater.new())
 
 	# action setup
 	action.running_frame_count = 3 # runs for 3 frames

@@ -36,11 +36,48 @@ BeehaveBlackboard::BeehaveBlackboard() {
 }
 
 BeehaveBlackboard::~BeehaveBlackboard() {
-}
-
-void BeehaveBlackboard::test() {
+	
 }
 
 void BeehaveBlackboard::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("test"), &BeehaveBlackboard::test);
+	// methods
+	ClassDB::bind_method(D_METHOD("set_value", "key", "value"), &BeehaveBlackboard::set_value);
+	ClassDB::bind_method(D_METHOD("get_value", "key", "default_value"), &BeehaveBlackboard::get_value);
+	ClassDB::bind_method(D_METHOD("has_value", "key"), &BeehaveBlackboard::has_value);
+	ClassDB::bind_method(D_METHOD("erase_value", "key"), &BeehaveBlackboard::erase_value);
+	ClassDB::bind_method(D_METHOD("get_size"), &BeehaveBlackboard::get_size);
+	ClassDB::bind_method(D_METHOD("set_values"), &BeehaveBlackboard::set_values);
+	ClassDB::bind_method(D_METHOD("get_values"), &BeehaveBlackboard::get_values);
+
+	// exports
+	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "values"), "set_values", "get_values");
+
+}
+
+Dictionary BeehaveBlackboard::get_values() const {
+	return values;
+}
+
+void BeehaveBlackboard::set_values(Dictionary values) {
+	this->values = values;
+}
+
+void BeehaveBlackboard::set_value(const String &key, Variant value) {
+	this->values[key] = value;
+}
+
+Variant BeehaveBlackboard::get_value(const String &key, Variant default_value) const {
+	return values.get(key, default_value);
+}
+
+bool BeehaveBlackboard::has_value(const String &key) const {
+	return values.has(key);
+}
+
+bool BeehaveBlackboard::erase_value(const String &key) {
+	return values.erase(key);
+}
+
+int BeehaveBlackboard::get_size() const {
+	return values.size();
 }

@@ -43,29 +43,18 @@ void BeehaveInverter::_bind_methods() {
 
 }
 
-BeehaveTreeNode::TickStatus BeehaveInverter::tick(Ref<BeehaveContext> context) {
-
-	if (get_child_count() != 1) {
-		return BeehaveTreeNode::FAILURE;
-	}
-
-	Node* child = get_child(0);
-
-	if (!child) {
-		return BeehaveTreeNode::FAILURE;
-	}
-
-	BeehaveTreeNode *tree_node = cast_to<BeehaveTreeNode>(child);
+BeehaveTickStatus BeehaveInverter::tick(Ref<BeehaveContext> context) {
+	BeehaveTreeNode *tree_node = get_wrapped_child();
 	if (!tree_node) {
-		return BeehaveTreeNode::FAILURE;
+		return BeehaveTickStatus::FAILURE;
 	}
 
-	BeehaveTreeNode::TickStatus tick_status = tree_node->tick(context);
+	BeehaveTickStatus tick_status = tree_node->tick(context);
 
-	if (tick_status == BeehaveTreeNode::FAILURE) {
-		return BeehaveTreeNode::SUCCESS;
-	} else if (tick_status == BeehaveTreeNode::SUCCESS) {
-		return BeehaveTreeNode::FAILURE;
+	if (tick_status == BeehaveTickStatus::FAILURE) {
+		return BeehaveTickStatus::SUCCESS;
+	} else if (tick_status == BeehaveTickStatus::SUCCESS) {
+		return BeehaveTickStatus::FAILURE;
 	}
 
 	return tick_status;

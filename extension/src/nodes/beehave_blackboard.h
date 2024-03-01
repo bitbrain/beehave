@@ -31,11 +31,14 @@
 #define BEEHAVE_BLACKBOARD_H
 
 #include <classes/node.hpp>
+#include <variant/dictionary.hpp>
 
 namespace godot {
 
 class BeehaveBlackboard : public Node {
 	GDCLASS(BeehaveBlackboard, Node);
+
+	Dictionary values = Dictionary();
 
 protected:
 	static void _bind_methods();
@@ -44,7 +47,14 @@ public:
 	BeehaveBlackboard();
 	~BeehaveBlackboard();
 
-	void test();
+	void set_value(const String &key, Variant value);
+	Variant get_value(const String &key, Variant default_value) const;
+	bool has_value(const String &key) const;
+	bool erase_value(const String &key);
+	int get_size() const;
+
+	Dictionary get_values() const;
+	void set_values(Dictionary values);
 };
 
 } //namespace godot

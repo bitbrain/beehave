@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_time_limiter.h                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,32 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#ifndef BEEHAVE_TIME_LIMITER_H
+#define BEEHAVE_TIME_LIMITER_H
 
-using namespace godot;
+#include "nodes/decorators/beehave_decorator.h"
 
-void BeehaveAction::_bind_methods() {
+namespace godot {
+
+class BeehaveTimeLimiter : public BeehaveDecorator {
+	GDCLASS(BeehaveTimeLimiter, BeehaveDecorator);
+	
+	float wait_time;
+	double passed_time;
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveTimeLimiter();
+	~BeehaveTimeLimiter();
+
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+	void set_wait_time(float wait_time);
+	float get_wait_time() const;
+};
+
 }
 
-BeehaveAction::BeehaveAction() {
-
-}
-BeehaveAction::~BeehaveAction() {
-
-}
+#endif

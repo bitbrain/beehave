@@ -1,15 +1,40 @@
-[gd_scene load_steps=2 format=3 uid="uid://bjyg8sehtnp6u"]
+[gd_scene load_steps=3 format=3 uid="uid://bjyg8sehtnp6u"]
 
 [ext_resource type="Script" path="res://test/unit_test_scene.gd" id="1_1kcjy"]
+[ext_resource type="Script" path="res://test/actions/count_up_action.gd" id="2_gwebm"]
 
 [node name="UnitTestScene" type="Node2D"]
 script = ExtResource("1_1kcjy")
 
-[node name="BeehaveTree" type="BeehaveTree" parent="."]
+[node name="BeehaveTree" type="BeehaveTree" parent="." node_paths=PackedStringArray("blackboard")]
 process_thread = 0
+enabled = true
+blackboard = NodePath("../BeehaveBlackboard")
 unique_name_in_owner = true
 
 [node name="BeehaveSucceeder" type="BeehaveSucceeder" parent="BeehaveTree"]
+
+[node name="CountUpAction" type="BeehaveAction" parent="BeehaveTree/BeehaveSucceeder"]
+unique_name_in_owner = true
+script = ExtResource("2_gwebm")
+
+[node name="BeehaveTree2" type="BeehaveTree" parent="." node_paths=PackedStringArray("blackboard")]
+process_thread = 0
+enabled = true
+blackboard = NodePath("../BeehaveBlackboard")
+unique_name_in_owner = true
+
+[node name="BeehaveSucceeder" type="BeehaveSucceeder" parent="BeehaveTree2"]
+
+[node name="SharedCountUpAction1" type="BeehaveAction" parent="BeehaveTree2/BeehaveSucceeder"]
+unique_name_in_owner = true
+script = ExtResource("2_gwebm")
+
+[node name="BeehaveSucceeder2" type="BeehaveSucceeder" parent="BeehaveTree2"]
+
+[node name="SharedCountUpAction2" type="BeehaveAction" parent="BeehaveTree2/BeehaveSucceeder2"]
+unique_name_in_owner = true
+script = ExtResource("2_gwebm")
 
 [node name="BeehaveBlackboard" type="BeehaveBlackboard" parent="."]
 unique_name_in_owner = true

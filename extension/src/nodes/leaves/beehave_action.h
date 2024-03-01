@@ -27,8 +27,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_ACTION
-#define BEEHAVE_ACTION
+#ifndef BEEHAVE_ACTION_H
+#define BEEHAVE_ACTION_H
 
 #include "nodes/leaves/beehave_leaf.h"
 
@@ -45,4 +45,4 @@ namespace godot {
 	};
 }
 
-#endif //BEEHAVE_ACTION
+#endif //BEEHAVE_ACTION_H

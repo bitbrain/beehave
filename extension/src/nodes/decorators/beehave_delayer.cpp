@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_delayer.cpp                                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,53 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#include "beehave_delayer.h"
 
 using namespace godot;
 
-void BeehaveAction::_bind_methods() {
+BeehaveDelayer::BeehaveDelayer():
+wait_time(1),
+passed_time(0) {
+
 }
 
-BeehaveAction::BeehaveAction() {
+BeehaveDelayer::~BeehaveDelayer() {
 
 }
-BeehaveAction::~BeehaveAction() {
 
+void BeehaveDelayer::_bind_methods() {
+	// methods
+	ClassDB::bind_method(D_METHOD("set_wait_time", "wait_time"), &BeehaveDelayer::set_wait_time);
+	ClassDB::bind_method(D_METHOD("get_wait_time"), &BeehaveDelayer::get_wait_time);
+
+	// exports
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "wait_time"), "set_wait_time", "get_wait_time");
+}
+	
+
+void BeehaveDelayer::set_wait_time(float wait_time) {
+	this->wait_time = wait_time;
+	passed_time = 0;
+}
+
+float BeehaveDelayer::get_wait_time() const {
+	return wait_time;
+}
+
+BeehaveTickStatus BeehaveDelayer::tick(Ref<BeehaveContext> context) {
+	BeehaveTreeNode *tree_node = get_wrapped_child();
+	if (!tree_node) {
+		return BeehaveTickStatus::FAILURE;
+	}
+
+	passed_time += context->get_delta();
+
+	// the wait time has been reached, time to reset
+	if (passed_time >= wait_time * 1000.0) {
+		// avoid time drift by carrying over miliseconds from previous iteration.
+		passed_time -= wait_time * 1000.0;
+		return tree_node->tick(context);
+	}
+
+	return BeehaveTickStatus::RUNNING;
 }

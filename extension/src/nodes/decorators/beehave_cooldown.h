@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_cooldown.h                                                    */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,33 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#ifndef BEEHAVE_COOLDOWN_H
+#define BEEHAVE_COOLDOWN_H
 
-using namespace godot;
+#include "nodes/decorators/beehave_decorator.h"
 
-void BeehaveAction::_bind_methods() {
+namespace godot {
+
+class BeehaveCooldown : public BeehaveDecorator {
+	GDCLASS(BeehaveCooldown, BeehaveDecorator);
+
+	float wait_time;
+	double passed_time;
+
+protected:
+	static void _bind_methods();
+
+public:
+	BeehaveCooldown();
+	~BeehaveCooldown();
+
+	void set_wait_time(float wait_time);
+	float get_wait_time() const;
+
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+};
+
 }
 
-BeehaveAction::BeehaveAction() {
-
-}
-BeehaveAction::~BeehaveAction() {
-
-}
+#endif//BEEHAVE_COOLDOWN_H

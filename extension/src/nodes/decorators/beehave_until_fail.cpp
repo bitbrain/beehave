@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_acti.cpp                                                      */
+/*  beehave_until_fail.cpp                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,16 +27,33 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_action.h"
+#include "beehave_until_fail.h"
 
 using namespace godot;
 
-void BeehaveAction::_bind_methods() {
-}
-
-BeehaveAction::BeehaveAction() {
+BeehaveUntilFail::BeehaveUntilFail() {
 
 }
-BeehaveAction::~BeehaveAction() {
 
+BeehaveUntilFail::~BeehaveUntilFail() {
+
+}
+
+void BeehaveUntilFail::_bind_methods() {
+
+}
+
+BeehaveTickStatus BeehaveUntilFail::tick(Ref<BeehaveContext> context) {
+	BeehaveTreeNode *tree_node = get_wrapped_child();
+	if (!tree_node) {
+		return BeehaveTickStatus::FAILURE;
+	}
+	
+	BeehaveTickStatus status = tree_node->tick(context);
+
+	if (status == BeehaveTickStatus::SUCCESS) {
+		return BeehaveTickStatus::RUNNING;
+	}
+
+	return BeehaveTickStatus::FAILURE;
 }
