@@ -1,5 +1,5 @@
 # GdUnit generated TestSuite
-class_name BlackboardEraseActionTest
+class_name BeehaveBlackboardEraseActionTest
 extends GdUnitTestSuite
 @warning_ignore("unused_parameter")
 @warning_ignore("return_value_discarded")
@@ -10,9 +10,9 @@ const __blackboard = "res://addons/beehave/blackboard.gd"
 
 const KEY: String = "test_key"
 
-var blackboard_erase: BlackboardEraseAction
+var blackboard_erase: BeehaveBlackboardEraseAction
 var actor: Node
-var blackboard: Blackboard
+var blackboard: BeehaveBlackboard
 
 var runner: GdUnitSceneRunner
 
@@ -28,16 +28,16 @@ func test_erase_existing_key() -> void:
 	blackboard.set_value(KEY, 0)
 	
 	runner = scene_runner(blackboard_erase)
-	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
+	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveTreeNode.SUCCESS)
 
 
 func test_erase_non_existing_key() -> void:
 	runner = scene_runner(blackboard_erase)
-	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveNode.SUCCESS)
+	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveTreeNode.SUCCESS)
 
 
 func test_invalid_key_expression() -> void:
 	blackboard_erase.key = "this is invalid!!!"
 	
 	runner = scene_runner(blackboard_erase)
-	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveNode.FAILURE)
+	assert_that(blackboard_erase.tick(actor, blackboard)).is_equal(BeehaveTreeNode.FAILURE)

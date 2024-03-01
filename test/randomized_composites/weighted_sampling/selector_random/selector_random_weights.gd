@@ -2,7 +2,7 @@ extends Node2D
 
 
 @onready var selector: SelectorRandomComposite = %SelectorRandom
-@onready var blackboard: Blackboard = $Blackboard
+@onready var blackboard: BeehaveBlackboard = $Blackboard
 @onready var label: Label = $Label
 
 # key: Node name | value: counter key

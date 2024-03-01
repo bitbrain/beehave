@@ -56,10 +56,21 @@ func simulate_mouse_move(pos :Vector2) -> GdUnitSceneRunner:
 
 
 ## Simulates a mouse move to the relative coordinates (offset).[br]
-## [member relative] : The relative position, e.g. the mouse position offset[br]
-## [member speed] : The mouse speed in pixels per second.[br]
+## [member relative] : The relative position, indicating the mouse position offset.[br]
+## [member time] : The time to move the mouse by the relative position in seconds (default is 1 second).[br]
+## [member trans_type] : Sets the type of transition used (default is TRANS_LINEAR).[br]
 @warning_ignore("unused_parameter")
-func simulate_mouse_move_relative(relative :Vector2, speed :Vector2 = Vector2.ONE) -> GdUnitSceneRunner:
+func simulate_mouse_move_relative(relative: Vector2, time: float = 1.0, trans_type: Tween.TransitionType = Tween.TRANS_LINEAR) -> GdUnitSceneRunner:
+	await Engine.get_main_loop().process_frame
+	return self
+
+
+## Simulates a mouse move to the absolute coordinates.[br]
+## [member position] : The final position of the mouse.[br]
+## [member time] : The time to move the mouse to the final position in seconds (default is 1 second).[br]
+## [member trans_type] : Sets the type of transition used (default is TRANS_LINEAR).[br]
+@warning_ignore("unused_parameter")
+func simulate_mouse_move_absolute(position: Vector2, time: float = 1.0, trans_type: Tween.TransitionType = Tween.TRANS_LINEAR) -> GdUnitSceneRunner:
 	await Engine.get_main_loop().process_frame
 	return self
 

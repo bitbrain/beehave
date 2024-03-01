@@ -2,6 +2,7 @@
 class_name GdUnitSettings
 extends RefCounted
 
+
 const MAIN_CATEGORY = "gdunit4"
 # Common Settings
 const COMMON_SETTINGS = MAIN_CATEGORY + "/settings"
@@ -86,7 +87,7 @@ enum NAMING_CONVENTIONS {
 }
 
 
-static func setup():
+static func setup() -> void:
 	create_property_if_need(UPDATE_NOTIFICATION_ENABLED, true, "Enables/Disables the update notification checked startup.")
 	create_property_if_need(SERVER_TIMEOUT, DEFAULT_SERVER_TIMEOUT, "Sets the server connection timeout in minutes.")
 	create_property_if_need(TEST_TIMEOUT, DEFAULT_TEST_TIMEOUT, "Sets the test case runtime timeout in seconds.")
@@ -103,6 +104,7 @@ static func setup():
 	create_property_if_need(TEMPLATE_TS_GD, GdUnitTestSuiteTemplate.default_GD_template(), "Defines the test suite template")
 	create_shortcut_properties_if_need()
 	migrate_properties()
+
 
 
 static func migrate_properties() -> void:
@@ -232,7 +234,7 @@ static func list_settings(category :String) -> Array[GdUnitProperty]:
 	for property in ProjectSettings.get_property_list():
 		var property_name :String = property["name"]
 		if property_name.begins_with(category):
-			var value = ProjectSettings.get_setting(property_name)
+			var value :Variant = ProjectSettings.get_setting(property_name)
 			var default :Variant = ProjectSettings.property_get_revert(property_name)
 			var help :String = property["hint_string"]
 			var value_set := extract_value_set_from_help(help)
@@ -285,27 +287,27 @@ static func validate_lookup_folder(value :String) -> Variant:
 	return null
 
 
-static func save_property(name :String, value) -> void:
+static func save_property(name :String, value :Variant) -> void:
 	ProjectSettings.set_setting(name, value)
 	_save_settings()
 
 
 static func _save_settings() -> void:
-	var err = ProjectSettings.save()
+	var err := ProjectSettings.save()
 	if err != OK:
 		push_error("Save GdUnit4 settings failed : %s" % error_string(err))
 		return
 
 
 static func has_property(name :String) -> bool:
-	return ProjectSettings.get_property_list().any( func(property): return property["name"] == name)
+	return ProjectSettings.get_property_list().any(func(property :Dictionary) -> bool: return property["name"] == name)
 
 
 static func get_property(name :String) -> GdUnitProperty:
 	for property in ProjectSettings.get_property_list():
-		var property_name = property["name"]
+		var property_name :String = property["name"]
 		if property_name == name:
-			var value = ProjectSettings.get_setting(property_name)
+			var value :Variant = ProjectSettings.get_setting(property_name)
 			var default :Variant = ProjectSettings.property_get_revert(property_name)
 			var help :String = property["hint_string"]
 			var value_set := extract_value_set_from_help(help)
@@ -318,7 +320,7 @@ static func migrate_property(old_property :String, new_property :String, default
 	if property == null:
 		prints("Migration not possible, property '%s' not found" % old_property)
 		return
-	var value = converter.call(property.value()) if converter.is_valid() else property.value()
+	var value :Variant = converter.call(property.value()) if converter.is_valid() else property.value()
 	ProjectSettings.set_setting(new_property, value)
 	ProjectSettings.set_initial_value(new_property, default_value)
 	set_help(new_property, value, help)

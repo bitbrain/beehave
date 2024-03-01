@@ -1,10 +1,10 @@
-class_name ClearCountAction extends ActionLeaf
+class_name ClearCountAction extends BeehaveAction
 
 @export var key = "custom_value"
 
-func tick(_actor: Node, blackboard: Blackboard) -> int:
-	if blackboard.has_value(key):
-		blackboard.erase_value(key)
+func tick(context: BeehaveContext) -> int:
+	if context.get_blackboard().has_value(key):
+		context.get_blackboard().erase_value(key)
 		return SUCCESS
 	else:
 		return FAILURE

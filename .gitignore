@@ -17,3 +17,5 @@ reports/
 *.exp
 *.lib
 *.obj
+
+.vs

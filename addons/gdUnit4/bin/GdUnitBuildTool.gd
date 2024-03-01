@@ -2,7 +2,9 @@
 extends SceneTree
 
 enum {
-	INIT, PROCESSING, EXIT
+	INIT,
+	PROCESSING,
+	EXIT
 }
 
 const RETURN_SUCCESS  =   0
@@ -11,9 +13,19 @@ const RETURN_WARNING  = 101
 
 var _console := CmdConsole.new()
 var _cmd_options: = CmdOptions.new([
-		CmdOption.new("-scp, --src_class_path", "-scp <source_path>", "The full class path of the source file.", TYPE_STRING),
-		CmdOption.new("-scl, --src_class_line", "-scl <line_number>", "The selected line number to generate test case.", TYPE_INT)
-		])
+	CmdOption.new(
+		"-scp, --src_class_path",
+		"-scp <source_path>",
+		"The full class path of the source file.",
+		TYPE_STRING
+	),
+	CmdOption.new(
+		"-scl, --src_class_line",
+		"-scl <line_number>",
+		"The selected line number to generate test case.",
+		TYPE_INT
+	)
+])
 
 var _status := INIT
 var _source_file :String = ""
@@ -49,13 +61,11 @@ func _idle(_delta):
 		var script := ResourceLoader.load(_source_file) as Script
 		if script == null:
 			exit(RETURN_ERROR, "Can't load source file %s!" % _source_file)
-		
 		var result := GdUnitTestSuiteBuilder.create(script, _source_line)
 		if result.is_error():
 			print_json_error(result.error_message())
 			exit(RETURN_ERROR, result.error_message())
 			return
-		
 		_console.prints_color("Added testcase: %s" % result.value(), Color.CORNFLOWER_BLUE)
 		print_json_result(result.value())
 		exit(RETURN_SUCCESS)
@@ -86,7 +96,8 @@ func print_json_error(error :String) -> void:
 func show_options() -> void:
 	_console.prints_color(" Usage:", Color.DARK_SALMON)
 	_console.prints_color("	build -scp <source_path> -scl <line_number>", Color.DARK_SALMON)
-	_console.prints_color("-- Options ---------------------------------------------------------------------------------------", Color.DARK_SALMON).new_line()
+	_console.prints_color("-- Options ---------------------------------------------------------------------------------------",
+		Color.DARK_SALMON).new_line()
 	for option in _cmd_options.default_options():
 		descripe_option(option)
 

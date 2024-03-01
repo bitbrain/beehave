@@ -14,14 +14,13 @@ func _init(call_stage := true):
 
 func _execute(context :GdUnitExecutionContext) -> void:
 	var test_suite := context.test_suite
-	
 	if _call_stage:
 		@warning_ignore("redundant_await")
 		await test_suite.after_test()
 	# unreference last used assert form the test to prevent memory leaks
 	GdUnitThreadManager.get_current_context().set_assert(null)
 	await context.gc()
-	
+	await context.error_monitor_stop()
 	if context.test_case.is_skipped():
 		fire_test_skipped(context)
 	else:

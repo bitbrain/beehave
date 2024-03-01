@@ -1,5 +1,5 @@
 [configuration]
-entry_symbol = "initialize_beehave_types"
+entry_symbol = "beehave_library_init"
 compatibility_minimum = 4.2
 
 [libraries]
@@ -21,3 +21,25 @@ ios.release  = "res://addons/beehave/libs/ios/beehave.ios.template_release.unive
 
 [icons]
 BeehaveTree = "res://addons/beehave/icons/tree.svg"
+BeehaveTreeNode = "res://addons/beehave/icons/category_bt.svg"
+BeehaveBlackboard = "res://addons/beehave/icons/blackboard.svg"
+BeehaveComposite = "res://addons/beehave/icons/category_composite.svg"
+BeehaveSelector = "res://addons/beehave/icons/selector.svg"
+BeehaveSelectorRandom = "res://addons/beehave/icons/selector_random.svg"
+BeehaveSelectorReactive = "res://addons/beehave/icons/selector_reactive.svg"
+BeehaveSequence = "res://addons/beehave/icons/sequence.svg"
+BeehaveSequenceRandom = "res://addons/beehave/icons/sequence_random.svg"
+BeehaveSequenceReactive = "res://addons/beehave/icons/sequence_reactive.svg"
+BeehaveSequenceStar = "res://addons/beehave/icons/sequence_star.svg"
+BeehaveSequenceStar = "res://addons/beehave/icons/sequence_star.svg"
+BeehaveDecorator = "res://addons/beehave/icons/category_decorator.svg"
+BeehaveCooldown = "res://addons/beehave/icons/cooldown.svg"
+BeehaveDelayer = "res://addons/beehave/icons/delayer.svg"
+BeehaveFailer = "res://addons/beehave/icons/failer.svg"
+BeehaveSucceeder = "res://addons/beehave/icons/succeeder.svg"
+BeehaveInverter = "res://addons/beehave/icons/inverter.svg"
+BeehaveLimiter = "res://addons/beehave/icons/limiter.svg"
+BeehaveTimeLimiter = "res://addons/beehave/icons/limiter.svg"
+BeehaveLeaf = "res://addons/beehave/icons/category_leaf.svg"
+BeehaveAction = "res://addons/beehave/icons/action.svg"
+BeehaveCondition = "res://addons/beehave/icons/condition.svg"
