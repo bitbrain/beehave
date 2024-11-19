@@ -33,7 +33,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 				blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 			return RUNNING
 		_:
-			push_error("This should be unreachable")
+			push_error("This should be unreachable: ", c.get_path())
 			return -1
 
 
