@@ -39,9 +39,10 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 			blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
 			blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
 
-		if response == RUNNING and c is ActionLeaf:
+		if response == RUNNING:
 			running_child = c
-			blackboard.set_value("running_action", c, str(actor.get_instance_id()))
+			if c is ActionLeaf:
+				blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 
 		if response != RUNNING:
 			blackboard.set_value(cache_key, wait_time, str(actor.get_instance_id()))
