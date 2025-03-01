@@ -28,10 +28,11 @@ static func is_type_array(type :int) -> bool:
 
 ## Filters an array by given value[br]
 ## If the given value not an array it returns null, will remove all occurence of given value.
-static func filter_value(array :Variant, value :Variant) -> Variant:
+@warning_ignore("unsafe_method_access")
+static func filter_value(array: Variant, value: Variant) -> Variant:
 	if not is_array_type(array):
 		return null
-	var filtered_array :Variant = array.duplicate()
+	var filtered_array: Variant = array.duplicate()
 	var index :int = filtered_array.find(value)
 	while index != -1:
 		filtered_array.remove_at(index)
@@ -72,13 +73,12 @@ static func scan_typed(array :Array) -> int:
 ##		# will result in PackedString(["a", "b"])
 ##		GdArrayTools.as_string(PackedColorArray(Color.RED, COLOR.GREEN))
 ## 	[/codeblock]
-static func as_string(elements :Variant, encode_value := true) -> String:
-	if not is_array_type(elements):
-		return "ERROR: Not an Array Type!"
+static func as_string(elements: Variant, encode_value := true) -> String:
 	var delemiter := ", "
 	if elements == null:
 		return "<null>"
-	if elements.is_empty():
+	@warning_ignore("unsafe_cast")
+	if (elements as Array).is_empty():
 		return "<empty>"
 	var prefix := _typeof_as_string(elements) if encode_value else ""
 	var formatted := ""
@@ -91,6 +91,14 @@ static func as_string(elements :Variant, encode_value := true) -> String:
 		formatted += GdDefaultValueDecoder.decode(element) if encode_value else str(element)
 		index += 1
 	return prefix + "[" + formatted + "]"
+
+
+static func has_same_content(current: Array, other: Array) -> bool:
+	if current.size() != other.size(): return false
+	for element: Variant in current:
+		if not other.has(element): return false
+		if current.count(element) != other.count(element): return false
+	return true
 
 
 static func _typeof_as_string(value :Variant) -> String:

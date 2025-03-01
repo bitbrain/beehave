@@ -1,8 +1,6 @@
 class_name GdUnitAwaiter
 extends RefCounted
 
-const GdUnitAssertImpl = preload("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd")
-
 
 # Waits for a specified signal in an interval of 50ms sent from the <source>, and terminates with an error after the specified timeout has elapsed.
 # source: the object from which the signal is emitted
@@ -14,16 +12,19 @@ func await_signal_on(source :Object, signal_name :String, args :Array = [], time
 	var assert_that := GdUnitAssertImpl.new(signal_name)
 	var line_number := GdUnitAssertions.get_line_number()
 	if not is_instance_valid(source):
+		@warning_ignore("return_value_discarded")
 		assert_that.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), line_number)
-		return await Engine.get_main_loop().process_frame
+		return await (Engine.get_main_loop() as SceneTree).process_frame
 	# fail fast if the given source instance invalid
 	if not is_instance_valid(source):
+		@warning_ignore("return_value_discarded")
 		assert_that.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), line_number)
 		return await await_idle_frame()
 	var awaiter := GdUnitSignalAwaiter.new(timeout_millis)
 	var value :Variant = await awaiter.on_signal(source, signal_name, args)
 	if awaiter.is_interrupted():
 		var failure := "await_signal_on(%s, %s) timed out after %sms" % [signal_name, args, timeout_millis]
+		@warning_ignore("return_value_discarded")
 		assert_that.report_error(failure, line_number)
 	return value
 
@@ -37,6 +38,7 @@ func await_signal_idle_frames(source :Object, signal_name :String, args :Array =
 	var line_number := GdUnitAssertions.get_line_number()
 	# fail fast if the given source instance invalid
 	if not is_instance_valid(source):
+		@warning_ignore("return_value_discarded")
 		GdUnitAssertImpl.new(signal_name)\
 			.report_error(GdAssertMessages.error_await_signal_on_invalid_instance(source, signal_name, args), line_number)
 		return await await_idle_frame()
@@ -44,6 +46,7 @@ func await_signal_idle_frames(source :Object, signal_name :String, args :Array =
 	var value :Variant = await awaiter.on_signal(source, signal_name, args)
 	if awaiter.is_interrupted():
 		var failure := "await_signal_idle_frames(%s, %s) timed out after %sms" % [signal_name, args, timeout_millis]
+		@warning_ignore("return_value_discarded")
 		GdUnitAssertImpl.new(signal_name).report_error(failure, line_number)
 	return value
 
@@ -56,7 +59,7 @@ func await_signal_idle_frames(source :Object, signal_name :String, args :Array =
 func await_millis(milliSec :int) -> void:
 	var timer :Timer = Timer.new()
 	timer.set_name("gdunit_await_millis_timer_%d" % timer.get_instance_id())
-	Engine.get_main_loop().root.add_child(timer)
+	(Engine.get_main_loop() as SceneTree).root.add_child(timer)
 	timer.add_to_group("GdUnitTimers")
 	timer.set_one_shot(true)
 	timer.start(milliSec / 1000.0)
@@ -66,4 +69,4 @@ func await_millis(milliSec :int) -> void:
 
 # Waits until the next idle frame
 func await_idle_frame() -> void:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame

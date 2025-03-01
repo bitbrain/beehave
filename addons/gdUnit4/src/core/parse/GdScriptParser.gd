@@ -14,7 +14,7 @@ var TOKEN_CLASS_NAME := Token.new("class_name")
 var TOKEN_INNER_CLASS := Token.new("class")
 var TOKEN_EXTENDS := Token.new("extends")
 var TOKEN_ENUM := Token.new("enum")
-var TOKEN_FUNCTION_STATIC_DECLARATION := Token.new("staticfunc")
+var TOKEN_FUNCTION_STATIC_DECLARATION := Token.new("static func")
 var TOKEN_FUNCTION_DECLARATION := Token.new("func")
 var TOKEN_FUNCTION := Token.new(".")
 var TOKEN_FUNCTION_RETURN_TYPE := Token.new("->")
@@ -64,15 +64,10 @@ var TOKENS :Array[Token] = [
 	OPERATOR_REMAINDER,
 ]
 
-var _regex_clazz_name :RegEx
+var _regex_clazz_name := GdUnitTools.to_regex("(class) ([a-zA-Z0-9_]+) (extends[a-zA-Z]+:)|(class) ([a-zA-Z0-9_]+)")
 var _regex_strip_comments := GdUnitTools.to_regex("^([^#\"']|'[^']*'|\"[^\"]*\")*\\K#.*")
-var _base_clazz :String
 var _scanned_inner_classes := PackedStringArray()
 var _script_constants := {}
-
-
-static func clean_up_row(row :String) -> String:
-	return to_unix_format(row.replace(" ", "").replace("\t", ""))
 
 
 static func to_unix_format(input :String) -> String:
@@ -263,6 +258,7 @@ class TokenInnerClass extends Token:
 
 	func parse(source_rows :PackedStringArray, offset :int) -> void:
 		# add class signature
+		@warning_ignore("return_value_discarded")
 		_content.append(source_rows[offset])
 		# parse class content
 		for row_index in range(offset+1, source_rows.size()):
@@ -275,8 +271,10 @@ class TokenInnerClass extends Token:
 					source_row = source_row.trim_prefix("\t")
 				# refomat invalid empty lines
 				if source_row.dedent().is_empty():
+					@warning_ignore("return_value_discarded")
 					_content.append("")
 				else:
+					@warning_ignore("return_value_discarded")
 					_content.append(source_row)
 				continue
 			break
@@ -286,9 +284,6 @@ class TokenInnerClass extends Token:
 	func _to_string() -> String:
 		return "TokenInnerClass{%s}" % [_clazz_name]
 
-
-func _init() -> void:
-	_regex_clazz_name = GdUnitTools.to_regex("(class)([a-zA-Z0-9]+)(extends[a-zA-Z]+:)|(class)([a-zA-Z0-9]+)(:)")
 
 
 func get_token(input :String, current_index :int) -> Token:
@@ -352,38 +347,7 @@ func tokenize_inner_class(source_code: String, current: int, token: Token) -> To
 	return TokenInnerClass.new(clazz_name)
 
 
-@warning_ignore("assert_always_false")
-func _process_values(left: Token, token_stack: Array, operator: Token) -> Token:
-	# precheck
-	if left.is_variable() and operator.is_operator():
-		var lvalue :Variant = left.value()
-		var value :Variant = null
-		var next_token_ := token_stack.pop_front() as Token
-		match operator:
-			OPERATOR_ADD:
-				value =  lvalue + next_token_.value()
-			OPERATOR_SUB:
-				value =  lvalue - next_token_.value()
-			OPERATOR_MUL:
-				value =  lvalue * next_token_.value()
-			OPERATOR_DIV:
-				value =  lvalue / next_token_.value()
-			OPERATOR_REMAINDER:
-				value =  lvalue & next_token_.value()
-			_:
-				assert(false, "Unsupported operator %s" % operator)
-		return Variable.new( str(value))
-	return operator
-
-
-func parse_func_return_type(row: String) -> int:
-	var token := parse_return_token(row)
-	if token == TOKEN_NOT_MATCH:
-		return TYPE_NIL
-	return token.type()
-
-
-func parse_return_token(input: String) -> Token:
+func parse_return_token(input: String) -> Variable:
 	var index := input.rfind(TOKEN_FUNCTION_RETURN_TYPE._token)
 	if index == -1:
 		return TOKEN_NOT_MATCH
@@ -397,10 +361,30 @@ func parse_return_token(input: String) -> Token:
 	return token
 
 
-# Parses the argument into a argument signature
-# e.g. func foo(arg1 :int, arg2 = 20) -> [arg1, arg2]
-func parse_arguments(input: String) -> Array[GdFunctionArgument]:
-	var args :Array[GdFunctionArgument] = []
+func get_function_descriptors(script: GDScript, included_functions: PackedStringArray = []) -> Array[GdFunctionDescriptor]:
+	var fds: Array[GdFunctionDescriptor] = []
+	for method_descriptor in script.get_script_method_list():
+		var func_name: String = method_descriptor["name"]
+		if included_functions.is_empty() or func_name in included_functions:
+			# exclude type set/geters
+			if is_getter_or_setter(func_name):
+				continue
+			if not fds.any(func(fd: GdFunctionDescriptor) -> bool: return fd.name() == func_name):
+				fds.append(GdFunctionDescriptor.extract_from(method_descriptor, false))
+
+	# we need to enrich it by default arguments and line number by parsing the script
+	# the engine core functions has no valid methods to get this info
+	_prescan_script(script)
+	_enrich_function_descriptor(script, fds)
+	return fds
+
+
+func is_getter_or_setter(func_name: String) -> bool:
+	return func_name.begins_with("@") and (func_name.ends_with("getter") or func_name.ends_with("setter"))
+
+
+func _parse_function_arguments(input: String) -> Dictionary:
+	var arguments := {}
 	var current_index := 0
 	var token :Token = null
 	var bracket := 0
@@ -431,7 +415,7 @@ func parse_arguments(input: String) -> Array[GdFunctionArgument]:
 			bracket -= 1
 		# if function end?
 		if in_function and bracket == 0:
-			return args
+			return arguments
 		# is function
 		if token == TOKEN_FUNCTION_DECLARATION:
 			token = next_token(input, current_index)
@@ -441,13 +425,13 @@ func parse_arguments(input: String) -> Array[GdFunctionArgument]:
 		if token is FuzzerToken:
 			var arg_value := _parse_end_function(input.substr(current_index), true)
 			current_index += arg_value.length()
-			args.append(GdFunctionArgument.new(token.name(), token.type(), arg_value))
+			var arg_name :String = (token as FuzzerToken).name()
+			arguments[arg_name] = arg_value.lstrip(" ")
 			continue
 		# is value argument
 		if in_function and token.is_variable():
-			var arg_name :String = token.plain_value()
-			var arg_type :int = TYPE_NIL
-			var arg_value :Variant = GdFunctionArgument.UNDEFINED
+			var arg_name: String = (token as Variable).plain_value()
+			var arg_value: String = GdFunctionArgument.UNDEFINED
 			# parse type and default value
 			while current_index < len(input):
 				token = next_token(input, current_index)
@@ -460,10 +444,6 @@ func parse_arguments(input: String) -> Array[GdFunctionArgument]:
 						if token == TOKEN_SPACE:
 							current_index += token._consumed
 							token = next_token(input, current_index)
-						arg_type = GdObjects.string_as_typeof(token._token)
-						# handle enum detection as argument
-						if arg_type == GdObjects.TYPE_VARIANT and is_class_enum_type(token._token):
-							arg_type = GdObjects.TYPE_ENUM
 					TOKEN_ARGUMENT_TYPE_ASIGNMENT:
 						arg_value = _parse_end_function(input.substr(current_index), true)
 						current_index += arg_value.length()
@@ -489,28 +469,8 @@ func parse_arguments(input: String) -> Array[GdFunctionArgument]:
 					TOKEN_ARGUMENT_SEPARATOR:
 						if bracket <= 1:
 							break
-			arg_value = arg_value.lstrip(" ")
-			if arg_type == TYPE_NIL and arg_value != GdFunctionArgument.UNDEFINED:
-				if arg_value.begins_with("Color."):
-					arg_type = TYPE_COLOR
-				elif arg_value.begins_with("Vector2."):
-					arg_type = TYPE_VECTOR2
-				elif arg_value.begins_with("Vector3."):
-					arg_type = TYPE_VECTOR3
-				elif arg_value.begins_with("AABB("):
-					arg_type = TYPE_AABB
-				elif arg_value.begins_with("["):
-					arg_type = TYPE_ARRAY
-				elif arg_value.begins_with("{"):
-					arg_type = TYPE_DICTIONARY
-				else:
-					arg_type = typeof(str_to_var(arg_value))
-					if arg_value.rfind(")") == arg_value.length()-1:
-						arg_type = GdObjects.TYPE_FUNC
-					elif arg_type == TYPE_NIL:
-						arg_type = TYPE_STRING
-			args.append(GdFunctionArgument.new(arg_name, arg_type, arg_value))
-	return args
+			arguments[arg_name] = arg_value.lstrip(" ")
+	return arguments
 
 
 func _parse_end_function(input: String, remove_trailing_char := false) -> String:
@@ -563,30 +523,16 @@ func _parse_end_function(input: String, remove_trailing_char := false) -> String
 	return input.substr(0, current_index)
 
 
+@warning_ignore("unsafe_method_access")
 func extract_inner_class(source_rows: PackedStringArray, clazz_name :String) -> PackedStringArray:
 	for row_index in source_rows.size():
-		var input := GdScriptParser.clean_up_row(source_rows[row_index])
+		var input := source_rows[row_index]
 		var token := next_token(input, 0)
 		if token.is_inner_class():
 			if token.is_class_name(clazz_name):
 				token.parse(source_rows, row_index)
 				return token.content()
 	return PackedStringArray()
-
-
-func extract_source_code(script_path :PackedStringArray) -> PackedStringArray:
-	if script_path.is_empty():
-		push_error("Invalid script path '%s'" % script_path)
-		return PackedStringArray()
-	#load the source code
-	var resource_path := script_path[0]
-	var script :GDScript = load(resource_path)
-	var source_code := load_source_code(script, script_path)
-	var base_script := script.get_base_script()
-	if base_script:
-		_base_clazz = GdObjects.extract_class_name_from_class_path([base_script.resource_path])
-		source_code += load_source_code(base_script, script_path)
-	return source_code
 
 
 func extract_func_signature(rows :PackedStringArray, index :int) -> String:
@@ -604,25 +550,6 @@ func extract_func_signature(rows :PackedStringArray, index :int) -> String:
 	return ""
 
 
-func load_source_code(script :GDScript, script_path :PackedStringArray) -> PackedStringArray:
-	var map := script.get_script_constant_map()
-	for key :String in map.keys():
-		var value :Variant = map.get(key)
-		if value is GDScript:
-			var class_path := GdObjects.extract_class_path(value)
-			if class_path.size() > 1:
-				_scanned_inner_classes.append(class_path[1])
-
-	var source_code := GdScriptParser.to_unix_format(script.source_code)
-	var source_rows := source_code.split("\n")
-	# extract all inner class names
-	# want to extract an inner class?
-	if script_path.size() > 1:
-		var inner_clazz := script_path[1]
-		source_rows = extract_inner_class(source_rows, inner_clazz)
-	return PackedStringArray(source_rows)
-
-
 func get_class_name(script :GDScript) -> String:
 	var source_code := GdScriptParser.to_unix_format(script.source_code)
 	var source_rows := source_code.split("\n")
@@ -635,13 +562,12 @@ func get_class_name(script :GDScript) -> String:
 			token = next_token(input, current_index)
 			current_index += token._consumed
 			token = tokenize_value(input, current_index, token)
-			return token.value()
+			return (token as Variable).value()
 	# if no class_name found extract from file name
 	return GdObjects.to_pascal_case(script.resource_path.get_basename().get_file())
 
 
-func parse_func_name(row :String) -> String:
-	var input := GdScriptParser.clean_up_row(row)
+func parse_func_name(input :String) -> String:
 	var current_index := 0
 	var token := next_token(input, current_index)
 	current_index += token._consumed
@@ -653,98 +579,65 @@ func parse_func_name(row :String) -> String:
 	return token._token
 
 
-func parse_functions(rows :PackedStringArray, clazz_name :String, clazz_path :PackedStringArray, included_functions := PackedStringArray()) -> Array[GdFunctionDescriptor]:
-	var func_descriptors :Array[GdFunctionDescriptor] = []
-	for rowIndex in rows.size():
-		var row := rows[rowIndex]
-		# step over inner class functions
-		if row.begins_with("\t"):
-			continue
-		var input := GdScriptParser.clean_up_row(row)
-		# skip comments and empty lines
-		if input.begins_with("#") or input.length() == 0:
-			continue
-		var token := next_token(input, 0)
-		if token == TOKEN_FUNCTION_STATIC_DECLARATION or token == TOKEN_FUNCTION_DECLARATION:
-			if _is_func_included(input, included_functions):
-				var func_signature := extract_func_signature(rows, rowIndex)
-				var fd := parse_func_description(func_signature, clazz_name, clazz_path, rowIndex+1)
-				fd._is_coroutine = is_func_coroutine(rows, rowIndex)
-				func_descriptors.append(fd)
-	return func_descriptors
+## Enriches the function descriptor by line number and argument default values
+## - enrich all function descriptors form current script up to all inherited scrips
+func _enrich_function_descriptor(script: GDScript, fds: Array[GdFunctionDescriptor]) -> void:
+	var enriched_functions := PackedStringArray()
+	var script_to_scan := script
+	while script_to_scan != null:
+		# do not scan the test suite base class itself
+		if script_to_scan.resource_path == "res://addons/gdUnit4/src/GdUnitTestSuite.gd":
+			break
+
+		var rows := script_to_scan.source_code.split("\n")
+		for rowIndex in rows.size():
+			var input := rows[rowIndex]
+			# step over inner class functions
+			if input.begins_with("\t"):
+				continue
+			# skip comments and empty lines
+			if input.begins_with("#") or input.length() == 0:
+				continue
+			var token := next_token(input, 0)
+			if token == TOKEN_FUNCTION_STATIC_DECLARATION or token == TOKEN_FUNCTION_DECLARATION:
+				var function_name := parse_func_name(input)
+				var fd: GdFunctionDescriptor = fds.filter(func(element: GdFunctionDescriptor) -> bool:
+					# is same function name and not already enriched
+					return function_name == element.name() and not enriched_functions.has(element.name())
+				).pop_front()
+				if fd != null:
+					# add as enriched function to exclude from next iteration (could be inherited)
+					@warning_ignore("return_value_discarded")
+					enriched_functions.append(fd.name())
+					var func_signature := extract_func_signature(rows, rowIndex)
+					var func_arguments := _parse_function_arguments(func_signature)
+					# enrich missing default values
+					for arg_name: String in func_arguments.keys():
+						var func_argument: String = func_arguments[arg_name]
+						fd.set_argument_value(arg_name, func_argument)
+					fd.enrich_file_info(script_to_scan.resource_path, rowIndex + 1)
+					fd._is_coroutine = is_func_coroutine(rows, rowIndex)
+					# enrich return class name if not set
+					if fd.return_type() == TYPE_OBJECT and fd._return_class in ["", "Resource", "RefCounted"]:
+						var var_token := parse_return_token(func_signature)
+						if var_token != TOKEN_NOT_MATCH and var_token.type() == TYPE_OBJECT:
+							fd._return_class = _patch_inner_class_names(var_token.plain_value(), "")
+		# if the script ihnerits we need to scan this also
+		script_to_scan = script_to_scan.get_base_script()
 
 
 func is_func_coroutine(rows :PackedStringArray, index :int) -> bool:
 	var is_coroutine := false
-	for rowIndex in range( index+1, rows.size()):
-		var row := rows[rowIndex]
-		is_coroutine = row.contains("await")
+	for rowIndex in range(index+1, rows.size()):
+		var input := rows[rowIndex]
+		is_coroutine = input.contains("await")
 		if is_coroutine:
 			return true
-		var input := GdScriptParser.clean_up_row(row)
 		var token := next_token(input, 0)
+		# scan until next function
 		if token == TOKEN_FUNCTION_STATIC_DECLARATION or token == TOKEN_FUNCTION_DECLARATION:
 			break
 	return is_coroutine
-
-
-func _is_func_included(row :String, included_functions :PackedStringArray) -> bool:
-	if included_functions.is_empty():
-		return true
-	for name in included_functions:
-		if row.find(name) != -1:
-			return true
-	return false
-
-
-func parse_func_description(func_signature :String, clazz_name :String, clazz_path :PackedStringArray, line_number :int) -> GdFunctionDescriptor:
-	var name :=  parse_func_name(func_signature)
-	var return_type :int
-	var return_clazz := ""
-	var token := parse_return_token(func_signature)
-	if token == TOKEN_NOT_MATCH:
-		return_type = GdObjects.TYPE_VARIANT
-	else:
-		return_type = token.type()
-		if token.type() == TYPE_OBJECT:
-			return_clazz = _patch_inner_class_names(token.value(), clazz_name)
-			# is return type an enum?
-			if is_class_enum_type(return_clazz):
-				return_type = GdObjects.TYPE_ENUM
-
-	return GdFunctionDescriptor.new(
-		name,
-		line_number,
-		is_virtual_func(clazz_name, clazz_path, name),
-		is_static_func(func_signature),
-		false,
-		return_type,
-		return_clazz,
-		parse_arguments(func_signature)
-	)
-
-
-# caches already parsed classes for virtual functions
-# key: <clazz_name> value: a Array of virtual function names
-var _virtual_func_cache := Dictionary()
-
-func is_virtual_func(clazz_name :String, clazz_path :PackedStringArray, func_name :String) -> bool:
-	if _virtual_func_cache.has(clazz_name):
-		return _virtual_func_cache[clazz_name].has(func_name)
-	var virtual_functions := Array()
-	var method_list := GdObjects.extract_class_functions(clazz_name, clazz_path)
-	for method_descriptor :Dictionary in method_list:
-		var is_virtual_function :bool = method_descriptor["flags"] & METHOD_FLAG_VIRTUAL
-		if is_virtual_function:
-			virtual_functions.append(method_descriptor["name"])
-	_virtual_func_cache[clazz_name] = virtual_functions
-	return _virtual_func_cache[clazz_name].has(func_name)
-
-
-func is_static_func(func_signature :String) -> bool:
-	var input := GdScriptParser.clean_up_row(func_signature)
-	var token := next_token(input, 0)
-	return token == TOKEN_FUNCTION_STATIC_DECLARATION
 
 
 func is_inner_class(clazz_path :PackedStringArray) -> bool:
@@ -755,39 +648,24 @@ func is_func_end(row :String) -> bool:
 	return row.strip_edges(false, true).ends_with(":")
 
 
-func is_class_enum_type(value :String) -> bool:
-	if value == "Variant":
-		return false
-	# first check is given value a enum from the current class
-	if _script_constants.has(value):
-		return true
-	# otherwise we need to determie it by reflection
-	var script := GDScript.new()
-	script.source_code = """
-	extends Resource
-
-	static func is_class_enum_type() -> bool:
-		return typeof(%s) == TYPE_DICTIONARY
-
-	""".dedent() % value
-	script.reload()
-	return script.call("is_class_enum_type")
-
-
-func _patch_inner_class_names(clazz :String, clazz_name :String) -> String:
-	var base_clazz := clazz_name.split(".")[0]
+func _patch_inner_class_names(clazz :String, clazz_name :String = "") -> String:
 	var inner_clazz_name := clazz.split(".")[0]
 	if _scanned_inner_classes.has(inner_clazz_name):
-		return base_clazz + "." + clazz
+		return inner_clazz_name
+		#var base_clazz := clazz_name.split(".")[0]
+		#return base_clazz + "." + clazz
 	if _script_constants.has(clazz):
 		return clazz_name + "." + clazz
 	return clazz
 
 
-func extract_functions(script :GDScript, clazz_name :String, clazz_path :PackedStringArray) -> Array[GdFunctionDescriptor]:
-	var source_code := load_source_code(script, clazz_path)
+func _prescan_script(script: GDScript) -> void:
 	_script_constants = script.get_script_constant_map()
-	return parse_functions(source_code, clazz_name, clazz_path)
+	for key :String in _script_constants.keys():
+		var value :Variant = _script_constants.get(key)
+		if value is GDScript:
+			@warning_ignore("return_value_discarded")
+			_scanned_inner_classes.append(key)
 
 
 func parse(clazz_name :String, clazz_path :PackedStringArray) -> GdUnitResult:
@@ -795,13 +673,22 @@ func parse(clazz_name :String, clazz_path :PackedStringArray) -> GdUnitResult:
 		return GdUnitResult.error("Invalid script path '%s'" % clazz_path)
 	var is_inner_class_ := is_inner_class(clazz_path)
 	var script :GDScript = load(clazz_path[0])
-	var function_descriptors := extract_functions(script, clazz_name, clazz_path)
+	_prescan_script(script)
+
+	if is_inner_class_:
+		var inner_class_name := clazz_path[1]
+		if _scanned_inner_classes.has(inner_class_name):
+			# do load only on inner class source code and enrich the stored script instance
+			var source_code := _load_inner_class(script, inner_class_name)
+			script = _script_constants.get(inner_class_name)
+			script.source_code = source_code
+	var function_descriptors := get_function_descriptors(script)
 	var gd_class := GdClassDescriptor.new(clazz_name, is_inner_class_, function_descriptors)
-	# iterate over class dependencies
-	script = script.get_base_script()
-	while script != null:
-		clazz_name = GdObjects.extract_class_name_from_class_path([script.resource_path])
-		function_descriptors = extract_functions(script, clazz_name, clazz_path)
-		gd_class.set_parent_clazz(GdClassDescriptor.new(clazz_name, is_inner_class_, function_descriptors))
-		script = script.get_base_script()
 	return GdUnitResult.success(gd_class)
+
+
+func _load_inner_class(script: GDScript, inner_clazz: String) -> String:
+	var source_rows := GdScriptParser.to_unix_format(script.source_code).split("\n")
+	# extract all inner class names
+	var inner_class_code := extract_inner_class(source_rows, inner_clazz)
+	return "\n".join(inner_class_code)

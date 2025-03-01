@@ -8,7 +8,7 @@ func _execute(context :GdUnitExecutionContext) -> void:
 	var test_suite := context.test_suite
 
 	fire_event(GdUnitEvent.new()\
-		.suite_before(test_suite.get_script().resource_path, test_suite.get_name(), test_suite.get_child_count()))
+		.suite_before(context.get_test_suite_path(), test_suite.get_name(), test_suite.get_child_count()))
 
 	@warning_ignore("redundant_await")
 	await test_suite.before()

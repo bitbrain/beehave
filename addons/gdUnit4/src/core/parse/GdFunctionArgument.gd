@@ -2,23 +2,39 @@ class_name GdFunctionArgument
 extends RefCounted
 
 
-var _cleanup_leading_spaces := RegEx.create_from_string("(?m)^[ \t]+")
-var _fix_comma_space := RegEx.create_from_string(""", {0,}\t{0,}(?=(?:[^"]*"[^"]*")*[^"]*$)(?!\\s)""")
-var _name: String
-var _type: int
-var _default_value :Variant
-var _parameter_sets :PackedStringArray = []
-
-const UNDEFINED :Variant = "<-NO_ARG->"
+const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
+const UNDEFINED: String = "<-NO_ARG->"
 const ARG_PARAMETERIZED_TEST := "test_parameters"
 
+static var _fuzzer_regex: RegEx
+static var _cleanup_leading_spaces: RegEx
+static var _fix_comma_space: RegEx
 
-func _init(p_name :String, p_type :int = TYPE_MAX, value :Variant = UNDEFINED) -> void:
+var _name: String
+var _type: int
+var _type_hint: int
+var _default_value: Variant
+var _parameter_sets: PackedStringArray = []
+
+
+func _init(p_name: String, p_type: int, value: Variant = UNDEFINED, p_type_hint: int = TYPE_NIL) -> void:
+	_init_static_variables()
 	_name = p_name
 	_type = p_type
-	if p_name == ARG_PARAMETERIZED_TEST:
-		_parameter_sets = _parse_parameter_set(value)
+	_type_hint = p_type_hint
+	if value != null and p_name == ARG_PARAMETERIZED_TEST:
+		_parameter_sets = _parse_parameter_set(str(value))
 	_default_value = value
+	# is argument a fuzzer?
+	if _type == TYPE_OBJECT and _fuzzer_regex.search(_name):
+		_type = GdObjects.TYPE_FUZZER
+
+
+func _init_static_variables() -> void:
+	if _fuzzer_regex == null:
+		_fuzzer_regex = GdUnitTools.to_regex("((?!(fuzzer_(seed|iterations)))fuzzer?\\w+)( ?+= ?+| ?+:= ?+| ?+:Fuzzer ?+= ?+|)")
+		_cleanup_leading_spaces = RegEx.create_from_string("(?m)^[ \t]+")
+		_fix_comma_space = RegEx.create_from_string(""", {0,}\t{0,}(?=(?:[^"]*"[^"]*")*[^"]*$)(?!\\s)""")
 
 
 func name() -> String:
@@ -29,18 +45,56 @@ func default() -> Variant:
 	return GodotVersionFixures.convert(_default_value, _type)
 
 
+func set_value(value: String) -> void:
+	# we onle need to apply default values for Objects, all others are provided by the method descriptor
+	if _type == GdObjects.TYPE_FUZZER:
+		_default_value = value
+		return
+	if _name == ARG_PARAMETERIZED_TEST:
+		_parameter_sets = _parse_parameter_set(value)
+		_default_value = value
+		return
+
+	if _type == TYPE_NIL or _type == GdObjects.TYPE_VARIANT:
+		_type = _extract_value_type(value)
+		_default_value = value
+	if _default_value == null:
+		_default_value = value
+
+
+func _extract_value_type(value: String) -> int:
+	if value != UNDEFINED:
+		if _fuzzer_regex.search(_name):
+			return GdObjects.TYPE_FUZZER
+		if value.rfind(")") == value.length()-1:
+			return GdObjects.TYPE_FUNC
+	return _type
+
+
 func value_as_string() -> String:
 	if has_default():
-		return str(_default_value)
+		return GdDefaultValueDecoder.decode_typed(_type, _default_value)
 	return ""
+
+
+func plain_value() -> Variant:
+	return _default_value
 
 
 func type() -> int:
 	return _type
 
 
+func type_hint() -> int:
+	return _type_hint
+
+
 func has_default() -> bool:
 	return not is_same(_default_value, UNDEFINED)
+
+
+func is_typed_array() -> bool:
+	return _type == TYPE_ARRAY and _type_hint != TYPE_NIL
 
 
 func is_parameter_set() -> bool:
@@ -60,10 +114,12 @@ static func get_parameter_set(parameters :Array[GdFunctionArgument]) -> GdFuncti
 
 func _to_string() -> String:
 	var s := _name
-	if _type != TYPE_MAX:
+	if _type != TYPE_NIL:
 		s += ":" + GdObjects.type_as_string(_type)
-	if _default_value != UNDEFINED:
-		s += "=" + str(_default_value)
+	if _type_hint != TYPE_NIL:
+		s += "[%s]" % GdObjects.type_as_string(_type_hint)
+	if typeof(_default_value) != TYPE_STRING:
+		s += "=" + value_as_string()
 	return s
 
 
@@ -85,6 +141,7 @@ func _parse_parameter_set(input :String) -> PackedStringArray:
 	for c in buf:
 		current_index += 1
 		matched = current_index == buf.size()
+		@warning_ignore("return_value_discarded")
 		collected_characters.push_back(c)
 
 		match c:
@@ -108,6 +165,7 @@ func _parse_parameter_set(input :String) -> PackedStringArray:
 		if matched:
 			var parameters := _fix_comma_space.sub(collected_characters.get_string_from_utf8(), ", ", true)
 			if not parameters.is_empty():
+				@warning_ignore("return_value_discarded")
 				output.append(parameters)
 			collected_characters.clear()
 			matched = false

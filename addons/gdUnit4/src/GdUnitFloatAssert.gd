@@ -3,15 +3,15 @@ class_name GdUnitFloatAssert
 extends GdUnitAssert
 
 
-## Verifies that the current value is equal to expected one.
+## Verifies that the current String is equal to the given one.
 @warning_ignore("unused_parameter")
-func is_equal(expected :float) -> GdUnitFloatAssert:
+func is_equal(expected :Variant) -> GdUnitFloatAssert:
 	return self
 
 
-## Verifies that the current value is not equal to expected one.
+## Verifies that the current String is not equal to the given one.
 @warning_ignore("unused_parameter")
-func is_not_equal(expected :float) -> GdUnitFloatAssert:
+func is_not_equal(expected :Variant) -> GdUnitFloatAssert:
 	return self
 
 

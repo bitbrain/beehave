@@ -3,7 +3,6 @@ class_name GdUnitTestReportCollector
 extends RefCounted
 
 
-var _execution_context_id :int
 var _reports :Array[GdUnitReport] = []
 
 
@@ -21,11 +20,6 @@ static func __filter_is_warning(report :GdUnitReport) -> bool:
 
 static func __filter_is_skipped(report :GdUnitReport) -> bool:
 	return report.is_skipped()
-
-
-func _init(execution_context_id :int) -> void:
-	_execution_context_id = execution_context_id
-	GdUnitSignals.instance().gdunit_report.connect(on_reports)
 
 
 func count_failures() -> int:
@@ -64,7 +58,5 @@ func reports() -> Array[GdUnitReport]:
 	return _reports
 
 
-# Consumes reports emitted by tests
-func on_reports(execution_context_id :int, report :GdUnitReport) -> void:
-	if execution_context_id == _execution_context_id:
-		_reports.append(report)
+func push_back(report :GdUnitReport) -> void:
+	_reports.push_back(report)

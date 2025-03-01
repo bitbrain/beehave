@@ -8,7 +8,7 @@ enum {
 	EMPTY
 }
 
-var _state :Variant
+var _state: int
 var _warn_message := ""
 var _error_message := ""
 var _value :Variant = null
@@ -66,6 +66,10 @@ func value() -> Variant:
 	return _value
 
 
+func value_as_string() -> String:
+	return _value
+
+
 func or_else(p_value :Variant) -> Variant:
 	if not is_success():
 		return p_value
@@ -97,7 +101,8 @@ static func serialize(result :GdUnitResult) -> Dictionary:
 
 static func deserialize(config :Dictionary) -> GdUnitResult:
 	var result := GdUnitResult.new()
-	result._value = str_to_var(config.get("value", ""))
+	var cfg_value: String = config.get("value", "")
+	result._value = str_to_var(cfg_value)
 	result._warn_message = config.get("warn_msg", null)
 	result._error_message = config.get("err_msg", null)
 	result._state = config.get("state")

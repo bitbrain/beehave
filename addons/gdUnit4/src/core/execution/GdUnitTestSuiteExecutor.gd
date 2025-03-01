@@ -5,7 +5,7 @@ class_name GdUnitTestSuiteExecutor
 # preload all asserts here
 @warning_ignore("unused_private_class_variable")
 var _assertions := GdUnitAssertions.new()
-var _executeStage :IGdUnitExecutionStage = GdUnitTestSuiteExecutionStage.new()
+var _executeStage := GdUnitTestSuiteExecutionStage.new()
 
 
 func _init(debug_mode :bool = false) -> void:
@@ -17,8 +17,8 @@ func execute(test_suite :GdUnitTestSuite) -> void:
 	if not orphan_detection_enabled:
 		prints("!!! Reporting orphan nodes is disabled. Please check GdUnit settings.")
 
-	Engine.get_main_loop().root.call_deferred("add_child", test_suite)
-	await Engine.get_main_loop().process_frame
+	(Engine.get_main_loop() as SceneTree).root.call_deferred("add_child", test_suite)
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	await _executeStage.execute(GdUnitExecutionContext.of_test_suite(test_suite))
 
 

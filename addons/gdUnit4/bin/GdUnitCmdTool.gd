@@ -33,6 +33,7 @@ class CLIRunner:
 	var _headless_mode_ignore := false
 	var _runner_config := GdUnitRunnerConfig.new()
 	var _runner_config_file := ""
+	var _debug_cmd_args: = PackedStringArray()
 	var _console := CmdConsole.new()
 	var _cmd_options := CmdOptions.new([
 			CmdOption.new(
@@ -105,9 +106,10 @@ class CLIRunner:
 	func _ready() -> void:
 		_state = INIT
 		_report_dir = GdUnitFileAccess.current_dir() + "reports"
-		_executor = load("res://addons/gdUnit4/src/core/execution/GdUnitTestSuiteExecutor.gd").new()
+		_executor = GdUnitTestSuiteExecutor.new()
 		# stop checked first test failure to fail fast
-		_executor.fail_fast(true)
+		@warning_ignore("unsafe_cast")
+		(_executor as GdUnitTestSuiteExecutor).fail_fast(true)
 		if GdUnit4CSharpApiLoader.is_mono_supported():
 			prints("GdUnit4Net version '%s' loaded." % GdUnit4CSharpApiLoader.version())
 			_cs_executor = GdUnit4CSharpApiLoader.create_executor(self)
@@ -123,6 +125,7 @@ class CLIRunner:
 			prints("Finallize .. done")
 
 
+	@warning_ignore("unsafe_method_access")
 	func _process(_delta :float) -> void:
 		match _state:
 			INIT:
@@ -135,7 +138,8 @@ class CLIRunner:
 				else:
 					set_process(false)
 					# process next test suite
-					var test_suite := _test_suites_to_process.pop_front() as Node
+					var test_suite: Node = _test_suites_to_process.pop_front()
+
 					if _cs_executor != null and _cs_executor.IsExecutable(test_suite):
 						_cs_executor.Execute(test_suite)
 						await _cs_executor.ExecutionCompleted
@@ -185,6 +189,7 @@ class CLIRunner:
 			"Disabled fail fast!",
 			Color.DEEP_SKY_BLUE
 		)
+		@warning_ignore("unsafe_method_access")
 		_executor.fail_fast(false)
 
 
@@ -199,13 +204,13 @@ class CLIRunner:
 
 	func show_version() -> void:
 		_console.prints_color(
-			"Godot %s" % Engine.get_version_info().get("string"),
+			"Godot %s" % Engine.get_version_info().get("string") as String,
 			Color.DARK_SALMON
 		)
 		var config := ConfigFile.new()
 		config.load("addons/gdUnit4/plugin.cfg")
 		_console.prints_color(
-			"GdUnit4 %s" % config.get_value("plugin", "version"),
+			"GdUnit4 %s" % config.get_value("plugin", "version") as String,
 			Color.DARK_SALMON
 		)
 		quit(RETURN_SUCCESS)
@@ -274,6 +279,12 @@ class CLIRunner:
 		quit(RETURN_SUCCESS)
 
 
+	func get_cmdline_args() -> PackedStringArray:
+		if _debug_cmd_args.is_empty():
+			return OS.get_cmdline_args()
+		return _debug_cmd_args
+
+
 	func init_gd_unit() -> void:
 		_console.prints_color(
 			"""
@@ -284,7 +295,7 @@ class CLIRunner:
 		).new_line()
 
 		var cmd_parser := CmdArgumentParser.new(_cmd_options, "GdUnitCmdTool.gd")
-		var result := cmd_parser.parse(OS.get_cmdline_args())
+		var result := cmd_parser.parse(get_cmdline_args())
 		if result.is_error():
 			show_options()
 			_console.prints_error(result.error_message())
@@ -297,15 +308,16 @@ class CLIRunner:
 			return
 		# build runner config by given commands
 		var commands :Array[CmdCommand] = []
-		commands.append_array(result.value())
+		@warning_ignore("unsafe_cast")
+		commands.append_array(result.value() as Array)
 		result = (
 			CmdCommandHandler.new(_cmd_options)
-				.register_cb("-help", Callable(self, "show_help"))
-				.register_cb("--help-advanced", Callable(self, "show_advanced_help"))
-				.register_cb("-a", Callable(_runner_config, "add_test_suite"))
-				.register_cbv("-a", Callable(_runner_config, "add_test_suites"))
-				.register_cb("-i", Callable(_runner_config, "skip_test_suite"))
-				.register_cbv("-i", Callable(_runner_config, "skip_test_suites"))
+				.register_cb("-help", show_help)
+				.register_cb("--help-advanced", show_advanced_help)
+				.register_cb("-a", _runner_config.add_test_suite)
+				.register_cbv("-a", _runner_config.add_test_suites)
+				.register_cb("-i", _runner_config.skip_test_suite)
+				.register_cbv("-i", _runner_config.skip_test_suites)
 				.register_cb("-rd", set_report_dir)
 				.register_cb("-rc", set_report_count)
 				.register_cb("--selftest", run_self_test)
@@ -364,9 +376,9 @@ class CLIRunner:
 		var ts_scanner := GdUnitTestSuiteScanner.new()
 		for as_resource_path in to_execute.keys() as Array[String]:
 			var selected_tests: PackedStringArray = to_execute.get(as_resource_path)
-			var scaned_suites := ts_scanner.scan(as_resource_path)
-			skip_test_case(scaned_suites, selected_tests)
-			test_suites_to_process.append_array(scaned_suites)
+			var scanned_suites := ts_scanner.scan(as_resource_path)
+			skip_test_case(scanned_suites, selected_tests)
+			test_suites_to_process.append_array(scanned_suites)
 		skip_suites(test_suites_to_process, config)
 		return test_suites_to_process
 
@@ -385,7 +397,7 @@ class CLIRunner:
 		var skipped := config.skipped()
 		if skipped.is_empty():
 			return
-		_console.prints_warning("Found excluded test suite's configured at '%s'" % _runner_config_file)
+
 		for test_suite in test_suites:
 			# skipp c# testsuites for now
 			if test_suite.get_script() == null:
@@ -395,24 +407,26 @@ class CLIRunner:
 
 	# Dictionary[String, PackedStringArray]
 	func skip_suite(test_suite: Node, skipped: Dictionary) -> void:
-		var skipped_suites :Array[String] = skipped.keys()
+		var skipped_suites :Array = skipped.keys()
 		var suite_name := test_suite.get_name()
 		var test_suite_path: String = (
 			test_suite.get_meta("ResourcePath") if test_suite.get_script() == null
 			else test_suite.get_script().resource_path
 		)
-		for suite_to_skip in skipped_suites:
+		for suite_to_skip: String in skipped_suites:
 			# if suite skipped by path or name
 			if (
 				suite_to_skip == test_suite_path
 				or (suite_to_skip.is_valid_filename() and suite_to_skip == suite_name)
 			):
-				var skipped_tests: Array[String] = skipped.get(suite_to_skip)
-				var skip_reason := "Excluded by config '%s'" % _runner_config_file
+				var skipped_tests: PackedStringArray = skipped.get(suite_to_skip)
+				var skip_reason := "Excluded by configuration"
 				# if no tests skipped test the complete suite is skipped
 				if skipped_tests.is_empty():
-					_console.prints_warning("Mark test suite '%s' as skipped!" % suite_to_skip)
+					_console.prints_warning("Mark the entire test suite '%s' as skipped!" % test_suite_path)
+					@warning_ignore("unsafe_property_access")
 					test_suite.__is_skipped = true
+					@warning_ignore("unsafe_property_access")
 					test_suite.__skip_reason = skip_reason
 				else:
 					# skip tests
@@ -443,10 +457,8 @@ class CLIRunner:
 	func _on_gdunit_event(event: GdUnitEvent) -> void:
 		match event.type():
 			GdUnitEvent.INIT:
-				_report = GdUnitHtmlReport.new(_report_dir)
+				_report = GdUnitHtmlReport.new(_report_dir, _report_max)
 			GdUnitEvent.STOP:
-				if _report == null:
-					_report = GdUnitHtmlReport.new(_report_dir)
 				var report_path := _report.write()
 				_report.delete_history(_report_max)
 				JUnitXmlReport.new(_report._report_path, _report.iteration()).write(_report)
@@ -464,45 +476,31 @@ class CLIRunner:
 					Color.CORNFLOWER_BLUE
 				)
 			GdUnitEvent.TESTSUITE_BEFORE:
-				_report.add_testsuite_report(
-					GdUnitTestSuiteReport.new(event.resource_path(), event.suite_name(), event.total_count())
-				)
+				_report.add_testsuite_report(event.resource_path(), event.suite_name(), event.total_count())
 			GdUnitEvent.TESTSUITE_AFTER:
-				_report.update_test_suite_report(
+				_report.add_testsuite_reports(
 					event.resource_path(),
-					event.elapsed_time(),
-					event.is_error(),
-					event.is_failed(),
-					event.is_warning(),
-					event.is_skipped(),
-					event.skipped_count(),
+					event.error_count(),
 					event.failed_count(),
 					event.orphan_nodes(),
+					event.elapsed_time(),
 					event.reports()
 				)
 			GdUnitEvent.TESTCASE_BEFORE:
-				_report.add_testcase_report(
-					event.resource_path(),
-					GdUnitTestCaseReport.new(
-						event.resource_path(),
-						event.suite_name(),
-						event.test_name()
-					)
-				)
+				_report.add_testcase(event.resource_path(), event.suite_name(), event.test_name())
 			GdUnitEvent.TESTCASE_AFTER:
-				var test_report := GdUnitTestCaseReport.new(
-					event.resource_path(),
-					event.suite_name(),
+				_report.set_testcase_counters(event.resource_path(),
 					event.test_name(),
 					event.is_error(),
-					event.is_failed(),
 					event.failed_count(),
 					event.orphan_nodes(),
 					event.is_skipped(),
-					event.reports(),
-					event.elapsed_time()
-				)
-				_report.update_testcase_report(event.resource_path(), test_report)
+					event.is_flaky(),
+					event.elapsed_time())
+				_report.add_testcase_reports(event.resource_path(), event.test_name(), event.reports())
+			GdUnitEvent.TESTCASE_STATISTICS:
+				_report.update_testsuite_counters(event.resource_path(), event.is_error(), event.failed_count(), event.orphan_nodes(),\
+					event.is_skipped(), event.is_flaky(), event.elapsed_time())
 		print_status(event)
 
 
@@ -556,11 +554,12 @@ class CLIRunner:
 				_print_failure_report(event.reports())
 				_print_status(event)
 				_console.prints_color(
-					"Statistics: | %d tests cases | %d error | %d failed | %d skipped | %d orphans |\n"
+					"Statistics: | %d tests cases | %d error | %d failed | %d flaky | %d skipped | %d orphans |\n"
 					% [
 						_report.test_count(),
 						_report.error_count(),
 						_report.failure_count(),
+						_report.flaky_count(),
 						_report.skipped_count(),
 						_report.orphan_count()
 					],
@@ -587,14 +586,22 @@ class CLIRunner:
 
 
 	func _print_status(event: GdUnitEvent) -> void:
-		if event.is_skipped():
+		if event.is_flaky() and event.is_success():
+			var retries :int = event.statistic(GdUnitEvent.RETRY_COUNT)
+			_console.print_color("FLAKY (%d retries)" % retries, Color.GREEN_YELLOW, CmdConsole.BOLD | CmdConsole.ITALIC)
+		elif event.is_success():
+			_console.print_color("PASSED", Color.FOREST_GREEN, CmdConsole.BOLD)
+		elif event.is_skipped():
 			_console.print_color("SKIPPED", Color.GOLDENROD, CmdConsole.BOLD | CmdConsole.ITALIC)
 		elif event.is_failed() or event.is_error():
-			_console.print_color("FAILED", Color.FIREBRICK, CmdConsole.BOLD)
-		elif event.orphan_nodes() > 0:
-			_console.print_color("PASSED", Color.GOLDENROD, CmdConsole.BOLD | CmdConsole.UNDERLINE)
-		else:
-			_console.print_color("PASSED", Color.FOREST_GREEN, CmdConsole.BOLD)
+			var retries :int = event.statistic(GdUnitEvent.RETRY_COUNT)
+			if retries > 1:
+				_console.print_color("FAILED (retry %d)" % retries, Color.FIREBRICK, CmdConsole.BOLD)
+			else:
+				_console.print_color("FAILED", Color.FIREBRICK, CmdConsole.BOLD)
+		elif event.is_warning():
+			_console.print_color("WARNING", Color.GOLDENROD, CmdConsole.BOLD | CmdConsole.UNDERLINE)
+
 		_console.prints_color(
 			" %s" % LocalTime.elapsed(event.elapsed_time()), Color.CORNFLOWER_BLUE
 		)

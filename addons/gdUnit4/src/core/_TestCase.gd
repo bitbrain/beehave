@@ -22,7 +22,6 @@ var _expect_to_interupt := false
 var _timer: Timer
 var _interupted: bool = false
 var _failed := false
-var _report: GdUnitReport = null
 var _parameter_set_resolver: GdUnitTestParameterSetResolver
 var _is_disposed := false
 
@@ -80,14 +79,13 @@ func dispose() -> void:
 	stop_timer()
 	_remove_failure_handler()
 	_fuzzers.clear()
-	_report = null
 
 
 @warning_ignore("shadowed_variable_base_class", "redundant_await")
 func _execute_test_case(name: String, test_parameter: Array) -> void:
 	# needs at least on await otherwise it breaks the awaiting chain
 	await get_parent().callv(name, test_parameter)
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	completed.emit()
 
 
@@ -104,22 +102,30 @@ func set_timeout() -> void:
 	_timer = Timer.new()
 	add_child(_timer)
 	_timer.set_name("gdunit_test_case_timer_%d" % _timer.get_instance_id())
-	_timer.timeout.connect(func do_interrupt() -> void:
-		if is_fuzzed():
-			_report = GdUnitReport.new().create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.fuzzer_interuped(_current_iteration, "timedout"))
-		else:
-			_report = GdUnitReport.new().create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.test_timeout(timeout))
-		_interupted = true
-		completed.emit()
-		, CONNECT_DEFERRED)
+	@warning_ignore("return_value_discarded")
+	_timer.timeout.connect(do_interrupt, CONNECT_DEFERRED)
 	_timer.set_one_shot(true)
 	_timer.set_wait_time(time)
 	_timer.set_autostart(false)
 	_timer.start()
 
 
+func do_interrupt() -> void:
+	_interupted = true
+	if not is_expect_interupted():
+		var execution_context:= GdUnitThreadManager.get_current_context().get_execution_context()
+		if is_fuzzed():
+			execution_context.add_report(GdUnitReport.new()\
+				.create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.fuzzer_interuped(_current_iteration, "timedout")))
+		else:
+			execution_context.add_report(GdUnitReport.new()\
+				.create(GdUnitReport.INTERUPTED, line_number(), GdAssertMessages.test_timeout(timeout)))
+	completed.emit()
+
+
 func _set_failure_handler() -> void:
 	if not GdUnitSignals.instance().gdunit_set_test_failed.is_connected(_failure_received):
+		@warning_ignore("return_value_discarded")
 		GdUnitSignals.instance().gdunit_set_test_failed.connect(_failure_received)
 
 
@@ -162,10 +168,6 @@ func is_parameterized() -> bool:
 
 func is_skipped() -> bool:
 	return _skipped
-
-
-func report() -> GdUnitReport:
-	return _report
 
 
 func skip_info() -> String:

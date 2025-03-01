@@ -38,8 +38,8 @@ func start(host :String, port :int) -> GdUnitResult:
 		var err := _stream.connect_to_host(host, port)
 		#prints("connect_to_host", host, port, err)
 		if err != OK:
-			return GdUnitResult.error("GdUnit3: Can't establish client, error code: %s" % err)
-	return GdUnitResult.success("GdUnit3: Client connected checked port %d" % port)
+			return GdUnitResult.error("GdUnit4: Can't establish client, error code: %s" % err)
+	return GdUnitResult.success("GdUnit4: Client connected checked port %d" % port)
 
 
 func _process(_delta :float) -> void:
@@ -51,6 +51,7 @@ func _process(_delta :float) -> void:
 			set_process(false)
 			# wait until client is connected to server
 			for retry in 10:
+				@warning_ignore("return_value_discarded")
 				_stream.poll()
 				console("wait to connect ..")
 				if _stream.get_status() == StreamPeerTCP.STATUS_CONNECTING:
@@ -71,7 +72,7 @@ func _process(_delta :float) -> void:
 					await get_tree().create_timer(0.500).timeout
 					rpc_ = rpc_receive()
 				set_process(true)
-				_client_id = rpc_.client_id()
+				_client_id = (rpc_ as RPCClientConnect).client_id()
 				console("Connected to Server: %d" % _client_id)
 				connection_succeeded.emit("Connect to TCP Server %s:%d success." % [_host, _port])
 				_connected = true
@@ -98,6 +99,7 @@ func process_rpc() -> void:
 func rpc_send(p_rpc :RPC) -> void:
 	if _stream != null:
 		var data := GdUnitServerConstants.JSON_RESPONSE_DELIMITER + p_rpc.serialize() + GdUnitServerConstants.JSON_RESPONSE_DELIMITER
+		@warning_ignore("return_value_discarded")
 		_stream.put_data(data.to_utf8_buffer())
 
 
@@ -106,7 +108,7 @@ func rpc_receive() -> RPC:
 		while _stream.get_available_bytes() > 0:
 			var available_bytes := _stream.get_available_bytes()
 			var data := _stream.get_data(available_bytes)
-			var received_data := data[1] as PackedByteArray
+			var received_data: PackedByteArray = data[1]
 			# data send by Godot has this magic header of 12 bytes
 			var header := Array(received_data.slice(0, 4))
 			if header == [0, 0, 0, 124]:

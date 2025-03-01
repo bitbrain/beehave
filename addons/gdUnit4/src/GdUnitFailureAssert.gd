@@ -29,3 +29,9 @@ func has_message(expected: String) -> GdUnitFailureAssert:
 @warning_ignore("unused_parameter")
 func starts_with_message(expected: String) -> GdUnitFailureAssert:
 	return self
+
+
+## Verifies that the failure message contains the expected message.
+@warning_ignore("unused_parameter")
+func contains_message(expected: String) -> GdUnitFailureAssert:
+	return self

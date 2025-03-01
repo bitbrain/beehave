@@ -4,6 +4,7 @@ extends Node
 @onready var _server :GdUnitTcpServer = $TcpServer
 
 
+@warning_ignore("return_value_discarded")
 func _ready() -> void:
 	var result := _server.start()
 	if result.is_error():

@@ -10,14 +10,16 @@ func _init(context_menus: Array[GdUnitContextMenuItem]) -> void:
 		_context_menus[menu.id] = menu
 	var popup := _menu_popup()
 	var file_tree := _file_tree()
+	@warning_ignore("return_value_discarded")
 	popup.about_to_popup.connect(on_context_menu_show.bind(popup, file_tree))
+	@warning_ignore("return_value_discarded")
 	popup.id_pressed.connect(on_context_menu_pressed.bind(file_tree))
 
 
 func on_context_menu_show(context_menu: PopupMenu, file_tree: Tree) -> void:
 	context_menu.add_separator()
 	var current_index := context_menu.get_item_count()
-	var selected_test_suites := collect_testsuites(_context_menus.values()[0], file_tree)
+	var selected_test_suites := collect_testsuites(_context_menus.values()[0] as GdUnitContextMenuItem, file_tree)
 
 	for menu_id: int in _context_menus.keys():
 		var menu_item: GdUnitContextMenuItem = _context_menus[menu_id]
@@ -30,7 +32,6 @@ func on_context_menu_show(context_menu: PopupMenu, file_tree: Tree) -> void:
 
 
 func on_context_menu_pressed(id: int, file_tree: Tree) -> void:
-	#prints("on_context_menu_pressed", id)
 	if !_context_menus.has(id):
 		return
 	var menu_item: GdUnitContextMenuItem = _context_menus[id]
@@ -48,13 +49,14 @@ func collect_testsuites(_menu_item: GdUnitContextMenuItem, file_tree: Tree) -> P
 		var file_type := file_system.get_file_type(resource_path)
 		var is_dir := DirAccess.dir_exists_absolute(resource_path)
 		if is_dir:
+			@warning_ignore("return_value_discarded")
 			selected_test_suites.append(resource_path)
 		elif is_dir or file_type == "GDScript" or file_type == "CSharpScript":
 			# find a performant way to check if the selected item a testsuite
-			#var resource := ResourceLoader.load(resource_path, "GDScript", ResourceLoader.CACHE_MODE_REUSE)
-			#prints("loaded", resource)
-			#if resource is GDScript and menu_item.is_visible(resource):
-			selected_test_suites.append(resource_path)
+			var resource := ResourceLoader.load(resource_path, "Script", ResourceLoader.CACHE_MODE_REUSE)
+			if _menu_item.is_visible(resource):
+				@warning_ignore("return_value_discarded")
+				selected_test_suites.append(resource_path)
 		selected_item = file_tree.get_next_selected(selected_item)
 	return selected_test_suites
 

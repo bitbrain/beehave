@@ -68,7 +68,7 @@ func _idle(_delta :float) -> void:
 			exit(RETURN_ERROR, result.error_message())
 			return
 		_console.prints_color("Added testcase: %s" % result.value(), Color.CORNFLOWER_BLUE)
-		print_json_result(result.value())
+		print_json_result(result.value() as Dictionary)
 		exit(RETURN_SUCCESS)
 
 
@@ -85,7 +85,7 @@ func exit(code :int, message :String = "") -> void:
 
 func print_json_result(result :Dictionary) -> void:
 	# convert back to system path
-	var path := ProjectSettings.globalize_path(result["path"]);
+	var path := ProjectSettings.globalize_path(result["path"] as String)
 	var json := 'JSON_RESULT:{"TestCases" : [{"line":%d, "path": "%s"}]}' % [result["line"], path]
 	prints(json)
 

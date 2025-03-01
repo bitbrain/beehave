@@ -61,6 +61,7 @@ func plus(time_unit :TimeUnit, value :int) -> LocalTime:
 			addValue = value * MILLIS_PER_MINUTE
 		TimeUnit.HOUR:
 			addValue = value * MILLIS_PER_HOUR
+	@warning_ignore("return_value_discarded")
 	_init(_time + addValue)
 	return self
 

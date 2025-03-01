@@ -6,6 +6,7 @@ static func instance() -> Object:
 	return GdUnitSingleton.instance("GdUnit4CSharpApi", func() -> Object:
 		if not GdUnit4CSharpApiLoader.is_mono_supported():
 			return null
+		@warning_ignore("unsafe_method_access")
 		return load("res://addons/gdUnit4/src/mono/GdUnit4CSharpApi.cs").new()
 	)
 
@@ -22,15 +23,17 @@ static func is_mono_supported() -> bool:
 static func version() -> String:
 	if not GdUnit4CSharpApiLoader.is_mono_supported():
 		return "unknown"
+	@warning_ignore("unsafe_method_access")
 	return instance().Version()
 
 
 static func create_test_suite(source_path :String, line_number :int, test_suite_path :String) -> GdUnitResult:
 	if not GdUnit4CSharpApiLoader.is_mono_supported():
 		return  GdUnitResult.error("Can't create test suite. No C# support found.")
-	var result := instance().CreateTestSuite(source_path, line_number, test_suite_path) as Dictionary
+	@warning_ignore("unsafe_method_access")
+	var result: Dictionary = instance().CreateTestSuite(source_path, line_number, test_suite_path)
 	if result.has("error"):
-		return GdUnitResult.error(result.get("error"))
+		return GdUnitResult.error(str(result.get("error")))
 	return  GdUnitResult.success(result)
 
 
@@ -42,6 +45,7 @@ static func is_test_suite(resource_path :String) -> bool:
 		if GdUnitSettings.is_report_push_errors():
 			push_error("Can't create test suite. Missing resource path.")
 		return  false
+	@warning_ignore("unsafe_method_access")
 	return instance().IsTestSuite(resource_path)
 
 
@@ -50,12 +54,14 @@ static func parse_test_suite(source_path :String) -> Node:
 		if GdUnitSettings.is_report_push_errors():
 			push_error("Can't create test suite. No c# support found.")
 		return null
+	@warning_ignore("unsafe_method_access")
 	return instance().ParseTestSuite(source_path)
 
 
 static func create_executor(listener :Node) -> RefCounted:
 	if not GdUnit4CSharpApiLoader.is_mono_supported():
 		return null
+	@warning_ignore("unsafe_method_access")
 	return instance().Executor(listener)
 
 

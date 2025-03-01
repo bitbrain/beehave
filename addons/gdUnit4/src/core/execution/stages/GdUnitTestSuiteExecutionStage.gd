@@ -19,6 +19,7 @@ func _execute(context :GdUnitExecutionContext) -> void:
 	if context.test_suite.__is_skipped:
 		await fire_test_suite_skipped(context)
 	else:
+		@warning_ignore("return_value_discarded")
 		GdUnitMemoryObserver.guard_instance(context.test_suite.__awaiter)
 		await _stage_before.execute(context)
 		for test_case_index in context.test_suite.get_child_count():
@@ -27,9 +28,9 @@ func _execute(context :GdUnitExecutionContext) -> void:
 			if not is_instance_valid(test_case):
 				continue
 			context.test_suite.set_active_test_case(test_case.get_name())
-			await _stage_test.execute(GdUnitExecutionContext.of_test_case(context, test_case.get_name()))
+			await _stage_test.execute(GdUnitExecutionContext.of_test_case(context, test_case))
 			# stop on first error or if fail fast is enabled
-			if _fail_fast and context.test_failed():
+			if _fail_fast and not context.is_success():
 				break
 			if test_case.is_interupted():
 				# it needs to go this hard way to kill the outstanding awaits of a test case when the test timed out
@@ -38,14 +39,14 @@ func _execute(context :GdUnitExecutionContext) -> void:
 				context.test_suite = await clone_test_suite(context.test_suite)
 		await _stage_after.execute(context)
 		GdUnitMemoryObserver.unguard_instance(context.test_suite.__awaiter)
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	context.test_suite.free()
 	context.dispose()
 
 
 # clones a test suite and moves the test cases to new instance
 func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	dispose_timers(test_suite)
 	await GdUnitMemoryObserver.gc_guarded_instance("Manually free on awaiter", test_suite.__awaiter)
 	var parent := test_suite.get_parent()
@@ -56,10 +57,11 @@ func clone_test_suite(test_suite :GdUnitTestSuite) -> GdUnitTestSuite:
 		test_suite.remove_child(child)
 		_test_suite.add_child(child)
 	parent.add_child(_test_suite)
+	@warning_ignore("return_value_discarded")
 	GdUnitMemoryObserver.guard_instance(_test_suite.__awaiter)
 	# finally free current test suite instance
 	test_suite.free()
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	return _test_suite
 
 
@@ -67,7 +69,7 @@ func dispose_timers(test_suite :GdUnitTestSuite) -> void:
 	GdUnitTools.release_timers()
 	for child in test_suite.get_children():
 		if child is Timer:
-			child.stop()
+			(child as Timer).stop()
 			test_suite.remove_child(child)
 			child.free()
 
@@ -86,7 +88,20 @@ func fire_test_suite_skipped(context :GdUnitExecutionContext) -> void:
 	var test_suite := context.test_suite
 	var skip_count := test_suite.get_child_count()
 	fire_event(GdUnitEvent.new()\
-		.suite_before(test_suite.get_script().resource_path, test_suite.get_name(), skip_count))
+		.suite_before(context.get_test_suite_path(), test_suite.get_name(), skip_count))
+
+
+	for test_case_index in context.test_suite.get_child_count():
+			# iterate only over test cases
+			var test_case := context.test_suite.get_child(test_case_index) as _TestCase
+			if not is_instance_valid(test_case):
+				continue
+			var test_case_context := GdUnitExecutionContext.of_test_case(context, test_case)
+			fire_event(GdUnitEvent.new()\
+				.test_before(test_case_context.get_test_suite_path(), test_case_context.get_test_suite_name(), test_case_context.get_test_case_name()))
+			fire_test_skipped(test_case_context)
+
+
 	var statistics := {
 		GdUnitEvent.ORPHAN_NODES: 0,
 		GdUnitEvent.ELAPSED_TIME: 0,
@@ -99,8 +114,37 @@ func fire_test_suite_skipped(context :GdUnitExecutionContext) -> void:
 		GdUnitEvent.SKIPPED: true
 	}
 	var report := GdUnitReport.new().create(GdUnitReport.SKIPPED, -1, GdAssertMessages.test_suite_skipped(test_suite.__skip_reason, skip_count))
-	fire_event(GdUnitEvent.new().suite_after(test_suite.get_script().resource_path, test_suite.get_name(), statistics, [report]))
-	await Engine.get_main_loop().process_frame
+	fire_event(GdUnitEvent.new().suite_after(context.get_test_suite_path(), test_suite.get_name(), statistics, [report]))
+	await (Engine.get_main_loop() as SceneTree).process_frame
+
+
+func fire_test_skipped(context: GdUnitExecutionContext) -> void:
+	var test_case := context.test_case
+	var statistics := {
+		GdUnitEvent.ORPHAN_NODES: 0,
+		GdUnitEvent.ELAPSED_TIME: 0,
+		GdUnitEvent.WARNINGS: false,
+		GdUnitEvent.ERRORS: false,
+		GdUnitEvent.ERROR_COUNT: 0,
+		GdUnitEvent.FAILED: false,
+		GdUnitEvent.FAILED_COUNT: 0,
+		GdUnitEvent.SKIPPED: true,
+		GdUnitEvent.SKIPPED_COUNT: 1,
+	}
+	var report := GdUnitReport.new() \
+		.create(GdUnitReport.SKIPPED, test_case.line_number(), GdAssertMessages.test_skipped("Skipped from the entire test suite"))
+	fire_event(GdUnitEvent.new() \
+		.test_after(context.get_test_suite_path(),
+			context.get_test_suite_name(),
+			context.get_test_case_name(),
+			statistics,
+			[report]))
+	# finally fire test statistics report
+	fire_event(GdUnitEvent.new()\
+		.test_statistics(context.get_test_suite_path(),
+			context.get_test_suite_name(),
+			context.get_test_case_name(),
+			statistics))
 
 
 func set_debug_mode(debug_mode :bool = false) -> void:

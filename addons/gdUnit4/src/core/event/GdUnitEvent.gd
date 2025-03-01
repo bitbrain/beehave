@@ -3,6 +3,7 @@ extends Resource
 
 const WARNINGS = "warnings"
 const FAILED = "failed"
+const FLAKY = "flaky"
 const ERRORS = "errors"
 const SKIPPED = "skipped"
 const ELAPSED_TIME = "elapsed_time"
@@ -10,6 +11,7 @@ const ORPHAN_NODES = "orphan_nodes"
 const ERROR_COUNT = "error_count"
 const FAILED_COUNT = "failed_count"
 const SKIPPED_COUNT = "skipped_count"
+const RETRY_COUNT = "retry_count"
 
 enum {
 	INIT,
@@ -18,6 +20,7 @@ enum {
 	TESTSUITE_AFTER,
 	TESTCASE_BEFORE,
 	TESTCASE_AFTER,
+	TESTCASE_STATISTICS,
 	DISCOVER_START,
 	DISCOVER_END,
 	DISCOVER_SUITE_ADDED,
@@ -68,6 +71,15 @@ func test_after(p_resource_path :String, p_suite_name :String, p_test_name :Stri
 	_test_name = p_test_name
 	_statistics = p_statistics
 	_reports = p_reports
+	return self
+
+
+func test_statistics(p_resource_path :String, p_suite_name :String, p_test_name :String, p_statistics :Dictionary = {}) -> GdUnitEvent:
+	_event_type = TESTCASE_STATISTICS
+	_resource_path = p_resource_path
+	_suite_name  = p_suite_name
+	_test_name = p_test_name
+	_statistics = p_statistics
 	return self
 
 
@@ -135,6 +147,10 @@ func is_error() -> bool:
 	return _statistics.get(ERRORS, false)
 
 
+func is_flaky() -> bool:
+	return _statistics.get(FLAKY, false)
+
+
 func is_skipped() -> bool:
 	return _statistics.get(SKIPPED, false)
 
@@ -170,7 +186,8 @@ func deserialize(serialized :Dictionary) -> GdUnitEvent:
 	if serialized.has("reports"):
 		# needs this workaround to copy typed values in the array
 		var reports_to_deserializ :Array[Dictionary] = []
-		reports_to_deserializ.append_array(serialized.get("reports"))
+		@warning_ignore("unsafe_cast")
+		reports_to_deserializ.append_array(serialized.get("reports") as Array)
 		_reports = _deserialize_reports(reports_to_deserializ)
 	return self
 

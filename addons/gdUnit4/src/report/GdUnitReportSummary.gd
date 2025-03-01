@@ -15,11 +15,15 @@ var _failure_count := 0
 var _error_count := 0
 var _orphan_count := 0
 var _skipped_count := 0
+var _flaky_count := 0
 var _duration := 0
 var _reports :Array[GdUnitReportSummary] = []
 
-
 func name() -> String:
+	return _name
+
+
+func name_html_encoded() -> String:
 	return html_encode(_name)
 
 
@@ -54,42 +58,35 @@ func test_executed_count() -> int:
 	return test_count() - skipped_count()
 
 
+func success_count() -> int:
+	return test_count() - error_count() - failure_count() - flaky_count() - skipped_count()
+
+
 func error_count() -> int:
-	var count := _error_count
-	for report in _reports:
-		count += report.error_count()
-	return count
+	return _error_count
 
 
 func failure_count() -> int:
-	var count := _failure_count
-	for report in _reports:
-		count += report.failure_count()
-	return count
+	return _failure_count
 
 
 func skipped_count() -> int:
-	var count := _skipped_count
-	for report in _reports:
-		count += report.skipped_count()
-	return count
+	return _skipped_count
+
+
+func flaky_count() -> int:
+	return _flaky_count
 
 
 func orphan_count() -> int:
-	var count := _orphan_count
-	for report in _reports:
-		count += report.orphan_count()
-	return count
+	return _orphan_count
 
 
 func duration() -> int:
-	var count := _duration
-	for report in _reports:
-		count += report.duration()
-	return count
+	return _duration
 
 
-func reports() -> Array:
+func get_reports() -> Array:
 	return _reports
 
 
@@ -98,21 +95,25 @@ func add_report(report :GdUnitReportSummary) -> void:
 
 
 func report_state() -> String:
-	return calculate_state(error_count(), failure_count(), orphan_count())
+	return calculate_state(error_count(), failure_count(), orphan_count(), flaky_count(), skipped_count())
 
 
 func succes_rate() -> String:
 	return calculate_succes_rate(test_count(), error_count(), failure_count())
 
 
-func calculate_state(p_error_count :int, p_failure_count :int, p_orphan_count :int) -> String:
+func calculate_state(p_error_count :int, p_failure_count :int, p_orphan_count :int, p_flaky_count: int, p_skipped_count: int) -> String:
+	if p_skipped_count > 0:
+		return "SKIPPED"
 	if p_error_count > 0:
-		return "error"
+		return "ERROR"
 	if p_failure_count > 0:
-		return "failure"
+		return "FAILED"
+	if p_flaky_count > 0:
+		return "FLAKY"
 	if p_orphan_count > 0:
-		return "warning"
-	return "success"
+		return "WARNING"
+	return "PASSED"
 
 
 func calculate_succes_rate(p_test_count :int, p_error_count :int, p_failure_count :int) -> String:
@@ -128,16 +129,12 @@ func create_summary(_report_dir :String) -> String:
 	return ""
 
 
-func html_encode(value :String) -> String:
-	for key in CHARACTERS_TO_ENCODE.keys() as Array[String]:
-		value =value.replace(key, CHARACTERS_TO_ENCODE[key])
+func html_encode(value: String) -> String:
+	for key: String in CHARACTERS_TO_ENCODE.keys():
+		@warning_ignore("unsafe_cast")
+		value = value.replace(key, CHARACTERS_TO_ENCODE[key] as String)
 	return value
 
 
 func convert_rtf_to_html(bbcode :String) -> String:
-	var as_text: = GdUnitTools.richtext_normalize(bbcode)
-	var converted := PackedStringArray()
-	var lines := as_text.split("\n")
-	for line in lines:
-		converted.append("<p>%s</p>" % line)
-	return "\n".join(converted)
+	return GdUnitTools.richtext_normalize(bbcode)

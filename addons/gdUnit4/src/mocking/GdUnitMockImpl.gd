@@ -77,6 +77,7 @@ func __save_function_return_value(__fuction_args :Array) -> void:
 	__prepare_return_value = false
 
 
+@warning_ignore("unsafe_method_access")
 func __is_mocked_args_match(__func_args :Array, __mocked_args :Array) -> bool:
 	var __is_matching := false
 	for __index in __mocked_args.size():
@@ -98,6 +99,7 @@ func __is_mocked_args_match(__func_args :Array, __mocked_args :Array) -> bool:
 	return __is_matching
 
 
+@warning_ignore("unsafe_method_access")
 func __get_mocked_return_value_or_default(__fuction_args :Array, __default_return_value :Variant) -> Variant:
 	var __func_name :String = __fuction_args[0]
 	if not __mocked_return_values.has(__func_name):
@@ -120,6 +122,7 @@ func __set_mode(mock_working_mode :String) -> Object:
 	return self
 
 
+@warning_ignore("unsafe_method_access")
 func __do_call_real_func(__func_name :String, __func_args := []) -> bool:
 	var __is_call_real_func := __mock_working_mode == GdUnitMock.CALL_REAL_FUNC  and not __excluded_methods.has(__func_name)
 	# do not call real funcions for mocked functions

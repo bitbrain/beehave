@@ -21,6 +21,7 @@ func serialize(test_suite :Node) -> Dictionary:
 
 
 func deserialize(data :Dictionary) -> GdUnitResourceDto:
+	@warning_ignore("return_value_discarded")
 	super.deserialize(data)
 	var test_cases_ :Array = data.get("test_cases", [])
 	for test_case :Dictionary in test_cases_:

@@ -6,8 +6,9 @@ const DEFAULT_TIMEOUT := 2000
 
 
 var _current_value_provider :ValueProvider
-var _current_error_message :String = ""
+var _current_failure_message :String = ""
 var _custom_failure_message :String = ""
+var _additional_failure_message: String = ""
 var _line_number := -1
 var _timeout := DEFAULT_TIMEOUT
 var _interrupted := false
@@ -21,21 +22,26 @@ func _init(instance :Object, func_name :String, args := Array()) -> void:
 	GdUnitThreadManager.get_current_context().set_assert(self)
 	# verify at first the function name exists
 	if not instance.has_method(func_name):
+		@warning_ignore("return_value_discarded")
 		report_error("The function '%s' do not exists checked instance '%s'." % [func_name, instance])
 		_interrupted = true
 	else:
 		_current_value_provider = CallBackValueProvider.new(instance, func_name, args)
 
 
-func _notification(_what :int) -> void:
-	if is_instance_valid(_current_value_provider):
-		_current_value_provider.dispose()
-		_current_value_provider = null
-	if is_instance_valid(_sleep_timer):
-		Engine.get_main_loop().root.remove_child(_sleep_timer)
-		_sleep_timer.stop()
-		_sleep_timer.free()
-		_sleep_timer = null
+func _notification(what :int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		_interrupted = true
+		var main_node :Node = (Engine.get_main_loop() as SceneTree).root
+		if is_instance_valid(_current_value_provider):
+			_current_value_provider.dispose()
+			_current_value_provider = null
+		if is_instance_valid(_sleep_timer):
+			_sleep_timer.set_wait_time(0.0001)
+			_sleep_timer.stop()
+			main_node.remove_child(_sleep_timer)
+			_sleep_timer.free()
+			_sleep_timer = null
 
 
 func report_success() -> GdUnitFuncAssert:
@@ -43,22 +49,23 @@ func report_success() -> GdUnitFuncAssert:
 	return self
 
 
-func report_error(error_message :String) -> GdUnitFuncAssert:
-	_current_error_message = error_message if _custom_failure_message == "" else _custom_failure_message
-	GdAssertReports.report_error(_current_error_message, _line_number)
+func report_error(failure :String) -> GdUnitFuncAssert:
+	_current_failure_message = GdAssertMessages.build_failure_message(failure, _additional_failure_message, _custom_failure_message)
+	GdAssertReports.report_error(_current_failure_message, _line_number)
 	return self
 
 
 func failure_message() -> String:
-	return _current_error_message
-
-
-func send_report(report :GdUnitReport)-> void:
-	GdUnitSignals.instance().gdunit_report.emit(report)
+	return _current_failure_message
 
 
 func override_failure_message(message :String) -> GdUnitFuncAssert:
 	_custom_failure_message = message
+	return self
+
+
+func append_failure_message(message :String) -> GdUnitFuncAssert:
+	_additional_failure_message = message
 	return self
 
 
@@ -111,6 +118,10 @@ func cb_is_equal(c :Variant, e :Variant) -> bool: return GdObjects.equals(c,e)
 func cb_is_not_equal(c :Variant, e :Variant) -> bool: return not GdObjects.equals(c, e)
 
 
+func do_interrupt() -> void:
+	_interrupted = true
+
+
 func _validate_callback(predicate :Callable, expected :Variant = null) -> void:
 	if _interrupted:
 		return
@@ -118,16 +129,16 @@ func _validate_callback(predicate :Callable, expected :Variant = null) -> void:
 	var time_scale := Engine.get_time_scale()
 	var timer := Timer.new()
 	timer.set_name("gdunit_funcassert_interrupt_timer_%d" % timer.get_instance_id())
-	Engine.get_main_loop().root.add_child(timer)
+	var scene_tree := Engine.get_main_loop() as SceneTree
+	scene_tree.root.add_child(timer)
 	timer.add_to_group("GdUnitTimers")
-	timer.timeout.connect(func do_interrupt() -> void:
-		_interrupted = true
-		, CONNECT_DEFERRED)
+	@warning_ignore("return_value_discarded")
+	timer.timeout.connect(do_interrupt, CONNECT_DEFERRED)
 	timer.set_one_shot(true)
 	timer.start((_timeout/1000.0)*time_scale)
 	_sleep_timer = Timer.new()
 	_sleep_timer.set_name("gdunit_funcassert_sleep_timer_%d" % _sleep_timer.get_instance_id() )
-	Engine.get_main_loop().root.add_child(_sleep_timer)
+	scene_tree.root.add_child(_sleep_timer)
 
 	while true:
 		var current :Variant = await next_current_value()
@@ -139,13 +150,20 @@ func _validate_callback(predicate :Callable, expected :Variant = null) -> void:
 			await _sleep_timer.timeout
 
 	_sleep_timer.stop()
-	await Engine.get_main_loop().process_frame
+	await scene_tree.process_frame
 	if _interrupted:
 		# https://github.com/godotengine/godot/issues/73052
 		#var predicate_name = predicate.get_method()
 		var predicate_name :String = str(predicate).split('::')[1]
-		report_error(GdAssertMessages.error_interrupted(predicate_name.strip_edges().trim_prefix("cb_"), expected, LocalTime.elapsed(_timeout)))
+		@warning_ignore("return_value_discarded")
+		report_error(GdAssertMessages.error_interrupted(
+			predicate_name.strip_edges().trim_prefix("cb_"),
+			expected,
+			LocalTime.elapsed(_timeout)
+			)
+		)
 	else:
+		@warning_ignore("return_value_discarded")
 		report_success()
 	_sleep_timer.free()
 	timer.free()

@@ -8,8 +8,12 @@ const SUB_COLOR :=  Color(1, 0, 0, .3)
 const ADD_COLOR :=  Color(0, 1, 0, .3)
 
 
-static func format_dict(value :Dictionary) -> String:
-	if value.is_empty():
+static func format_dict(value :Variant) -> String:
+	if not value is Dictionary:
+		return str(value)
+
+	var dict_value: Dictionary = value
+	if dict_value.is_empty():
 		return "{ }"
 	var as_rows := var_to_str(value).split("\n")
 	for index in range( 1, as_rows.size()-1):
@@ -22,15 +26,22 @@ static func format_dict(value :Dictionary) -> String:
 static func input_event_as_text(event :InputEvent) -> String:
 	var text := ""
 	if event is InputEventKey:
+		var key_event := event as InputEventKey
 		text += "InputEventKey : key='%s', pressed=%s, keycode=%d, physical_keycode=%s" % [
-					event.as_text(), event.pressed, event.keycode, event.physical_keycode]
+					event.as_text(), key_event.pressed, key_event.keycode, key_event.physical_keycode]
 	else:
 		text += event.as_text()
 	if event is InputEventMouse:
-		text += ", global_position %s" % event.global_position
+		var mouse_event := event as InputEventMouse
+		text += ", global_position %s" % mouse_event.global_position
 	if event is InputEventWithModifiers:
+		var mouse_event := event as InputEventWithModifiers
 		text += ", shift=%s, alt=%s, control=%s, meta=%s, command=%s" % [
-					event.shift_pressed, event.alt_pressed, event.ctrl_pressed, event.meta_pressed, event.command_or_control_autoremap]
+					mouse_event.shift_pressed,
+					mouse_event.alt_pressed,
+					mouse_event.ctrl_pressed,
+					mouse_event.meta_pressed,
+					mouse_event.command_or_control_autoremap]
 	return text
 
 
@@ -51,9 +62,11 @@ static func colored_array_div(characters :PackedByteArray) -> String:
 		match character:
 			GdDiffTool.DIV_ADD:
 				index += 1
+				@warning_ignore("return_value_discarded")
 				additional_chars.append(characters[index])
 			GdDiffTool.DIV_SUB:
 				index += 1
+				@warning_ignore("return_value_discarded")
 				missing_chars.append(characters[index])
 			_:
 				if not missing_chars.is_empty():
@@ -62,6 +75,7 @@ static func colored_array_div(characters :PackedByteArray) -> String:
 				if not additional_chars.is_empty():
 					result.append_array(format_chars(additional_chars, ADD_COLOR))
 					additional_chars = PackedByteArray()
+				@warning_ignore("return_value_discarded")
 				result.append(character)
 		index += 1
 
@@ -95,7 +109,7 @@ static func _nerror(number :Variant) -> String:
 static func _colored_value(value :Variant) -> String:
 	match typeof(value):
 		TYPE_STRING, TYPE_STRING_NAME:
-			return "'[color=%s]%s[/color]'" % [VALUE_COLOR, _colored_string_div(value)]
+			return "'[color=%s]%s[/color]'" % [VALUE_COLOR, _colored_string_div(str(value))]
 		TYPE_INT:
 			return "'[color=%s]%d[/color]'" % [VALUE_COLOR, value]
 		TYPE_FLOAT:
@@ -106,10 +120,12 @@ static func _colored_value(value :Variant) -> String:
 			if value == null:
 				return "'[color=%s]<null>[/color]'" % [VALUE_COLOR]
 			if value is InputEvent:
-				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, input_event_as_text(value)]
-			if value.has_method("_to_string"):
+				var ie: InputEvent = value
+				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, input_event_as_text(ie)]
+			var obj_value: Object = value
+			if obj_value.has_method("_to_string"):
 				return "[color=%s]<%s>[/color]" % [VALUE_COLOR, str(value)]
-			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, value.get_class()]
+			return "[color=%s]<%s>[/color]" % [VALUE_COLOR, obj_value.get_class()]
 		TYPE_DICTIONARY:
 			return "'[color=%s]%s[/color]'" % [VALUE_COLOR, format_dict(value)]
 		_:
@@ -163,10 +179,10 @@ static func test_timeout(timeout :int) -> String:
 static func test_suite_skipped(hint :String, skip_count :int) -> String:
 	return """
 		%s
-		  Tests skipped: %s
+		  Skipped %s tests
 		  Reason: %s
 		""".dedent().trim_prefix("\n")\
-		% [_error("Entire test-suite is skipped!"), _colored_value(skip_count), _colored_value(hint)]
+		% [_error("The Entire test-suite is skipped!"), _colored_value(skip_count), _colored_value(hint)]
 
 
 static func test_skipped(hint :String) -> String:
@@ -336,6 +352,7 @@ static func error_ends_with(current :Variant, expected :Variant) -> String:
 
 
 static func error_has_length(current :Variant, expected: int, compare_operator :int) -> String:
+	@warning_ignore("unsafe_method_access")
 	var current_length :Variant = current.length() if current != null else null
 	match compare_operator:
 		Comparator.EQUAL:
@@ -361,48 +378,50 @@ static func error_has_length(current :Variant, expected: int, compare_operator :
 
 # - ArrayAssert specific messgaes ---------------------------------------------------
 
-static func error_arr_contains(current :Variant, expected :Array, not_expect :Array, not_found :Array, by_reference :bool) -> String:
+static func error_arr_contains(current: Variant, expected: Variant, not_expect: Variant, not_found: Variant, by_reference: bool) -> String:
 	var failure_message := "Expecting contains SAME elements:" if by_reference else "Expecting contains elements:"
 	var error := "%s\n %s\n do contains (in any order)\n %s" % [
 					_error(failure_message), _colored_value(current), _colored_value(expected)]
-	if not not_expect.is_empty():
+	if not is_empty(not_expect):
 		error += "\nbut some elements where not expected:\n %s" % _colored_value(not_expect)
-	if not not_found.is_empty():
-		var prefix := "but" if not_expect.is_empty() else "and"
+	if not is_empty(not_found):
+		var prefix := "but" if is_empty(not_expect) else "and"
 		error += "\n%s could not find elements:\n %s" % [prefix, _colored_value(not_found)]
 	return error
 
 
 static func error_arr_contains_exactly(
-	current :Variant,
-	expected :Variant,
-	not_expect :Variant,
-	not_found :Variant, compare_mode :GdObjects.COMPARE_MODE) -> String:
+	current: Variant,
+	expected: Variant,
+	not_expect: Variant,
+	not_found: Variant, compare_mode: GdObjects.COMPARE_MODE) -> String:
 	var failure_message := (
 		"Expecting contains exactly elements:" if compare_mode == GdObjects.COMPARE_MODE.PARAMETER_DEEP_TEST
 		else "Expecting contains SAME exactly elements:"
 	)
-	if not_expect.is_empty() and not_found.is_empty():
-		var diff := _find_first_diff(current, expected)
+	if is_empty(not_expect) and is_empty(not_found):
+		var arr_current: Array = current
+		var arr_expected: Array = expected
+		var diff := _find_first_diff(arr_current, arr_expected)
 		return "%s\n %s\n do contains (in same order)\n %s\n but has different order %s"  % [
 					_error(failure_message), _colored_value(current), _colored_value(expected), diff]
 
 	var error := "%s\n %s\n do contains (in same order)\n %s" % [
 					_error(failure_message), _colored_value(current), _colored_value(expected)]
-	if not not_expect.is_empty():
+	if not is_empty(not_expect):
 		error += "\nbut some elements where not expected:\n %s" % _colored_value(not_expect)
-	if not not_found.is_empty():
-		var prefix := "but" if not_expect.is_empty() else "and"
+	if not is_empty(not_found):
+		var prefix := "but" if is_empty(not_expect) else "and"
 		error += "\n%s could not find elements:\n %s" % [prefix, _colored_value(not_found)]
 	return error
 
 
 static func error_arr_contains_exactly_in_any_order(
-	current :Variant,
-	expected :Array,
-	not_expect :Array,
-	not_found :Array,
-	compare_mode :GdObjects.COMPARE_MODE) -> String:
+	current: Variant,
+	expected: Variant,
+	not_expect: Variant,
+	not_found: Variant,
+	compare_mode: GdObjects.COMPARE_MODE) -> String:
 
 	var failure_message := (
 		"Expecting contains exactly elements:" if compare_mode == GdObjects.COMPARE_MODE.PARAMETER_DEEP_TEST
@@ -410,19 +429,19 @@ static func error_arr_contains_exactly_in_any_order(
 	)
 	var error := "%s\n %s\n do contains exactly (in any order)\n %s" % [
 					_error(failure_message), _colored_value(current), _colored_value(expected)]
-	if not not_expect.is_empty():
+	if not is_empty(not_expect):
 		error += "\nbut some elements where not expected:\n %s" % _colored_value(not_expect)
-	if not not_found.is_empty():
-		var prefix := "but" if not_expect.is_empty() else "and"
+	if not is_empty(not_found):
+		var prefix := "but" if is_empty(not_expect) else "and"
 		error += "\n%s could not find elements:\n %s" % [prefix, _colored_value(not_found)]
 	return error
 
 
-static func error_arr_not_contains(current :Array, expected :Array, found :Array, compare_mode :GdObjects.COMPARE_MODE) -> String:
+static func error_arr_not_contains(current: Variant, expected: Variant, found: Variant, compare_mode: GdObjects.COMPARE_MODE) -> String:
 	var failure_message := "Expecting:" if compare_mode == GdObjects.COMPARE_MODE.PARAMETER_DEEP_TEST else "Expecting SAME:"
 	var error := "%s\n %s\n do not contains\n %s" % [
 					_error(failure_message), _colored_value(current), _colored_value(expected)]
-	if not found.is_empty():
+	if not is_empty(found):
 		error += "\n but found elements:\n %s" % _colored_value(found)
 	return error
 
@@ -542,20 +561,25 @@ static func result_message(result :GdUnitResult) -> String:
 # - Spy|Mock specific errors ----------------------------------------------------
 static func error_no_more_interactions(summary :Dictionary) -> String:
 	var interactions := PackedStringArray()
-	for args :Variant in summary.keys():
+	for args :Array in summary.keys():
 		var times :int = summary[args]
+		@warning_ignore("return_value_discarded")
 		interactions.append(_format_arguments(args, times))
 	return "%s\n%s\n%s" % [_error("Expecting no more interactions!"), _error("But found interactions on:"), "\n".join(interactions)]
 
 
-static func error_validate_interactions(current_interactions :Dictionary, expected_interactions :Dictionary) -> String:
-	var interactions := PackedStringArray()
-	for args :Variant in current_interactions.keys():
-		var times :int = current_interactions[args]
-		interactions.append(_format_arguments(args, times))
-	var expected_interaction := _format_arguments(expected_interactions.keys()[0], expected_interactions.values()[0])
+static func error_validate_interactions(current_interactions: Dictionary, expected_interactions: Dictionary) -> String:
+	var collected_interactions := PackedStringArray()
+	for args: Array in current_interactions.keys():
+		var times: int = current_interactions[args]
+		@warning_ignore("return_value_discarded")
+		collected_interactions.append(_format_arguments(args, times))
+
+	var arguments: Array = expected_interactions.keys()[0]
+	var interactions: int = expected_interactions.values()[0]
+	var expected_interaction := _format_arguments(arguments, interactions)
 	return "%s\n%s\n%s\n%s" % [
-			_error("Expecting interaction on:"), expected_interaction, _error("But found interactions on:"), "\n".join(interactions)]
+			_error("Expecting interaction on:"), expected_interaction, _error("But found interactions on:"), "\n".join(collected_interactions)]
 
 
 static func _format_arguments(args :Array, times :int) -> String:
@@ -569,13 +593,15 @@ static func _format_arguments(args :Array, times :int) -> String:
 static func _to_typed_args(args :Array) -> PackedStringArray:
 	var typed := PackedStringArray()
 	for arg :Variant in args:
+		@warning_ignore("return_value_discarded")
 		typed.append(_format_arg(arg) + " :" + GdObjects.type_as_string(typeof(arg)))
 	return typed
 
 
 static func _format_arg(arg :Variant) -> String:
 	if arg is InputEvent:
-		return input_event_as_text(arg)
+		var ie: InputEvent = arg
+		return input_event_as_text(ie)
 	return str(arg)
 
 
@@ -589,6 +615,7 @@ static func _find_first_diff(left :Array, right :Array) -> String:
 
 
 static func error_has_size(current :Variant, expected: int) -> String:
+	@warning_ignore("unsafe_method_access")
 	var current_size :Variant = null if current == null else current.size()
 	return "%s\n %s\n but was\n %s" % [_error("Expecting size:"), _colored_value(expected), _colored_value(current_size)]
 
@@ -613,3 +640,18 @@ static func format_invalid(value :String) -> String:
 
 static func humanized(value :String) -> String:
 	return value.replace("_", " ")
+
+
+static func build_failure_message(failure :String, additional_failure_message: String, custom_failure_message: String) -> String:
+	var message := failure if custom_failure_message.is_empty() else custom_failure_message
+	if additional_failure_message.is_empty():
+		return message
+	return """
+		%s
+		[color=LIME_GREEN][b]Additional info:[/b][/color]
+		 %s""".dedent().trim_prefix("\n") % [message, additional_failure_message]
+
+
+static func is_empty(value: Variant) -> bool:
+	var arry_value: Array = value
+	return arry_value != null and arry_value.is_empty()

@@ -8,6 +8,7 @@ var _path :String
 func serialize(resource :Node) -> Dictionary:
 	var serialized := Dictionary()
 	serialized["name"] = resource.get_name()
+	@warning_ignore("unsafe_method_access")
 	serialized["resource_path"] = resource.ResourcePath()
 	return serialized
 

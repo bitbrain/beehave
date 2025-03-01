@@ -36,6 +36,7 @@ func _run(name :String, cb :Callable) -> Variant:
 	var save_current_thread_id := _current_thread_id
 	var thread := Thread.new()
 	thread.set_meta("name", name)
+	@warning_ignore("return_value_discarded")
 	thread.start(cb)
 	_current_thread_id = thread.get_id() as int
 	_register_thread(thread, _current_thread_id)
@@ -52,8 +53,9 @@ func _register_thread(thread :Thread, thread_id :int) -> void:
 
 
 func _unregister_thread(thread_id :int) -> void:
-	var context := _thread_context_by_id.get(thread_id) as GdUnitThreadContext
+	var context: GdUnitThreadContext = _thread_context_by_id.get(thread_id)
 	if context:
+		@warning_ignore("return_value_discarded")
 		_thread_context_by_id.erase(thread_id)
 		context.dispose()
 

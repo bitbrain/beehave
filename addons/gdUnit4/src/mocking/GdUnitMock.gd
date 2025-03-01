@@ -9,10 +9,10 @@ const RETURN_DEFAULTS = "RETURN_DEFAULTS"
 ## builds full deep mocked object
 const RETURN_DEEP_STUB = "RETURN_DEEP_STUB"
 
-var _value :Variant
+var _value: Variant
 
 
-func _init(value :Variant) -> void:
+func _init(value: Variant) -> void:
 	_value = value
 
 
@@ -21,9 +21,10 @@ func _init(value :Variant) -> void:
 ## 	[codeblock]
 ## 		do_return(false).on(myMock).is_selected()
 ## 	[/codeblock]
-func on(obj :Object) -> Object:
-	if not GdUnitMock._is_mock_or_spy( obj, "__do_return"):
+func on(obj: Variant) -> Variant:
+	if not GdUnitMock._is_mock_or_spy(obj, "__do_return"):
 		return obj
+	@warning_ignore("unsafe_method_access")
 	return obj.__do_return(_value)
 
 
@@ -33,8 +34,12 @@ func checked(obj :Object) -> Object:
 	return on(obj)
 
 
-static func _is_mock_or_spy(obj :Object, func_sig :String) -> bool:
-	if obj is GDScript and not obj.get_script().has_script_method(func_sig):
+static func _is_mock_or_spy(obj: Variant, func_sig: String) -> bool:
+	if obj is Object and not as_object(obj).has_method(func_sig):
 		push_error("Error: You try to use a non mock or spy!")
 		return false
 	return true
+
+
+static func as_object(value: Variant) -> Object:
+	return value

@@ -7,50 +7,97 @@ var _report_path :String
 var _iteration :int
 
 
-func _init(report_path :String) -> void:
-	_iteration = GdUnitFileAccess.find_last_path_index(report_path, REPORT_DIR_PREFIX) + 1
+func _init(report_path :String, max_reports: int) -> void:
+	if max_reports > 1:
+		_iteration = GdUnitFileAccess.find_last_path_index(report_path, REPORT_DIR_PREFIX) + 1
+	else:
+		_iteration = 1
 	_report_path = "%s/%s%d" % [report_path, REPORT_DIR_PREFIX, _iteration]
+	@warning_ignore("return_value_discarded")
 	DirAccess.make_dir_recursive_absolute(_report_path)
 
 
-func add_testsuite_report(suite_report :GdUnitTestSuiteReport) -> void:
-	_reports.append(suite_report)
+func add_testsuite_report(p_resource_path: String, p_suite_name: String, p_test_count: int) -> void:
+	_reports.append(GdUnitTestSuiteReport.new(p_resource_path, p_suite_name, p_test_count))
 
 
 @warning_ignore("shadowed_variable")
-func add_testcase_report(resource_path :String, suite_report :GdUnitTestCaseReport) -> void:
-	for report in _reports:
+func add_testcase(resource_path :String, suite_name :String, test_name: String) -> void:
+	for report:GdUnitTestSuiteReport in _reports:
 		if report.resource_path() == resource_path:
-			report.add_report(suite_report)
+			var test_report := GdUnitTestCaseReport.new(resource_path, suite_name, test_name)
+			report.add_or_create_test_report(test_report)
 
 
-@warning_ignore("shadowed_variable")
-func update_test_suite_report(
-	resource_path :String,
-	duration :int,
-	_is_error :bool,
-	is_failed: bool,
-	_is_warning :bool,
-	_is_skipped :bool,
-	skipped_count :int,
-	failed_count :int,
-	orphan_count :int,
-	reports :Array = []) -> void:
+func add_testsuite_reports(
+	p_resource_path :String,
+	p_error_count :int,
+	p_failure_count :int,
+	p_orphan_count :int,
+	p_duration :int,
+	p_reports :Array = []) -> void:
 
-	for report in _reports:
-		if report.resource_path() == resource_path:
-			report.set_duration(duration)
-			report.set_failed(is_failed, failed_count)
-			report.set_skipped(skipped_count)
-			report.set_orphans(orphan_count)
-			report.set_reports(reports)
+	for report:GdUnitTestSuiteReport in _reports:
+		if report.resource_path() == p_resource_path:
+			report.set_reports(p_reports)
+	update_summary_counters(p_error_count, p_failure_count, p_orphan_count, 0, 0, p_duration)
 
 
-@warning_ignore("shadowed_variable")
-func update_testcase_report(resource_path :String, test_report :GdUnitTestCaseReport) -> void:
-	for report in _reports:
-		if report.resource_path() == resource_path:
-			report.update(test_report)
+func add_testcase_reports(
+	p_resource_path: String,
+	p_test_name: String,
+	p_reports: Array[GdUnitReport]) -> void:
+
+	for report:GdUnitTestSuiteReport in _reports:
+		if report.resource_path() == p_resource_path:
+			report.add_testcase_reports(p_test_name, p_reports)
+
+
+func update_testsuite_counters(
+	p_resource_path :String,
+	p_error_count: int,
+	p_failure_count: int,
+	p_orphan_count: int,
+	p_is_skipped: bool,
+	p_is_flaky: bool,
+	p_duration: int) -> void:
+
+	for report:GdUnitTestSuiteReport in _reports:
+		if report.resource_path() == p_resource_path:
+			report.update_testsuite_counters(p_error_count, p_failure_count, p_orphan_count, p_is_skipped, p_is_flaky, p_duration)
+	update_summary_counters(p_error_count, p_failure_count, p_orphan_count, p_is_skipped, p_is_flaky, 0)
+
+
+func set_testcase_counters(
+	p_resource_path: String,
+	p_test_name: String,
+	p_error_count: int,
+	p_failure_count: int,
+	p_orphan_count: int,
+	p_is_skipped: bool,
+	p_is_flaky: bool,
+	p_duration: int) -> void:
+
+	for report:GdUnitTestSuiteReport in _reports:
+		if report.resource_path() == p_resource_path:
+			report.set_testcase_counters(p_test_name, p_error_count, p_failure_count, p_orphan_count,
+				p_is_skipped, p_is_flaky, p_duration)
+
+
+func update_summary_counters(
+	p_error_count: int,
+	p_failure_count: int,
+	p_orphan_count: int,
+	p_is_skipped: bool,
+	p_is_flaky: bool,
+	p_duration: int) -> void:
+
+	_error_count += p_error_count
+	_failure_count += p_failure_count
+	_orphan_count += p_orphan_count
+	_skipped_count += p_is_skipped as int
+	_flaky_count += p_is_flaky as int
+	_duration += p_duration
 
 
 func write() -> String:
@@ -61,6 +108,7 @@ func write() -> String:
 	# write report
 	var index_file := "%s/index.html" % _report_path
 	FileAccess.open(index_file, FileAccess.WRITE).store_string(to_write)
+	@warning_ignore("return_value_discarded")
 	GdUnitFileAccess.copy_directory("res://addons/gdUnit4/src/report/template/css/", _report_path + "/css")
 	return index_file
 
@@ -77,17 +125,20 @@ func apply_path_reports(report_dir :String, template :String, report_summaries :
 	paths.append_array(path_report_mapping.keys())
 	paths.sort()
 	for report_path in paths:
-		var report := GdUnitByPathReport.new(report_path, path_report_mapping.get(report_path))
+		var reports: Array[GdUnitReportSummary] = path_report_mapping.get(report_path)
+		var report := GdUnitByPathReport.new(report_path, reports)
 		var report_link :String = report.write(report_dir).replace(report_dir, ".")
+		@warning_ignore("return_value_discarded")
 		table_records.append(report.create_record(report_link))
 	return template.replace(GdUnitHtmlPatterns.TABLE_BY_PATHS, "\n".join(table_records))
 
 
-func apply_testsuite_reports(report_dir :String, template :String, test_suite_reports :Array[GdUnitReportSummary]) -> String:
+func apply_testsuite_reports(report_dir: String, template: String, test_suite_reports: Array[GdUnitReportSummary]) -> String:
 	var table_records := PackedStringArray()
-	for report in test_suite_reports:
+	for report: GdUnitTestSuiteReport in test_suite_reports:
 		var report_link :String = report.write(report_dir).replace(report_dir, ".")
-		table_records.append(report.create_record(report_link))
+		@warning_ignore("return_value_discarded")
+		table_records.append(report.create_record(report_link) as String)
 	return template.replace(GdUnitHtmlPatterns.TABLE_BY_TESTSUITES, "\n".join(table_records))
 
 

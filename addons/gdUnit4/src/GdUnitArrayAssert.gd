@@ -158,3 +158,14 @@ func extractv(
 	extractor8 :GdUnitValueExtractor = null,
 	extractor9 :GdUnitValueExtractor = null) -> GdUnitArrayAssert:
 	return self
+
+
+
+@warning_ignore("unused_parameter")
+func override_failure_message(message :String) -> GdUnitArrayAssert:
+	return self
+
+
+@warning_ignore("unused_parameter")
+func append_failure_message(message :String) -> GdUnitArrayAssert:
+	return self

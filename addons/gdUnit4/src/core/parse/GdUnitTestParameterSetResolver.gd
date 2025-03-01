@@ -45,10 +45,11 @@ func validate(input_value_set: Array) -> String:
 	for input_values :Variant in input_value_set:
 		var parameter_set_index := input_value_set.find(input_values)
 		if input_values is Array:
-			var current_arg_count :int = input_values.size()
+			var arr_values: Array = input_values
+			var current_arg_count := arr_values.size()
 			if current_arg_count != expected_arg_count:
 				return "\n	The parameter set at index [%d] does not match the expected input parameters!\n	The test case requires [%d] input parameters, but the set contains [%d]" % [parameter_set_index, expected_arg_count, current_arg_count]
-			var error := GdUnitTestParameterSetResolver.validate_parameter_types(input_arguments, input_values, parameter_set_index)
+			var error := GdUnitTestParameterSetResolver.validate_parameter_types(input_arguments, arr_values, parameter_set_index)
 			if not error.is_empty():
 				return error
 		else:
@@ -97,6 +98,7 @@ func build_test_case_names(test_case: _TestCase) -> PackedStringArray:
 		for parameter_set_index in parameter_sets.size():
 			var parameter_set := parameter_sets[parameter_set_index]
 			_static_sets_by_index[parameter_set_index] = _is_static_parameter_set(parameter_set, property_names)
+			@warning_ignore("return_value_discarded")
 			_test_case_names_cache.append(GdUnitTestParameterSetResolver._build_test_case_name(test_case, parameter_set, parameter_set_index))
 			parameter_set_index += 1
 	return _test_case_names_cache
@@ -121,6 +123,7 @@ func _extract_test_names_by_reflection(test_case: _TestCase) -> PackedStringArra
 	var parameter_sets := load_parameter_sets(test_case)
 	var test_case_names: PackedStringArray = []
 	for index in parameter_sets.size():
+		@warning_ignore("return_value_discarded")
 		test_case_names.append(GdUnitTestParameterSetResolver._build_test_case_name(test_case, str(parameter_sets[index]), index))
 	return test_case_names
 
@@ -149,10 +152,10 @@ func load_parameter_sets(test_case: _TestCase, do_validate := false) -> Array:
 	if result != OK:
 		push_error("Extracting test parameters failed! Script loading error: %s" % result)
 		return []
-	var instance :Variant = script.new()
+	var instance :Object = script.new()
 	GdUnitTestParameterSetResolver.copy_properties(test_case.get_parent(), instance)
-	instance.queue_free()
-	var parameter_sets :Variant = instance.call("__extract_test_parameters")
+	(instance as Node).queue_free()
+	var parameter_sets: Array = instance.call("__extract_test_parameters")
 	if not do_validate:
 		return parameter_sets
 	# validate the parameter set
@@ -169,12 +172,30 @@ func load_parameter_sets(test_case: _TestCase, do_validate := false) -> Array:
 		""".dedent().trim_prefix("\n") % [
 			GdAssertMessages._error("Internal Error"),
 			GdAssertMessages._error("Please report this issue as a bug!")]
-		test_case.get_parent().__execution_context\
-			.reports()\
-			.append(GdUnitReport.new().create(GdUnitReport.INTERUPTED, test_case.line_number(), error))
+		GdUnitThreadManager.get_current_context()\
+			.get_execution_context()\
+			.add_report(GdUnitReport.new().create(GdUnitReport.INTERUPTED, test_case.line_number(), error))
 		test_case.skip(true, error)
 		test_case._interupted = true
+	@warning_ignore("return_value_discarded")
+	fixure_typed_parameters(parameter_sets, _fd.args())
 	return parameter_sets
+
+
+func fixure_typed_parameters(parameter_sets: Array, arg_descriptors: Array[GdFunctionArgument]) -> Array:
+	for parameter_set_index in parameter_sets.size():
+		var parameter_set: Array = parameter_sets[parameter_set_index]
+		# run over all function arguments
+		for parameter_index in parameter_set.size():
+			var parameter :Variant = parameter_set[parameter_index]
+			var arg_descriptor: GdFunctionArgument = arg_descriptors[parameter_index]
+			if parameter is Array:
+				var as_array: Array = parameter
+				# we need to convert the untyped array to the expected typed version
+				if arg_descriptor.is_typed_array():
+					parameter_set[parameter_index] = Array(as_array, arg_descriptor.type_hint(), "", null)
+	return parameter_sets
+
 
 
 static func copy_properties(source: Object, dest: Object) -> void:

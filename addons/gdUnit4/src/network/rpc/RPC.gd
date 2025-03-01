@@ -13,7 +13,7 @@ static func deserialize(json_value :String) -> Object:
 	if err != OK:
 		push_error("Can't deserialize JSON, error at line %d: %s \n json: '%s'" % [json.get_error_line(), json.get_error_message(), json_value])
 		return null
-	var result := json.get_data() as Dictionary
+	var result :Dictionary = json.get_data()
 	if not typeof(result) == TYPE_DICTIONARY:
 		push_error("Can't deserialize JSON, error at line %d: %s \n json: '%s'" % [result.error_line, result.error_string, json_value])
 		return null

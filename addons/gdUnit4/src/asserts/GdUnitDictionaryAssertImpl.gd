@@ -1,14 +1,14 @@
 extends GdUnitDictionaryAssert
 
-var _base :GdUnitAssert
+var _base: GdUnitAssertImpl
 
 
 func _init(current :Variant) -> void:
-	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript",
-								ResourceLoader.CACHE_MODE_REUSE).new(current)
+	_base = GdUnitAssertImpl.new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
 	if not GdUnitAssertions.validate_value_type(current, TYPE_DICTIONARY):
+		@warning_ignore("return_value_discarded")
 		report_error("GdUnitDictionaryAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 
@@ -30,11 +30,18 @@ func report_error(error :String) -> GdUnitDictionaryAssert:
 
 
 func failure_message() -> String:
-	return _base._current_error_message
+	return _base.failure_message()
 
 
 func override_failure_message(message :String) -> GdUnitDictionaryAssert:
+	@warning_ignore("return_value_discarded")
 	_base.override_failure_message(message)
+	return self
+
+
+func append_failure_message(message :String) -> GdUnitDictionaryAssert:
+	@warning_ignore("return_value_discarded")
+	_base.append_failure_message(message)
 	return self
 
 
@@ -43,11 +50,13 @@ func current_value() -> Variant:
 
 
 func is_null() -> GdUnitDictionaryAssert:
+	@warning_ignore("return_value_discarded")
 	_base.is_null()
 	return self
 
 
 func is_not_null() -> GdUnitDictionaryAssert:
+	@warning_ignore("return_value_discarded")
 	_base.is_not_null()
 	return self
 
@@ -96,14 +105,16 @@ func is_not_same(expected :Variant) -> GdUnitDictionaryAssert:
 
 func is_empty() -> GdUnitDictionaryAssert:
 	var current :Variant = current_value()
-	if current == null or not current.is_empty():
+	@warning_ignore("unsafe_cast")
+	if current == null or not (current as Dictionary).is_empty():
 		return report_error(GdAssertMessages.error_is_empty(current))
 	return report_success()
 
 
 func is_not_empty() -> GdUnitDictionaryAssert:
 	var current :Variant = current_value()
-	if current == null or current.is_empty():
+	@warning_ignore("unsafe_cast")
+	if current == null or (current as Dictionary).is_empty():
 		return report_error(GdAssertMessages.error_is_not_empty())
 	return report_success()
 
@@ -112,7 +123,8 @@ func has_size(expected: int) -> GdUnitDictionaryAssert:
 	var current :Variant = current_value()
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
-	if current.size() != expected:
+	@warning_ignore("unsafe_cast")
+	if (current as Dictionary).size() != expected:
 		return report_error(GdAssertMessages.error_has_size(current, expected))
 	return report_success()
 
@@ -122,9 +134,11 @@ func _contains_keys(expected :Array, compare_mode :GdObjects.COMPARE_MODE) -> Gd
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
 	# find expected keys
-	var keys_not_found :Array = expected.filter(_filter_by_key.bind(current.keys(), compare_mode))
+	@warning_ignore("unsafe_cast")
+	var keys_not_found :Array = expected.filter(_filter_by_key.bind((current as Dictionary).keys(), compare_mode))
 	if not keys_not_found.is_empty():
-		return report_error(GdAssertMessages.error_contains_keys(current.keys(), expected, keys_not_found, compare_mode))
+		@warning_ignore("unsafe_cast")
+		return report_error(GdAssertMessages.error_contains_keys((current as Dictionary).keys() as Array, expected, keys_not_found, compare_mode))
 	return report_success()
 
 
@@ -133,11 +147,12 @@ func _contains_key_value(key :Variant, value :Variant, compare_mode :GdObjects.C
 	var expected := [key]
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
-	var keys_not_found :Array = expected.filter(_filter_by_key.bind(current.keys(), compare_mode))
+	var dict_current: Dictionary = current
+	var keys_not_found :Array = expected.filter(_filter_by_key.bind(dict_current.keys(), compare_mode))
 	if not keys_not_found.is_empty():
-		return report_error(GdAssertMessages.error_contains_keys(current.keys(), expected, keys_not_found, compare_mode))
-	if not GdObjects.equals(current[key], value, false, compare_mode):
-		return report_error(GdAssertMessages.error_contains_key_value(key, value, current[key], compare_mode))
+		return report_error(GdAssertMessages.error_contains_keys(dict_current.keys() as Array, expected, keys_not_found, compare_mode))
+	if not GdObjects.equals(dict_current[key], value, false, compare_mode):
+		return report_error(GdAssertMessages.error_contains_key_value(key, value, dict_current[key], compare_mode))
 	return report_success()
 
 
@@ -145,9 +160,10 @@ func _not_contains_keys(expected :Array, compare_mode :GdObjects.COMPARE_MODE) -
 	var current :Variant = current_value()
 	if current == null:
 		return report_error(GdAssertMessages.error_is_not_null())
-	var keys_found :Array = current.keys().filter(_filter_by_key.bind(expected, compare_mode, true))
+	var dict_current: Dictionary = current
+	var keys_found :Array = dict_current.keys().filter(_filter_by_key.bind(expected, compare_mode, true))
 	if not keys_found.is_empty():
-		return report_error(GdAssertMessages.error_not_contains_keys(current.keys(), expected, keys_found, compare_mode))
+		return report_error(GdAssertMessages.error_not_contains_keys(dict_current.keys() as Array, expected, keys_found, compare_mode))
 	return report_success()
 
 

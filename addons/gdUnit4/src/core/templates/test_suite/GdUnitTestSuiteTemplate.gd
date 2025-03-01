@@ -86,8 +86,10 @@ static func default_CS_template() -> String:
 
 
 static func build_template(source_path: String) -> String:
-	var clazz_name :String = GdObjects.to_pascal_case(GdObjects.extract_class_name(source_path).value() as String)
-	return GdUnitSettings.get_setting(GdUnitSettings.TEMPLATE_TS_GD, default_GD_template())\
+	var clazz_name :String = GdObjects.to_pascal_case(GdObjects.extract_class_name(source_path).value_as_string())
+	var template: String = GdUnitSettings.get_setting(GdUnitSettings.TEMPLATE_TS_GD, default_GD_template())
+
+	return template\
 		.replace(TAG_TEST_SUITE_CLASS, clazz_name+"Test")\
 		.replace(TAG_SOURCE_RESOURCE_PATH, source_path)\
 		.replace(TAG_SOURCE_CLASS_NAME, clazz_name)\

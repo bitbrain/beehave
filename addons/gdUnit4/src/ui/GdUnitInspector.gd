@@ -11,11 +11,15 @@ var _command_handler := GdUnitCommandHandler.instance()
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		_getEditorThemes()
+	@warning_ignore("return_value_discarded")
 	GdUnitCommandHandler.instance().gdunit_runner_start.connect(func() -> void:
-		var tab_container :TabContainer = get_parent_control()
-		for tab_index in tab_container.get_tab_count():
-			if tab_container.get_tab_title(tab_index) == "GdUnit":
-				tab_container.set_current_tab(tab_index)
+		var control :Control = get_parent_control()
+		# if the tab is floating we dont need to set as current
+		if control is TabContainer:
+			var tab_container :TabContainer = control
+			for tab_index in tab_container.get_tab_count():
+				if tab_container.get_tab_title(tab_index) == "GdUnit":
+					tab_container.set_current_tab(tab_index)
 	)
 	if Engine.is_editor_hint():
 		add_script_editor_context_menu()

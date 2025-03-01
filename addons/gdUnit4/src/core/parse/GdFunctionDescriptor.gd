@@ -6,11 +6,24 @@ var _is_static :bool
 var _is_engine :bool
 var _is_coroutine :bool
 var _name :String
+var _source_path: String
 var _line_number :int
 var _return_type :int
 var _return_class :String
 var _args : Array[GdFunctionArgument]
 var _varargs :Array[GdFunctionArgument]
+
+
+
+static func create(p_name: String, p_source_path: String, p_source_line: int, p_return_type: int, p_args: Array[GdFunctionArgument] = []) -> GdFunctionDescriptor:
+	var fd := GdFunctionDescriptor.new(p_name, p_source_line, false, false, false, p_return_type, "", p_args)
+	fd.enrich_file_info(p_source_path, p_source_line)
+	return fd
+
+static func create_static(p_name: String, p_source_path: String, p_source_line: int, p_return_type: int, p_args: Array[GdFunctionArgument] = []) -> GdFunctionDescriptor:
+	var fd := GdFunctionDescriptor.new(p_name, p_source_line, false, true, false, p_return_type, "", p_args)
+	fd.enrich_file_info(p_source_path, p_source_line)
+	return fd
 
 
 func _init(p_name :String,
@@ -34,8 +47,17 @@ func _init(p_name :String,
 	_varargs = p_varargs
 
 
+func with_return_class(clazz_name: String) -> GdFunctionDescriptor:
+	_return_class = clazz_name
+	return self
+
+
 func name() -> String:
 	return _name
+
+
+func source_path() -> String:
+	return _source_path
 
 
 func line_number() -> int:
@@ -74,7 +96,7 @@ func is_private() -> bool:
 	return name().begins_with("_") and not is_virtual()
 
 
-func return_type() -> Variant:
+func return_type() -> int:
 	return _return_type
 
 
@@ -82,6 +104,19 @@ func return_type_as_string() -> String:
 	if (return_type() == TYPE_OBJECT or return_type() == GdObjects.TYPE_ENUM) and not _return_class.is_empty():
 		return _return_class
 	return GdObjects.type_as_string(return_type())
+
+
+@warning_ignore("unsafe_cast")
+func set_argument_value(arg_name: String, value: String) -> void:
+	(
+		_args.filter(func(arg: GdFunctionArgument) -> bool: return arg.name() == arg_name)\
+		.front() as GdFunctionArgument
+	).set_value(value)
+
+
+func enrich_file_info(p_source_path: String, p_line_number: int) -> void:
+	_source_path = p_source_path
+	_line_number = p_line_number
 
 
 func args() -> Array[GdFunctionArgument]:
@@ -92,34 +127,13 @@ func varargs() -> Array[GdFunctionArgument]:
 	return _varargs
 
 
-func typeless() -> String:
-	var func_signature := ""
-	if _return_type == TYPE_NIL:
-		func_signature = "func %s(%s) -> void:" % [name(), typeless_args()]
-	elif _return_type == GdObjects.TYPE_VARIANT:
-		func_signature = "func %s(%s) -> Variant:" % [name(), typeless_args()]
-	else:
-		func_signature = "func %s(%s) -> %s:" % [name(), typeless_args(), return_type_as_string()]
-	return "static " + func_signature if is_static() else func_signature
-
-
-func typeless_args() -> String:
-	var collect := PackedStringArray()
-	for arg in args():
-		if arg.has_default():
-			collect.push_back(  arg.name() + "=" + arg.value_as_string())
-		else:
-			collect.push_back(arg.name())
-	for arg in varargs():
-		collect.push_back(arg.name() + "=" + arg.value_as_string())
-	return ", ".join(collect)
-
-
 func typed_args() -> String:
 	var collect := PackedStringArray()
 	for arg in args():
+		@warning_ignore("return_value_discarded")
 		collect.push_back(arg._to_string())
 	for arg in varargs():
+		@warning_ignore("return_value_discarded")
 		collect.push_back(arg._to_string())
 	return ", ".join(collect)
 
@@ -135,28 +149,23 @@ func _to_string() -> String:
 
 
 # extract function description given by Object.get_method_list()
-static func extract_from(descriptor :Dictionary) -> GdFunctionDescriptor:
-	var function_flags :int = descriptor["flags"]
-	var is_virtual_ :bool = function_flags & METHOD_FLAG_VIRTUAL
-	var is_static_ :bool = function_flags & METHOD_FLAG_STATIC
-	var is_vararg_ :bool = function_flags & METHOD_FLAG_VARARG
-	#var is_const :bool = function_flags & METHOD_FLAG_CONST
-	#var is_core :bool = function_flags & METHOD_FLAG_OBJECT_CORE
-	#var is_default :bool = function_flags & METHOD_FLAGS_DEFAULT
-	#prints("is_virtual: ", is_virtual)
-	#prints("is_static: ", is_static)
-	#prints("is_const: ", is_const)
-	#prints("is_core: ", is_core)
-	#prints("is_default: ", is_default)
-	#prints("is_vararg: ", is_vararg)
+static func extract_from(descriptor :Dictionary, is_engine_ := true) -> GdFunctionDescriptor:
+	var func_name: String = descriptor["name"]
+	var function_flags: int = descriptor["flags"]
+	var return_descriptor: Dictionary = descriptor["return"]
+	var clazz_name: String = return_descriptor["class_name"]
+	var is_virtual_: bool = function_flags & METHOD_FLAG_VIRTUAL
+	var is_static_: bool = function_flags & METHOD_FLAG_STATIC
+	var is_vararg_: bool = function_flags & METHOD_FLAG_VARARG
+
 	return GdFunctionDescriptor.new(
-		descriptor["name"],
+		func_name,
 		-1,
 		is_virtual_,
 		is_static_,
-		true,
-		_extract_return_type(descriptor["return"]),
-		descriptor["return"]["class_name"],
+		is_engine_,
+		_extract_return_type(return_descriptor),
+		clazz_name,
 		_extract_args(descriptor),
 		_build_varargs(is_vararg_)
 	)
@@ -185,13 +194,15 @@ const enum_fix := [
 	"Control.LayoutMode"]
 
 
-static func _extract_return_type(return_info :Dictionary) -> Variant:
+static func _extract_return_type(return_info :Dictionary) -> int:
 	var type :int = return_info["type"]
 	var usage :int = return_info["usage"]
 	if type == TYPE_INT and usage & PROPERTY_USAGE_CLASS_IS_ENUM:
 		return GdObjects.TYPE_ENUM
 	if type == TYPE_NIL and usage & PROPERTY_USAGE_NIL_IS_VARIANT:
 		return GdObjects.TYPE_VARIANT
+	if type == TYPE_NIL and usage == 6:
+		return GdObjects.TYPE_VOID
 	return type
 
 
@@ -204,11 +215,10 @@ static func _extract_args(descriptor :Dictionary) -> Array[GdFunctionArgument]:
 		var arg :Dictionary = arguments.pop_back()
 		var arg_name := _argument_name(arg)
 		var arg_type := _argument_type(arg)
-		var arg_default :Variant = GdFunctionArgument.UNDEFINED
-		if not defaults.is_empty():
-			var default_value :Variant = defaults.pop_back()
-			arg_default = GdDefaultValueDecoder.decode_typed(arg_type, default_value)
-		args_.push_front(GdFunctionArgument.new(arg_name, arg_type, arg_default))
+		var arg_type_hint := _argument_hint(arg)
+		#var arg_class: StringName = arg["class_name"]
+		var default_value: Variant = GdFunctionArgument.UNDEFINED if defaults.is_empty() else defaults.pop_back()
+		args_.push_front(GdFunctionArgument.new(arg_name, arg_type, default_value, arg_type_hint))
 	return args_
 
 
@@ -219,21 +229,39 @@ static func _build_varargs(p_is_vararg :bool) -> Array[GdFunctionArgument]:
 	# if function has vararg we need to handle this manually by adding 10 default arguments
 	var type := GdObjects.TYPE_VARARG
 	for index in 10:
-		varargs_.push_back(GdFunctionArgument.new("vararg%d_" % index, type, "\"%s\"" % GdObjects.TYPE_VARARG_PLACEHOLDER_VALUE))
+		varargs_.push_back(GdFunctionArgument.new("vararg%d_" % index, type, '"%s"' % GdObjects.TYPE_VARARG_PLACEHOLDER_VALUE))
 	return varargs_
 
 
 static func _argument_name(arg :Dictionary) -> String:
-	# add suffix to the name to prevent clash with reserved names
-	return (arg["name"] + "_") as String
+	return arg["name"]
 
 
 static func _argument_type(arg :Dictionary) -> int:
 	var type :int = arg["type"]
+	var usage :int = arg["usage"]
+
 	if type == TYPE_OBJECT:
 		if arg["class_name"] == "Node":
 			return GdObjects.TYPE_NODE
+		if arg["class_name"] == "Fuzzer":
+			return GdObjects.TYPE_FUZZER
+
+	# if the argument untyped we need to scan the assignef value type
+	if type == TYPE_NIL and usage == PROPERTY_USAGE_NIL_IS_VARIANT:
+		return GdObjects.TYPE_VARIANT
 	return type
+
+
+static func _argument_hint(arg :Dictionary) -> int:
+	var hint :int = arg["hint"]
+	var hint_string :String = arg["hint_string"]
+
+	match hint:
+		PROPERTY_HINT_ARRAY_TYPE:
+			return GdObjects.string_to_type(hint_string)
+		_:
+			return 0
 
 
 static func _argument_type_as_string(arg :Dictionary) -> String:

@@ -33,11 +33,11 @@ static func init_fonts(item: CanvasItem) -> float:
 	return 16.0
 
 
-static func load_and_resize_font(font_resource: String, size: float) -> Font:
+static func load_and_resize_font(font_resource: String, size: float) -> FontFile:
 	var font: FontFile = ResourceLoader.load(font_resource, "FontFile")
 	if font == null:
 		push_error("Can't load font '%s'" % font_resource)
 		return null
-	var resized_font := font.duplicate()
+	var resized_font: FontFile = font.duplicate()
 	resized_font.fixed_size = int(size)
 	return resized_font

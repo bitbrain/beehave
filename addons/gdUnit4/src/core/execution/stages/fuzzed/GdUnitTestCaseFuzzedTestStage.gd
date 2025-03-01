@@ -15,6 +15,7 @@ func _execute(context :GdUnitExecutionContext) -> void:
 
 	# guard on fuzzers
 	for fuzzer in fuzzers:
+		@warning_ignore("return_value_discarded")
 		GdUnitMemoryObserver.guard_instance(fuzzer)
 
 	for iteration in test_case.iterations():
@@ -46,7 +47,8 @@ func create_fuzzers(test_suite :GdUnitTestSuite, test_case :_TestCase) -> Array[
 	test_case.generate_seed()
 	var fuzzers :Array[Fuzzer] = []
 	for fuzzer_arg in test_case.fuzzer_arguments():
-		var fuzzer := _expression_runner.to_fuzzer(test_suite.get_script(), fuzzer_arg.value_as_string())
+		@warning_ignore("unsafe_cast")
+		var fuzzer := _expression_runner.to_fuzzer(test_suite.get_script() as GDScript, fuzzer_arg.plain_value() as String)
 		fuzzer._iteration_index = 0
 		fuzzer._iteration_limit = test_case.iterations()
 		fuzzers.append(fuzzer)

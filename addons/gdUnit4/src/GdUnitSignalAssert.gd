@@ -6,14 +6,14 @@ extends GdUnitAssert
 ## Verifies that given signal is emitted until waiting time
 @warning_ignore("unused_parameter")
 func is_emitted(name :String, args := []) -> GdUnitSignalAssert:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	return self
 
 
 ## Verifies that given signal is NOT emitted until waiting time
 @warning_ignore("unused_parameter")
 func is_not_emitted(name :String, args := []) -> GdUnitSignalAssert:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	return self
 
 

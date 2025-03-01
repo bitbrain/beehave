@@ -17,6 +17,7 @@ func _init(callable :Callable) -> void:
 func _execute() -> Array[ErrorLogEntry]:
 	# execute the given code and monitor for runtime errors
 	if _callable == null or not _callable.is_valid():
+		@warning_ignore("return_value_discarded")
 		_report_error("Invalid Callable '%s'" % _callable)
 	else:
 		await _callable.call()

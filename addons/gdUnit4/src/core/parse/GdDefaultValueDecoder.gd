@@ -64,11 +64,11 @@ func _on_type_StringName(value :StringName) -> String:
 	return 'StringName("%s")' % value
 
 
-func _on_type_Object(value :Object, _type :int) -> String:
+func _on_type_Object(value: Variant, _type: int) -> String:
 	return str(value)
 
 
-func _on_type_Color(color :Color) -> String:
+func _on_type_Color(color: Color) -> String:
 	if color == Color.BLACK:
 		return "Color()"
 	return "Color%s" % color
@@ -101,7 +101,8 @@ func _on_type_Array(value :Variant, type :int) -> String:
 
 		TYPE_PACKED_COLOR_ARRAY:
 			var colors := PackedStringArray()
-			for color in value as PackedColorArray:
+			for color: Color in value:
+				@warning_ignore("return_value_discarded")
 				colors.append(_on_type_Color(color))
 			if colors.is_empty():
 				return "PackedColorArray()"
@@ -109,7 +110,8 @@ func _on_type_Array(value :Variant, type :int) -> String:
 
 		TYPE_PACKED_VECTOR2_ARRAY:
 			var vectors := PackedStringArray()
-			for vector in value as PackedVector2Array:
+			for vector: Vector2 in value:
+				@warning_ignore("return_value_discarded")
 				vectors.append(_on_type_Vector(vector, TYPE_VECTOR2))
 			if vectors.is_empty():
 				return "PackedVector2Array()"
@@ -117,7 +119,8 @@ func _on_type_Array(value :Variant, type :int) -> String:
 
 		TYPE_PACKED_VECTOR3_ARRAY:
 			var vectors := PackedStringArray()
-			for vector in value as PackedVector3Array:
+			for vector: Vector3 in value:
+				@warning_ignore("return_value_discarded")
 				vectors.append(_on_type_Vector(vector, TYPE_VECTOR3))
 			if vectors.is_empty():
 				return "PackedVector3Array()"
@@ -125,7 +128,8 @@ func _on_type_Array(value :Variant, type :int) -> String:
 
 		GdObjects.TYPE_PACKED_VECTOR4_ARRAY:
 			var vectors := PackedStringArray()
-			for vector:Variant in value as Array:
+			for vector: Vector4 in value:
+				@warning_ignore("return_value_discarded")
 				vectors.append(_on_type_Vector(vector, TYPE_VECTOR4))
 			if vectors.is_empty():
 				return "PackedVector4Array()"
@@ -133,7 +137,8 @@ func _on_type_Array(value :Variant, type :int) -> String:
 
 		TYPE_PACKED_STRING_ARRAY:
 			var values := PackedStringArray()
-			for v in value as PackedStringArray:
+			for v: String in value:
+				@warning_ignore("return_value_discarded")
 				values.append('"%s"' % v)
 			if values.is_empty():
 				return "PackedStringArray()"
@@ -145,7 +150,8 @@ func _on_type_Array(value :Variant, type :int) -> String:
 		TYPE_PACKED_INT32_ARRAY,\
 		TYPE_PACKED_INT64_ARRAY:
 			var vectors := PackedStringArray()
-			for vector :Variant in value as Array:
+			for vector :Variant in value:
+				@warning_ignore("return_value_discarded")
 				vectors.append(str(vector))
 			if vectors.is_empty():
 				return GdObjects.type_as_string(type) + "()"
@@ -239,11 +245,16 @@ func _on_type_Basis(basis :Basis) -> String:
 	return "Basis(Vector3%s, Vector3%s, Vector3%s)" % [basis.x, basis.y, basis.z]
 
 
+@warning_ignore("unsafe_cast")
 static func decode(value :Variant) -> String:
 	var type := typeof(value)
-	if GdArrayTools.is_type_array(type) and value.is_empty():
+	if GdArrayTools.is_type_array(type) and (value as Array).is_empty():
 		return "<empty>"
-	var decoder :Callable = instance("GdUnitDefaultValueDecoders", func() -> GdDefaultValueDecoder: return GdDefaultValueDecoder.new()).get_decoder(type)
+	var decoder :Callable = (
+			instance("GdUnitDefaultValueDecoders",
+				func() -> GdDefaultValueDecoder: return GdDefaultValueDecoder.new()
+				) as GdDefaultValueDecoder
+		).get_decoder(type)
 	if decoder == null:
 		push_error("No value decoder registered for type '%d'! Please open a Bug issue at 'https://github.com/MikeSchulze/gdUnit4/issues/new/choose'." % type)
 		return "null"
@@ -252,10 +263,15 @@ static func decode(value :Variant) -> String:
 	return decoder.call(value)
 
 
+@warning_ignore("unsafe_cast")
 static func decode_typed(type :int, value :Variant) -> String:
 	if value == null:
 		return "null"
-	var decoder :Callable = instance("GdUnitDefaultValueDecoders", func() -> GdDefaultValueDecoder: return GdDefaultValueDecoder.new()).get_decoder(type)
+	var decoder: Callable = (
+			instance("GdUnitDefaultValueDecoders",
+				func() -> GdDefaultValueDecoder: return GdDefaultValueDecoder.new()
+				) as GdDefaultValueDecoder
+			).get_decoder(type)
 	if decoder == null:
 		push_error("No value decoder registered for type '%d'! Please open a Bug issue at 'https://github.com/MikeSchulze/gdUnit4/issues/new/choose'." % type)
 		return "null"

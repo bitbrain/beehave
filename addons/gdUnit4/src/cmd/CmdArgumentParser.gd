@@ -40,22 +40,23 @@ func options() -> CmdOptions:
 	return _options
 
 
-func _parse_cmd_arguments(option :CmdOption, args :Array) -> int:
+func _parse_cmd_arguments(option: CmdOption, args: Array) -> int:
 	var command_name := option.short_command()
-	var command :CmdCommand = _parsed_commands.get(command_name, CmdCommand.new(command_name))
+	var command: CmdCommand = _parsed_commands.get(command_name, CmdCommand.new(command_name))
 
 	if option.has_argument():
 		if not option.is_argument_optional() and args.is_empty():
 			return -1
 		if _is_next_value_argument(args):
-			command.add_argument(args.pop_front())
+			var value: String = args.pop_front()
+			command.add_argument(value)
 		elif not option.is_argument_optional():
 			return -1
 	_parsed_commands[command_name] = command
 	return 0
 
 
-func _is_next_value_argument(args :Array) -> bool:
+func _is_next_value_argument(args: PackedStringArray) -> bool:
 	if args.is_empty():
 		return false
 	return _options.get_option(args[0]) == null

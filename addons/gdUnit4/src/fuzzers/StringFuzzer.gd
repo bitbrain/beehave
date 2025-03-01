@@ -60,5 +60,6 @@ func next_value() -> String:
 	var max_char := len(_charset)
 	var length :int = max(_min_length, randi() % _max_length)
 	for i in length:
+		@warning_ignore("return_value_discarded")
 		value.append(_charset[randi() % max_char])
 	return value.get_string_from_utf8()

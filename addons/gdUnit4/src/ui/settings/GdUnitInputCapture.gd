@@ -11,9 +11,12 @@ var _input_event: InputEventKey
 
 func _ready() -> void:
 	reset()
+	self_modulate = Color.WHITE
 	_tween = create_tween()
-	_tween.set_loops(-1)
-	_tween.tween_property(self, "modulate", Color(0, 0, 0, .1), 1.0).from_current().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	@warning_ignore("return_value_discarded")
+	_tween.set_loops()
+	@warning_ignore("return_value_discarded")
+	_tween.tween_property(%Label, "self_modulate", Color(1, 1, 1, .8), 1.0).from_current().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN_OUT)
 
 
 func reset() -> void:
@@ -24,7 +27,8 @@ func _input(event: InputEvent) -> void:
 	if not is_visible_in_tree():
 		return
 	if event is InputEventKey and event.is_pressed() and not event.is_echo():
-		match event.keycode:
+		var _event := event as InputEventKey
+		match _event.keycode:
 			KEY_CTRL:
 				_input_event.ctrl_pressed = true
 			KEY_SHIFT:
@@ -34,8 +38,8 @@ func _input(event: InputEvent) -> void:
 			KEY_META:
 				_input_event.meta_pressed = true
 			_:
-				_input_event.keycode = event.keycode
-		_apply_input_modifiers(event)
+				_input_event.keycode = _event.keycode
+		_apply_input_modifiers(_event)
 		accept_event()
 
 	if event is InputEventKey and not event.is_pressed():
@@ -45,7 +49,8 @@ func _input(event: InputEvent) -> void:
 
 func _apply_input_modifiers(event: InputEvent) -> void:
 	if event is InputEventWithModifiers:
-		_input_event.meta_pressed = event.meta_pressed or _input_event.meta_pressed
-		_input_event.alt_pressed = event.alt_pressed or _input_event.alt_pressed
-		_input_event.shift_pressed = event.shift_pressed or _input_event.shift_pressed
-		_input_event.ctrl_pressed = event.ctrl_pressed or _input_event.ctrl_pressed
+		var _event := event as InputEventWithModifiers
+		_input_event.meta_pressed = _event.meta_pressed or _input_event.meta_pressed
+		_input_event.alt_pressed = _event.alt_pressed or _input_event.alt_pressed
+		_input_event.shift_pressed = _event.shift_pressed or _input_event.shift_pressed
+		_input_event.ctrl_pressed = _event.ctrl_pressed or _input_event.ctrl_pressed

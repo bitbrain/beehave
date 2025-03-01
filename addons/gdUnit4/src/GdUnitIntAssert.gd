@@ -2,16 +2,15 @@
 class_name GdUnitIntAssert
 extends GdUnitAssert
 
-
-## Verifies that the current value is equal to expected one.
+## Verifies that the current String is equal to the given one.
 @warning_ignore("unused_parameter")
-func is_equal(expected :int) -> GdUnitIntAssert:
+func is_equal(expected :Variant) -> GdUnitIntAssert:
 	return self
 
 
-## Verifies that the current value is not equal to expected one.
+## Verifies that the current String is not equal to the given one.
 @warning_ignore("unused_parameter")
-func is_not_equal(expected :int) -> GdUnitIntAssert:
+func is_not_equal(expected :Variant) -> GdUnitIntAssert:
 	return self
 
 

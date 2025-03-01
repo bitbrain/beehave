@@ -5,14 +5,14 @@ signal run_overall_pressed(debug: bool)
 signal run_pressed(debug: bool)
 signal stop_pressed()
 
-@onready var _version_label := %version
-@onready var _button_wiki := %help
-@onready var _tool_button := %tool
-@onready var _button_run_overall := %run_overall
-@onready var _button_run := %run
-@onready var _button_run_debug := %debug
-@onready var _button_stop := %stop
-@onready var settings_dlg := preload("res://addons/gdUnit4/src/ui/settings/GdUnitSettingsDialog.tscn").instantiate()
+@onready var _version_label: Control = %version
+@onready var _button_wiki: Button = %help
+@onready var _tool_button: Button = %tool
+@onready var _button_run_overall: Button = %run_overall
+@onready var _button_run: Button = %run
+@onready var _button_run_debug: Button = %debug
+@onready var _button_stop: Button = %stop
+
 
 
 const SETTINGS_SHORTCUT_MAPPING := {
@@ -23,6 +23,7 @@ const SETTINGS_SHORTCUT_MAPPING := {
 }
 
 
+@warning_ignore("return_value_discarded")
 func _ready() -> void:
 	GdUnit4Version.init_version_label(_version_label)
 	var command_handler := GdUnitCommandHandler.instance()
@@ -34,7 +35,7 @@ func _ready() -> void:
 	GdUnitSignals.instance().gdunit_settings_changed.connect(_on_gdunit_settings_changed)
 	init_buttons()
 	init_shortcuts(command_handler)
-	EditorInterface.get_base_control().add_child(settings_dlg)
+
 
 
 func init_buttons() -> void:
@@ -53,6 +54,7 @@ func init_shortcuts(command_handler: GdUnitCommandHandler) -> void:
 	_button_run_debug.shortcut = command_handler.get_shortcut(GdUnitShortcut.ShortCut.RERUN_TESTS_DEBUG)
 	_button_stop.shortcut = command_handler.get_shortcut(GdUnitShortcut.ShortCut.STOP_TEST_RUN)
 	# register for shortcut changes
+	@warning_ignore("return_value_discarded")
 	GdUnitSignals.instance().gdunit_settings_changed.connect(_on_settings_changed.bind(command_handler))
 
 
@@ -87,10 +89,15 @@ func _on_gdunit_settings_changed(_property: GdUnitProperty) -> void:
 
 
 func _on_wiki_pressed() -> void:
+	@warning_ignore("return_value_discarded")
 	OS.shell_open("https://mikeschulze.github.io/gdUnit4/")
 
 
 func _on_btn_tool_pressed() -> void:
+	var settings_dlg: Window = EditorInterface.get_base_control().find_child("GdUnitSettingsDialog", false, false)
+	if settings_dlg == null:
+		settings_dlg = preload("res://addons/gdUnit4/src/ui/settings/GdUnitSettingsDialog.tscn").instantiate()
+		EditorInterface.get_base_control().add_child(settings_dlg, true)
 	settings_dlg.popup_centered_ratio(.60)
 
 

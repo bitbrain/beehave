@@ -1,14 +1,14 @@
 extends GdUnitBoolAssert
 
-var _base: GdUnitAssert
+var _base: GdUnitAssertImpl
 
 
 func _init(current :Variant) -> void:
-	_base = ResourceLoader.load("res://addons/gdUnit4/src/asserts/GdUnitAssertImpl.gd", "GDScript",
-								ResourceLoader.CACHE_MODE_REUSE).new(current)
+	_base = GdUnitAssertImpl.new(current)
 	# save the actual assert instance on the current thread context
 	GdUnitThreadManager.get_current_context().set_assert(self)
 	if not GdUnitAssertions.validate_value_type(current, TYPE_BOOL):
+		@warning_ignore("return_value_discarded")
 		report_error("GdUnitBoolAssert inital error, unexpected type <%s>" % GdObjects.typeof_as_string(current))
 
 
@@ -34,32 +34,43 @@ func report_error(error :String) -> GdUnitBoolAssert:
 
 
 func failure_message() -> String:
-	return _base._current_error_message
+	return _base.failure_message()
 
 
 func override_failure_message(message :String) -> GdUnitBoolAssert:
+	@warning_ignore("return_value_discarded")
 	_base.override_failure_message(message)
+	return self
+
+
+func append_failure_message(message :String) -> GdUnitBoolAssert:
+	@warning_ignore("return_value_discarded")
+	_base.append_failure_message(message)
 	return self
 
 
 # Verifies that the current value is null.
 func is_null() -> GdUnitBoolAssert:
+	@warning_ignore("return_value_discarded")
 	_base.is_null()
 	return self
 
 
 # Verifies that the current value is not null.
 func is_not_null() -> GdUnitBoolAssert:
+	@warning_ignore("return_value_discarded")
 	_base.is_not_null()
 	return self
 
 
-func is_equal(expected :Variant) -> GdUnitBoolAssert:
+func is_equal(expected: Variant) -> GdUnitBoolAssert:
+	@warning_ignore("return_value_discarded")
 	_base.is_equal(expected)
 	return self
 
 
-func is_not_equal(expected :Variant) -> GdUnitBoolAssert:
+func is_not_equal(expected: Variant) -> GdUnitBoolAssert:
+	@warning_ignore("return_value_discarded")
 	_base.is_not_equal(expected)
 	return self
 

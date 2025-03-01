@@ -30,8 +30,10 @@ func prescan_testsuite_classes() -> void:
 		var base_class :String = script_meta["base"]
 		var resource_path :String = script_meta["path"]
 		if base_class == "GdUnitTestSuite":
+			@warning_ignore("return_value_discarded")
 			_included_resources.append(resource_path)
 		elif ClassDB.class_exists(base_class):
+			@warning_ignore("return_value_discarded")
 			_excluded_resources.append(resource_path)
 
 
@@ -54,6 +56,7 @@ func _scan_test_suites(dir :DirAccess, collected_suites :Array[Node]) -> Array[N
 	if exclude_scan_directories.has(dir.get_current_dir()):
 		return collected_suites
 	prints("Scanning for test suites in:", dir.get_current_dir())
+	@warning_ignore("return_value_discarded")
 	dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	var file_name := dir.get_next()
 	while file_name != "":
@@ -61,6 +64,7 @@ func _scan_test_suites(dir :DirAccess, collected_suites :Array[Node]) -> Array[N
 		if dir.current_is_dir():
 			var sub_dir := DirAccess.open(resource_path)
 			if sub_dir != null:
+				@warning_ignore("return_value_discarded")
 				_scan_test_suites(sub_dir, collected_suites)
 		else:
 			var time := LocalTime.now()
@@ -91,7 +95,7 @@ func _parse_is_test_suite(resource_path :String) -> Node:
 		return null
 	# Check in the global class cache whether the GdUnitTestSuite class has been extended.
 	if _included_resources.has(resource_path):
-		return _parse_test_suite(ResourceLoader.load(resource_path))
+		return _parse_test_suite(GdUnitTestSuiteScanner.load_with_disabled_warnings(resource_path))
 
 	# Otherwise we need to scan manual, we need to exclude classes where direct extends form Godot classes
 	# the resource loader can fail to load e.g. plugin classes with do preload other scripts
@@ -100,10 +104,25 @@ func _parse_is_test_suite(resource_path :String) -> Node:
 	if extends_from.is_empty() or ClassDB.class_exists(extends_from):
 		return null
 	# Finally, we need to load the class to determine it is a test suite
-	var script := ResourceLoader.load(resource_path)
+	var script := GdUnitTestSuiteScanner.load_with_disabled_warnings(resource_path)
 	if not GdObjects.is_test_suite(script):
 		return null
-	return _parse_test_suite(ResourceLoader.load(resource_path))
+	return _parse_test_suite(script)
+
+
+# We load the test suites with disabled unsafe_method_access to avoid spamming loading errors
+# `unsafe_method_access` will happen when using `assert_that`
+static func load_with_disabled_warnings(resource_path: String) -> GDScript:
+	# grap current level
+	var unsafe_method_access: Variant = ProjectSettings.get_setting("debug/gdscript/warnings/unsafe_method_access")
+
+	# disable and load the script
+	ProjectSettings.set_setting("debug/gdscript/warnings/unsafe_method_access", 0)
+	var script: GDScript = ResourceLoader.load(resource_path)
+
+	# restore
+	ProjectSettings.set_setting("debug/gdscript/warnings/unsafe_method_access", unsafe_method_access)
+	return script
 
 
 static func _is_script_format_supported(resource_path :String) -> bool:
@@ -113,65 +132,58 @@ static func _is_script_format_supported(resource_path :String) -> bool:
 	return GdUnit4CSharpApiLoader.is_csharp_file(resource_path)
 
 
-func _parse_test_suite(script :GDScript) -> GdUnitTestSuite:
+func _parse_test_suite(script: Script) -> GdUnitTestSuite:
 	if not GdObjects.is_test_suite(script):
 		return null
 
-	var test_suite :GdUnitTestSuite = script.new()
+	# If test suite a C# script
+	if GdUnit4CSharpApiLoader.is_test_suite(script.resource_path):
+		return GdUnit4CSharpApiLoader.parse_test_suite(script.resource_path)
+
+	# Do pares as GDScript
+	var test_suite: GdUnitTestSuite = (script as GDScript).new()
 	test_suite.set_name(GdUnitTestSuiteScanner.parse_test_suite_name(script))
 	# add test cases to test suite and parse test case line nummber
-	var test_case_names := _extract_test_case_names(script)
-	_parse_and_add_test_cases(test_suite, script, test_case_names)
-	# not all test case parsed?
-	# we have to scan the base class to
-	if not test_case_names.is_empty():
-		var base_script :GDScript = test_suite.get_script().get_base_script()
-		while base_script is GDScript:
-			# do not parse testsuite itself
-			if base_script.resource_path.find("GdUnitTestSuite") == -1:
-				_parse_and_add_test_cases(test_suite, base_script, test_case_names)
-			base_script = base_script.get_base_script()
+	var test_case_names := _extract_test_case_names(script as GDScript)
+	_parse_and_add_test_cases(test_suite, script as GDScript, test_case_names)
 	return test_suite
 
 
 func _extract_test_case_names(script :GDScript) -> PackedStringArray:
-	var names := PackedStringArray()
-	for method in script.get_script_method_list():
-		var funcName :String = method["name"]
-		if funcName.begins_with("test"):
-			names.append(funcName)
-	return names
+	return script.get_script_method_list()\
+		.map(func(descriptor: Dictionary) -> String: return descriptor["name"])\
+		.filter(func(func_name: String) -> bool: return func_name.begins_with("test"))
 
 
 static func parse_test_suite_name(script :Script) -> String:
 	return script.resource_path.get_file().replace(".gd", "")
 
 
-func _handle_test_suite_arguments(test_suite :Node, script :GDScript, fd :GdFunctionDescriptor) -> void:
+func _handle_test_suite_arguments(test_suite: GdUnitTestSuite, script: GDScript, fd: GdFunctionDescriptor) -> void:
 	for arg in fd.args():
 		match arg.name():
 			_TestCase.ARGUMENT_SKIP:
-				var result :Variant = _expression_runner.execute(script, arg.value_as_string())
+				var result: Variant = _expression_runner.execute(script, arg.plain_value())
 				if result is bool:
 					test_suite.__is_skipped = result
 				else:
-					push_error("Test expression '%s' cannot be evaluated because it is not of type bool!" % arg.value_as_string())
+					push_error("Test expression '%s' cannot be evaluated because it is not of type bool!" % arg.plain_value())
 			_TestCase.ARGUMENT_SKIP_REASON:
-				test_suite.__skip_reason = arg.value_as_string()
+				test_suite.__skip_reason = arg.plain_value()
 			_:
 				push_error("Unsuported argument `%s` found on before() at '%s'!" % [arg.name(), script.resource_path])
 
 
-func _handle_test_case_arguments(test_suite :Node, script :GDScript, fd :GdFunctionDescriptor) -> void:
+func _handle_test_case_arguments(test_suite: GdUnitTestSuite, script: GDScript, fd: GdFunctionDescriptor) -> void:
 	var timeout := _TestCase.DEFAULT_TIMEOUT
 	var iterations := Fuzzer.ITERATION_DEFAULT_COUNT
 	var seed_value := -1
 	var is_skipped := false
 	var skip_reason := "Unknown."
-	var fuzzers :Array[GdFunctionArgument] = []
+	var fuzzers: Array[GdFunctionArgument] = []
 	var test := _TestCase.new()
 
-	for arg in fd.args():
+	for arg: GdFunctionArgument in fd.args():
 		# verify argument is allowed
 		# is test using fuzzers?
 		if arg.type() == GdObjects.TYPE_FUZZER:
@@ -181,31 +193,33 @@ func _handle_test_case_arguments(test_suite :Node, script :GDScript, fd :GdFunct
 				_TestCase.ARGUMENT_TIMEOUT:
 					timeout = arg.default()
 				_TestCase.ARGUMENT_SKIP:
-					var result :Variant = _expression_runner.execute(script, arg.value_as_string())
+					var result :Variant = _expression_runner.execute(script, arg.plain_value())
 					if result is bool:
 						is_skipped = result
 					else:
-						push_error("Test expression '%s' cannot be evaluated because it is not of type bool!" % arg.value_as_string())
+						push_error("Test expression '%s' cannot be evaluated because it is not of type bool!" % arg.plain_value())
 				_TestCase.ARGUMENT_SKIP_REASON:
-					skip_reason = arg.value_as_string()
+					skip_reason = arg.plain_value()
 				Fuzzer.ARGUMENT_ITERATIONS:
 					iterations = arg.default()
 				Fuzzer.ARGUMENT_SEED:
 					seed_value = arg.default()
 	# create new test
-	test.configure(fd.name(), fd.line_number(), script.resource_path, timeout, fuzzers, iterations, seed_value)
+	@warning_ignore("return_value_discarded")
+	test.configure(fd.name(), fd.line_number(), fd.source_path(), timeout, fuzzers, iterations, seed_value)
 	test.set_function_descriptor(fd)
 	test.skip(is_skipped, skip_reason)
 	_validate_argument(fd, test)
 	test_suite.add_child(test)
 
 
-func _parse_and_add_test_cases(test_suite :Node, script :GDScript, test_case_names :PackedStringArray) -> void:
+func _parse_and_add_test_cases(test_suite: GdUnitTestSuite, script: GDScript, test_case_names: PackedStringArray) -> void:
 	var test_cases_to_find := Array(test_case_names)
 	var functions_to_scan := test_case_names.duplicate()
+	@warning_ignore("return_value_discarded")
 	functions_to_scan.append("before")
-	var source := _script_parser.load_source_code(script, [script.resource_path])
-	var function_descriptors := _script_parser.parse_functions(source, "", [script.resource_path], functions_to_scan)
+
+	var function_descriptors := _script_parser.get_function_descriptors(script, functions_to_scan)
 	for fd in function_descriptors:
 		if fd.name() == "before":
 			_handle_test_suite_arguments(test_suite, script, fd)
@@ -226,7 +240,7 @@ func _validate_argument(fd :GdFunctionDescriptor, test_case :_TestCase) -> void:
 
 # converts given file name by configured naming convention
 static func _to_naming_convention(file_name :String) -> String:
-	var nc :int = GdUnitSettings.get_setting(GdUnitSettings.TEST_SITE_NAMING_CONVENTION, 0)
+	var nc :int = GdUnitSettings.get_setting(GdUnitSettings.TEST_SUITE_NAMING_CONVENTION, 0)
 	match nc:
 		GdUnitSettings.NAMING_CONVENTIONS.AUTO_DETECT:
 			if GdObjects.is_snake_case(file_name):
@@ -291,16 +305,15 @@ static func create_test_suite(test_suite_path :String, source_path :String) -> G
 static func get_test_case_line_number(resource_path :String, func_name :String) -> int:
 	var file := FileAccess.open(resource_path, FileAccess.READ)
 	if file != null:
-		var script_parser := GdScriptParser.new()
 		var line_number := 0
 		while not file.eof_reached():
-			var row := GdScriptParser.clean_up_row(file.get_line())
+			var row := file.get_line()
 			line_number += 1
 			# ignore comments and empty lines and not test functions
-			if row.begins_with("#") || row.length() == 0 || row.find("functest") == -1:
+			if row.begins_with("#") || row.length() == 0 || row.find("func test_") == -1:
 				continue
 			# abort if test case name found
-			if script_parser.parse_func_name(row) == "test_" + func_name:
+			if row.find("func") != -1 and row.find("test_" + func_name) != -1:
 				return line_number
 	return -1
 
@@ -323,7 +336,7 @@ func get_extends_classname(resource_path :String) -> String:
 
 
 static func add_test_case(resource_path :String, func_name :String)  -> GdUnitResult:
-	var script := load(resource_path) as GDScript
+	var script := load_with_disabled_warnings(resource_path)
 	# count all exiting lines and add two as space to add new test case
 	var line_number := count_lines(script) + 2
 	var func_body := TEST_FUNC_TEMPLATE.replace("${func_name}", func_name)
@@ -350,7 +363,7 @@ static func test_suite_exists(test_suite_path :String) -> bool:
 static func test_case_exists(test_suite_path :String, func_name :String) -> bool:
 	if not test_suite_exists(test_suite_path):
 		return false
-	var script := ResourceLoader.load(test_suite_path) as GDScript
+	var script := load_with_disabled_warnings(test_suite_path)
 	for f in script.get_script_method_list():
 		if f["name"] == "test_" + func_name:
 			return true

@@ -4,23 +4,30 @@ extends MainLoop
 const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 
 # gdlint: disable=max-line-length
-const NO_LOG_TEMPLATE = """
+const LOG_FRAME_TEMPLATE = """
 <!DOCTYPE html>
-<html>
+<html style="display: inline-grid;">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<meta http-equiv="x-ua-compatible" content="IE=edge"/>
-	<title>Logging</title>
-	<link href="css/style.css" rel="stylesheet" type="text/css"/>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Godot Logging</title>
+	<link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-	<div>
-		<h1>No logging available!</h1>
-		</br>
-		<p>For logging to occur, you must check Enable File Logging in Project Settings.</p>
-		<p>You can enable Logging <b>Project Settings</b> > <b>Logging</b> > <b>File Logging</b> > <b>Enable File Logging</b> in the Project Settings.</p>
+
+<body style="background-color: #eee;">
+	<div class="godot-report-frame"">
+${content}
 	</div>
 </body>
+</html>
+"""
+
+const NO_LOG_MESSAGE = """
+<h3>No logging available!</h3>
+</br>
+<p>In order for logging to take place, you must activate the Activate file logging option in the project settings.</p>
+<p>You can enable the logging under:
+<b>Project Settings</b> > <b>Debug</b> > <b>File Logging</b> > <b>Enable File Logging</b> in the project settings.</p>
 """
 
 #warning-ignore-all:return_value_discarded
@@ -34,48 +41,65 @@ var _cmd_options := CmdOptions.new([
 		)
 	])
 
+
 var _report_root_path: String
+var _current_report_path: String
+var _debug_cmd_args := PackedStringArray()
 
 
 func _init() -> void:
-	_report_root_path = GdUnitFileAccess.current_dir() + "reports"
+	set_report_directory(GdUnitFileAccess.current_dir() + "reports")
+	set_current_report_path()
 
 
-func _process(_delta :float) -> bool:
+func _process(_delta: float) -> bool:
 	# check if reports exists
 	if not reports_available():
 		prints("no reports found")
 		return true
-	# scan for latest report path
-	var iteration := GdUnitFileAccess.find_last_path_index(
-		_report_root_path, GdUnitHtmlReport.REPORT_DIR_PREFIX
-	)
-	var report_path := "%s/%s%d" % [_report_root_path, GdUnitHtmlReport.REPORT_DIR_PREFIX, iteration]
+
 	# only process if godot logging is enabled
 	if not GdUnitSettings.is_log_enabled():
-		_patch_report(report_path, "")
+		write_report(NO_LOG_MESSAGE, "")
 		return true
+
 	# parse possible custom report path,
 	var cmd_parser := CmdArgumentParser.new(_cmd_options, "GdUnitCmdTool.gd")
 	# ignore erros and exit quitly
-	if cmd_parser.parse(OS.get_cmdline_args(), true).is_error():
+	if cmd_parser.parse(get_cmdline_args(), true).is_error():
 		return true
 	CmdCommandHandler.new(_cmd_options).register_cb("-rd", set_report_directory)
-	# scan for latest godot log and copy to report
-	var godot_log := _scan_latest_godot_log()
-	var result := _copy_and_pach(godot_log, report_path)
+
+	var godot_log_file := scan_latest_godot_log()
+	var result := read_log_file_content(godot_log_file)
 	if result.is_error():
-		push_error(result.error_message())
+		write_report(result.error_message(), godot_log_file)
 		return true
-	_patch_report(report_path, godot_log)
+	write_report(result.value_as_string(), godot_log_file)
 	return true
+
+
+func set_current_report_path() -> void:
+	# scan for latest report directory
+	var iteration := GdUnitFileAccess.find_last_path_index(
+		_report_root_path, GdUnitHtmlReport.REPORT_DIR_PREFIX
+	)
+	_current_report_path = "%s/%s%d" % [_report_root_path, GdUnitHtmlReport.REPORT_DIR_PREFIX, iteration]
 
 
 func set_report_directory(path: String) -> void:
 	_report_root_path = path
 
 
-func _scan_latest_godot_log() -> String:
+func get_log_report_html() -> String:
+	return _current_report_path + "/godot_report_log.html"
+
+
+func reports_available() -> bool:
+	return DirAccess.dir_exists_absolute(_report_root_path)
+
+
+func scan_latest_godot_log() -> String:
 	var path := GdUnitSettings.get_log_path().get_base_dir()
 	var files_sorted := Array()
 	for file in GdUnitFileAccess.scan_dir(path):
@@ -83,59 +107,60 @@ func _scan_latest_godot_log() -> String:
 		files_sorted.append(file_name)
 	# sort by name, the name contains the timestamp so we sort at the end by timestamp
 	files_sorted.sort()
-	return files_sorted[-1]
+	return files_sorted.back()
 
 
-func _patch_report(report_path: String, godot_log: String) -> void:
-	var index_file := FileAccess.open("%s/index.html" % report_path, FileAccess.READ_WRITE)
+func read_log_file_content(log_file: String) -> GdUnitResult:
+	var file := FileAccess.open(log_file, FileAccess.READ)
+	if file == null:
+		return GdUnitResult.error(
+			"Can't find log file '%s'. Error: %s"
+			% [log_file, error_string(FileAccess.get_open_error())]
+		)
+	var content := "<pre>" + file.get_as_text()
+	# patch out console format codes
+	for color_index in range(0, 256):
+		var to_replace := "[38;5;%dm" % color_index
+		content = content.replace(to_replace, "")
+	content += "</pre>"
+	content = content\
+		.replace("[0m", "")\
+		.replace(CmdConsole.CSI_BOLD, "")\
+		.replace(CmdConsole.CSI_ITALIC, "")\
+		.replace(CmdConsole.CSI_UNDERLINE, "")
+	return GdUnitResult.success(content)
+
+
+func write_report(content: String, godot_log_file: String) -> GdUnitResult:
+	var file := FileAccess.open(get_log_report_html(), FileAccess.WRITE)
+	if file == null:
+		return GdUnitResult.error(
+			"Can't open to write '%s'. Error: %s"
+			% [get_log_report_html(), error_string(FileAccess.get_open_error())]
+		)
+	var report_html := LOG_FRAME_TEMPLATE.replace("${content}", content)
+	file.store_string(report_html)
+	_update_index_html(godot_log_file)
+	return GdUnitResult.success(file)
+
+
+func _update_index_html(godot_log_file: String) -> void:
+	var index_file := FileAccess.open("%s/index.html" % _current_report_path, FileAccess.READ_WRITE)
 	if index_file == null:
 		push_error(
 			"Can't add log path to index.html. Error: %s"
 			% error_string(FileAccess.get_open_error())
 		)
 		return
-	# if no log file available than add a information howto enable it
-	if godot_log.is_empty():
-		FileAccess.open(
-			"%s/logging_not_available.html" % report_path,
-			FileAccess.WRITE).store_string(NO_LOG_TEMPLATE)
-	var log_file := "logging_not_available.html" if godot_log.is_empty() else godot_log.get_file()
-	var content := index_file.get_as_text().replace("${log_file}", log_file)
+	var content := index_file.get_as_text()\
+		.replace("${log_report}", get_log_report_html())\
+		.replace("${godot_log_file}", godot_log_file)
 	# overide it
 	index_file.seek(0)
 	index_file.store_string(content)
 
 
-func _copy_and_pach(from_file: String, to_dir: String) -> GdUnitResult:
-	var result := GdUnitFileAccess.copy_file(from_file, to_dir)
-	if result.is_error():
-		return result
-	var file := FileAccess.open(from_file, FileAccess.READ)
-	if file == null:
-		return GdUnitResult.error(
-			"Can't find file '%s'. Error: %s"
-			% [from_file, error_string(FileAccess.get_open_error())]
-		)
-	var content := file.get_as_text()
-	# patch out console format codes
-	for color_index in range(0, 256):
-		var to_replace := "[38;5;%dm" % color_index
-		content = content.replace(to_replace, "")
-	content = content\
-		.replace("[0m", "")\
-		.replace(CmdConsole.CSI_BOLD, "")\
-		.replace(CmdConsole.CSI_ITALIC, "")\
-		.replace(CmdConsole.CSI_UNDERLINE, "")
-	var to_file := to_dir + "/" + from_file.get_file()
-	file = FileAccess.open(to_file, FileAccess.WRITE)
-	if file == null:
-		return GdUnitResult.error(
-			"Can't open to write '%s'. Error: %s"
-			% [to_file, error_string(FileAccess.get_open_error())]
-		)
-	file.store_string(content)
-	return GdUnitResult.empty()
-
-
-func reports_available() -> bool:
-	return DirAccess.dir_exists_absolute(_report_root_path)
+func get_cmdline_args() -> PackedStringArray:
+	if _debug_cmd_args.is_empty():
+		return OS.get_cmdline_args()
+	return _debug_cmd_args

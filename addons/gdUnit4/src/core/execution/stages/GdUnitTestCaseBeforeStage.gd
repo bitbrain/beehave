@@ -3,8 +3,6 @@
 class_name GdUnitTestCaseBeforeStage
 extends IGdUnitExecutionStage
 
-
-var _test_name :StringName = ""
 var _call_stage :bool
 
 
@@ -14,16 +12,10 @@ func _init(call_stage := true) -> void:
 
 func _execute(context :GdUnitExecutionContext) -> void:
 	var test_suite := context.test_suite
-	var test_case_name := context._test_case_name if _test_name.is_empty() else _test_name
 
 	fire_event(GdUnitEvent.new()\
-		.test_before(test_suite.get_script().resource_path, test_suite.get_name(), test_case_name))
-
+		.test_before(context.get_test_suite_path(), context.get_test_suite_name(), context.get_test_case_name()))
 	if _call_stage:
 		@warning_ignore("redundant_await")
 		await test_suite.before_test()
 	context.error_monitor_start()
-
-
-func set_test_name(test_name :StringName) -> void:
-	_test_name = test_name

@@ -5,39 +5,39 @@ extends GdUnitAssert
 
 ## Verifies that the current value is null.
 func is_null() -> GdUnitFuncAssert:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	return self
 
 
 ## Verifies that the current value is not null.
 func is_not_null() -> GdUnitFuncAssert:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	return self
 
 
 ## Verifies that the current value is equal to the given one.
 @warning_ignore("unused_parameter")
 func is_equal(expected :Variant) -> GdUnitFuncAssert:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	return self
 
 
 ## Verifies that the current value is not equal to the given one.
 @warning_ignore("unused_parameter")
 func is_not_equal(expected :Variant) -> GdUnitFuncAssert:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	return self
 
 
 ## Verifies that the current value is true.
 func is_true() -> GdUnitFuncAssert:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	return self
 
 
 ## Verifies that the current value is false.
 func is_false() -> GdUnitFuncAssert:
-	await Engine.get_main_loop().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 	return self
 
 
