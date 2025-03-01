@@ -60,12 +60,18 @@ Behavior trees are a modular way to build AI logic for your game. For simple AI,
 
 [Learn how to beehave on the official wiki!](https://bitbra.in/beehave/#/manual/)
 
-## Tutorial (Godot 3.5+)
+## Media
 
+### Beehave Overview (GamesFromScratch)
+[![tutorial-thumbnail](https://img.youtube.com/vi/egutKInUfko/0.jpg)](https://www.youtube.com/watch?v=egutKInUfko)
+
+### Godot 3.5 Tutorial
 [bitbrain](https://youtube.com/@bitbraindev) recorded this tutorial to show in more depth how to use this addon:
 
 [![tutorial-thumbnail](https://img.youtube.com/vi/n0gVEA1dyPQ/0.jpg)](https://www.youtube.com/watch?v=n0gVEA1dyPQ)
 
+
+### Getting Started with Beehave (Liam Flannery)
 [Liam Flannery](https://twitter.com/liamflannery56) wrote up a getting started [tutorial](https://medium.com/@liam.flannery56/easily-creating-behaviour-trees-in-godot-4-2-beehave-tutorial-ff8a911d43a0) that's up to date with Godot 4.2
 
 # 🥰 Credits
