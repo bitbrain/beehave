@@ -1,7 +1,7 @@
 class_name MockAction
 extends ActionLeaf
 
-@export_enum("Success", "Failure") var final_result: int = 0
+@export_enum("Success", "Failure", "Running") var final_result: int = 0
 @export var running_frame_count: int = 0
 
 signal started_running(actor, blackboard)
