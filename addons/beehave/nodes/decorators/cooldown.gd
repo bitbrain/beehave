@@ -30,7 +30,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(self.get_instance_id(), response, blackboard.get_debug_data())
 	else:
-		response = c.tick(actor, blackboard)
+		response = c._safe_tick(actor, blackboard)
 
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(c.get_instance_id(), response, blackboard.get_debug_data())

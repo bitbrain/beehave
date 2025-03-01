@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://b73wipsrkaboq"]
+[gd_scene load_steps=9 format=3 uid="uid://b73wipsrkaboq"]
 
 [ext_resource type="Script" path="res://test/debug/debugger_test_scene.gd" id="1_u2x7i"]
 [ext_resource type="Script" path="res://addons/beehave/debug/debugger_tab.gd" id="2_3lxjr"]
@@ -7,13 +7,16 @@
 [ext_resource type="Script" path="res://addons/beehave/nodes/decorators/succeeder.gd" id="5_4ynoj"]
 [ext_resource type="Script" path="res://addons/beehave/nodes/leaves/condition.gd" id="6_kqyiy"]
 [ext_resource type="Script" path="res://test/actions/mock_action.gd" id="7_nf6a7"]
+[ext_resource type="Script" path="res://test/actions/no_return_action.gd" id="7_tfwq3"]
 
 [node name="debugger_test_scene" type="Node2D"]
 script = ExtResource("1_u2x7i")
 
-[node name="BeehaveTree" type="Node" parent="."]
+[node name="BeehaveTree" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
 unique_name_in_owner = true
 script = ExtResource("3_v5wys")
+blackboard = NodePath("@Node@19212")
+actor = NodePath("..")
 
 [node name="SequenceComposite" type="Node" parent="BeehaveTree"]
 script = ExtResource("4_w0qba")
@@ -26,6 +29,9 @@ script = ExtResource("6_kqyiy")
 
 [node name="MockAction" type="Node" parent="BeehaveTree/SequenceComposite"]
 script = ExtResource("7_nf6a7")
+
+[node name="NoReturnAction" type="Node" parent="BeehaveTree/SequenceComposite"]
+script = ExtResource("7_tfwq3")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

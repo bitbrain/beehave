@@ -44,3 +44,11 @@ func get_class_name() -> Array[StringName]:
 
 func can_send_message(blackboard: Blackboard) -> bool:
 	return blackboard.get_value("can_send_message", false)
+
+
+func _safe_tick(actor: Node, blackboard: Blackboard) -> int:
+	var response = tick(actor, blackboard)
+	if not response is int:
+		push_error("All tick methods must return an int, got %s" % response)
+		return FAILURE
+	return response
