@@ -1,89 +1,56 @@
 # Leaf Nodes
 
-Leaf nodes are the core elements of Behavior Trees, responsible for executing actions and evaluating conditions for your game characters or objects. Unlike composite or decorator nodes, leaf nodes are positioned at the ends of branches in the tree structure and do not have any children. They serve as the endpoints of the tree, where actual game behaviors are determined and performed.
+Leaf nodes are the fundamental building blocks of behavior trees that perform the actual work. Unlike composite nodes and decorators which control flow, leaf nodes are where the behavior tree interacts with the game world.
 
-## Purpose of Leaf Nodes
+## What are Leaf Nodes?
 
-While composite nodes are responsible for controlling the flow of execution and connecting different nodes together, leaf nodes focus on carrying out specific actions or assessing certain conditions. Leaf nodes allow you to define the essential behaviors and decisions that your game characters or objects will make, based on the overall logic of the Behavior Tree.
+Leaf nodes are the terminal nodes in a behavior tree - they have no children and represent concrete actions or conditions that can be executed. They are called "leaf" nodes because they sit at the ends of branches in the tree structure.
 
-By combining leaf nodes with composite and decorator nodes, you can create a hierarchical structure that is capable of producing complex, context-dependent behaviors for your game characters or objects. The leaf nodes ensure that the tree's logic ultimately results in tangible actions or condition checks, bringing the AI to life and providing engaging gameplay experiences.
+In Beehave, there are two primary types of leaf nodes:
 
-## `tick` Method Example
+- **Action Nodes**: Perform actions that change the game state
+- **Condition Nodes**: Check conditions in the game state
 
-Here's an example of how to use these methods in an `ActionLeaf`:
+## Key Characteristics
 
-The `tick` method is the main method of the node that is called every time the behavior tree is ticked. It should contain the custom logic for the node and return a status code:
-```gdscript
-class_name MoveToTargetAction extends ActionLeaf
+- Leaf nodes always return a status: `SUCCESS`, `FAILURE`, or `RUNNING`
+- They interact directly with the game world or check game state
+- They have no child nodes
+- They are where the "real work" happens in your behavior tree
 
-var target: NodePath
+## When to Use Leaf Nodes
 
-func _init(target: NodePath):
-	self.target = target
+You'll create leaf nodes whenever you need your AI to:
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
-	var target_node = blackboard.get_node(self.target)
-	if target_node == null:
-		return FAILURE
+- Perform a specific action (move to a location, play an animation, attack)
+- Check a specific condition (is health low, is enemy visible, is item available)
 
-	actor.look_at(target_node.global_position)
-	actor.move_and_slide(actor.global_transform.basis.z * 10, Vector3.UP)
+## Creating Custom Leaf Nodes
 
-	if actor.global_transform.origin.distance_to(target_node.global_position) < 2:
-		return SUCCESS
+While Beehave provides basic Action and Condition leaf nodes, you'll typically create your own custom leaf nodes for your specific game mechanics. This allows you to encapsulate game-specific logic within reusable components.
 
-	return RUNNING
+For detailed information on the specific leaf node types, see:
+- [Action Leaf](manual/action_leaf.md)
+- [Condition Leaf](manual/condition_leaf.md)
 
-func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	actor.stop()
+## Example
+
+Here's a simplified example of how leaf nodes fit into a behavior tree:
+
 ```
-In this example, the `MoveToTargetAction` is an `ActionLeaf` that moves the actor towards a specified target node. The `tick` function is called every frame and moves the actor until it reaches the target. If the actor is within 2 units of distance to the target, `SUCCESS` is returned. If the action is interrupted, the `interrupt` function is called and the actor is stopped.
-
-## `interrupt` Method Example
-
-This method is called when a running node needs to be interrupted before it can return `FAILURE` or `SUCCESS`. You can use this method to cancel any ongoing actions:
-
-```gdscript
-func interrupt(actor: Node, blackboard: Blackboard) -> void:
-    # Let's say we have an ActionLeaf called "CastSpell" that takes in a spell name
-    spell_name = "fireball"
-    action_node = CastSpell.new(spell_name)
-    
-    # If the action is currently running, call its interrupt method
-    if action_node.get_status() == RUNNING:
-        action_node.interrupt(actor, blackboard)
+Selector
+├── Sequence
+│   ├── IsEnemyVisible (Condition Leaf)
+│   └── AttackEnemy (Action Leaf)
+└── Sequence
+    ├── IsWanderPointAvailable (Condition Leaf)
+    └── WanderToPoint (Action Leaf)
 ```
 
-## `before_run` Method Example
+In this example, the leaf nodes (`IsEnemyVisible`, `AttackEnemy`, `IsWanderPointAvailable`, and `WanderToPoint`) are where the actual game logic happens.
 
-This method is called before the first time the node is ticked by its parent. You can use this method to set up any necessary state before the node's logic is executed:
+## Next Steps
 
-```gdscript
-func before_run(actor: Node, blackboard: Blackboard) -> void:
-    # Let's say we have an ActionLeaf called "EquipItem" that takes in an item name
-    item_name = "enchanted sword"
-    action_node = EquipItem.new(item_name)
-    
-    # Print a message to the console
-    print(actor.name + " equipping " + item_name + "...")
-    
-    # Execute the action and return the status code
-    action_node.tick(actor, blackboard)
-```
-
-## `after_run` Method Example
-
-This method is called after the last time the node is ticked and returns either `SUCCESS` or `FAILURE`. You can use this method to perform any cleanup or reset any state that was set up in the `before_run` method:
-
-```gdscript
-func after_run(actor: Node, blackboard: Blackboard) -> void:
-    # Let's say we have an ActionLeaf called "GainExperience" that takes in an amount of experience
-    exp_gained = 100
-    action_node = GainExperience.new(exp_gained)
-    
-    # Print a message to the console
-    print(actor.name + " gained " + str(exp_gained) + " experience points!")
-    
-    # Execute the action
-    action_node.tick(actor, blackboard)
-```
+To learn more about specific leaf node types, continue to:
+- [Action Leaf](manual/action_leaf.md)
+- [Condition Leaf](manual/condition_leaf.md)

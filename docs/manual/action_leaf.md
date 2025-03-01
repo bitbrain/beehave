@@ -1,4 +1,4 @@
-# Action Leaf Node
+# Action Leaf
 
 The `ActionLeaf` node is a key element in Behavior Trees, designed to represent *ACTIONS* that game characters or objects perform, such as _gathering wood_ or _fishing_. As leaf nodes, they don't have any children and are responsible for executing the specific task in the game.
 

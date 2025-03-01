@@ -1,0 +1,61 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="400" fill="#2a2a2a"/>
+  
+  <!-- Debugger Panel Header -->
+  <rect x="20" y="20" width="560" height="30" fill="#3a3a3a" stroke="#4a4a4a" stroke-width="1"/>
+  <text x="40" y="40" font-family="Arial" font-size="14" fill="#ffffff">🐝 Beehave Debugger</text>
+  
+  <!-- Tree View -->
+  <rect x="20" y="60" width="560" height="320" fill="#333333" stroke="#4a4a4a" stroke-width="1"/>
+  
+  <!-- BeehaveTree Node -->
+  <rect x="50" y="80" width="150" height="30" fill="#4a6" stroke="#5b7" stroke-width="2" rx="5" ry="5"/>
+  <text x="125" y="100" font-family="Arial" font-size="12" fill="#fff" text-anchor="middle">BeehaveTree</text>
+  
+  <!-- Selector Node - Running -->
+  <rect x="70" y="120" width="150" height="30" fill="#aa6" stroke="#bb7" stroke-width="2" rx="5" ry="5"/>
+  <text x="145" y="140" font-family="Arial" font-size="12" fill="#fff" text-anchor="middle">SelectorComposite</text>
+  <circle cx="210" cy="135" r="8" fill="#33aaff"/>
+  
+  <!-- Attack Sequence - Running -->
+  <rect x="90" y="160" width="150" height="30" fill="#66a" stroke="#77b" stroke-width="2" rx="5" ry="5"/>
+  <text x="165" y="180" font-family="Arial" font-size="12" fill="#fff" text-anchor="middle">Attack Sequence</text>
+  <circle cx="230" cy="175" r="8" fill="#33aaff"/>
+  
+  <!-- IsPlayerVisible - Success -->
+  <rect x="110" y="200" width="150" height="30" fill="#a66" stroke="#b77" stroke-width="2" rx="5" ry="5"/>
+  <text x="185" y="220" font-family="Arial" font-size="12" fill="#fff" text-anchor="middle">IsPlayerVisible</text>
+  <circle cx="250" cy="215" r="8" fill="#6a6"/>
+  
+  <!-- ChasePlayer - Running -->
+  <rect x="110" y="240" width="150" height="30" fill="#6a6" stroke="#7b7" stroke-width="2" rx="5" ry="5"/>
+  <text x="185" y="260" font-family="Arial" font-size="12" fill="#fff" text-anchor="middle">ChasePlayer</text>
+  <circle cx="250" cy="255" r="8" fill="#33aaff"/>
+  
+  <!-- AttackPlayer - Idle -->
+  <rect x="110" y="280" width="150" height="30" fill="#6a6" stroke="#7b7" stroke-width="2" rx="5" ry="5" opacity="0.5"/>
+  <text x="185" y="300" font-family="Arial" font-size="12" fill="#fff" text-anchor="middle" opacity="0.5">AttackPlayer</text>
+  <circle cx="250" cy="295" r="8" fill="#888" opacity="0.5"/>
+  
+  <!-- Patrol Sequence - Idle -->
+  <rect x="90" y="320" width="150" height="30" fill="#66a" stroke="#77b" stroke-width="2" rx="5" ry="5" opacity="0.5"/>
+  <text x="165" y="340" font-family="Arial" font-size="12" fill="#fff" text-anchor="middle" opacity="0.5">Patrol Sequence</text>
+  <circle cx="230" cy="335" r="8" fill="#888" opacity="0.5"/>
+  
+  <!-- Legend -->
+  <rect x="350" y="80" width="200" height="150" fill="#3a3a3a" stroke="#4a4a4a" stroke-width="1"/>
+  <text x="360" y="100" font-family="Arial" font-size="14" fill="#ffffff">Legend</text>
+  
+  <circle cx="370" cy="125" r="8" fill="#6a6"/>
+  <text x="385" y="130" font-family="Arial" font-size="12" fill="#ffffff">SUCCESS</text>
+  
+  <circle cx="370" cy="150" r="8" fill="#a66"/>
+  <text x="385" y="155" font-family="Arial" font-size="12" fill="#ffffff">FAILURE</text>
+  
+  <circle cx="370" cy="175" r="8" fill="#33aaff"/>
+  <text x="385" y="180" font-family="Arial" font-size="12" fill="#ffffff">RUNNING</text>
+  
+  <circle cx="370" cy="200" r="8" fill="#888"/>
+  <text x="385" y="205" font-family="Arial" font-size="12" fill="#ffffff">IDLE</text>
+</svg> 

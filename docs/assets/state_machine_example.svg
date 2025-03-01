@@ -1,0 +1,45 @@
+<svg width="600" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="300" fill="#f0f0f0"/>
+  
+  <!-- States -->
+  <circle cx="100" cy="150" r="50" fill="#ffaa66" stroke="#000" stroke-width="2"/>
+  <text x="100" y="155" font-family="Arial" font-size="14" text-anchor="middle">Patrol</text>
+  
+  <circle cx="300" cy="150" r="50" fill="#ffaa66" stroke="#000" stroke-width="2"/>
+  <text x="300" y="155" font-family="Arial" font-size="14" text-anchor="middle">Chase</text>
+  
+  <circle cx="500" cy="150" r="50" fill="#ffaa66" stroke="#000" stroke-width="2"/>
+  <text x="500" y="155" font-family="Arial" font-size="14" text-anchor="middle">Attack</text>
+  
+  <!-- Transitions -->
+  <!-- Patrol to Chase -->
+  <path d="M 145 130 L 255 130" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="200" y="120" font-family="Arial" font-size="12" text-anchor="middle">Player seen</text>
+  
+  <!-- Chase to Patrol -->
+  <path d="M 255 170 L 145 170" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="200" y="190" font-family="Arial" font-size="12" text-anchor="middle">Player lost</text>
+  
+  <!-- Chase to Attack -->
+  <path d="M 345 130 L 455 130" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="400" y="120" font-family="Arial" font-size="12" text-anchor="middle">In range</text>
+  
+  <!-- Attack to Chase -->
+  <path d="M 455 170 L 345 170" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="400" y="190" font-family="Arial" font-size="12" text-anchor="middle">Out of range</text>
+  
+  <!-- Self-loops -->
+  <path d="M 100 90 A 20 20 0 1 1 130 110" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" fill="none"/>
+  <text x="70" y="80" font-family="Arial" font-size="12" text-anchor="middle">Patrol point reached</text>
+  
+  <!-- Markers -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000"/>
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="300" y="40" font-family="Arial" font-size="20" font-weight="bold" text-anchor="middle">State Machine Example</text>
+</svg> 

@@ -1,4 +1,5 @@
-# Simple Parallel Node
+# Simple Parallel
+
 The Simple Parallel node is a fundamental building block in Behavior Trees, used to execute two children at the same time. It helps you run multiple actions simultaneously. Think of the Simple Parallel node as "While doing A, do B as well".
 
 ## How does it work?
