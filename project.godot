@@ -12,9 +12,9 @@ config_version=5
 
 config/name="Beehave"
 run/main_scene="res://examples/beehave_test_scene.tscn"
-config/features=PackedStringArray("4.3")
-boot_splash/image="res://splash.png"
+config/features=PackedStringArray("4.4")
 boot_splash/fullsize=false
+boot_splash/image="res://splash.png"
 config/icon="res://icon.png"
 
 [autoload]

@@ -1,13 +1,13 @@
 [gd_scene load_steps=9 format=3 uid="uid://b73wipsrkaboq"]
 
-[ext_resource type="Script" path="res://test/debug/debugger_test_scene.gd" id="1_u2x7i"]
-[ext_resource type="Script" path="res://addons/beehave/debug/debugger_tab.gd" id="2_3lxjr"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="3_v5wys"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="4_w0qba"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/decorators/succeeder.gd" id="5_4ynoj"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/leaves/condition.gd" id="6_kqyiy"]
-[ext_resource type="Script" path="res://test/actions/mock_action.gd" id="7_nf6a7"]
-[ext_resource type="Script" path="res://test/actions/no_return_action.gd" id="7_tfwq3"]
+[ext_resource type="Script" uid="uid://di24bwou1lk1o" path="res://test/debug/debugger_test_scene.gd" id="1_u2x7i"]
+[ext_resource type="Script" uid="uid://b7hbn0y1kfarn" path="res://addons/beehave/debug/debugger_tab.gd" id="2_3lxjr"]
+[ext_resource type="Script" uid="uid://bb0t2ovl7wifo" path="res://addons/beehave/nodes/beehave_tree.gd" id="3_v5wys"]
+[ext_resource type="Script" uid="uid://cg016dbe7gs1x" path="res://addons/beehave/nodes/composites/sequence.gd" id="4_w0qba"]
+[ext_resource type="Script" uid="uid://dsf3a8vlolhx8" path="res://addons/beehave/nodes/decorators/succeeder.gd" id="5_4ynoj"]
+[ext_resource type="Script" uid="uid://cbnbvj8prv63i" path="res://addons/beehave/nodes/leaves/condition.gd" id="6_kqyiy"]
+[ext_resource type="Script" uid="uid://bt1cypqmttosj" path="res://test/actions/mock_action.gd" id="7_nf6a7"]
+[ext_resource type="Script" uid="uid://d2jglgd63q7k8" path="res://test/actions/no_return_action.gd" id="7_tfwq3"]
 
 [node name="debugger_test_scene" type="Node2D"]
 script = ExtResource("1_u2x7i")

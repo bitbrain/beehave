@@ -1,15 +1,15 @@
 [gd_scene load_steps=12 format=3 uid="uid://dxkotdttpvmb0"]
 
-[ext_resource type="Script" path="res://examples/beehave_test_scene.gd" id="1_18xg1"]
+[ext_resource type="Script" uid="uid://bpqetb2foys1g" path="res://examples/beehave_test_scene.gd" id="1_18xg1"]
 [ext_resource type="Texture2D" uid="uid://uq5muso23nn5" path="res://splash.png" id="2_2q57p"]
-[ext_resource type="Script" path="res://examples/ColorChangingSprite.gd" id="3_shmq8"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="4_yb1gg"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector_reactive.gd" id="5_l2xef"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="6_jtsdg"]
+[ext_resource type="Script" uid="uid://c8wmvgu043nhw" path="res://examples/ColorChangingSprite.gd" id="3_shmq8"]
+[ext_resource type="Script" uid="uid://bb0t2ovl7wifo" path="res://addons/beehave/nodes/beehave_tree.gd" id="4_yb1gg"]
+[ext_resource type="Script" uid="uid://cw22yurt5l74k" path="res://addons/beehave/nodes/composites/selector_reactive.gd" id="5_l2xef"]
+[ext_resource type="Script" uid="uid://cg016dbe7gs1x" path="res://addons/beehave/nodes/composites/sequence.gd" id="6_jtsdg"]
 [ext_resource type="PackedScene" uid="uid://dl8hr0kerrxsv" path="res://examples/conditions/HasPositivePosition.tscn" id="7_iqb0a"]
 [ext_resource type="PackedScene" uid="uid://c3msbcyat8v0n" path="res://examples/actions/SetModulateColor.tscn" id="8_0v48s"]
 [ext_resource type="PackedScene" uid="uid://dgbwmcsll3o7t" path="res://examples/conditions/HasNegativePosition.tscn" id="9_x8ohm"]
-[ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="10_y2p03"]
+[ext_resource type="Script" uid="uid://dme5f24l0edsf" path="res://addons/beehave/blackboard.gd" id="10_y2p03"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_atdvc"]
 load_path = "res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex"

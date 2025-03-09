@@ -1,12 +1,12 @@
 [gd_scene load_steps=8 format=3 uid="uid://diw3kjj050wdy"]
 
-[ext_resource type="Script" path="res://addons/beehave/blackboard.gd" id="1_27ukk"]
-[ext_resource type="Script" path="res://test/unit_test_scene.gd" id="1_embiv"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="2_phgmn"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="4_px6t4"]
-[ext_resource type="Script" path="res://test/conditions/value_reached_condition.gd" id="5_rc0ra"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/decorators/inverter.gd" id="5_thhls"]
-[ext_resource type="Script" path="res://test/actions/count_up_action.gd" id="6_brhwp"]
+[ext_resource type="Script" uid="uid://dme5f24l0edsf" path="res://addons/beehave/blackboard.gd" id="1_27ukk"]
+[ext_resource type="Script" uid="uid://ceuqtrld2fcic" path="res://test/unit_test_scene.gd" id="1_embiv"]
+[ext_resource type="Script" uid="uid://bb0t2ovl7wifo" path="res://addons/beehave/nodes/beehave_tree.gd" id="2_phgmn"]
+[ext_resource type="Script" uid="uid://cg016dbe7gs1x" path="res://addons/beehave/nodes/composites/sequence.gd" id="4_px6t4"]
+[ext_resource type="Script" uid="uid://tqf624wsv5ht" path="res://test/conditions/value_reached_condition.gd" id="5_rc0ra"]
+[ext_resource type="Script" uid="uid://crkjak4kyv56m" path="res://addons/beehave/nodes/decorators/inverter.gd" id="5_thhls"]
+[ext_resource type="Script" uid="uid://k84173r4nie7" path="res://test/actions/count_up_action.gd" id="6_brhwp"]
 
 [node name="UnitTestScene" type="Node2D"]
 script = ExtResource("1_embiv")

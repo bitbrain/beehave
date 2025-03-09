@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://hshbbkok6ltj"]
 
-[ext_resource type="Script" path="res://examples/random_tree_example/RandomTree.gd" id="1_ehk4d"]
+[ext_resource type="Script" uid="uid://b8dp6vk6wvutc" path="res://examples/random_tree_example/RandomTree.gd" id="1_ehk4d"]
 
 [node name="Node2D" type="Node2D"]
 
