@@ -26,7 +26,11 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		if c is ConditionLeaf:
 			blackboard.set_value("last_condition", c, str(actor.get_instance_id()))
 			blackboard.set_value("last_condition_status", response, str(actor.get_instance_id()))
-
+		
+		if c is ActionLeaf:
+			var sequence = c.get_parent()
+			BeehaveGlobalDebugger.action_tick.emit(sequence.name, c.name, response)
+		
 		match response:
 			SUCCESS:
 				_cleanup_running_task(c, actor, blackboard)

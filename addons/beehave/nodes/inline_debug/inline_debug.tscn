@@ -1,0 +1,80 @@
+[gd_scene load_steps=6 format=3 uid="uid://dqo2u00weevgd"]
+
+[ext_resource type="Script" uid="uid://n4yxcjlrkm4v" path="res://addons/beehave/nodes/inline_debug/inline_debug.gd" id="1_3aj8r"]
+[ext_resource type="Texture2D" uid="uid://c5gw354thiofm" path="res://addons/beehave/icons/sequence.svg" id="2_nok58"]
+[ext_resource type="Texture2D" uid="uid://btrq8e0kyxthg" path="res://addons/beehave/icons/action.svg" id="3_k3ssi"]
+[ext_resource type="Texture2D" uid="uid://dl6wo332kglbe" path="res://addons/beehave/icons/succeeder.svg" id="4_ealie"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3aj8r"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.134205, 0.00143652, 0.0923977, 1)
+
+[node name="BeehaveInlineDebug" type="PanelContainer"]
+offset_right = 192.0
+offset_bottom = 80.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3aj8r")
+script = ExtResource("1_3aj8r")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("2_nok58")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="SequenceName" type="Label" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.27451, 0.827451, 0.639216, 1)
+theme_override_font_sizes/font_size = 24
+text = "Sequence..."
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("3_k3ssi")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="ActionName" type="Label" parent="VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.713726, 0.286275, 1)
+theme_override_font_sizes/font_size = 24
+text = "Action..."
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/HBoxContainer3"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("4_ealie")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ActionStatus" type="Label" parent="VBoxContainer/HBoxContainer3"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.27451, 0.756863, 0.882353, 1)
+theme_override_font_sizes/font_size = 24
+text = "STATUS..."

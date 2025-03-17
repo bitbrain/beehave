@@ -1,5 +1,7 @@
 extends Node
 
+signal action_tick(sequence_name: String, action_name: String, response: int)
+
 var _registered_trees: Dictionary
 var _active_tree
 

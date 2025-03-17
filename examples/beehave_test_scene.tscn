@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://dxkotdttpvmb0"]
+[gd_scene load_steps=13 format=3 uid="uid://dxkotdttpvmb0"]
 
 [ext_resource type="Script" uid="uid://bpqetb2foys1g" path="res://examples/beehave_test_scene.gd" id="1_18xg1"]
 [ext_resource type="Texture2D" uid="uid://uq5muso23nn5" path="res://splash.png" id="2_2q57p"]
 [ext_resource type="Script" uid="uid://c8wmvgu043nhw" path="res://examples/ColorChangingSprite.gd" id="3_shmq8"]
+[ext_resource type="PackedScene" uid="uid://dqo2u00weevgd" path="res://addons/beehave/nodes/inline_debug/inline_debug.tscn" id="4_v1lq1"]
 [ext_resource type="Script" uid="uid://bb0t2ovl7wifo" path="res://addons/beehave/nodes/beehave_tree.gd" id="4_yb1gg"]
 [ext_resource type="Script" uid="uid://cw22yurt5l74k" path="res://addons/beehave/nodes/composites/selector_reactive.gd" id="5_l2xef"]
 [ext_resource type="Script" uid="uid://cg016dbe7gs1x" path="res://addons/beehave/nodes/composites/sequence.gd" id="6_jtsdg"]
@@ -22,6 +23,13 @@ modulate = Color(0.882353, 0.882353, 0.882353, 0.141176)
 position = Vector2(32, 46)
 scale = Vector2(2.63487, 2.57664)
 texture = ExtResource("2_2q57p")
+
+[node name="BeehaveInlineDebug" parent="." node_paths=PackedStringArray("tree") instance=ExtResource("4_v1lq1")]
+offset_left = 60.0
+offset_top = -50.0
+offset_right = 275.0
+offset_bottom = 58.0
+tree = NodePath("../ColorChangingSprite/BeehaveTree")
 
 [node name="ColorChangingSprite" type="Sprite2D" parent="."]
 scale = Vector2(0.1, 0.1)
