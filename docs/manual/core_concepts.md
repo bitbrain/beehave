@@ -29,7 +29,7 @@ Composite nodes control the flow by managing multiple child nodes:
 
 - **Sequence**: Executes children in order until one fails (AND logic). Returns SUCCESS only if all children succeed. If any child fails, the sequence stops and returns FAILURE.
 - **Selector**: Executes children in order until one succeeds (OR logic). Returns SUCCESS if any child succeeds. If all children fail, the selector returns FAILURE.
-- **Simple Parallel**: Executes two children simultaneously - typically a main task and a background task. The node can be configured to succeed when the main task succeeds or when both tasks succeed. See [Simple Parallel](./composites/simple_parallel.md) for more details.
+- **Simple Parallel**: Executes two children simultaneously - typically a main task and a background task. The node can be configured to succeed when the main task succeeds or when both tasks succeed. See [Simple Parallel](/manual/simple_parallel.md) for more details.
 
 ### Decorator Nodes
 
@@ -52,7 +52,7 @@ The Blackboard is a shared memory space that nodes can use to store and retrieve
 
 - **Data Sharing**: The blackboard allows different parts of the behavior tree to exchange information
 - **Persistence**: Data remains on the blackboard between ticks, serving as the AI's memory
-- **Scoping**: Blackboard data can be scoped to specific trees or branches (see [Blackboard](blackboard.md))
+- **Scoping**: Blackboard data can be scoped to specific trees or branches (see [Blackboard](/manual/blackboard.md))
 
 ### Blackboard Example
 
@@ -137,4 +137,4 @@ Some useful behavior tree patterns include:
 - Use the Limiter decorator for operations that don't need to run every tick
 - Keep your trees organized and not too deep for better debugging
 
-Now that you understand the core concepts, let's move on to [creating your first behavior tree](first_behavior_tree.md) or learn more about [blackboards](blackboard.md). 
+Now that you understand the core concepts, let's move on to [creating your first behavior tree](/manual/first_behavior_tree.md) or learn more about [blackboards](/manual/blackboard.md). 

@@ -24,8 +24,8 @@ When a parent node restarts, it means the whole composite node begins its evalua
 
 When a composite node ticks again, it will "jump" to the currently `RUNNING` child node and tick it.
 
-For [sequence nodes](sequence.md), on the first frame it starts ticking all its children in order, starting from the first one, until either all of them return `SUCCESS` or one of them returns `RUNNING`. If one of them returned `RUNNING`, on the next frame, the sequence will only tick the running child node. Not all of them, just the running one - and possibly the child nodes following it, if the running child has completed and returned `SUCCESS`. 
-For [selector nodes](selector.md), on the first frame it starts ticking each child in order until one of them returns `SUCCESS` or one of them returns `RUNNING`. If one of them returned `RUNNING`, on the next frame, the selector will only tick the running child node, skipping all the previous ones, and possibly the child nodes following it, if the running child has completed and returned `FAILURE`.
+For [sequence nodes](/manual/sequence.md), on the first frame it starts ticking all its children in order, starting from the first one, until either all of them return `SUCCESS` or one of them returns `RUNNING`. If one of them returned `RUNNING`, on the next frame, the sequence will only tick the running child node. Not all of them, just the running one - and possibly the child nodes following it, if the running child has completed and returned `SUCCESS`. 
+For [selector nodes](/manual/selector.md), on the first frame it starts ticking each child in order until one of them returns `SUCCESS` or one of them returns `RUNNING`. If one of them returned `RUNNING`, on the next frame, the selector will only tick the running child node, skipping all the previous ones, and possibly the child nodes following it, if the running child has completed and returned `FAILURE`.
 
 ## Interrupting child nodes
 

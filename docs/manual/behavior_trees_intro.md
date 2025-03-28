@@ -78,4 +78,4 @@ When I get home from work (Selector):
 
 ## Next Steps
 
-Now that you understand the basic concept of behavior trees, let's explore the [Core Concepts](core_concepts.md) of Beehave and then build [Your First Behavior Tree](first_behavior_tree.md). 
+Now that you understand the basic concept of behavior trees, let's explore the [Core Concepts](/manual/core_concepts.md) of Beehave and then build [Your First Behavior Tree](/manual/first_behavior_tree.md). 

@@ -273,4 +273,4 @@ Now that you have a basic behavior tree working, you can:
 - Add decorator nodes to modify behavior
 - Use the blackboard to share more information between nodes
 
-Check out the [Common Patterns & Examples](common_patterns.md) section for more ideas, or learn about [Debugging](debugging.md) to fine-tune your behavior trees. 
+Check out the [Common Patterns & Examples](/manual/common_patterns.md) section for more ideas, or learn about [Debugging](/manual/debugging.md) to fine-tune your behavior trees. 
