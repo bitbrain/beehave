@@ -90,6 +90,31 @@ Understanding how behavior trees execute is crucial:
 
 This continual reevaluation allows the AI to respond to changing conditions in the game world.
 
+### Execution Modes
+
+Beehave trees can run in three different modes, controlled by the `process_thread` property:
+
+- **PHYSICS** (default): The tree ticks automatically during the physics process, making it ideal for physics-based behaviors like movement and combat
+- **IDLE**: The tree ticks automatically during the idle process, better suited for UI or non-physics behaviors
+- **MANUAL**: The tree only ticks when you explicitly call the `tick()` method, giving you full control over when behaviors execute
+
+#### Manual Mode Use Cases
+
+Manual mode is particularly useful in scenarios where you want precise control over when behaviors execute:
+
+- **Turn-Based Games**: In games like roguelikes or strategy games, you might want behaviors to execute only when it's a character's turn
+- **Event-Driven Systems**: When behaviors should only run in response to specific events rather than every frame
+- **Performance Optimization**: For behaviors that don't need to run every frame, you can manually control the tick rate
+- **Synchronized Behaviors**: When multiple trees need to execute in a specific order or at the same time
+
+Example of manual mode in a roguelike:
+```gdscript
+# In your turn manager
+func process_turn():
+    for character in characters:
+        character.behavior_tree.tick()
+```
+
 ### Execution Example
 
 Consider this sequence: "Check if enemy is visible" → "Move to enemy" → "Attack enemy"
