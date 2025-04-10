@@ -113,3 +113,94 @@ func test_actor_override() -> void:
 	tree.actor = actor
 	scene.add_child(tree)
 	assert_that(tree.actor).is_equal(actor)
+
+
+func test_manual_mode_does_not_auto_tick() -> void:
+	var scene = create_scene()
+	scene_runner(scene)
+	scene.beehave_tree.process_thread = BeehaveTree.ProcessThread.MANUAL
+	scene.beehave_tree.enabled = true
+	
+	# Set up count up action
+	scene.count_up_action.status = BeehaveNode.RUNNING
+	scene.beehave_tree.blackboard.set_value("custom_value", 0)
+	
+	# Wait a bit to verify no auto-ticks
+	await get_tree().create_timer(0.1).timeout
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(0)
+
+
+func test_manual_mode_can_tick_manually() -> void:
+	var scene = create_scene()
+	scene_runner(scene)
+	scene.beehave_tree.process_thread = BeehaveTree.ProcessThread.MANUAL
+	scene.beehave_tree.enabled = true
+	
+	# Set up count up action
+	scene.count_up_action.status = BeehaveNode.RUNNING
+	scene.beehave_tree.blackboard.set_value("custom_value", 0)
+	
+	# Manual tick should increase counter
+	scene.beehave_tree.tick()
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(1)
+	
+	# Another manual tick should increase counter again
+	scene.beehave_tree.tick()
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(2)
+
+
+func test_manual_mode_respects_tick_rate() -> void:
+	var scene = create_scene()
+	scene_runner(scene)
+	scene.beehave_tree.process_thread = BeehaveTree.ProcessThread.MANUAL
+	scene.beehave_tree.tick_rate = 3
+	scene.beehave_tree.enabled = true
+	
+	# Set up count up action
+	scene.count_up_action.status = BeehaveNode.RUNNING
+	scene.beehave_tree.blackboard.set_value("custom_value", 0)
+	
+	# First tick should increase counter
+	scene.beehave_tree.tick()
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(1)
+	
+	# Second tick should increase counter (tick rate is only checked in _process_internally)
+	scene.beehave_tree.tick()
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(2)
+	
+	# Third tick should increase counter
+	scene.beehave_tree.tick()
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(3)
+	
+	# Fourth tick should increase counter
+	scene.beehave_tree.tick()
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(4)
+
+
+func test_manual_mode_can_be_disabled() -> void:
+	var scene = create_scene()
+	scene_runner(scene)
+	scene.beehave_tree.process_thread = BeehaveTree.ProcessThread.MANUAL
+	scene.beehave_tree.enabled = true
+	
+	# Set up count up action
+	scene.count_up_action.status = BeehaveNode.RUNNING
+	scene.beehave_tree.blackboard.set_value("custom_value", 0)
+	
+	# Should be able to tick when enabled
+	scene.beehave_tree.tick()
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(1)
+	
+	# Disable the tree
+	scene.beehave_tree.disable()
+	
+	# Should not be able to tick when disabled
+	scene.beehave_tree.tick()
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(1)  # Value should not change
+	
+	# Re-enable the tree
+	scene.beehave_tree.enable()
+	
+	# Should be able to tick again
+	scene.beehave_tree.tick()
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(2)

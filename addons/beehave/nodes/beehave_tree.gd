@@ -6,7 +6,7 @@ class_name BeehaveTree extends Node
 
 enum { SUCCESS, FAILURE, RUNNING }
 
-enum ProcessThread { IDLE, PHYSICS }
+enum ProcessThread { IDLE, PHYSICS, MANUAL }
 
 signal tree_enabled
 signal tree_disabled
@@ -45,6 +45,7 @@ signal tree_disabled
 @export var process_thread: ProcessThread = ProcessThread.PHYSICS:
 	set(value):
 		process_thread = value
+		self.enabled = self.enabled and process_thread != ProcessThread.MANUAL
 		set_physics_process(enabled and process_thread == ProcessThread.PHYSICS)
 		set_process(enabled and process_thread == ProcessThread.IDLE)
 
