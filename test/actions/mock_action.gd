@@ -9,10 +9,12 @@ signal stopped_running(actor, blackboard)
 signal interrupted(actor, blackboard)
 
 var tick_count: int = 0
+var after_run_called: bool = false
 
 
 func before_run(actor: Node, blackboard: Blackboard) -> void:
 	tick_count = 0
+	after_run_called = false
 	started_running.emit(actor, blackboard)
 
 
@@ -30,4 +32,5 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 
 func after_run(actor: Node, blackboard: Blackboard) -> void:
 	tick_count = 0
+	after_run_called = true
 	stopped_running.emit(actor, blackboard)

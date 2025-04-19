@@ -84,3 +84,49 @@ func test_interrupt_propagates_when_composite() -> void:
 func _on_interrupted(_actor, blackboard):
 	var started = blackboard.get_value("interrupted", 0)
 	blackboard.set_value("interrupted", started + 1)
+
+func test_after_run_called_on_success() -> void:
+	cooldown.wait_time = 1.0
+	action.final_result = BeehaveNode.SUCCESS
+	
+	# First tick should execute child and call after_run
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_bool(action.after_run_called).is_true()
+	
+	# Reset after_run_called flag since before_run will be called on next tick
+	action.after_run_called = false
+	
+	# Second tick should be in cooldown and not call after_run
+	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	assert_bool(action.after_run_called).is_false()
+
+func test_after_run_called_on_failure() -> void:
+	cooldown.wait_time = 1.0
+	action.final_result = BeehaveNode.FAILURE
+	
+	# First tick should execute child and call after_run
+	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	assert_bool(action.after_run_called).is_true()
+	
+	# Reset after_run_called flag since before_run will be called on next tick
+	action.after_run_called = false
+	
+	# Second tick should be in cooldown and not call after_run
+	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	assert_bool(action.after_run_called).is_false()
+
+func test_after_run_not_called_during_cooldown() -> void:
+	cooldown.wait_time = 1.0
+	action.final_result = BeehaveNode.SUCCESS
+	
+	# First tick should execute child and call after_run
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_bool(action.after_run_called).is_true()
+	
+	# Reset after_run_called flag since before_run will be called on next tick
+	action.after_run_called = false
+	
+	# Wait a bit but not enough to complete cooldown
+	await runner.simulate_frames(1, 500)
+	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	assert_bool(action.after_run_called).is_false()  # Should not call after_run during cooldown

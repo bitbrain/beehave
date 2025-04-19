@@ -28,6 +28,8 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 			blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 		return RUNNING
 	if response == SUCCESS:
+		c.after_run(actor, blackboard)
 		return RUNNING
 
+	c.after_run(actor, blackboard)
 	return SUCCESS
