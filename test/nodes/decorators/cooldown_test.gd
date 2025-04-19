@@ -130,3 +130,19 @@ func test_after_run_not_called_during_cooldown() -> void:
 	await runner.simulate_frames(1, 500)
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	assert_bool(action.after_run_called).is_false()  # Should not call after_run during cooldown
+
+func test_cooldown_reset_on_interrupt() -> void:
+	cooldown.wait_time = 1.0
+	action.final_result = BeehaveNode.SUCCESS
+	
+	# First tick should execute child and start cooldown
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	
+	# Second tick should be in cooldown
+	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	
+	# Interrupt should reset the cooldown
+	tree.interrupt()
+	
+	# After interrupt, the cooldown should be reset and the action should execute normally
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)

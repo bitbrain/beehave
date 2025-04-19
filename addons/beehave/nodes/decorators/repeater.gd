@@ -1,6 +1,7 @@
 ## The repeater will execute its child until it returns `SUCCESS` a certain amount of times.
 ## When the number of maximum ticks is reached, it will return a `SUCCESS` status code.
 ## If the child returns `FAILURE`, the repeater will return `FAILURE` immediately.
+## The counter resets when the node is interrupted (such as when the behavior tree changes branches).
 @tool
 @icon("../../icons/repeater.svg")
 class_name RepeaterDecorator extends Decorator
@@ -50,6 +51,13 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 		return RUNNING
 	else:
 		return SUCCESS
+
+
+func interrupt(actor: Node, blackboard: Blackboard) -> void:
+	# Reset the internal counter when the node is interrupted
+	current_count = 0
+		
+	super(actor, blackboard)
 
 
 func get_class_name() -> Array[StringName]:

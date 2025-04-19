@@ -94,3 +94,36 @@ func test_after_run_not_called_during_delay() -> void:
 	await runner.simulate_frames(1, 500)
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	assert_bool(action.after_run_called).is_false()
+
+func test_delay_reset_on_interrupt() -> void:
+	delayer.wait_time = 1.0
+	action.final_result = BeehaveNode.SUCCESS
+	
+	# First tick should start the delay
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	
+	# Simulate partial progress through the delay
+	await runner.simulate_frames(1, 500)
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	
+	# Interrupt should reset the delay
+	tree.interrupt()
+	
+	# Verify the blackboard value is reset
+	var cache_key = "time_limiter_%s" % delayer.get_instance_id()
+	var blackboard_value = tree.blackboard.get_value(cache_key, -1, str(tree.actor.get_instance_id()))
+	assert_that(blackboard_value).is_equal(0.0) # This should pass if our reset works
+	
+	# First tick after interrupt should start a new delay from the beginning
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	
+	# Set running_child to null to force a reinitialize on next tick
+	# This simulates what would happen in a real tree when switching branches
+	delayer.running_child = null
+	
+	# Manually "complete" the delay by setting it past the wait time
+	cache_key = "time_limiter_%s" % delayer.get_instance_id()
+	tree.blackboard.set_value(cache_key, 1.1, str(tree.actor.get_instance_id()))  # Set it past wait_time
+	
+	# Now when we tick, it should execute the child and return SUCCESS
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)

@@ -95,3 +95,21 @@ func _on_action_started(_actor, blackboard):
 func _on_action_ended(_actor, blackboard):
 	var ended = blackboard.get_value("ended", 0)
 	blackboard.set_value("ended", ended + 1)
+
+func test_counter_reset_on_interrupt() -> void:
+	repeater.repetitions = 3
+	action.final_result = BeehaveNode.SUCCESS
+	
+	# Complete one repetition to advance the counter
+	for i in range(action.running_frame_count):
+		tree.tick()
+	tree.tick()
+	
+	# Verify internal counter was advanced
+	assert_int(repeater.current_count).is_equal(1)
+	
+	# Interrupt should reset the counter
+	tree.interrupt()
+	
+	# Verify counter was reset to 0
+	assert_int(repeater.current_count).is_equal(0)

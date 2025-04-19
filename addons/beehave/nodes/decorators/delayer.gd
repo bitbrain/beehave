@@ -6,6 +6,7 @@ class_name DelayDecorator
 ## The Delay Decorator will return 'RUNNING' for a set amount of time
 ## before executing its child.
 ## The timer resets when both it and its child are not `RUNNING`
+## or when the node is interrupted (such as when the behavior tree changes branches).
 
 ## The wait time in seconds
 @export var wait_time := 0.0
@@ -48,3 +49,9 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 			blackboard.set_value(cache_key, 0.0, str(actor.get_instance_id()))
 
 	return response
+
+func interrupt(actor: Node, blackboard: Blackboard) -> void:
+	# Reset the delay timer when the branch changes
+	blackboard.set_value(cache_key, 0.0, str(actor.get_instance_id()))
+	
+	super(actor, blackboard)

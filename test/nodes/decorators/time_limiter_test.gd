@@ -61,3 +61,25 @@ func test_clear_running_child_after_run() -> void:
 	action.status = BeehaveNode.SUCCESS
 	await runner.simulate_frames(1, 1600)
 	assert_that(time_limiter.running_child).is_null()
+
+func test_timer_reset_on_interrupt() -> void:
+	time_limiter.wait_time = 1.0
+	action.status = BeehaveNode.RUNNING
+	
+	# First tick to start the timer
+	tree.tick()
+	
+	# Advance the timer but not enough to trigger failure
+	await runner.simulate_frames(1, 500)
+	
+	# Timer should be running
+	var cache_key = "time_limiter_%s" % time_limiter.get_instance_id()
+	var timer_value = tree.blackboard.get_value(cache_key, 0.0, str(actor.get_instance_id()))
+	assert_that(timer_value > 0.0).is_true()
+	
+	# Interrupt should reset the timer
+	tree.interrupt()
+	
+	# Verify timer was reset to 0
+	timer_value = tree.blackboard.get_value(cache_key, -1.0, str(actor.get_instance_id()))
+	assert_that(timer_value).is_equal(0.0)

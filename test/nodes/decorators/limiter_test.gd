@@ -62,3 +62,26 @@ func test_clear_running_child_after_run() -> void:
 	tree.tick()
 	assert_that(action.count).is_equal(2)
 	assert_that(limiter.running_child).is_equal(null)
+
+func test_counter_reset_on_interrupt() -> void:
+	limiter.max_count = 3
+	action.status = BeehaveNode.RUNNING
+	
+	# Tick once to advance the counter
+	var tree_status = tree.tick()
+	# Verify counter was advanced
+	assert_that(tree_status).is_equal(BeehaveNode.RUNNING)
+	assert_that(action.count).is_equal(1)
+	
+	# Interrupt should reset the counter
+	tree.interrupt()
+	
+	# Verify the counter was reset by checking if we can tick again
+	# If counter was reset, we should be able to tick max_count times again
+	action.status = BeehaveNode.RUNNING
+	for i in range(limiter.max_count):
+		var status = tree.tick()
+		assert_that(status).is_equal(BeehaveNode.RUNNING)
+	
+	# After max_count ticks, it should now fail (proving counter started from 0)
+	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
