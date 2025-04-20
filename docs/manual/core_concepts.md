@@ -148,6 +148,99 @@ The diagram uses different colored arrows to represent execution status:
 
 This continual decision-making allows the AI to respond dynamically - attacking when enemies are visible, and patrolling otherwise.
 
+## Interrupts
+
+Interrupts are a critical mechanism in behavior trees that prevent "stale branches" and ensure proper cleanup of node states. A branch becomes stale when it is no longer visited during execution but might still have nodes in the RUNNING state.
+
+### The Problem of Stale Branches
+
+Stale branches commonly occur in several scenarios:
+
+1. **In reactive sequences**: When using a `SequenceReactiveComposite` that always restarts from the beginning, later children that were previously RUNNING might get abandoned if an earlier condition fails.
+
+2. **When conditions change**: In a sequence where all nodes were succeeding, if a node suddenly starts failing, subsequent nodes might have accumulated state that needs to be reset.
+
+3. **When switching between branches in selectors**: When a `SelectorReactiveComposite` switches from one branch to another due to changing conditions, the previously running branch needs proper cleanup.
+
+4. **During random execution**: When using `SelectorRandomComposite` or `SequenceRandom` nodes, different execution paths may be chosen on subsequent ticks, abandoning previously running branches.
+
+5. **In parallel execution**: When using `SimpleParallel` nodes where both main and background tasks might be running simultaneously, one might need to be interrupted when the other completes.
+
+6. **With decorator-altered flow**: Decorators like `Repeater`, `UntilFail`, or `Limiter` can create scenarios where interruption is needed when they force early termination or repetition of their child nodes.
+
+7. **When the tree is disabled**: If the entire behavior tree is disabled or the game object is deactivated while nodes are in the RUNNING state.
+
+> **Note:** Random nodes (`SelectorRandomComposite` and `SequenceRandom`) do not support interrupts in the current version of Beehave.
+
+### The `interrupt()` Method
+
+To address these issues, every node in Beehave implements an `interrupt()` method. When called, this method:
+
+- Cleanly terminates any ongoing operations
+- Resets internal state variables
+- Propagates the interrupt to all children
+
+The behavior tree system automatically calls `interrupt()` on branches that are no longer being visited, ensuring that no node is left in an inconsistent state.
+
+### Example: Enemy Attack with Cooldown
+
+Here's an example of how interrupts help manage an enemy's attack behavior:
+
+```gdscript
+class_name AttackWithCooldown
+extends ActionLeaf
+
+var cooldown_timer: float = 0.0
+var is_attacking: bool = false
+
+func tick(actor: Node, blackboard: Blackboard) -> int:
+    if is_attacking:
+        # Currently in attack animation
+        if actor.animation_finished():
+            is_attacking = false
+            cooldown_timer = 2.0  # Start cooldown
+            return SUCCESS
+        return RUNNING
+        
+    if cooldown_timer > 0:
+        # In cooldown
+        cooldown_timer -= get_process_delta_time()
+        return RUNNING
+    
+    # Ready to attack
+    actor.play_attack_animation()
+    is_attacking = true
+    return RUNNING
+
+func interrupt(actor: Node, blackboard: Blackboard) -> void:
+    # Clean up state when the node is interrupted
+    is_attacking = false
+    cooldown_timer = 0.0
+    # Additional cleanup like stopping animations could go here
+```
+
+In this example, if the player leaves the enemy's attack range (causing a condition node to fail), the `interrupt()` method will be called on our `AttackWithCooldown` node. This ensures the cooldown and attack state are properly reset, preventing situations where the enemy might be stuck in an invisible cooldown when the player returns to range.
+
+### When Interrupts Are Called
+
+Interrupts are automatically triggered when a branch becomes "unreachable" - that is, when the flow of execution will no longer visit certain nodes that were previously running. Based on the actual implementation in Beehave's composite nodes, interrupts are called in these specific scenarios:
+
+1. **Backward jumps in execution flow**: 
+   - In `SequenceComposite` nodes: When a child fails, and this failure occurs earlier in the sequence than the previous failure
+   - In `SelectorComposite` nodes: When a child succeeds, and this success occurs earlier in the selector than the previous success
+
+2. **Branch switching**:
+   - When a `SelectorComposite` or `SelectorReactiveComposite` switches from one branch to another due to changing conditions
+   - When one branch of a selector succeeds, making other branches unreachable
+
+3. **Flow resets**:
+   - When a `SequenceReactiveComposite` receives a RUNNING status and needs to restart execution
+   - When a reactive node pattern forces re-evaluation of earlier conditions
+
+4. **Tree-level changes**:
+   - When the entire behavior tree is disabled
+   - When a branch is explicitly skipped due to higher-level node behavior
+
 ## Common Patterns
 
 Some useful behavior tree patterns include:

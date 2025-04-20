@@ -156,6 +156,14 @@ func process_begin(instance_id: int, blackboard = null) -> void:
 
 	for child in _get_child_nodes():
 		child.set_meta("status", -1)
+		
+		
+		
+func process_interrupt(instance_id: int, blackboard = null) -> void:
+	var node := get_node_or_null(str(instance_id))
+	if node:
+		node.blackboard = blackboard
+		# TODO: highlight interrupt somehow (e.g. red border pops up?)
 
 
 func process_tick(instance_id: int, status: int, blackboard = null) -> void:

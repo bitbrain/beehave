@@ -27,7 +27,6 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 		remaining_time -= get_physics_process_delta_time()
 		blackboard.set_value(cache_key, remaining_time, str(actor.get_instance_id()))
-
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(self.get_instance_id(), response, blackboard.get_debug_data())
 	else:
@@ -53,5 +52,4 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
 	# Reset the cooldown when the branch changes
 	blackboard.set_value(cache_key, 0.0, str(actor.get_instance_id()))
-		
-	super(actor, blackboard)
+	super.interrupt(actor, blackboard)

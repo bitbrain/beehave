@@ -21,6 +21,7 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 	if running_child != null:
 		running_child.interrupt(actor, blackboard)
 		running_child = null
+	super.interrupt(actor, blackboard)
 
 
 func after_run(actor: Node, blackboard: Blackboard) -> void:

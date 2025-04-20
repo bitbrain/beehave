@@ -58,9 +58,9 @@ func test_get_last_condition() -> void:
 	var scene = create_scene()
 	var runner := scene_runner(scene)
 	await runner.simulate_frames(100)
-	assert_that(scene.beehave_tree.get_running_action()).is_null()
-	assert_that(scene.beehave_tree.get_last_condition()).is_not_null()
-	assert_that(scene.beehave_tree.get_last_condition_status()).is_equal("SUCCESS")
+	assert_that(scene.beehave_tree_without_interrupt.get_running_action()).is_null()
+	assert_that(scene.beehave_tree_without_interrupt.get_last_condition()).is_not_null()
+	assert_that(scene.beehave_tree_without_interrupt.get_last_condition_status()).is_equal("SUCCESS")
 
 
 func test_disabled() -> void:

@@ -24,6 +24,9 @@ func _capture(message: String, data: Array, session_id: int) -> bool:
 	if message == "beehave:unregister_tree":
 		debugger_tab.unregister_tree(data[0])
 		return true
+	if message == "beehave:process_interrupt":
+		debugger_tab.graph.process_interrupt(data[0], data[1])
+		return true
 	if message == "beehave:process_tick":
 		debugger_tab.graph.process_tick(data[0], data[1], data[2])
 		return true

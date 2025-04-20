@@ -19,6 +19,9 @@ static func process_tick(instance_id: int, status: int, blackboard: Dictionary =
 	if can_send_message():
 		EngineDebugger.send_message("beehave:process_tick", [instance_id, status, blackboard])
 
+static func process_interrupt(instance_id: int, blackboard: Dictionary = {}) -> void:
+	if can_send_message():
+		EngineDebugger.send_message("beehave:process_interrupt", [instance_id, blackboard])
 
 static func process_begin(instance_id: int, blackboard: Dictionary = {}) -> void:
 	if can_send_message():

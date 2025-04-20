@@ -30,80 +30,80 @@ Imagine an enemy character that should decide between different actions based on
 The enemy will choose the first successful option, and the Selector node will return `SUCCESS`. If none of the conditions are met, the Selector node will return `FAILURE`.
 
 <ul style="list-style: none;">
-    <li>
-        <img src="assets/icons/tree.svg" width="18px"/>
-        BeehaveTree
-    </li>
-    <ul style="list-style: none;">
-        <li>
-            <a href="#/manual/selector?id=selector-node"><img src="assets/icons/selector.svg" width="18px"/></a>
-            SelectorComposite
-        </li>
-        <li>
-            <ul style="list-style: none;">
-                <li>
-                    <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
-                    SequenceComposite
-                </li>
-                <li>
-                    <ul style="list-style: none;">
-                        <li>
-                            <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
-                            IsPlayerFarAway
-                        </li>
-                        <li>
-                            <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
-                            PatrolTheArea
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <ul style="list-style: none;">
-                <li>
-                    <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
-                    SequenceComposite2
-                </li>
-                <li>
-                    <ul style="list-style: none;">
-                        <li>
-                            <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
-                            IsPlayerClose
-                        </li>
-                        <li>
-                            <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
-                            IsHPLow
-                        </li>
-                        <li>
-                            <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
-                            Retreat
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <ul style="list-style: none;">
-                <li>
-                    <a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
-                    SequenceComposite3
-                </li>
-                <li>
-                    <ul style="list-style: none;">
-                        <li>
-                            <a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
-                            IsPlayerClose
-                        </li>
-                        <li>
-                            <a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
-                            AttackPlayer
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
+	<li>
+		<img src="assets/icons/tree.svg" width="18px"/>
+		BeehaveTree
+	</li>
+	<ul style="list-style: none;">
+		<li>
+			<a href="#/manual/selector?id=selector-node"><img src="assets/icons/selector.svg" width="18px"/></a>
+			SelectorComposite
+		</li>
+		<li>
+			<ul style="list-style: none;">
+				<li>
+					<a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+					SequenceComposite
+				</li>
+				<li>
+					<ul style="list-style: none;">
+						<li>
+							<a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+							IsPlayerFarAway
+						</li>
+						<li>
+							<a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+							PatrolTheArea
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<ul style="list-style: none;">
+				<li>
+					<a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+					SequenceComposite2
+				</li>
+				<li>
+					<ul style="list-style: none;">
+						<li>
+							<a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+							IsPlayerClose
+						</li>
+						<li>
+							<a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+							IsHPLow
+						</li>
+						<li>
+							<a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+							Retreat
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<ul style="list-style: none;">
+				<li>
+					<a href="#/manual/sequence?id=sequence-node"><img src="assets/icons/sequence.svg" width="18px"/></a>
+					SequenceComposite3
+				</li>
+				<li>
+					<ul style="list-style: none;">
+						<li>
+							<a href="#/manual/condition_leaf?id=condition-leaf"><img src="assets/icons/condition.svg" width="18px"/></a>
+							IsPlayerClose
+						</li>
+						<li>
+							<a href="#/manual/action_leaf?id=action-leaf-node"><img src="assets/icons/action.svg" width="18px"/></a>
+							AttackPlayer
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
 </ul>
 
 Note, that the "If the player is close and the enemy is low on health, retreat" sequence goes before "If the player is in range, attack the player". If you put them the other way around, the enemy would always keep attacking the player as SelectorSequence will always run the first sequence that doesn't return `FAILURE`.

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://diw3kjj050wdy"]
+[gd_scene load_steps=9 format=3 uid="uid://diw3kjj050wdy"]
 
 [ext_resource type="Script" uid="uid://dme5f24l0edsf" path="res://addons/beehave/blackboard.gd" id="1_27ukk"]
 [ext_resource type="Script" uid="uid://ceuqtrld2fcic" path="res://test/unit_test_scene.gd" id="1_embiv"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://tqf624wsv5ht" path="res://test/conditions/value_reached_condition.gd" id="5_rc0ra"]
 [ext_resource type="Script" uid="uid://crkjak4kyv56m" path="res://addons/beehave/nodes/decorators/inverter.gd" id="5_thhls"]
 [ext_resource type="Script" uid="uid://k84173r4nie7" path="res://test/actions/count_up_action.gd" id="6_brhwp"]
+[ext_resource type="Script" uid="uid://8hn4kne15ac5" path="res://addons/beehave/nodes/composites/selector.gd" id="8_jf1d5"]
 
 [node name="UnitTestScene" type="Node2D"]
 script = ExtResource("1_embiv")
@@ -17,10 +18,11 @@ script = ExtResource("1_27ukk")
 
 [node name="Node2D" type="Node2D" parent="."]
 
-[node name="BeehaveTree" type="Node" parent="Node2D" node_paths=PackedStringArray("blackboard")]
+[node name="BeehaveTree" type="Node" parent="Node2D" node_paths=PackedStringArray("blackboard", "actor")]
 unique_name_in_owner = true
 script = ExtResource("2_phgmn")
-blackboard = NodePath("@Node@22048")
+blackboard = NodePath("@Node@25087")
+actor = NodePath("..")
 
 [node name="SequenceComposite" type="Node" parent="Node2D/BeehaveTree"]
 script = ExtResource("4_px6t4")
@@ -35,12 +37,32 @@ script = ExtResource("5_rc0ra")
 unique_name_in_owner = true
 script = ExtResource("6_brhwp")
 
+[node name="BeehaveTreeWithoutInterrupt" type="Node" parent="Node2D" node_paths=PackedStringArray("blackboard", "actor")]
+unique_name_in_owner = true
+script = ExtResource("2_phgmn")
+blackboard = NodePath("@Node@25088")
+actor = NodePath("..")
+
+[node name="SequenceComposite" type="Node" parent="Node2D/BeehaveTreeWithoutInterrupt"]
+script = ExtResource("4_px6t4")
+
+[node name="ValueNotReached" type="Node" parent="Node2D/BeehaveTreeWithoutInterrupt/SequenceComposite"]
+script = ExtResource("5_thhls")
+
+[node name="ValueReachedCondition" type="Node" parent="Node2D/BeehaveTreeWithoutInterrupt/SequenceComposite/ValueNotReached"]
+script = ExtResource("5_rc0ra")
+
+[node name="CountUpAction" type="Node" parent="Node2D/BeehaveTreeWithoutInterrupt/SequenceComposite"]
+script = ExtResource("6_brhwp")
+reset_on_interrupt = false
+
 [node name="AnotherNode" type="Node2D" parent="."]
 
-[node name="BeehaveTree" type="Node" parent="AnotherNode" node_paths=PackedStringArray("blackboard")]
+[node name="BeehaveTree" type="Node" parent="AnotherNode" node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("2_phgmn")
 actor_node_path = NodePath("..")
 blackboard = NodePath("../../Blackboard")
+actor = NodePath("..")
 
 [node name="SequenceComposite" type="Node" parent="AnotherNode/BeehaveTree"]
 script = ExtResource("4_px6t4")
@@ -55,13 +77,15 @@ limit = 4
 [node name="SharedCountUpAction1" type="Node" parent="AnotherNode/BeehaveTree/SequenceComposite"]
 unique_name_in_owner = true
 script = ExtResource("6_brhwp")
+reset_on_interrupt = false
 
 [node name="ThirdNode" type="Node2D" parent="."]
 
-[node name="BeehaveTree" type="Node" parent="ThirdNode" node_paths=PackedStringArray("blackboard")]
+[node name="BeehaveTree" type="Node" parent="ThirdNode" node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("2_phgmn")
 actor_node_path = NodePath("..")
 blackboard = NodePath("../../Blackboard")
+actor = NodePath("..")
 
 [node name="SequenceComposite" type="Node" parent="ThirdNode/BeehaveTree"]
 script = ExtResource("4_px6t4")
@@ -76,30 +100,46 @@ limit = 4
 [node name="SharedCountUpAction2" type="Node" parent="ThirdNode/BeehaveTree/SequenceComposite"]
 unique_name_in_owner = true
 script = ExtResource("6_brhwp")
+reset_on_interrupt = false
 
 [node name="EmptyTree" type="Node2D" parent="."]
 
-[node name="BeehaveTree" type="Node" parent="EmptyTree" node_paths=PackedStringArray("blackboard")]
+[node name="BeehaveTree" type="Node" parent="EmptyTree" node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("2_phgmn")
-blackboard = NodePath("@Node@22045")
+blackboard = NodePath("@Node@25089")
+actor = NodePath("..")
 
 [node name="OnlyOneActionTree" type="Node2D" parent="."]
 
-[node name="BeehaveTree" type="Node" parent="OnlyOneActionTree" node_paths=PackedStringArray("blackboard")]
+[node name="BeehaveTree" type="Node" parent="OnlyOneActionTree" node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("2_phgmn")
 enabled = false
 actor_node_path = NodePath("..")
-blackboard = NodePath("@Node@22046")
+blackboard = NodePath("@Node@25090")
+actor = NodePath("..")
 
 [node name="CountUpAction" type="Node" parent="OnlyOneActionTree/BeehaveTree"]
 script = ExtResource("6_brhwp")
 
 [node name="DeactivatedTree" type="Node2D" parent="."]
 
-[node name="BeehaveTree" type="Node" parent="DeactivatedTree" node_paths=PackedStringArray("blackboard")]
+[node name="BeehaveTree" type="Node" parent="DeactivatedTree" node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("2_phgmn")
 actor_node_path = NodePath("..")
-blackboard = NodePath("@Node@22047")
+blackboard = NodePath("@Node@25091")
+actor = NodePath("..")
 
 [node name="CountUpAction" type="Node" parent="DeactivatedTree/BeehaveTree"]
 script = ExtResource("6_brhwp")
+
+[node name="ComplexCooldownTree" type="Node2D" parent="."]
+
+[node name="BeehaveTree" type="Node" parent="ComplexCooldownTree" node_paths=PackedStringArray("blackboard", "actor")]
+script = ExtResource("2_phgmn")
+blackboard = NodePath("@Node@26048")
+actor = NodePath("..")
+metadata/_custom_type_script = "uid://bb0t2ovl7wifo"
+
+[node name="SelectorComposite" type="Node" parent="ComplexCooldownTree/BeehaveTree"]
+script = ExtResource("8_jf1d5")
+metadata/_custom_type_script = "uid://8hn4kne15ac5"

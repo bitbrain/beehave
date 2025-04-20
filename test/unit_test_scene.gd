@@ -1,6 +1,7 @@
 class_name UnitTestScene extends Node2D
 
 @onready var beehave_tree: BeehaveTree = %BeehaveTree
+@onready var beehave_tree_without_interrupt: BeehaveTree = %BeehaveTreeWithoutInterrupt
 @onready var blackboard: Blackboard = %Blackboard
 @onready var test_node = $Node2D
 @onready var count_up_action = %CountUpAction

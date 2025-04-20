@@ -72,6 +72,9 @@ func after_run(actor: Node, blackboard: Blackboard) -> void:
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
 	if not resume_on_interrupt:
+		if running_child != null:
+			running_child.interrupt(actor, blackboard)
+			running_child = null
 		_reset()
 	super(actor, blackboard)
 

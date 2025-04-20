@@ -8,13 +8,16 @@ class_name SequenceReactiveComposite extends Composite
 ## return `FAILURE` and restart.
 ## In case a child returns `RUNNING` this node will restart.
 
-var successful_index: int = 0
+# Track where we last failed – so we detect a backward jump
+var previous_failure_index: int = -1
+# Separate index for running as failure and running can diverge in reactive sequence
+var previous_running_index: int = -1
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
-	for c in get_children():
-		if c.get_index() < successful_index:
-			continue
+	var children = get_children()
+	for i in range(children.size()):
+		var c = children[i]
 
 		if c != running_child:
 			c.before_run(actor, blackboard)
@@ -29,32 +32,47 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 		match response:
 			SUCCESS:
-				successful_index += 1
+				if running_child != null and running_child == c:
+					# do not interrupt as this child finishes running!
+					_cleanup_running(running_child, actor, blackboard)
 				c.after_run(actor, blackboard)
 			FAILURE:
-				# Interrupt any child that was RUNNING before.
-				interrupt(actor, blackboard)
+				_interrupt_children(actor, blackboard, i, previous_failure_index)
+				
+				# remember where we failed for next tick
+				previous_failure_index = c.get_index()
+				
+				if running_child != null:
+					running_child.interrupt(actor, blackboard)
+					_cleanup_running(running_child, actor, blackboard)
 				c.after_run(actor, blackboard)
 				return FAILURE
 			RUNNING:
 				_reset()
-				if running_child != c:
-					interrupt(actor, blackboard)
-					running_child = c
+				if running_child != null and running_child != c:
+					running_child.interrupt(actor, blackboard)
+					_cleanup_running(running_child, actor, blackboard)
+				running_child = c
 				if c is ActionLeaf:
 					blackboard.set_value("running_action", c, str(actor.get_instance_id()))
+				_interrupt_children(actor, blackboard, i, previous_running_index)
+				previous_running_index = i
 				return RUNNING
-	_reset()
 	return SUCCESS
 
 
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
+	_interrupt_children(actor, blackboard, -1, previous_running_index if previous_running_index > previous_failure_index else previous_failure_index)
+	if running_child != null:
+		running_child.interrupt(actor, blackboard)
+		_cleanup_running(running_child, actor, blackboard)
 	_reset()
 	super(actor, blackboard)
 
 
 func _reset() -> void:
-	successful_index = 0
+	previous_failure_index = -1
+	previous_running_index = -1
 
 
 func get_class_name() -> Array[StringName]:

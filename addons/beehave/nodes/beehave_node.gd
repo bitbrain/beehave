@@ -24,7 +24,7 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 
 ## Called when this node needs to be interrupted before it can return FAILURE or SUCCESS.
 func interrupt(actor: Node, blackboard: Blackboard) -> void:
-	pass
+	BeehaveDebuggerMessages.process_interrupt(self.get_instance_id(), blackboard.get_debug_data())
 
 
 ## Called before the first time it ticks by the parent.
