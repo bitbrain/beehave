@@ -14,6 +14,50 @@ Type of Node | Child returns `RUNNING`
 `SelectorComposite` | Tick again
 `SelectorReactiveComposite` | Restart
 
+`Tick again` means that it will (for each consecutive tick) skip previous nodes that already ran and tick **only** the current `RUNNING` node again until it is no longer `RUNNING`.
+
+`Restart` means that it will tick all previous nodes that already ran and then tick the current `RUNNING` node again.
+
+### When to Use Restart vs Tick Again
+
+The choice between "restart" and "tick again" behaviors impacts how your selector responds to dynamic game environments:
+
+#### When to Use "Tick Again" Behavior
+Choose a selector with "tick again" behavior (`SelectorComposite`) when you need to:
+
+- **Maintain action continuity**: Ensure long-running tasks complete without interruption
+- **Preserve computational resources**: Avoid re-checking conditions that are unlikely to change
+- **Create stable, predictable behavior**: When commitment to the current action is more important than responsiveness
+
+**Example**: A character performing a special ability that must complete its full animation sequence before considering other options.
+
+```
+SelectorComposite
+├─ IsSpecialAbilityTriggered (Condition: success)
+│  └─ PerformSpecialAbility (Action: running)
+├─ IsEnemyNearby (Condition: not evaluated while ability is running)
+└─ Patrol (Action: not evaluated while ability is running)
+```
+
+#### When to Use "Restart" Behavior
+Choose a selector with "restart" behavior (`SelectorReactiveComposite`) when you need to:
+
+- **Prioritize responsiveness**: Immediately react to changing high-priority conditions
+- **Implement interrupt-driven behavior**: Allow higher-priority tasks to interrupt lower-priority ones
+- **Handle volatile environments**: Re-evaluate all options when the game state changes frequently
+
+**Example**: An AI that should immediately respond to threats regardless of current activities.
+
+```
+SelectorReactiveComposite
+├─ IsUnderAttack (Condition: initially failure, later success)
+│  └─ DefendSelf (Action: will interrupt ongoing tasks when under attack)
+├─ IsHungry (Condition: success)
+└─ SearchForFood (Action: interrupted when attack detected)
+```
+
+The "tick again" approach improves performance and ensures action completion, while "restart" provides greater adaptability to changing conditions at the cost of potentially interrupting ongoing tasks.
+
 ## Selector Random
 The `SelectorRandomComposite` node behaves similarly to the Selector Star node, but instead of executing its children in the given order, it executes them in a random order.
 

@@ -17,6 +17,48 @@ Type of Node | Child returns `FAILURE` | Child returns `RUNNING`
 `SequenceReactiveComposite` | Restart | Restart
 `SequenceStarComposite` | Tick again | Tick again
 
+`Restart` means that it will tick all previous nodes that already ran and then tick the current `RUNNING` node again.
+
+`Tick again` means that it will (for each consecutive tick) skip previous nodes that already ran and tick **only** the current `RUNNING` node again until it is no longer `RUNNING`.
+
+### When to Use Restart vs Tick Again
+
+The choice between "restart" and "tick again" behaviors has significant impacts on your sequence's effectiveness in different scenarios:
+
+#### When to Use "Restart" Behavior
+Choose a sequence with "restart" behavior when you need to:
+
+- **Validate preconditions continuously**: Ensure all previous steps still hold true while executing a sequence
+- **Handle dynamic environments**: Re-check environmental conditions that might change during execution
+- **Maintain safety checks**: For critical operations where all conditions must remain valid throughout
+
+**Example**: A character needs to pick up and use an item that might be taken by another character. Using `SequenceReactiveComposite` would re-check if the item is still available before attempting to use it.
+
+```
+SequenceReactiveComposite
+├─ IsItemAvailable (Condition)
+├─ MoveToItem (Action: running)
+└─ UseItem (Action)
+```
+
+#### When to Use "Tick Again" Behavior
+Choose a sequence with "tick again" behavior when you need to:
+
+- **Optimize performance**: Avoid redundant checks of conditions that won't change
+- **Complete multi-step procedures**: Ensure a procedure completes without unnecessary rechecking
+- **Create predictable, deterministic behavior**: When you want guaranteed completion of a series of steps
+
+**Example**: A character performing a complex animation sequence that should complete regardless of minor environmental changes would benefit from `SequenceStarComposite`.
+
+```
+SequenceStarComposite
+├─ StartAnimation (Action: success)
+├─ PlayMainAnimation (Action: running)
+└─ EndAnimation (Action)
+```
+
+The performance benefits of "tick again" come at the cost of responsiveness to changing conditions, while "restart" provides better adaptability but with higher computational overhead.
+
 ## Sequence Random
 The Sequence Random node behaves similarly to the Sequence Star node, but instead of executing its children in the given order, it executes them in a random order.
 
