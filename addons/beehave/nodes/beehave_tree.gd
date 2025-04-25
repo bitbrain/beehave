@@ -35,7 +35,7 @@ signal tree_disabled
 	set(anp):
 		actor_node_path = anp
 		if actor_node_path != null and str(actor_node_path) != "..":
-			actor = get_node(actor_node_path)
+			actor = get_node(actor_node_path.get_as_property_path())
 		else:
 			actor = get_parent()
 		if Engine.is_editor_hint():
