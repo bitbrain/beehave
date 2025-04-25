@@ -71,3 +71,47 @@ func test_blackboard_property_shared_between_trees() -> void:
 
 	assert_that(blackboard1.get_value("hello")).is_equal("world")
 	assert_that(blackboard2.get_value("hello")).is_equal("world")
+
+
+func test_separate_blackboards_independent_values() -> void:
+	# Load the scene with two separate blackboards
+	var scene = auto_free(load("res://test/blackboard/shared_blackboard_scene.tscn").instantiate())
+	var runner = scene_runner(scene)
+	
+	await runner.simulate_frames(10)
+	
+	# Get references to the two blackboards
+	var shared = {}
+	var blackboard1: Blackboard = scene.blackboard
+	var blackboard2: Blackboard = scene.blackboard_2
+	
+	blackboard1.blackboard = shared
+	blackboard2.blackboard = shared
+	
+	# Set values in first blackboard
+	blackboard1.set_value("key1", "value1")
+	blackboard1.set_value("shared_key", "blackboard1_value")
+	
+	# Set values in second blackboard
+	blackboard2.set_value("key2", "value2")
+	blackboard2.set_value("shared_key", "blackboard2_value")
+	
+	# Verify that values in blackboard1 are as expected
+	assert_that(blackboard1.get_value("key1")).is_equal("value1")
+	assert_that(blackboard1.get_value("shared_key")).is_equal("blackboard1_value")
+	assert_bool(blackboard1.has_value("key2")).is_false()
+	
+	# Verify that values in blackboard2 are as expected
+	assert_that(blackboard2.get_value("key2")).is_equal("value2")
+	assert_that(blackboard2.get_value("shared_key")).is_equal("blackboard2_value")
+	assert_bool(blackboard2.has_value("key1")).is_false()
+	
+	# Modify a value in blackboard1 and verify it doesn't affect blackboard2
+	blackboard1.set_value("shared_key", "blackboard1_modified")
+	assert_that(blackboard1.get_value("shared_key")).is_equal("blackboard1_modified")
+	assert_that(blackboard2.get_value("shared_key")).is_equal("blackboard2_value")
+	
+	# Erase a value from blackboard2 and verify it doesn't affect blackboard1
+	blackboard2.erase_value("shared_key")
+	assert_bool(blackboard2.has_value("shared_key")).is_false()
+	assert_bool(blackboard1.has_value("shared_key")).is_true()

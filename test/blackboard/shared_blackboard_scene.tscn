@@ -15,6 +15,13 @@ blackboard = {
 "hello": "world"
 }
 
+[node name="Blackboard2" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_fg0hi")
+blackboard = {
+"hello": "world"
+}
+
 [node name="BeehaveTree1" type="Node" parent="." node_paths=PackedStringArray("blackboard", "actor")]
 unique_name_in_owner = true
 script = ExtResource("3_aaudw")

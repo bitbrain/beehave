@@ -281,12 +281,15 @@ func disable() -> void:
 
 
 func _exit_tree() -> void:
+	if Engine.is_editor_hint():
+		# Skip this when running in editor
+		return
 	if custom_monitor:
 		if _process_time_metric_name != "":
 			# Remove tree metric from the engine
 			Performance.remove_custom_monitor(_process_time_metric_name)
 			_get_global_metrics().unregister_tree(self)
-
+	
 		BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
 

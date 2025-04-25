@@ -7,13 +7,14 @@ const DEFAULT = "default"
 ## multiple nodes of the behavior tree.
 @export var blackboard: Dictionary = {}:
 	set(b):
-		blackboard = b
+		blackboard = b.duplicate()
 		_data[DEFAULT] = blackboard
 
 var _data: Dictionary = {}
 
 
 func _ready():
+	blackboard = blackboard.duplicate()
 	_data[DEFAULT] = blackboard
 
 
