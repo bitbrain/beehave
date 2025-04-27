@@ -96,7 +96,7 @@ signal tree_disabled
 			update_configuration_warnings()
 
 var status: int = -1
-var last_tick: int = 0
+var last_tick: int = -1
 
 var _internal_blackboard: Blackboard
 var _process_time_metric_name: String
@@ -144,9 +144,6 @@ func _ready() -> void:
 		_get_global_debugger().register_tree(self)
 		BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
-	# Randomize at what frames tick() will happen to avoid stutters
-	last_tick = randi_range(0, tick_rate - 1)
-
 
 func _on_scene_tree_node_added_removed(node: Node, is_added: bool) -> void:
 	if Engine.is_editor_hint():
@@ -168,42 +165,29 @@ func _on_scene_tree_node_added_removed(node: Node, is_added: bool) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	_process_internally()
+	tick()
 
 
 func _process(_delta: float) -> void:
-	_process_internally()
+	tick()
 
 
-func _process_internally() -> void:
+func tick() -> int:
 	if Engine.is_editor_hint():
-		return
-
-	if last_tick < tick_rate - 1:
+		return -1
+	if last_tick != -1 and last_tick < tick_rate - 1:
 		last_tick += 1
-		return
+		return -1
 
 	last_tick = 0
 
 	# Start timing for metric
 	var start_time = Time.get_ticks_usec()
-
 	blackboard.set_value("can_send_message", _can_send_message)
 
-	if _can_send_message:
+	if _can_send_message and not Engine.is_editor_hint():
 		BeehaveDebuggerMessages.process_begin(get_instance_id(), blackboard.get_debug_data())
 
-	if self.get_child_count() == 1:
-		tick()
-
-	if _can_send_message:
-		BeehaveDebuggerMessages.process_end(get_instance_id(), blackboard.get_debug_data())
-
-	# Check the cost for this frame and save it for metric report
-	_process_time_metric_value = Time.get_ticks_usec() - start_time
-
-
-func tick() -> int:
 	if actor == null or get_child_count() == 0:
 		return FAILURE
 	var child := self.get_child(0)
@@ -219,7 +203,13 @@ func tick() -> int:
 	if status != RUNNING:
 		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
 		child.after_run(actor, blackboard)
+		
+	if _can_send_message and not Engine.is_editor_hint():
+		BeehaveDebuggerMessages.process_end(get_instance_id(), blackboard.get_debug_data())
 
+	# Check the cost for this frame and save it for metric report
+	_process_time_metric_value = Time.get_ticks_usec() - start_time
+	
 	return status
 
 

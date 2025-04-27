@@ -164,17 +164,17 @@ func test_manual_mode_respects_tick_rate() -> void:
 	scene.beehave_tree.tick()
 	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(1)
 	
-	# Second tick should increase counter (tick rate is only checked in _process_internally)
+	# Second tick should not yet increase counter 
 	scene.beehave_tree.tick()
-	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(2)
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(1)
 	
-	# Third tick should increase counter
+	# Second tick should not yet increase counter 
 	scene.beehave_tree.tick()
-	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(3)
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(1)
 	
 	# Fourth tick should increase counter
 	scene.beehave_tree.tick()
-	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(4)
+	assert_that(scene.beehave_tree.blackboard.get_value("custom_value")).is_equal(2)
 
 
 func test_manual_mode_can_be_disabled() -> void:
