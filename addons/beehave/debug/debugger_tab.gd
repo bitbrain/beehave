@@ -21,6 +21,7 @@ var message: Label
 var active_trees: Dictionary
 var active_tree_id: int = -1
 var session: EditorDebuggerSession
+var first_run: bool = true  # Track if this is the first run since Godot started
 
 
 func _ready() -> void:
@@ -76,14 +77,58 @@ func _ready() -> void:
 	toggle_button.focus_mode = Control.FOCUS_NONE
 	graph.get_menu_container().add_child(toggle_button)
 	graph.get_menu_container().move_child(toggle_button, 0)
-
+	
 	stop()
+
 	visibility_changed.connect(_on_visibility_changed)
+	
+	# Report initial visibility after a short delay to ensure proper initialization
+	if visible and is_visible_in_tree():
+		get_tree().create_timer(0.5).timeout.connect(func(): _on_visibility_changed())
 
 
 func start() -> void:
 	container.visible = true
 	message.visible = false
+	
+	# If this is the first run since Godot started, use a more aggressive approach
+	if first_run:
+		first_run = false
+		
+		# First-stage initialization - immediately report visibility
+		if session != null and visible and is_visible_in_tree():
+			session.send_message("beehave:visibility_changed", [true])
+			
+		# Second-stage initialization - run after a short delay to ensure UI is ready
+		get_tree().create_timer(0.1).timeout.connect(func():
+			if session != null and visible and is_visible_in_tree():
+				session.send_message("beehave:visibility_changed", [true])
+				
+				# If a tree is already selected, activate it
+				if active_tree_id != -1:
+					session.send_message("beehave:activate_tree", [active_tree_id])
+		)
+		
+		# Third-stage initialization - run after a longer delay as a fallback
+		get_tree().create_timer(0.5).timeout.connect(func():
+			if session != null and visible and is_visible_in_tree():
+				session.send_message("beehave:visibility_changed", [true])
+				
+				# Reactivate tree and force reselection if there's something in the list
+				if active_tree_id != -1:
+					session.send_message("beehave:activate_tree", [active_tree_id])
+				elif not item_list.get_selected_items().is_empty():
+					# Force reselection of the current item
+					_on_item_selected(item_list.get_selected_items()[0])
+		)
+	else:
+		# For subsequent runs, the standard initialization is sufficient
+		if session != null and visible and is_visible_in_tree():
+			session.send_message("beehave:visibility_changed", [true])
+			
+			# If there's already an active tree, reactivate it
+			if active_tree_id != -1:
+				session.send_message("beehave:activate_tree", [active_tree_id])
 
 
 func stop() -> void:
@@ -100,11 +145,36 @@ func register_tree(data: Dictionary) -> void:
 		var idx := item_list.add_item(data.name, TREE_ICON)
 		item_list.set_item_tooltip(idx, data.path)
 		item_list.set_item_metadata(idx, data.id)
-
+		
 	active_trees[data.id] = data
 
-	if active_tree_id == data.id.to_int():
+	var id_int = data.id.to_int()
+	if active_tree_id == id_int:
 		graph.beehave_tree = data
+		
+		# Re-send activation if this is our active tree
+		if session != null and visible and is_visible_in_tree():
+			session.send_message("beehave:visibility_changed", [true])
+			session.send_message("beehave:activate_tree", [id_int])
+	
+	# If no item is selected or this is the first item, select it
+	if item_list.get_selected_items().is_empty():
+		var idx_to_select := 0
+		for i in range(item_list.item_count):
+			if item_list.get_item_metadata(i) == data.id:
+				idx_to_select = i
+				break
+		
+		item_list.select(idx_to_select)
+		# This will trigger _on_item_selected to send activation messages
+		
+		# For extra robustness, especially on first run, explicitly call _on_item_selected
+		# after a short delay to ensure the UI is updated
+		get_tree().create_timer(0.2).timeout.connect(func():
+			if item_list.is_inside_tree() and item_list.item_count > 0 and not item_list.get_selected_items().is_empty():
+				var selected_idx = item_list.get_selected_items()[0]
+				_on_item_selected(selected_idx)
+		)
 
 
 func unregister_tree(instance_id: int) -> void:
@@ -128,16 +198,41 @@ func _on_toggle_button_pressed(toggle_button: Button) -> void:
 
 
 func _on_item_selected(idx: int) -> void:
+	if idx < 0 or idx >= item_list.item_count:
+		return
+		
 	var id: StringName = item_list.get_item_metadata(idx)
-	graph.beehave_tree = active_trees.get(id, {})
+	if id == null or id == "":
+		return
+		
+	var tree_data = active_trees.get(id, {})
+	if tree_data.is_empty():
+		return
+		
+	graph.beehave_tree = tree_data
 
-	# Clear our any loaded blackboards
+	# Clear out any loaded blackboards
 	for child in blackboard_vbox.get_children():
 		child.free()
 
 	active_tree_id = id.to_int()
+	
+	# First send the visibility state, then activate the tree
 	if session != null:
+		var is_visible = visible and is_visible_in_tree()
+		
+		# Always send visibility first to ensure the global debugger is in the correct state
+		session.send_message("beehave:visibility_changed", [is_visible])
+		
+		# Send activation message
 		session.send_message("beehave:activate_tree", [active_tree_id])
+		
+		# For extra robustness, send another visibility message after a short delay
+		# This helps ensure the visibility state is correctly applied
+		get_tree().create_timer(0.1).timeout.connect(func():
+			if session != null and is_visible_in_tree():
+				session.send_message("beehave:visibility_changed", [true])
+		)
 
 func _on_graph_node_selected(node: GraphNode) -> void:
 	var node_blackboard: VBoxContainer = NewNodeBlackBoard.new(BeehaveUtils.get_frames(), node)
@@ -153,5 +248,20 @@ func _on_graph_node_deselected(node: GraphNode) -> void:
 
 
 func _on_visibility_changed() -> void:
+	var is_visible = visible and is_visible_in_tree()
+	
 	if session != null:
-		session.send_message("beehave:visibility_changed", [visible and is_visible_in_tree()])
+		session.send_message("beehave:visibility_changed", [is_visible])
+		
+		# If a tree is already selected, resend the activation message when visibility changes
+		if active_tree_id != -1:
+			session.send_message("beehave:activate_tree", [active_tree_id])
+			
+			# For extra robustness, send another activation+visibility message after a short delay
+			# This helps ensure the state is correctly applied
+			if is_visible:
+				get_tree().create_timer(0.2).timeout.connect(func():
+					if session != null and is_visible_in_tree() and active_tree_id != -1:
+						session.send_message("beehave:visibility_changed", [true])
+						session.send_message("beehave:activate_tree", [active_tree_id])
+				)

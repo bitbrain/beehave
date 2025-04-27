@@ -140,6 +140,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		update_configuration_warnings.call_deferred()
 	else:
+		# Ensure the local debugger knows about the tree *before* telling the editor.
 		_get_global_debugger().register_tree(self)
 		BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
 
@@ -288,8 +289,7 @@ func _exit_tree() -> void:
 		if _process_time_metric_name != "":
 			# Remove tree metric from the engine
 			Performance.remove_custom_monitor(_process_time_metric_name)
-			_get_global_metrics().unregister_tree(self)
-	
+		_get_global_metrics().unregister_tree(self)
 		BeehaveDebuggerMessages.unregister_tree(get_instance_id())
 
 
