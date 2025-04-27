@@ -15,6 +15,8 @@ func _ready() -> void:
 	name = graph_node.name
 
 	set_anchors_preset(Control.PRESET_FULL_RECT)
+	size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	size_flags_vertical = Control.SIZE_EXPAND_FILL
 
 	var title_panel: Panel = Panel.new()
 	title_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -22,6 +24,7 @@ func _ready() -> void:
 	add_child(title_panel)
 	var title_hbox: HBoxContainer = HBoxContainer.new()
 	title_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	title_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
 	title_panel.add_child(title_hbox)
 
@@ -39,6 +42,8 @@ func _ready() -> void:
 
 	item_tree = Tree.new()
 	item_tree.custom_minimum_size = Vector2(200, 400)
+	item_tree.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	item_tree.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	item_tree.hide_root = true
 	item_tree.allow_search = false
 	item_tree.columns = 2
