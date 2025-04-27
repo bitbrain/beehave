@@ -1,3 +1,4 @@
+@tool
 class_name ValueReachedCondition extends ConditionLeaf
 
 @export var limit = 2

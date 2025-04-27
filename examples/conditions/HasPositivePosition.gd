@@ -1,3 +1,4 @@
+@tool
 class_name HasPositivePosition extends ConditionLeaf
 
 
@@ -6,4 +7,3 @@ func tick(actor: Node, _blackboard: Blackboard) -> int:
 		return SUCCESS
 	else:
 		return FAILURE
-

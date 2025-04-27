@@ -1,3 +1,4 @@
+@tool
 extends ActionLeaf
 
 @export var modulate_color:Color = Color.WHITE

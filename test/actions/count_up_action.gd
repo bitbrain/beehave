@@ -1,3 +1,4 @@
+@tool
 class_name CountUpAction extends ActionLeaf
 
 @export var key = "custom_value"
