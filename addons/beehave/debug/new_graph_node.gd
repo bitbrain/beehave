@@ -100,14 +100,14 @@ func _ready() -> void:
 func _draw_port(slot_index: int, port_position: Vector2i, left: bool, color: Color) -> void:
 	if horizontal:
 		if is_slot_enabled_left(1):
-			draw_texture(PORT_LEFT_ICON, Vector2(0, size.y / 2) + Vector2(-4, -5), color)
+			draw_texture(PORT_LEFT_ICON, Vector2(0, size.y / 2) + Vector2(-10, -11), color)
 		if is_slot_enabled_right(1):
-			draw_texture(PORT_RIGHT_ICON, Vector2(size.x, size.y / 2) + Vector2(-5, -4.5), color)
+			draw_texture(PORT_RIGHT_ICON, Vector2(size.x, size.y / 2) + Vector2(-9, -11), color)
 	else:
 		if slot_index == 0 and is_slot_enabled_left(0):
-			draw_texture(PORT_TOP_ICON, Vector2(size.x / 2, 0) + Vector2(-4.5, -7), color)
+			draw_texture(PORT_TOP_ICON, Vector2(size.x / 2, 0) + Vector2(-10, -15), color)
 		elif slot_index == 1:
-			draw_texture(PORT_BOTTOM_ICON, Vector2(size.x / 2, size.y) + Vector2(-4.5, -5), color)
+			draw_texture(PORT_BOTTOM_ICON, Vector2(size.x / 2, size.y) + Vector2(-10, -9), color)
 
 
 func get_custom_input_port_position(horizontal: bool) -> Vector2:

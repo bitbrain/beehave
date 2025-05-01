@@ -7,9 +7,10 @@ const HORIZONTAL_LAYOUT_ICON := preload("icons/horizontal_layout.svg")
 const VERTICAL_LAYOUT_ICON := preload("icons/vertical_layout.svg")
 
 const PROGRESS_SHIFT: int = 50
-const INACTIVE_COLOR: Color = Color("#898989")
+const INACTIVE_COLOR: Color = Color("#000000")
 const ACTIVE_COLOR: Color = Color("#c29c06")
 const SUCCESS_COLOR: Color = Color("#07783a")
+const FAILURE_COLOR: Color = Color("#82010b")
 
 
 var updating_graph: bool = false
@@ -45,7 +46,7 @@ func _init(frames:RefCounted) -> void:
 
 func _ready() -> void:
 	custom_minimum_size = Vector2(100, 300)
-	set("show_arrange_button", true)
+	show_arrange_button = false
 	minimap_enabled = false
 	layout_button = Button.new()
 	layout_button.flat = true
@@ -53,6 +54,13 @@ func _ready() -> void:
 	layout_button.pressed.connect(func(): horizontal_layout = not horizontal_layout)
 	get_menu_container().add_child(layout_button)
 	_update_layout_button()
+	
+	
+func _get_connection_line(from_position: Vector2, to_position: Vector2) -> PackedVector2Array:
+	# FIXME: hack to hide default lines because empty array crashes Godot :(
+	const vec1 = Vector2(-9999999, -9999999)
+	const vec2 = Vector2(-9999999, -9999999)
+	return [vec1, vec2]
 
 
 func _update_graph() -> void:
@@ -173,7 +181,7 @@ func process_tick(instance_id: int, status: int, blackboard = null) -> void:
 		node.set_status(status)
 		node.set_meta("status", status)
 		node.blackboard = blackboard
-		if status == BeehaveNode.SUCCESS or status == BeehaveNode.RUNNING:
+		if status == BeehaveNode.RUNNING:
 			if not active_nodes.has(node.name):
 				active_nodes.push_back(node.name)
 
@@ -190,7 +198,9 @@ func process_end(instance_id: int, blackboard = null) -> void:
 				child.set_color(SUCCESS_COLOR)
 			BeehaveNode.FAILURE:
 				active_nodes.erase(child.name)
-				child.set_color(INACTIVE_COLOR)
+				child.set_color(FAILURE_COLOR)
+				child.set_input_color(FAILURE_COLOR)
+				child.set_output_color(FAILURE_COLOR)
 			BeehaveNode.RUNNING:
 				child.set_color(ACTIVE_COLOR)
 			_:
@@ -205,19 +215,6 @@ func _is_same_tree(instance_id: int) -> bool:
 
 func _get_child_nodes() -> Array[Node]:
 	return get_children().filter(func(child): return child is BeehaveGraphNode)
-
-
-func _get_connection_line(from_position: Vector2, to_position: Vector2) -> PackedVector2Array:
-	for child in _get_child_nodes():
-		for port in child.get_input_port_count():
-			if not (child.position_offset + child.get_input_port_position(port)).is_equal_approx(to_position):
-				continue
-			to_position = child.position_offset + child.get_custom_input_port_position(horizontal_layout)
-		for port in child.get_output_port_count():
-			if not (child.position_offset + child.get_output_port_position(port)).is_equal_approx(from_position):
-				continue
-			from_position = child.position_offset + child.get_custom_output_port_position(horizontal_layout)
-	return _get_elbow_connection_line(from_position, to_position)
 
 
 func _get_elbow_connection_line(from_position: Vector2, to_position: Vector2) -> PackedVector2Array:
@@ -247,10 +244,7 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	if active_nodes.is_empty():
-		return
-
-	var circle_size: float = max(3, 6 * zoom)
+	var circle_size: float = max(4, 8 * zoom)
 	var progress_shift: float = PROGRESS_SHIFT * zoom
 
 	var connections := get_connection_list()
@@ -261,43 +255,63 @@ func _draw() -> void:
 		from_node = c.from_node
 		to_node = c.to_node
 
-		if not from_node in active_nodes or not c.to_node in active_nodes:
-			continue
-
 		var from := get_node(String(from_node))
 		var to := get_node(String(to_node))
 
-		if from.get_meta("status", -1) < 0 or to.get_meta("status", -1) < 0:
-			return
+		var from_position: Vector2 = from.position + from.get_custom_output_port_position(horizontal_layout) * zoom
+		var to_position: Vector2 = to.position + to.get_custom_input_port_position(horizontal_layout) * zoom
 
-		var output_port_position: Vector2
-		var input_port_position: Vector2
+		var line := _get_elbow_connection_line(from_position, to_position)
 
-		var scale_factor: float = from.get_rect().size.x / from.size.x
+		# Get colors based on node states
+		var from_color: Color
+		var to_color: Color
+		
+		match from.get_meta("status", -1):
+			BeehaveNode.SUCCESS: from_color = SUCCESS_COLOR
+			BeehaveNode.FAILURE: from_color = FAILURE_COLOR
+			BeehaveNode.RUNNING: from_color = ACTIVE_COLOR
+			_: from_color = INACTIVE_COLOR
+			
+		match to.get_meta("status", -1):
+			BeehaveNode.SUCCESS: to_color = SUCCESS_COLOR
+			BeehaveNode.FAILURE: to_color = FAILURE_COLOR
+			BeehaveNode.RUNNING: to_color = ACTIVE_COLOR
+			_: to_color = INACTIVE_COLOR
 
-		var line := _get_elbow_connection_line(
-			from.position + from.get_custom_output_port_position(horizontal_layout) * scale_factor,
-			to.position + to.get_custom_input_port_position(horizontal_layout) * scale_factor
-		)
+		# Draw the line with gradient colors
+		var line_color := from_color.lerp(to_color, 0.5)
+		line_color.a = 0.6
+		draw_polyline(line, line_color, 7.0 * zoom, true)
 
-		var curve = Curve2D.new()
-		for l in line:
-			curve.add_point(l)
+		# Draw a second line with a different alpha for smoother transition
+		var transition_color := from_color.lerp(to_color, 0.3)
+		transition_color.a = 0.3
+		draw_polyline(line, transition_color, 9.0, true)
 
-		var max_steps := int(curve.get_baked_length())
-		var current_shift := progress % max_steps
-		var p := curve.sample_baked(current_shift)
-		draw_circle(p, circle_size, ACTIVE_COLOR)
+		# Only draw dots for active nodes
+		if not active_nodes.is_empty() and from_node in active_nodes and to_node in active_nodes:
+			if from.get_meta("status", -1) < 0 or to.get_meta("status", -1) < 0:
+				continue
 
-		var shift := current_shift - progress_shift
-		while shift >= 0:
-			draw_circle(curve.sample_baked(shift), circle_size, ACTIVE_COLOR)
-			shift -= progress_shift
+			var curve = Curve2D.new()
+			for l in line:
+				curve.add_point(l)
 
-		shift = current_shift + progress_shift
-		while shift <= curve.get_baked_length():
-			draw_circle(curve.sample_baked(shift), circle_size, ACTIVE_COLOR)
-			shift += progress_shift
+			var max_steps := int(curve.get_baked_length())
+			var current_shift := progress % max_steps
+			var p := curve.sample_baked(current_shift)
+			draw_circle(p, circle_size, ACTIVE_COLOR)
+
+			var shift := current_shift - progress_shift
+			while shift >= 0:
+				draw_circle(curve.sample_baked(shift), circle_size, ACTIVE_COLOR)
+				shift -= progress_shift
+
+			shift = current_shift + progress_shift
+			while shift <= curve.get_baked_length():
+				draw_circle(curve.sample_baked(shift), circle_size, ACTIVE_COLOR)
+				shift += progress_shift
 
 
 func _update_layout_button() -> void:

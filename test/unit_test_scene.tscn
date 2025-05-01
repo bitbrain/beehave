@@ -21,7 +21,7 @@ script = ExtResource("1_27ukk")
 [node name="BeehaveTree" type="Node" parent="Node2D" node_paths=PackedStringArray("blackboard", "actor")]
 unique_name_in_owner = true
 script = ExtResource("2_phgmn")
-blackboard = NodePath("@Node@25087")
+blackboard = NodePath("@Node@24701")
 actor = NodePath("..")
 
 [node name="SequenceComposite" type="Node" parent="Node2D/BeehaveTree"]
@@ -40,7 +40,7 @@ script = ExtResource("6_brhwp")
 [node name="BeehaveTreeWithoutInterrupt" type="Node" parent="Node2D" node_paths=PackedStringArray("blackboard", "actor")]
 unique_name_in_owner = true
 script = ExtResource("2_phgmn")
-blackboard = NodePath("@Node@25088")
+blackboard = NodePath("@Node@24702")
 actor = NodePath("..")
 
 [node name="SequenceComposite" type="Node" parent="Node2D/BeehaveTreeWithoutInterrupt"]
@@ -106,7 +106,7 @@ reset_on_interrupt = false
 
 [node name="BeehaveTree" type="Node" parent="EmptyTree" node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("2_phgmn")
-blackboard = NodePath("@Node@25089")
+blackboard = NodePath("@Node@24703")
 actor = NodePath("..")
 
 [node name="OnlyOneActionTree" type="Node2D" parent="."]
@@ -115,7 +115,7 @@ actor = NodePath("..")
 script = ExtResource("2_phgmn")
 enabled = false
 actor_node_path = NodePath("..")
-blackboard = NodePath("@Node@25090")
+blackboard = NodePath("@Node@24704")
 actor = NodePath("..")
 
 [node name="CountUpAction" type="Node" parent="OnlyOneActionTree/BeehaveTree"]
@@ -125,8 +125,10 @@ script = ExtResource("6_brhwp")
 
 [node name="BeehaveTree" type="Node" parent="DeactivatedTree" node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("2_phgmn")
+enabled = false
 actor_node_path = NodePath("..")
-blackboard = NodePath("@Node@25091")
+process_thread = 2
+blackboard = NodePath("@Node@24705")
 actor = NodePath("..")
 
 [node name="CountUpAction" type="Node" parent="DeactivatedTree/BeehaveTree"]
@@ -136,7 +138,9 @@ script = ExtResource("6_brhwp")
 
 [node name="BeehaveTree" type="Node" parent="ComplexCooldownTree" node_paths=PackedStringArray("blackboard", "actor")]
 script = ExtResource("2_phgmn")
-blackboard = NodePath("@Node@26048")
+enabled = false
+process_thread = 2
+blackboard = NodePath("@Node@24706")
 actor = NodePath("..")
 metadata/_custom_type_script = "uid://bb0t2ovl7wifo"
 
