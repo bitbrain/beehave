@@ -31,9 +31,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 	if get_child_count() != 2:
 		warnings.append("SimpleParallel should have exactly two child nodes.")
 
-	if not get_child(0) is ActionLeaf:
-		warnings.append("SimpleParallel should have an action leaf node as first child node.")
-
 	return warnings
 
 
