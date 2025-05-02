@@ -58,7 +58,7 @@ func _build_ui() -> void:
 	blackboard_vbox.hide()
 	graph_container.add_child(blackboard_vbox)
 
-	# “Run Project for debugging” overlay
+	# "Run Project for debugging" overlay
 	message = Label.new()
 	message.text = "Run Project for debugging"
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -81,7 +81,7 @@ func _init_graph() -> void:
 	graph_container.add_child(graph)
 	graph_container.move_child(graph, 0)
 
-	# “Make Floating” button
+	# "Make Floating" button
 	var float_btn = Button.new()
 	float_btn.name = "MakeFloatingButton"
 	float_btn.flat = true
@@ -92,7 +92,7 @@ func _init_graph() -> void:
 	)
 	graph.get_menu_container().add_child(float_btn)
 
-	# “Toggle Panel” button
+	# "Toggle Panel" button
 	var toggle_btn = Button.new()
 	toggle_btn.name = "TogglePanelButton"
 	toggle_btn.flat = true
@@ -117,6 +117,10 @@ func start() -> void:
 			get_tree().create_timer(delay).timeout.connect(_notify_state)
 	else:
 		_notify_state()
+	
+	# Auto-detach if enabled in project settings - check every time
+	if ProjectSettings.get_setting("beehave/debugger/start_detached", false):
+		emit_signal("make_floating")
 
 
 func _notify_state() -> void:
