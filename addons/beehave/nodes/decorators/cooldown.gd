@@ -16,17 +16,16 @@ class_name CooldownDecorator
 
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	var c: BeehaveNode = get_child(0)
-	var remaining_time: float = blackboard.get_value(cache_key, 0.0, str(actor.get_instance_id()))
+	var end_time: float = blackboard.get_value(cache_key, 0.0, str(actor.get_instance_id()))
+	var current_time = Time.get_ticks_msec()
 	var response: int
 
 	if c != running_child:
 		c.before_run(actor, blackboard)
 
-	if remaining_time > 0:
+	if current_time < end_time:
 		response = FAILURE
 
-		remaining_time -= get_physics_process_delta_time()
-		blackboard.set_value(cache_key, remaining_time, str(actor.get_instance_id()))
 		if can_send_message(blackboard):
 			BeehaveDebuggerMessages.process_tick(self.get_instance_id(), response, blackboard.get_debug_data())
 	else:
@@ -44,8 +43,9 @@ func tick(actor: Node, blackboard: Blackboard) -> int:
 			if c is ActionLeaf:
 				blackboard.set_value("running_action", c, str(actor.get_instance_id()))
 		else:
+			end_time = Time.get_ticks_msec() + wait_time * 1000
 			c.after_run(actor, blackboard)
-			blackboard.set_value(cache_key, wait_time, str(actor.get_instance_id()))
+			blackboard.set_value(cache_key, end_time, str(actor.get_instance_id()))
 
 	return response
 
