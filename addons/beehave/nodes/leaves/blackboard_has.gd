@@ -1,8 +1,7 @@
-@tool
-class_name BlackboardHasCondition extends ConditionLeaf
-
 ## Returns [code]FAILURE[/code] if expression execution fails or the specified key doesn't exist.
 ## Returns [code]SUCCESS[/code] if blackboard has the specified key.
+@tool
+class_name BlackboardHasCondition extends ConditionLeaf
 
 ## Expression representing a blackboard key.
 @export_placeholder(EXPRESSION_PLACEHOLDER) var key: String = ""

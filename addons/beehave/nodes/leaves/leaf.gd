@@ -1,8 +1,7 @@
+## Base class for all leaf nodes of the tree.
 @tool
 @icon("../../icons/category_leaf.svg")
 class_name Leaf extends BeehaveNode
-
-## Base class for all leaf nodes of the tree.
 
 const EXPRESSION_PLACEHOLDER: String = "Insert an expression..."
 

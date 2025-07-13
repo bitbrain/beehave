@@ -1,11 +1,10 @@
-@tool
-@icon("../../icons/selector_reactive.svg")
-class_name SelectorReactiveComposite extends Composite
-
 ## Selector Reactive nodes will attempt to execute each of its children until one of
 ## them return `SUCCESS`. If all children return `FAILURE`, this node will also
 ## return `FAILURE`.
 ## If a child returns `RUNNING` it will restart.
+@tool
+@icon("../../icons/selector_reactive.svg")
+class_name SelectorReactiveComposite extends Composite
 
 
 

@@ -1,12 +1,11 @@
-@tool
-@icon("../../icons/cooldown.svg")
-extends Decorator
-class_name CooldownDecorator
-
 ## The Cooldown Decorator will return 'FAILURE' for a set amount of time
 ## after executing its child.
 ## The timer resets the next time its child is executed and it is not `RUNNING`
 ## or when the node is interrupted (such as when the behavior tree changes branches).
+@tool
+@icon("../../icons/cooldown.svg")
+extends Decorator
+class_name CooldownDecorator
 
 ## The wait time in seconds
 @export var wait_time := 0.0

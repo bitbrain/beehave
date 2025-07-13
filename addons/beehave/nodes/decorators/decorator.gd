@@ -1,9 +1,8 @@
+## Decorator nodes are used to transform the result received by its child.
+## Must only have one child.
 @tool
 @icon("../../icons/category_decorator.svg")
 class_name Decorator extends BeehaveNode
-
-## Decorator nodes are used to transform the result received by its child.
-## Must only have one child.
 
 var running_child: BeehaveNode = null
 

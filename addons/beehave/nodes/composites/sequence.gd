@@ -1,12 +1,11 @@
-@tool
-@icon("../../icons/sequence.svg")
-class_name SequenceComposite extends Composite
-
 ## Sequence nodes will attempt to execute all of its children and report
 ## `SUCCESS` in case all of the children report a `SUCCESS` status code.
 ## If at least one child reports a `FAILURE` status code, this node will also
 ## return `FAILURE` and restart.
 ## In case a child returns `RUNNING` this node will tick again.
+@tool
+@icon("../../icons/sequence.svg")
+class_name SequenceComposite extends Composite
 
 var successful_index: int = 0
 # Track where we last failed – so we detect a backward jump

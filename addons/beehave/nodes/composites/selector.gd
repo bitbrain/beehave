@@ -1,10 +1,8 @@
+## A Selector runs its children in order until one succeeds or is running.
+## On failure, skips already-processed children across ticks.
 @tool
 @icon("../../icons/selector.svg")
 class_name SelectorComposite extends Composite
-
-
-# A Selector runs its children in order until one succeeds or is running.
-# On failure, skips already-processed children across ticks.
 
 
 var last_execution_index: int = 0

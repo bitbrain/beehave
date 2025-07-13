@@ -1,11 +1,10 @@
+## The UntilFail Decorator will return `RUNNING` if its child returns
+## `SUCCESS` or `RUNNING` or it will return `SUCCESS` if its child returns
+## `FAILURE`
 @tool
 @icon("../../icons/until_fail.svg")
 class_name UntilFailDecorator
 extends Decorator
-
-## The UntilFail Decorator will return `RUNNING` if its child returns
-## `SUCCESS` or `RUNNING` or it will return `SUCCESS` if its child returns
-## `FAILURE`
 
 
 func tick(actor: Node, blackboard: Blackboard) -> int:

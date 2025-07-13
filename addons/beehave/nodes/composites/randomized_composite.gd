@@ -1,3 +1,7 @@
+## Base class for composite nodes that execute their children in randomized order.
+## Provides functionality for shuffling children with optional weight-based distribution.
+## When weights are enabled, children with higher weights have a higher chance of being
+## selected first in the random ordering.
 @tool
 class_name RandomizedComposite extends Composite
 

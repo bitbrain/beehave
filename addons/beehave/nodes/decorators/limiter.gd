@@ -1,11 +1,10 @@
-@tool
-@icon("../../icons/limiter.svg")
-class_name LimiterDecorator extends Decorator
-
 ## The limiter will execute its `RUNNING` child `x` amount of times. When the number of
 ## maximum ticks is reached, it will return a `FAILURE` status code.
 ## The count resets the next time that a child is not `RUNNING`
 ## or when the node is interrupted (such as when the behavior tree changes branches).
+@tool
+@icon("../../icons/limiter.svg")
+class_name LimiterDecorator extends Decorator
 
 @onready var cache_key = "limiter_%s" % self.get_instance_id()
 

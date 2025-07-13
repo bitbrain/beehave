@@ -1,12 +1,12 @@
-@tool
-@icon("../../icons/sequence_reactive.svg")
-class_name SequenceReactiveComposite extends Composite
-
 ## Reactive Sequence nodes will attempt to execute all of its children and report
 ## `SUCCESS` in case all of the children report a `SUCCESS` status code.
 ## If at least one child reports a `FAILURE` status code, this node will also
 ## return `FAILURE` and restart.
 ## In case a child returns `RUNNING` this node will restart.
+@tool
+@icon("../../icons/sequence_reactive.svg")
+class_name SequenceReactiveComposite extends Composite
+
 
 # Track where we last failed – so we detect a backward jump
 var previous_failure_index: int = -1
@@ -67,7 +67,7 @@ func interrupt(actor: Node, blackboard: Blackboard) -> void:
 		running_child.interrupt(actor, blackboard)
 		_cleanup_running(running_child, actor, blackboard)
 	_reset()
-	super(actor, blackboard)
+	super (actor, blackboard)
 
 
 func _reset() -> void:
@@ -76,6 +76,6 @@ func _reset() -> void:
 
 
 func get_class_name() -> Array[StringName]:
-	var classes := super()
+	var classes := super ()
 	classes.push_back(&"SequenceReactiveComposite")
 	return classes

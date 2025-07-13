@@ -1,10 +1,9 @@
-@tool
-@icon("../../icons/selector_random.svg")
-class_name SelectorRandomComposite extends RandomizedComposite
-
 ## This node will attempt to execute all of its children just like a
 ## [code]SelectorStar[/code] would, with the exception that the children
 ## will be executed in a random order.
+@tool
+@icon("../../icons/selector_random.svg")
+class_name SelectorRandomComposite extends RandomizedComposite
 
 ## A shuffled list of the children that will be executed in reverse order.
 var _children_bag: Array[Node] = []

@@ -1,8 +1,8 @@
+## A Composite node controls the flow of execution of its children in a specific manner.
 @tool
 @icon("../../icons/category_composite.svg")
 class_name Composite extends BeehaveNode
 
-## A Composite node controls the flow of execution of its children in a specific manner.
 
 var running_child: BeehaveNode = null
 
@@ -30,7 +30,7 @@ func after_run(actor: Node, blackboard: Blackboard) -> void:
 
 
 func get_class_name() -> Array[StringName]:
-	var classes := super()
+	var classes := super ()
 	classes.push_back(&"Composite")
 	return classes
 	

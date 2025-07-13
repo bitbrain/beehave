@@ -1,12 +1,11 @@
-@tool
-@icon("../../icons/delayer.svg")
-extends Decorator
-class_name DelayDecorator
-
 ## The Delay Decorator will return 'RUNNING' for a set amount of time
 ## before executing its child.
 ## The timer resets when both it and its child are not `RUNNING`
 ## or when the node is interrupted (such as when the behavior tree changes branches).
+@tool
+@icon("../../icons/delayer.svg")
+extends Decorator
+class_name DelayDecorator
 
 ## The wait time in seconds
 @export var wait_time := 0.0

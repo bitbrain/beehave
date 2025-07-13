@@ -1,7 +1,3 @@
-@tool
-@icon("../../icons/simple_parallel.svg")
-class_name SimpleParallelComposite extends Composite
-
 ## Simple Parallel nodes will attampt to execute all chidren at same time and
 ## can only have exactly two children. First child as primary node, second
 ## child as secondary node.
@@ -12,6 +8,9 @@ class_name SimpleParallelComposite extends Composite
 ## secondary node and return primary node's result.
 ## If this node is running under delay mode, it will wait seconday node
 ## finish its action after primary node terminates.
+@tool
+@icon("../../icons/simple_parallel.svg")
+class_name SimpleParallelComposite extends Composite
 
 #how many times should secondary node repeat, zero means loop forever
 @export var secondary_node_repeat_count: int = 0
