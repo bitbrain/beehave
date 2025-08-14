@@ -50,7 +50,7 @@ To better understand what branch to choose from for which Godot version, please 
 |`4.1.x`|`4.x`|`2.7.x`|
 |`4.0.x`|`4.x`|`2.7.x`|
 
-Refer to [this guide](https://bitbra.in/2023/09/03/godot-addon-compatibility.html) for more details behind this structure.
+Refer to [this guide](https://bitbra.in/blog/godot-addon-compatibility/) for more details behind this structure.
 
 # 📚 Getting started
 
