@@ -22,6 +22,7 @@
 #include "nodes/decorators/beehave_until_fail.h"
 #include "nodes/composites/beehave_composite.h"
 #include "nodes/composites/beehave_selector.h"
+#include "nodes/composites/beehave_sequence.h"
 
 using namespace godot;
 
@@ -54,6 +55,7 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	// composites
 	ClassDB::register_abstract_class<BeehaveComposite>();
 	ClassDB::register_class<BeehaveSelector>();
+	ClassDB::register_class<BeehaveSequence>();
 }
 
 void uninitialize_beehave_types(ModuleInitializationLevel p_level) {
