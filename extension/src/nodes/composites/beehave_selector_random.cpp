@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_sequence.cpp                                                  */
+/*  beehave_selector_random.cpp                                           */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,45 +27,50 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_sequence.h"
+#include "beehave_selector_random.h"
+#include <variant/utility_functions.hpp>
 
 using namespace godot;
 
-BeehaveSequence::BeehaveSequence() {
+BeehaveSelectorRandom::BeehaveSelectorRandom() {
+	if (random_seed == 0) {
+		UtilityFunctions::randomize();
+	}
+}
+
+BeehaveSelectorRandom::~BeehaveSelectorRandom() {
 
 }
 
-BeehaveSequence::~BeehaveSequence() {
+void BeehaveSelectorRandom::_bind_methods() {
 
 }
 
-void BeehaveSequence::_bind_methods() {
+BeehaveTickStatus BeehaveSelectorRandom::tick(Ref<BeehaveContext> context) {
+	if (_children_bag.is_empty()) {
+		_children_bag = get_shuffled_children();
+	} 
 
-}
-
-BeehaveTickStatus BeehaveSequence::tick(Ref<BeehaveContext> context) {
-    TypedArray<Node> children = get_children();
-    for (int i = 0; i < children.size(); ++i) {
-        if (i < successful_index) {
-            continue;
-        }
-        BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(children[i]));
-        if (child == nullptr) {
-            // skip anything that is not a valid beehave node
+	// Since we're going to remove children from the array, iterate it in reverse order.
+	for (int i = _children_bag.size() -1; i >= 0; --i) {
+		BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(_children_bag[i]));
+		if (child == nullptr) {
+			// skip anything that is not a valid beehave node
 			continue;
-        }
-        BeehaveTickStatus response = child->tick(context);
+		}
+		BeehaveTickStatus response = child->tick(context);
 
-        switch(response) {
-            case SUCCESS:
-                ++successful_index;
-                break;
-            case FAILURE:
-                successful_index = 0;
-                return FAILURE;
-            case RUNNING:
-                return RUNNING;
-        }
-    }
-    return BeehaveTickStatus::SUCCESS;
+		switch (response) {
+			case SUCCESS:
+				// TODO: introduce after_run mechanism
+				_children_bag.erase(child);
+				return SUCCESS;
+			case FAILURE:
+				_children_bag.erase(child);
+				break;
+			case RUNNING:
+				return RUNNING;
+		}
+	}
+	return BeehaveTickStatus::FAILURE;
 }

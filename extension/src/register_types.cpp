@@ -21,8 +21,15 @@
 #include "nodes/decorators/beehave_repeater.h"
 #include "nodes/decorators/beehave_until_fail.h"
 #include "nodes/composites/beehave_composite.h"
+#include "nodes/composites/beehave_composite_random.h"
 #include "nodes/composites/beehave_selector.h"
+#include "nodes/composites/beehave_selector_reactive.h"
+#include "nodes/composites/beehave_selector_random.h"
 #include "nodes/composites/beehave_sequence.h"
+#include "nodes/composites/beehave_sequence_reactive.h"
+#include "nodes/composites/beehave_sequence_star.h"
+#include "nodes/composites/beehave_sequence_random.h"
+#include "nodes/composites/beehave_simple_parallel.h"
 
 using namespace godot;
 
@@ -54,8 +61,15 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 
 	// composites
 	ClassDB::register_abstract_class<BeehaveComposite>();
+	ClassDB::register_abstract_class<BeehaveCompositeRandom>();
 	ClassDB::register_class<BeehaveSelector>();
+	ClassDB::register_class<BeehaveSelectorReactive>();
+	ClassDB::register_class<BeehaveSelectorRandom>();
 	ClassDB::register_class<BeehaveSequence>();
+	ClassDB::register_class<BeehaveSequenceReactive>();
+	ClassDB::register_class<BeehaveSequenceStar>();
+	ClassDB::register_class<BeehaveSequenceRandom>();
+	ClassDB::register_class<BeehaveSimpleParallel>();
 }
 
 void uninitialize_beehave_types(ModuleInitializationLevel p_level) {

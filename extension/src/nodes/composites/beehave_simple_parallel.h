@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_sequence.cpp                                                  */
+/*  beehave_simple_parallel.h                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,45 +27,40 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_sequence.h"
+#ifndef BEEHAVE_SIMPLE_PARALLEL_H
+#define BEEHAVE_SIMPLE_PARALLEL_H
 
-using namespace godot;
+#include "nodes/composites/beehave_composite.h"
 
-BeehaveSequence::BeehaveSequence() {
+namespace godot
+{
 
-}
+class BeehaveSimpleParallel : public BeehaveComposite {
+    GDCLASS(BeehaveSimpleParallel, BeehaveComposite);
 
-BeehaveSequence::~BeehaveSequence() {
+    // TODO: add secondary node repeat count back in - needs something akin to before_run() hook for proper setup.
 
-}
+    // Whether to wait for the secondary node to finish after the primary node has finished.
+    bool wait_for_secondary_node;
 
-void BeehaveSequence::_bind_methods() {
+    BeehaveTickStatus delayed_result;
+    bool main_task_finished;
+    bool secondary_node_running;
 
-}
+protected:
+    static void _bind_methods();
 
-BeehaveTickStatus BeehaveSequence::tick(Ref<BeehaveContext> context) {
-    TypedArray<Node> children = get_children();
-    for (int i = 0; i < children.size(); ++i) {
-        if (i < successful_index) {
-            continue;
-        }
-        BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(children[i]));
-        if (child == nullptr) {
-            // skip anything that is not a valid beehave node
-			continue;
-        }
-        BeehaveTickStatus response = child->tick(context);
+public:
+    BeehaveSimpleParallel();
+    ~BeehaveSimpleParallel();
 
-        switch(response) {
-            case SUCCESS:
-                ++successful_index;
-                break;
-            case FAILURE:
-                successful_index = 0;
-                return FAILURE;
-            case RUNNING:
-                return RUNNING;
-        }
-    }
-    return BeehaveTickStatus::SUCCESS;
-}
+    void set_wait_for_secondary_node(bool wait);
+    bool get_wait_for_secondary_node() const;
+
+    BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+    void _reset();
+};
+} // namespace godot
+
+#endif // BEEHAVE_SIMPLE_PARALLEL_H

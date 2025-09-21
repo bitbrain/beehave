@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_sequence.cpp                                                  */
+/*  beehave_sequence_reactive.cpp                                         */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,28 +27,25 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_sequence.h"
+#include "beehave_sequence_reactive.h"
 
 using namespace godot;
 
-BeehaveSequence::BeehaveSequence() {
+BeehaveSequenceReactive::BeehaveSequenceReactive() {
 
 }
 
-BeehaveSequence::~BeehaveSequence() {
+BeehaveSequenceReactive::~BeehaveSequenceReactive() {
 
 }
 
-void BeehaveSequence::_bind_methods() {
+void BeehaveSequenceReactive::_bind_methods() {
 
 }
 
-BeehaveTickStatus BeehaveSequence::tick(Ref<BeehaveContext> context) {
+BeehaveTickStatus BeehaveSequenceReactive::tick(Ref<BeehaveContext> context) {
     TypedArray<Node> children = get_children();
     for (int i = 0; i < children.size(); ++i) {
-        if (i < successful_index) {
-            continue;
-        }
         BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(children[i]));
         if (child == nullptr) {
             // skip anything that is not a valid beehave node
@@ -58,10 +55,8 @@ BeehaveTickStatus BeehaveSequence::tick(Ref<BeehaveContext> context) {
 
         switch(response) {
             case SUCCESS:
-                ++successful_index;
                 break;
             case FAILURE:
-                successful_index = 0;
                 return FAILURE;
             case RUNNING:
                 return RUNNING;

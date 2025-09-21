@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_sequence.cpp                                                  */
+/*  beehave_selector_reactive.h                                           */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,45 +27,25 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_sequence.h"
+#ifndef BEEHAVE_SELECTOR_REACTIVE_H
+#define BEEHAVE_SELECTOR_REACTIVE_H
 
-using namespace godot;
+#include "nodes/composites/beehave_composite.h"
 
-BeehaveSequence::BeehaveSequence() {
+namespace godot {
 
-}
+class BeehaveSelectorReactive : public BeehaveComposite {
+	GDCLASS(BeehaveSelectorReactive, BeehaveComposite);
 
-BeehaveSequence::~BeehaveSequence() {
+protected:
+	static void _bind_methods();
 
-}
+public:
+	BeehaveSelectorReactive();
+	~BeehaveSelectorReactive();
 
-void BeehaveSequence::_bind_methods() {
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+};
+}// namespace godot
 
-}
-
-BeehaveTickStatus BeehaveSequence::tick(Ref<BeehaveContext> context) {
-    TypedArray<Node> children = get_children();
-    for (int i = 0; i < children.size(); ++i) {
-        if (i < successful_index) {
-            continue;
-        }
-        BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(children[i]));
-        if (child == nullptr) {
-            // skip anything that is not a valid beehave node
-			continue;
-        }
-        BeehaveTickStatus response = child->tick(context);
-
-        switch(response) {
-            case SUCCESS:
-                ++successful_index;
-                break;
-            case FAILURE:
-                successful_index = 0;
-                return FAILURE;
-            case RUNNING:
-                return RUNNING;
-        }
-    }
-    return BeehaveTickStatus::SUCCESS;
-}
+#endif // BEEHAVE_SELECTOR_REACTIVE_H

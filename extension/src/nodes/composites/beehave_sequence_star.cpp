@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_sequence.cpp                                                  */
+/*  beehave_sequence_star.cpp                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,23 +27,23 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_sequence.h"
+#include "beehave_sequence_star.h"
 
 using namespace godot;
 
-BeehaveSequence::BeehaveSequence() {
+BeehaveSequenceStar::BeehaveSequenceStar() {
 
 }
 
-BeehaveSequence::~BeehaveSequence() {
+BeehaveSequenceStar::~BeehaveSequenceStar() {
 
 }
 
-void BeehaveSequence::_bind_methods() {
+void BeehaveSequenceStar::_bind_methods() {
 
 }
 
-BeehaveTickStatus BeehaveSequence::tick(Ref<BeehaveContext> context) {
+BeehaveTickStatus BeehaveSequenceStar::tick(Ref<BeehaveContext> context) {
     TypedArray<Node> children = get_children();
     for (int i = 0; i < children.size(); ++i) {
         if (i < successful_index) {
@@ -61,7 +61,6 @@ BeehaveTickStatus BeehaveSequence::tick(Ref<BeehaveContext> context) {
                 ++successful_index;
                 break;
             case FAILURE:
-                successful_index = 0;
                 return FAILURE;
             case RUNNING:
                 return RUNNING;
