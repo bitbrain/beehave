@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_sequence.cpp                                                  */
+/*  beehave_selector_reactive.cpp                                         */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,45 +27,41 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "beehave_sequence.h"
+#include "beehave_selector_reactive.h"
 
 using namespace godot;
 
-BeehaveSequence::BeehaveSequence() {
+BeehaveSelectorReactive::BeehaveSelectorReactive() {
 
 }
 
-BeehaveSequence::~BeehaveSequence() {
+BeehaveSelectorReactive::~BeehaveSelectorReactive() {
 
 }
 
-void BeehaveSequence::_bind_methods() {
+void BeehaveSelectorReactive::_bind_methods() {
 
 }
 
-BeehaveTickStatus BeehaveSequence::tick(Ref<BeehaveContext> context) {
-    TypedArray<Node> children = get_children();
-    for (int i = 0; i < children.size(); ++i) {
-        if (i < successful_index) {
-            continue;
-        }
-        BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(children[i]));
-        if (child == nullptr) {
-            // skip anything that is not a valid beehave node
+BeehaveTickStatus BeehaveSelectorReactive::tick(Ref<BeehaveContext> context) {
+	TypedArray<Node> children = get_children();
+	for (int i = 0; i < children.size(); ++i) {
+		BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(children[i]));
+		if (child == nullptr) {
+			// skip anything that is not a valid beehave node
 			continue;
-        }
-        BeehaveTickStatus response = child->tick(context);
+		}
+		BeehaveTickStatus response = child->tick(context);
 
-        switch(response) {
-            case SUCCESS:
-                ++successful_index;
-                break;
-            case FAILURE:
-                successful_index = 0;
-                return FAILURE;
-            case RUNNING:
-                return RUNNING;
-        }
-    }
-    return BeehaveTickStatus::SUCCESS;
+		switch (response) {
+			case SUCCESS:
+				// TODO: introduce after_run mechanism
+				return SUCCESS;
+			case FAILURE:
+				break;
+			case RUNNING:
+				return RUNNING;
+		}
+	}
+	return BeehaveTickStatus::FAILURE;
 }

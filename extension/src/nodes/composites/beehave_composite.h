@@ -35,7 +35,7 @@
 namespace godot {
 
 class BeehaveComposite : public BeehaveTreeNode {
-GDCLASS(BeehaveComposite, BeehaveTreeNode);
+	GDCLASS(BeehaveComposite, BeehaveTreeNode);
 
 public:
 	BeehaveComposite();
