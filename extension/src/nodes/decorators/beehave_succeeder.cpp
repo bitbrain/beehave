@@ -48,6 +48,19 @@ BeehaveTickStatus BeehaveSucceeder::tick(Ref<BeehaveContext> context) {
 	if (!tree_node) {
 		return BeehaveTickStatus::FAILURE;
 	}
-	tree_node->tick(context);
-	return BeehaveTickStatus::SUCCESS;
+
+	if (tree_node != running_child) {
+		tree_node->before_run(context);
+	}
+
+	BeehaveTickStatus status = tree_node->tick(context);
+
+	if(status == BeehaveTickStatus::RUNNING) {
+		running_child = tree_node;
+		return BeehaveTickStatus::RUNNING;
+	}
+	else {
+		tree_node->after_run(context);
+		return BeehaveTickStatus::SUCCESS;
+	}
 }

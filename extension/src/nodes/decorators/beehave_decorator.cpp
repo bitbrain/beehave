@@ -43,6 +43,18 @@ void BeehaveDecorator::_bind_methods() {
 
 }
 
+void BeehaveDecorator::after_run(Ref<BeehaveContext> context) {
+	running_child = nullptr;
+}
+
+void BeehaveDecorator::interrupt(Ref<BeehaveContext> context) {
+	if (running_child) {
+		running_child->interrupt(context);
+		running_child = nullptr;
+	}
+	BeehaveTreeNode::interrupt(context);
+}
+
 BeehaveTreeNode* BeehaveDecorator::get_wrapped_child() const {
 	if (get_child_count() != 1) {
 		return nullptr;

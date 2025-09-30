@@ -49,12 +49,20 @@ BeehaveTickStatus BeehaveInverter::tick(Ref<BeehaveContext> context) {
 		return BeehaveTickStatus::FAILURE;
 	}
 
+	if (tree_node != running_child) {
+		tree_node->before_run(context);
+	}
+
 	BeehaveTickStatus tick_status = tree_node->tick(context);
 
 	if (tick_status == BeehaveTickStatus::FAILURE) {
+		tree_node->after_run(context);
 		return BeehaveTickStatus::SUCCESS;
 	} else if (tick_status == BeehaveTickStatus::SUCCESS) {
+		tree_node->after_run(context);
 		return BeehaveTickStatus::FAILURE;
+	} else if (tick_status == BeehaveTickStatus::RUNNING) {
+		running_child = tree_node;
 	}
 
 	return tick_status;

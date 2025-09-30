@@ -66,6 +66,18 @@ public:
 	virtual BeehaveTickStatus tick(Ref<BeehaveContext> context);
 
 	GDVIRTUAL1RC(BeehaveTickStatus, _tick, Ref<BeehaveContext>);
+
+	virtual void interrupt(Ref<BeehaveContext> context);
+
+	GDVIRTUAL1C(_interrupt, Ref<BeehaveContext>);
+
+	virtual void before_run(Ref<BeehaveContext> context);
+
+	GDVIRTUAL1C(_before_run, Ref<BeehaveContext>);
+
+	virtual void after_run(Ref<BeehaveContext> context);
+
+	GDVIRTUAL1C(_after_run, Ref<BeehaveContext>);
 };
 
 } //namespace godot

@@ -52,6 +52,7 @@ public:
 
 	BeehaveTickStatus tick(Ref<BeehaveContext> context);
 
+	void interrupt(Ref<BeehaveContext> context);
 };
 
 }

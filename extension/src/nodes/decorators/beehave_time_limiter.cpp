@@ -63,16 +63,38 @@ BeehaveTickStatus BeehaveTimeLimiter::tick(Ref<BeehaveContext> context) {
 		return BeehaveTickStatus::FAILURE;
 	}
 
-	BeehaveTickStatus status = BeehaveTickStatus::FAILURE;
+	// Time has run out
+	if (passed_time >= wait_time) {
+		interrupt(context);
+		tree_node->after_run(context);
+		return FAILURE;
+	}
 
 	passed_time += context->get_delta();
+	BeehaveTickStatus status = tree_node->tick(context);
 
-	// the wait time has been reached, time to reset
-	if (passed_time >= wait_time * 1000.0) {
-		status = tree_node->tick(context);
-		// avoid time drift by carrying over miliseconds from previous iteration.
-		passed_time -= wait_time * 1000.0;
+	if (status == BeehaveTickStatus::RUNNING) {
+		running_child = tree_node;
+	}
+	else {
+		tree_node->after_run(context);
 	}
 
 	return status;
+}
+
+void BeehaveTimeLimiter::before_run(Ref<BeehaveContext> context) {
+	passed_time = 0;
+
+	BeehaveTreeNode *tree_node = get_wrapped_child();
+	if (tree_node) {
+		tree_node->before_run(context);
+	}
+}
+
+void BeehaveTimeLimiter::interrupt(Ref<BeehaveContext> context) {
+	// Reset the timer when the node is interrupted
+	passed_time = 0;
+
+	BeehaveDecorator::interrupt(context);
 }

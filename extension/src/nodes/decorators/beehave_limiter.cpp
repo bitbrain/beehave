@@ -68,8 +68,35 @@ BeehaveTickStatus BeehaveLimiter::tick(Ref<BeehaveContext> context) {
 	if (current_count < max_count) {
 		BeehaveTickStatus tick_status = tree_node->tick(context);
 		++current_count;
+
+		if (tick_status == BeehaveTickStatus::RUNNING) {
+			running_child = tree_node;
+		}
+		else {
+			current_count = 0;
+			tree_node->after_run(context);
+		}
+
 		return tick_status;
 	}
 
+	interrupt(context);
+	tree_node->after_run(context);
+	
 	return BeehaveTickStatus::FAILURE;
+}
+
+void BeehaveLimiter::before_run(Ref<BeehaveContext> context) {
+	// Initialize the counter to 0 when we first start running
+	current_count = 0;
+
+	BeehaveTreeNode *tree_node = get_wrapped_child();
+	if (tree_node) {
+		tree_node->before_run(context);
+	}
+}
+
+void BeehaveLimiter::interrupt(Ref<BeehaveContext> context) {
+	current_count = 0;
+	BeehaveDecorator::interrupt(context);
 }

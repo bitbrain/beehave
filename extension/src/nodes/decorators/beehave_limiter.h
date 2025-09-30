@@ -51,6 +51,10 @@ public:
 	int get_max_count() const;
 
 	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+	void before_run(Ref<BeehaveContext> context);
+
+	void interrupt(Ref<BeehaveContext> context);
 };
 
 }

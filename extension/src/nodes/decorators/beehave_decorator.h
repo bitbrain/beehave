@@ -47,6 +47,10 @@ protected:
 public:
 	BeehaveDecorator();
 	~BeehaveDecorator();
+
+	void after_run(Ref<BeehaveContext> context);
+
+	void interrupt(Ref<BeehaveContext> context);
 };
 
 }
