@@ -123,15 +123,31 @@ BeehaveBlackboard *BeehaveTree::get_blackboard() const {
 
 void BeehaveTree::enable() {
 	enabled = true;
+
+	set_physics_process(enabled && process_thread == ProcessThread::PHYSICS);
+	set_process(enabled && process_thread == ProcessThread::IDLE);
 }
 
 void BeehaveTree::disable() {
 	enabled = false;
+
+	set_physics_process(enabled && process_thread == ProcessThread::PHYSICS);
+	set_process(enabled && process_thread == ProcessThread::IDLE);
+
+	interrupt();
 }
 
 void BeehaveTree::set_enabled(bool enabled) {
 	this->enabled = enabled;
+
+	if(enabled) {
+		enable();
+	}
+	else {
+		disable();
+	}
 }
+
 bool BeehaveTree::is_enabled() const {
 	return enabled;
 }
@@ -150,6 +166,9 @@ BeehaveTickStatus BeehaveTree::get_tick_status() const {
 
 void BeehaveTree::set_process_thread(BeehaveTree::ProcessThread thread) {
 	process_thread = thread;
+
+	set_physics_process(enabled && process_thread == ProcessThread::PHYSICS);
+	set_process(enabled && process_thread == ProcessThread::IDLE);
 }
 
 BeehaveTree::ProcessThread BeehaveTree::get_process_thread() const {
@@ -186,9 +205,24 @@ BeehaveTickStatus BeehaveTree::tick() {
 			continue;
 		}
 		BeehaveTreeNode *tree_node = cast_to<BeehaveTreeNode>(child);
-		if (tree_node) {
-			tick_status = tree_node->tick(context);
+		if (tree_node == nullptr) {
+			// Skip nodes that aren't valid Beehave nodes
+			continue;
+		}
+		
+		if (tick_status != BeehaveTickStatus::RUNNING) {
+			tree_node->before_run(context);
+		}
+
+		tick_status = tree_node->tick(context);
+
+		if (tick_status != BeehaveTickStatus::RUNNING) {
+			tree_node->after_run(context);
 		}
 	}
 	return tick_status;
+}
+
+void BeehaveTree::interrupt() {
+	// TODO: interrupt currently running child, if it exists
 }

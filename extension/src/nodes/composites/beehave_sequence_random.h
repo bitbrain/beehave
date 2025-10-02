@@ -39,6 +39,11 @@ namespace godot
 class BeehaveSequenceRandom : public BeehaveCompositeRandom {
     GDCLASS(BeehaveSequenceRandom, BeehaveCompositeRandom);
 
+    // Whether the sequence should start where it left off after a previous failure.
+    bool resume_on_failure = false;
+    // Whether the sequence should start where it left off after a previous interruption.
+    bool resume_on_interrupt = false;
+
 protected:
     static void _bind_methods();
 
@@ -46,7 +51,17 @@ public:
     BeehaveSequenceRandom();
     ~BeehaveSequenceRandom();
 
+    void set_resume_on_failure(bool resume_on_failure);
+    bool get_resume_on_failure() const;
+
+    void set_resume_on_interrupt(bool resume_on_interrupt);
+    bool get_resume_on_interrupt() const;
+
     BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+    void after_run(Ref<BeehaveContext> context);
+
+    void interrupt(Ref<BeehaveContext> context);
 
 private:
 	TypedArray<Node> _children_bag;

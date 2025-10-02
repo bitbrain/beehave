@@ -45,9 +45,12 @@ void BeehaveSelector::_bind_methods() {
 
 BeehaveTickStatus BeehaveSelector::tick(Ref<BeehaveContext> context) {
 	TypedArray<Node> children = get_children();
+	int processed_count = 0;
+
 	for (int i = 0; i < children.size(); ++i) {
 		if (i < last_execution_index) {
 			// skip everything that was executed already
+			++processed_count;
 			continue;
 		}
 		BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(children[i]));
@@ -55,18 +58,70 @@ BeehaveTickStatus BeehaveSelector::tick(Ref<BeehaveContext> context) {
 			// skip anything that is not a valid beehave node
 			continue;
 		}
+
+		if (child != running_child) {
+			child->before_run(context);
+		}
+
 		BeehaveTickStatus response = child->tick(context);
+		++processed_count;
 
 		switch (response) {
 			case SUCCESS:
-				// TODO: introduce after_run mechanism
+				if (running_child) {
+					if (running_child != child) {
+						running_child->interrupt(context);
+					}
+					running_child = nullptr;
+				}
+				child->after_run(context);
+				interrupt_children(context, i + 1, previous_success_or_running_index + 1);
+
+				previous_success_or_running_index = i;
+				ready_to_interrupt_all = false;
 				return SUCCESS;
 			case FAILURE:
+				running_child = nullptr;
+				child->after_run(context);
 				++last_execution_index;
 				break;
 			case RUNNING:
+				if (child != running_child) {
+					if (running_child) {
+						running_child->interrupt(context);
+					}
+					running_child = child;
+				}
+				interrupt_children(context, i + 1, previous_success_or_running_index + 1);
+				previous_success_or_running_index = i;
+				ready_to_interrupt_all = false;
 				return RUNNING;
 		}
 	}
+
+	// FIXME: this doesn't account for children that aren't Beehave nodes. In that case, processed_count will never reach children.size()!
+	// All children failed
+	ready_to_interrupt_all = (processed_count == children.size());
+	last_execution_index = 0;
 	return BeehaveTickStatus::FAILURE;
+}
+
+void BeehaveSelector::after_run(Ref<BeehaveContext> context) {
+	last_execution_index = 0;
+	BeehaveComposite::after_run(context);
+}
+
+void BeehaveSelector::interrupt(Ref<BeehaveContext> context) {
+	if (ready_to_interrupt_all) {
+		interrupt_children(context, 0, get_child_count());
+		ready_to_interrupt_all = false;
+	}
+	else {
+		interrupt_children(context, last_execution_index + 1, previous_success_or_running_index + 1);
+	}
+
+	last_execution_index = 0;
+	previous_success_or_running_index = -1;
+
+	BeehaveComposite::interrupt(context);
 }

@@ -42,8 +42,32 @@ BeehaveSequenceRandom::~BeehaveSequenceRandom() {
 
 }
 
-void BeehaveSequenceRandom::_bind_methods() {
+void BeehaveSequenceRandom::set_resume_on_failure(bool resume_on_failure) {
+    this->resume_on_failure = resume_on_failure;
+}
 
+bool BeehaveSequenceRandom::get_resume_on_failure() const {
+    return resume_on_failure;
+}
+
+void BeehaveSequenceRandom::set_resume_on_interrupt(bool resume_on_interrupt) {
+    this->resume_on_interrupt = resume_on_interrupt;
+}
+
+bool BeehaveSequenceRandom::get_resume_on_interrupt() const {
+    return resume_on_interrupt;
+}
+
+void BeehaveSequenceRandom::_bind_methods() {
+    // methods
+    ClassDB::bind_method(D_METHOD("set_resume_on_failure", "resume_on_failure"), &BeehaveSequenceRandom::set_resume_on_failure);
+    ClassDB::bind_method(D_METHOD("get_resume_on_failure"), &BeehaveSequenceRandom::get_resume_on_failure);
+    ClassDB::bind_method(D_METHOD("set_resume_on_interrupt", "resume_on_interrupt"), &BeehaveSequenceRandom::set_resume_on_interrupt);
+    ClassDB::bind_method(D_METHOD("get_resume_on_interrupt"), &BeehaveSequenceRandom::get_resume_on_interrupt);
+
+    // exports
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "resume_on_failure"), "set_resume_on_failure", "get_resume_on_failure");
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "resume_on_interrupt"), "set_resume_on_interrupt", "get_resume_on_interrupt");
 }
 
 BeehaveTickStatus BeehaveSequenceRandom::tick(Ref<BeehaveContext> context) {
@@ -58,18 +82,42 @@ BeehaveTickStatus BeehaveSequenceRandom::tick(Ref<BeehaveContext> context) {
             // skip anything that is not a valid beehave node
 			continue;
         }
+
+        if (child != running_child) {
+            child->before_run(context);
+        }
+
         BeehaveTickStatus response = child->tick(context);
 
         switch(response) {
             case SUCCESS:
                 _children_bag.erase(child);
+                child->after_run(context);
                 break;
             case FAILURE:
                 _children_bag.erase(child);
+                // Interrupt any child that was RUNNING before, but do not reset!
+                BeehaveCompositeRandom::interrupt(context);
+                child->after_run(context);
                 return FAILURE;
             case RUNNING:
+                running_child = child;
                 return RUNNING;
         }
     }
     return BeehaveTickStatus::SUCCESS;
+}
+
+void BeehaveSequenceRandom::after_run(Ref<BeehaveContext> context) {
+    if (!resume_on_failure) {
+        _children_bag = get_shuffled_children();
+    }
+    BeehaveCompositeRandom::after_run(context);
+}
+
+void BeehaveSequenceRandom::interrupt(Ref<BeehaveContext> context) {
+    if (!resume_on_interrupt) {
+        _children_bag = get_shuffled_children();
+    }
+    BeehaveCompositeRandom::interrupt(context);
 }

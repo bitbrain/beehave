@@ -38,6 +38,8 @@ class BeehaveSelector : public BeehaveComposite {
 	GDCLASS(BeehaveSelector, BeehaveComposite);
 
 	int last_execution_index = 0;
+	int previous_success_or_running_index = -1;
+	bool ready_to_interrupt_all = false;
 
 protected:
 	static void _bind_methods();
@@ -47,6 +49,10 @@ public:
 	~BeehaveSelector();
 
 	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+	void after_run(Ref<BeehaveContext> context);
+
+	void interrupt(Ref<BeehaveContext> context);
 };
 }// namespace godot
 

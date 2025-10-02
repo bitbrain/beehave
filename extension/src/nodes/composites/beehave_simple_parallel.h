@@ -38,14 +38,16 @@ namespace godot
 class BeehaveSimpleParallel : public BeehaveComposite {
     GDCLASS(BeehaveSimpleParallel, BeehaveComposite);
 
-    // TODO: add secondary node repeat count back in - needs something akin to before_run() hook for proper setup.
+    // How many times should secondary node repeat, zero means loop forever
+    int secondary_node_repeat_count = 0;
 
     // Whether to wait for the secondary node to finish after the primary node has finished.
-    bool wait_for_secondary_node;
+    bool wait_for_secondary_node = false;
 
-    BeehaveTickStatus delayed_result;
-    bool main_task_finished;
-    bool secondary_node_running;
+    BeehaveTickStatus delayed_result = BeehaveTickStatus::SUCCESS;
+    bool main_task_finished = false;
+    bool secondary_node_running = false;
+    int secondary_node_repeat_left = 0;
 
 protected:
     static void _bind_methods();
@@ -57,7 +59,16 @@ public:
     void set_wait_for_secondary_node(bool wait);
     bool get_wait_for_secondary_node() const;
 
+    void set_secondary_node_repeat_count(int repeat_count);
+    int get_secondary_node_repeat_count() const;
+
     BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+    void before_run(Ref<BeehaveContext> context);
+
+    void after_run(Ref<BeehaveContext> context);
+
+    void interrupt(Ref<BeehaveContext> context);
 
     void _reset();
 };

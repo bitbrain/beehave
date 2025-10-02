@@ -39,6 +39,7 @@ class BeehaveSequence : public BeehaveComposite {
     GDCLASS(BeehaveSequence, BeehaveComposite);
 
     int successful_index = 0;
+    int previous_success_or_running_index = -1;
 
 protected:
     static void _bind_methods();
@@ -48,6 +49,8 @@ public:
     ~BeehaveSequence();
 
     BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+    void interrupt(Ref<BeehaveContext> context);
 };
 } // namespace godot
 

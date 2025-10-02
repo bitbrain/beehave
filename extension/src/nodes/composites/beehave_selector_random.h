@@ -47,6 +47,10 @@ public:
 
 	BeehaveTickStatus tick(Ref<BeehaveContext> context);
 
+	void after_run(Ref<BeehaveContext> context);
+
+	void interrupt(Ref<BeehaveContext> context);
+
 private:
 	TypedArray<Node> _children_bag;
 };

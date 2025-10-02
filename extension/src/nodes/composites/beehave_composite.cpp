@@ -38,3 +38,33 @@ BeehaveComposite::BeehaveComposite() {
 BeehaveComposite::~BeehaveComposite() {
 
 }
+
+void BeehaveComposite::after_run(Ref<BeehaveContext> context) {
+    running_child = nullptr;
+}
+
+void BeehaveComposite::interrupt(Ref<BeehaveContext> context) {
+    if (running_child) {
+        running_child->interrupt(context);
+        running_child = nullptr;
+    }
+    BeehaveTreeNode::interrupt(context);
+}
+
+void BeehaveComposite::interrupt_children(Ref<BeehaveContext> context, int from_index, int to_index) {
+    if (from_index >= to_index) {
+        return;
+    }
+
+    TypedArray<Node> children = get_children();
+
+    for (int i = from_index; i < to_index; ++i) {
+        BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(children[i]));
+        if (child == nullptr) {
+            // Skip all children which aren't Beehave nodes
+            continue;
+        }
+
+        child->interrupt(context);
+    }
+}

@@ -38,6 +38,12 @@ namespace godot
 class BeehaveSequenceReactive : public BeehaveComposite {
     GDCLASS(BeehaveSequenceReactive, BeehaveComposite);
 
+    // Track where we last failed – so we detect a backward jump
+    int previous_failure_index = -1;
+
+    // Separate index for running as failure and running can diverge in reactive sequence
+    int previous_running_index = -1;
+
 protected:
     static void _bind_methods();
 
@@ -46,6 +52,8 @@ public:
     ~BeehaveSequenceReactive();
 
     BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+    void interrupt(Ref<BeehaveContext> context);
 };
 } // namespace godot
 

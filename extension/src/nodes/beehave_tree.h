@@ -85,6 +85,7 @@ public:
 	int get_tick_rate() const;
 	void set_process_thread(BeehaveTree::ProcessThread thread);
 	BeehaveTree::ProcessThread get_process_thread() const;
+	void interrupt();
 };
 
 } //namespace godot
