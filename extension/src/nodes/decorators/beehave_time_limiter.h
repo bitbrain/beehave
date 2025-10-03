@@ -47,10 +47,14 @@ public:
 	BeehaveTimeLimiter();
 	~BeehaveTimeLimiter();
 
-	BeehaveTickStatus tick(Ref<BeehaveContext> context);
-
 	void set_wait_time(float wait_time);
 	float get_wait_time() const;
+
+	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+	void before_run(Ref<BeehaveContext> context);
+
+	void interrupt(Ref<BeehaveContext> context);
 };
 
 }

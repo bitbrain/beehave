@@ -67,6 +67,10 @@ BeehaveTickStatus BeehaveCooldown::tick(Ref<BeehaveContext> context) {
 
 	BeehaveTickStatus status = BeehaveTickStatus::FAILURE;
 
+	if (tree_node != running_child) {
+		tree_node->before_run(context);
+	}
+
 	if (passed_time == 0) {
 		status = tree_node->tick(context);
 		UtilityFunctions::print(vformat("cooldown72 status=%s", status));
@@ -81,5 +85,19 @@ BeehaveTickStatus BeehaveCooldown::tick(Ref<BeehaveContext> context) {
 		passed_time -= wait_time;
 	}
 	UtilityFunctions::print(vformat("cooldown83 status=%s", status));
+
+	if (status == BeehaveTickStatus::RUNNING) {
+		running_child = tree_node;
+	}
+	else {
+		tree_node->after_run(context);
+	}
+
 	return status;
+}
+
+void BeehaveCooldown::interrupt(Ref<BeehaveContext> context) {
+	// Reset the cooldown when the branch changes
+	passed_time = 0;
+	BeehaveDecorator::interrupt(context);
 }

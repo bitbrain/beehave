@@ -66,14 +66,33 @@ BeehaveTickStatus BeehaveDelayer::tick(Ref<BeehaveContext> context) {
 		return BeehaveTickStatus::FAILURE;
 	}
 
+	if (tree_node != running_child) {
+		tree_node->before_run(context);
+	}
+
 	passed_time += context->get_delta();
 
 	// the wait time has been reached, time to reset
-	if (passed_time >= wait_time * 1000.0) {
+	if (passed_time >= wait_time) {
 		// avoid time drift by carrying over miliseconds from previous iteration.
-		passed_time -= wait_time * 1000.0;
-		return tree_node->tick(context);
+		passed_time -= wait_time;
+
+		BeehaveTickStatus status = tree_node->tick(context);
+		if (status == BeehaveTickStatus::RUNNING) {
+			running_child = tree_node;
+		}
+		else {
+			tree_node->after_run(context);
+			passed_time = 0;
+		}
+		return status;
 	}
 
 	return BeehaveTickStatus::RUNNING;
+}
+
+void BeehaveDelayer::interrupt(Ref<BeehaveContext> context) {
+	// Reset the delay timer when the branch changes
+	passed_time = 0;
+	BeehaveDecorator::interrupt(context);
 }

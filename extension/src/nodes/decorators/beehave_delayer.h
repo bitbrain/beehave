@@ -51,6 +51,8 @@ public:
 	float get_wait_time() const;
 
 	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+	void interrupt(Ref<BeehaveContext> context);
 };
 
 }

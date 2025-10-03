@@ -54,17 +54,57 @@ BeehaveTickStatus BeehaveSequenceStar::tick(Ref<BeehaveContext> context) {
             // skip anything that is not a valid beehave node
 			continue;
         }
+
+        if (child != running_child) {
+            child->before_run(context);
+        }
+
         BeehaveTickStatus response = child->tick(context);
 
         switch(response) {
             case SUCCESS:
+                if (running_child && running_child == child) {
+                    // Do not interrupt as this child finishes running!
+                    running_child = nullptr;
+                }
                 ++successful_index;
+                child->after_run(context);
                 break;
             case FAILURE:
+                interrupt_children(context, i + 1, previous_failure_or_running_index + 1);
+
+                // Remember where we failed for next tick
+                previous_failure_or_running_index = i;
+
+                // Interrupt any child that was RUNNING before, but do not reset!
+                if (running_child) {
+                    running_child->interrupt(context);
+                    running_child = nullptr;
+                }
+                child->after_run(context);
                 return FAILURE;
             case RUNNING:
+                if (running_child && running_child != child) {
+                    running_child->interrupt(context);
+                    running_child = nullptr;
+                }
+                running_child = child;
+
+                interrupt_children(context, i + 1, previous_failure_or_running_index + 1);
+                previous_failure_or_running_index = i;
                 return RUNNING;
         }
     }
+
+    successful_index = 0;
     return BeehaveTickStatus::SUCCESS;
+}
+
+void BeehaveSequenceStar::interrupt(Ref<BeehaveContext> context) {
+    interrupt_children(context, successful_index, previous_failure_or_running_index + 1);
+
+    successful_index = 0;
+    previous_failure_or_running_index = -1;
+
+    BeehaveComposite::interrupt(context);
 }

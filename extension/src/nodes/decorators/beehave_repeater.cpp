@@ -68,10 +68,39 @@ BeehaveTickStatus BeehaveRepeater::tick(Ref<BeehaveContext> context) {
 	}
 
 	if (current_count < repetitions) {
-		++current_count;
+		if (tree_node != running_child) {
+			tree_node->before_run(context);
+		}
+
 		BeehaveTickStatus tick_status = tree_node->tick(context);
-		return tick_status;
+		
+		if (tick_status == BeehaveTickStatus::RUNNING) {
+			running_child = tree_node;
+			return BeehaveTickStatus::RUNNING;
+		}
+
+		++current_count;
+		running_child = nullptr;
+
+		if (tick_status == BeehaveTickStatus::FAILURE) {
+			return BeehaveTickStatus::FAILURE;
+		}
+
+		if (current_count >= repetitions) {
+			return BeehaveTickStatus::SUCCESS;
+		}
+
+		return BeehaveTickStatus::RUNNING;
 	}
 
-	return BeehaveTickStatus::FAILURE;
+	return BeehaveTickStatus::SUCCESS;
+}
+
+void BeehaveRepeater::before_run(Ref<BeehaveContext> context) {
+	current_count = 0;
+}
+
+void BeehaveRepeater::interrupt(Ref<BeehaveContext> context) {
+	current_count = 0;
+	BeehaveDecorator::interrupt(context);
 }

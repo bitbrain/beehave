@@ -39,6 +39,8 @@ class BeehaveSequenceStar : public BeehaveComposite {
     GDCLASS(BeehaveSequenceStar, BeehaveComposite);
 
     int successful_index = 0;
+    // Track where we last failed – so we detect a backward jump
+    int previous_failure_or_running_index = -1;
 
 protected:
     static void _bind_methods();
@@ -48,6 +50,8 @@ public:
     ~BeehaveSequenceStar();
 
     BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+    void interrupt(Ref<BeehaveContext> context);
 };
 } // namespace godot
 

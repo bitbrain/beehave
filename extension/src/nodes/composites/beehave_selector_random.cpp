@@ -52,25 +52,47 @@ BeehaveTickStatus BeehaveSelectorRandom::tick(Ref<BeehaveContext> context) {
 	} 
 
 	// Since we're going to remove children from the array, iterate it in reverse order.
-	for (int i = _children_bag.size() -1; i >= 0; --i) {
+	for (int i = _children_bag.size() - 1; i >= 0; --i) {
 		BeehaveTreeNode *child = cast_node(Object::cast_to<Node>(_children_bag[i]));
 		if (child == nullptr) {
 			// skip anything that is not a valid beehave node
 			continue;
 		}
+
+		if (child != running_child) {
+			child->before_run(context);
+		}
+
 		BeehaveTickStatus response = child->tick(context);
 
 		switch (response) {
 			case SUCCESS:
-				// TODO: introduce after_run mechanism
 				_children_bag.erase(child);
+				child->after_run(context);
 				return SUCCESS;
 			case FAILURE:
 				_children_bag.erase(child);
+				child->after_run(context);
 				break;
 			case RUNNING:
+				if (child != running_child) {
+					if (running_child) {
+						running_child->interrupt(context);
+					}
+					running_child = child;
+				}
 				return RUNNING;
 		}
 	}
 	return BeehaveTickStatus::FAILURE;
+}
+
+void BeehaveSelectorRandom::after_run(Ref<BeehaveContext> context) {
+	_children_bag = get_shuffled_children();
+	BeehaveCompositeRandom::after_run(context);
+}
+
+void BeehaveSelectorRandom::interrupt(Ref<BeehaveContext> context) {
+	_children_bag = get_shuffled_children();
+	BeehaveCompositeRandom::interrupt(context);
 }

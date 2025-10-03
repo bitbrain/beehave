@@ -37,6 +37,9 @@ namespace godot {
 class BeehaveSelectorReactive : public BeehaveComposite {
 	GDCLASS(BeehaveSelectorReactive, BeehaveComposite);
 
+	int previous_success_or_running_index = -1;
+	bool ready_to_interrupt_all = false;
+
 protected:
 	static void _bind_methods();
 
@@ -45,6 +48,8 @@ public:
 	~BeehaveSelectorReactive();
 
 	BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+	void interrupt(Ref<BeehaveContext> context);
 };
 }// namespace godot
 

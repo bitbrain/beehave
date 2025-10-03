@@ -51,16 +51,55 @@ BeehaveTickStatus BeehaveSequenceReactive::tick(Ref<BeehaveContext> context) {
             // skip anything that is not a valid beehave node
 			continue;
         }
+
+        if (child != running_child) {
+            child->before_run(context);
+        }
+
         BeehaveTickStatus response = child->tick(context);
 
         switch(response) {
             case SUCCESS:
+                if (running_child && running_child == child) {
+                    // Do not interrupt this child as it finishes running!
+                    running_child = nullptr;
+                }
+                child->after_run(context);
                 break;
             case FAILURE:
+                interrupt_children(context, i + 1, previous_failure_index + 1);
+
+                previous_failure_index = i;
+
+                if (running_child) {
+                    running_child->interrupt(context);
+                    running_child = nullptr;
+                }
+                child->after_run(context);
                 return FAILURE;
             case RUNNING:
+                previous_failure_index = -1;
+                previous_running_index = -1;
+
+                if (running_child && running_child != child) {
+                    running_child->interrupt(context);
+                    running_child = nullptr;
+                }
+                running_child = child;
+                interrupt_children(context, i + 1, previous_running_index + 1);
+                previous_running_index = i;
                 return RUNNING;
         }
     }
     return BeehaveTickStatus::SUCCESS;
+}
+
+void BeehaveSequenceReactive::interrupt(Ref<BeehaveContext> context) {
+    int to_index = previous_running_index > previous_failure_index ? previous_running_index : previous_failure_index;
+    interrupt_children(context, 0, to_index);
+
+    previous_running_index = -1;
+    previous_failure_index = -1;
+
+    BeehaveComposite::interrupt(context);
 }

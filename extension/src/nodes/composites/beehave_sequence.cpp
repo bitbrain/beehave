@@ -54,18 +54,55 @@ BeehaveTickStatus BeehaveSequence::tick(Ref<BeehaveContext> context) {
             // skip anything that is not a valid beehave node
 			continue;
         }
+
+        if (child != running_child) {
+            child->before_run(context);
+        }
+
         BeehaveTickStatus response = child->tick(context);
 
         switch(response) {
             case SUCCESS:
+                // Do not interrupt as the child finishes running!
+                running_child = nullptr;
                 ++successful_index;
                 break;
             case FAILURE:
+                if (running_child) {
+                    running_child->interrupt(context);
+                    running_child = nullptr;
+                }
+                interrupt_children(context, i + 1, previous_success_or_running_index + 1);
+                
+                // Remember where we failed for next tick
+                previous_success_or_running_index = i;
                 successful_index = 0;
+
+                // Interrupt any child that was RUNNING before, but do not reset!
+                if (running_child) {
+                    running_child->interrupt(context);
+                    running_child = nullptr;
+                }
+                child->after_run(context);
+
                 return FAILURE;
             case RUNNING:
+                if (running_child && child != running_child) {
+                    running_child->interrupt(context);
+                    running_child = nullptr;
+                }
+                running_child = child;
+                interrupt_children(context, i + 1, previous_success_or_running_index + 1);
+                previous_success_or_running_index = i;
                 return RUNNING;
         }
     }
+
+    successful_index = 0;
     return BeehaveTickStatus::SUCCESS;
+}
+
+void BeehaveSequence::interrupt(Ref<BeehaveContext> context) {
+    interrupt_children(context, successful_index, previous_success_or_running_index + 1);
+    BeehaveComposite::interrupt(context);
 }

@@ -45,6 +45,18 @@ BeehaveTickStatus BeehaveTreeNode::tick(Ref<BeehaveContext> context) {
 	return status;
 }
 
+void BeehaveTreeNode::interrupt(Ref<BeehaveContext> context) {
+	GDVIRTUAL_CALL(_interrupt, context);
+}
+
+void BeehaveTreeNode::before_run(Ref<BeehaveContext> context) {
+	GDVIRTUAL_CALL(_before_run, context);
+}
+
+void BeehaveTreeNode::after_run(Ref<BeehaveContext> context) {
+	GDVIRTUAL_CALL(_after_run, context);
+}
+
 BeehaveTreeNode* BeehaveTreeNode::cast_node(Node* node) const {
 	BeehaveTreeNode *tree_node = cast_to<BeehaveTreeNode>(node);
 	if (!tree_node) {
@@ -56,6 +68,9 @@ BeehaveTreeNode* BeehaveTreeNode::cast_node(Node* node) const {
 void BeehaveTreeNode::_bind_methods() {
 
 	GDVIRTUAL_BIND(_tick, "context");
+	GDVIRTUAL_BIND(_interrupt, "context");
+	GDVIRTUAL_BIND(_before_run, "context");
+	GDVIRTUAL_BIND(_after_run, "context");
 
 	BIND_ENUM_CONSTANT(PENDING);
 	BIND_ENUM_CONSTANT(SUCCESS);

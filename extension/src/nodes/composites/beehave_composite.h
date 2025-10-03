@@ -37,9 +37,23 @@ namespace godot {
 class BeehaveComposite : public BeehaveTreeNode {
 	GDCLASS(BeehaveComposite, BeehaveTreeNode);
 
+protected:
+	BeehaveTreeNode *running_child;
+
 public:
 	BeehaveComposite();
 	~BeehaveComposite();
+
+	void after_run(Ref<BeehaveContext> context);
+
+	void interrupt(Ref<BeehaveContext> context);
+
+protected:
+	/*
+	*Interrupt all children between from_index and to_index (non-inclusive)
+	*For example, `interrupt_children(context, 2, 6)` will interrupt children at indices 2, 3, 4 and 5, but not 6
+	*/
+	void interrupt_children(Ref<BeehaveContext> context, int from_index, int to_index);
 };
 } //namespace godot
 
