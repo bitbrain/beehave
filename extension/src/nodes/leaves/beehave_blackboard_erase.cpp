@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_condition.h                                                   */
+/*  beehave_blackboard_erase.cpp                                          */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,23 +27,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_CONDITION
-#define BEEHAVE_CONDITION
+#include "beehave_blackboard_erase.h"
+#include "nodes/beehave_blackboard.h"
 
-#include "beehave_leaf.h"
+using namespace godot;
 
-namespace godot {
+void BeehaveBlackboardErase::_bind_methods() {
+    // methods
+    ClassDB::bind_method(D_METHOD("set_key", "key"), &BeehaveBlackboardErase::set_key);
+    ClassDB::bind_method(D_METHOD("get_key"), &BeehaveBlackboardErase::get_key);
 
-class BeehaveCondition : public BeehaveLeaf {
-	GDCLASS(BeehaveCondition, BeehaveLeaf);
-
-	protected:
-		static void _bind_methods();
-
-	public:
-		BeehaveCondition();
-		~BeehaveCondition();
-};
+    // exports
+    ADD_PROPERTY(PropertyInfo(Variant::STRING, "key", PropertyHint::PROPERTY_HINT_PLACEHOLDER_TEXT, "Insert a key name..."), "set_key", "get_key");
 }
 
-#endif //BEEHAVE_CONDITION
+BeehaveBlackboardErase::BeehaveBlackboardErase() {
+
+}
+
+BeehaveBlackboardErase::~BeehaveBlackboardErase() {
+
+}
+
+void BeehaveBlackboardErase::set_key(String key) {
+    this->key = key;
+}
+
+String BeehaveBlackboardErase::get_key() const {
+    return this->key;
+}
+
+BeehaveTickStatus BeehaveBlackboardErase::tick(Ref<BeehaveContext> context) {
+    bool success = context->get_blackboard()->erase_value(key);
+    return success ? SUCCESS : FAILURE;
+}

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_condition.h                                                   */
+/*  beehave_blackboard_compare.h                                          */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,23 +27,50 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_CONDITION
-#define BEEHAVE_CONDITION
+#ifndef BEEHAVE_BLACKBOARD_COMPARE
+#define BEEHAVE_BLACKBOARD_COMPARE
 
-#include "beehave_leaf.h"
+#include "beehave_action.h"
 
 namespace godot {
 
-class BeehaveCondition : public BeehaveLeaf {
-	GDCLASS(BeehaveCondition, BeehaveLeaf);
+class BeehaveBlackboardCompare : public BeehaveAction {
+	GDCLASS(BeehaveBlackboardCompare, BeehaveAction);
 
-	protected:
+public:
+    enum ComparisonOperator {
+        EQUAL = 0,
+        NOT_EQUAL = 1,
+        GREATER = 2,
+        LESS = 3,
+        GREATER_EQUAL = 4,
+        LESS_EQUAL = 5,
+    };
+
+    String left_operand;
+    String right_operand;
+    ComparisonOperator comparison_operator = ComparisonOperator::EQUAL;
+
+protected:
 		static void _bind_methods();
 
-	public:
-		BeehaveCondition();
-		~BeehaveCondition();
+public:
+		BeehaveBlackboardCompare();
+		~BeehaveBlackboardCompare();
+
+        void set_left_operand(String left_operand);
+        String get_left_operand() const;
+
+        void set_right_operand(String right_operand);
+        String get_right_operand() const;
+
+        void set_comparison_operator(BeehaveBlackboardCompare::ComparisonOperator comparison_operator);
+        BeehaveBlackboardCompare::ComparisonOperator get_comparison_operator() const;
+
+        BeehaveTickStatus tick(Ref<BeehaveContext> context);
 };
 }
 
-#endif //BEEHAVE_CONDITION
+VARIANT_ENUM_CAST(BeehaveBlackboardCompare::ComparisonOperator);
+
+#endif //BEEHAVE_BLACKBOARD_COMPARE

@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_condition.h                                                   */
+/*  beehave_blackboard_set.h                                              */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,23 +27,34 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_CONDITION
-#define BEEHAVE_CONDITION
+#ifndef BEEHAVE_BLACKBOARD_SET
+#define BEEHAVE_BLACKBOARD_SET
 
-#include "beehave_leaf.h"
+#include "beehave_action.h"
 
 namespace godot {
 
-class BeehaveCondition : public BeehaveLeaf {
-	GDCLASS(BeehaveCondition, BeehaveLeaf);
+class BeehaveBlackboardSet : public BeehaveAction {
+	GDCLASS(BeehaveBlackboardSet, BeehaveAction);
+
+    String key;
+    String value;
 
 	protected:
 		static void _bind_methods();
 
 	public:
-		BeehaveCondition();
-		~BeehaveCondition();
+		BeehaveBlackboardSet();
+		~BeehaveBlackboardSet();
+
+        void set_key(String key);
+        String get_key() const;
+
+        void set_value(String value);
+        String get_value() const;
+
+        BeehaveTickStatus tick(Ref<BeehaveContext> context);
 };
 }
 
-#endif //BEEHAVE_CONDITION
+#endif //BEEHAVE_BLACKBOARD_SET

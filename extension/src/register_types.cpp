@@ -10,6 +10,11 @@
 #include "nodes/beehave_tree_node.h"
 #include "nodes/leaves/beehave_leaf.h"
 #include "nodes/leaves/beehave_action.h"
+#include "nodes/leaves/beehave_condition.h"
+#include "nodes/leaves/beehave_blackboard_compare.h"
+#include "nodes/leaves/beehave_blackboard_erase.h"
+#include "nodes/leaves/beehave_blackboard_has.h"
+#include "nodes/leaves/beehave_blackboard_set.h"
 #include "nodes/decorators/beehave_decorator.h"
 #include "nodes/decorators/beehave_succeeder.h"
 #include "nodes/decorators/beehave_failer.h"
@@ -46,7 +51,12 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 	// leafs
 	ClassDB::register_abstract_class<BeehaveLeaf>();
 	ClassDB::register_abstract_class<BeehaveAction>();
+	ClassDB::register_abstract_class<BeehaveCondition>();
 	ClassDB::register_abstract_class<BeehaveDecorator>();
+	ClassDB::register_class<BeehaveBlackboardCompare>();
+	ClassDB::register_class<BeehaveBlackboardErase>();
+	ClassDB::register_class<BeehaveBlackboardHas>();
+	ClassDB::register_class<BeehaveBlackboardSet>();
 
 	// decorators
 	ClassDB::register_class<BeehaveSucceeder>();
