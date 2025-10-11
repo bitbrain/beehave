@@ -29,7 +29,7 @@
 
 #include "beehave_blackboard_set.h"
 #include "nodes/beehave_blackboard.h"
-#include <classes/expression.hpp>
+#include <classes/engine.hpp>
 #include <variant/utility_functions.hpp>
 
 using namespace godot;
@@ -47,7 +47,7 @@ void BeehaveBlackboardSet::_bind_methods() {
 }
 
 BeehaveBlackboardSet::BeehaveBlackboardSet() {
-
+    value_expression.instantiate();
 }
 
 BeehaveBlackboardSet::~BeehaveBlackboardSet() {
@@ -64,6 +64,20 @@ String BeehaveBlackboardSet::get_key() const {
 
 void BeehaveBlackboardSet::set_value(String value) {
     this->value = value;
+
+    Error error = value_expression->parse(value);
+    if (error != Error::OK) {
+        if (!Engine::get_singleton()->is_editor_hint()) {
+            UtilityFunctions::push_error("[BlackboardSet] Couldn't parse expression with source: ", value, " Error text: ", value_expression->get_error_text());
+        }
+        is_expression_successfully_parsed = false;
+    }
+    else {
+        execute_failure_printed = false;
+        is_expression_successfully_parsed = true;
+    }
+
+    update_configuration_warnings();
 }
 
 String BeehaveBlackboardSet::get_value() const {
@@ -71,21 +85,29 @@ String BeehaveBlackboardSet::get_value() const {
 }
 
 BeehaveTickStatus BeehaveBlackboardSet::tick(Ref<BeehaveContext> context) {
-    Ref<Expression> value_expression;
-    value_expression.instantiate();
-
-    Error error = value_expression->parse(value);
-    if (error != Error::OK) {
-        UtilityFunctions::push_error("[Leaf] Couldn't parse expression with source: `%s` Error text: `%s`", value, value_expression->get_error_text());
+    if (!is_expression_successfully_parsed) {
         return BeehaveTickStatus::FAILURE;
     }
 
-    Variant final_value = value_expression->execute(Array(), context->get_blackboard());
+    Variant final_value = value_expression->execute(Array(), context->get_blackboard(), false);
 
     if (value_expression->has_execute_failed()) {
+        if (!execute_failure_printed && !Engine::get_singleton()->is_editor_hint()) {
+            // Until the expression is changed, it will (likely) keep failing. Don't flood the output with errors.
+            UtilityFunctions::push_error("[BlackboardSet] Couldn't execute expression with source: ", value, " Error text: ", value_expression->get_error_text());
+            execute_failure_printed = true;
+        }
         return BeehaveTickStatus::FAILURE;
     }
 
     context->get_blackboard()->set_value(key, final_value);
     return BeehaveTickStatus::SUCCESS;
+}
+
+PackedStringArray BeehaveBlackboardSet::_get_configuration_warnings() const {
+    PackedStringArray warnings = BeehaveAction::_get_configuration_warnings();
+    if (!is_expression_successfully_parsed) {
+        warnings.push_back(vformat("Couldn't parse expression with source: %s Error text: %s", value, value_expression->get_error_text()));
+    }
+    return warnings;
 }

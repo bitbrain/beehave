@@ -31,6 +31,7 @@
 #define BEEHAVE_BLACKBOARD_COMPARE
 
 #include "beehave_action.h"
+#include <classes/expression.hpp>
 
 namespace godot {
 
@@ -51,6 +52,13 @@ public:
     String right_operand;
     ComparisonOperator comparison_operator = ComparisonOperator::EQUAL;
 
+    private:
+        Ref<Expression> left_expression;
+        Ref<Expression> right_expression;
+        bool is_left_expression_successfully_parsed = false;
+        bool is_right_expression_successfully_parsed = false;
+        bool execute_failure_printed = false;
+
 protected:
 		static void _bind_methods();
 
@@ -68,6 +76,8 @@ public:
         BeehaveBlackboardCompare::ComparisonOperator get_comparison_operator() const;
 
         BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+        PackedStringArray _get_configuration_warnings() const override;
 };
 }
 

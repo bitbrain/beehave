@@ -31,6 +31,7 @@
 #define BEEHAVE_BLACKBOARD_SET
 
 #include "beehave_action.h"
+#include <classes/expression.hpp>
 
 namespace godot {
 
@@ -39,6 +40,11 @@ class BeehaveBlackboardSet : public BeehaveAction {
 
     String key;
     String value;
+
+    private:
+        Ref<Expression> value_expression;
+        bool is_expression_successfully_parsed = false;
+        bool execute_failure_printed = false;
 
 	protected:
 		static void _bind_methods();
@@ -54,6 +60,8 @@ class BeehaveBlackboardSet : public BeehaveAction {
         String get_value() const;
 
         BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+        PackedStringArray _get_configuration_warnings() const override;
 };
 }
 

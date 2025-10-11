@@ -29,7 +29,7 @@
 
 #include "beehave_blackboard_compare.h"
 #include "nodes/beehave_blackboard.h"
-#include <classes/expression.hpp>
+#include <classes/engine.hpp>
 #include <variant/utility_functions.hpp>
 
 using namespace godot;
@@ -58,7 +58,8 @@ void BeehaveBlackboardCompare::_bind_methods() {
 }
 
 BeehaveBlackboardCompare::BeehaveBlackboardCompare() {
-
+    left_expression.instantiate();
+    right_expression.instantiate();
 }
 
 BeehaveBlackboardCompare::~BeehaveBlackboardCompare() {
@@ -67,6 +68,20 @@ BeehaveBlackboardCompare::~BeehaveBlackboardCompare() {
 
 void BeehaveBlackboardCompare::set_left_operand(String left_operand) {
     this->left_operand = left_operand;
+
+    Error error = left_expression->parse(left_operand);
+    if (error != Error::OK) {
+        if (!Engine::get_singleton()->is_editor_hint()) {
+            UtilityFunctions::push_error("[BlackboardSet] Couldn't parse expression with source: ", left_operand, " Error text: ", left_expression->get_error_text());
+        }
+        is_left_expression_successfully_parsed = false;
+    }
+    else {
+        execute_failure_printed = false;
+        is_left_expression_successfully_parsed = true;
+    }
+
+    update_configuration_warnings();
 }
 
 String BeehaveBlackboardCompare::get_left_operand() const {
@@ -75,6 +90,20 @@ String BeehaveBlackboardCompare::get_left_operand() const {
 
 void BeehaveBlackboardCompare::set_right_operand(String right_operand) {
     this->right_operand = right_operand;
+
+    Error error = right_expression->parse(right_operand);
+    if (error != Error::OK) {
+        if (!Engine::get_singleton()->is_editor_hint()) {
+            UtilityFunctions::push_error("[BlackboardSet] Couldn't parse expression with source: ", right_operand, " Error text: ", right_expression->get_error_text());
+        }
+        is_right_expression_successfully_parsed = false;
+    }
+    else {
+        execute_failure_printed = false;
+        is_right_expression_successfully_parsed = true;
+    }
+
+    update_configuration_warnings();
 }
 
 String BeehaveBlackboardCompare::get_right_operand() const {
@@ -90,31 +119,29 @@ BeehaveBlackboardCompare::ComparisonOperator BeehaveBlackboardCompare::get_compa
 }
 
 BeehaveTickStatus BeehaveBlackboardCompare::tick(Ref<BeehaveContext> context) {
-    Ref<Expression> left_expression;
-    left_expression.instantiate();
-
-    Error error = left_expression->parse(left_operand);
-    if (error != Error::OK) {
-        UtilityFunctions::push_error("[Leaf] Couldn't parse expression with source: `%s` Error text: `%s`", left_operand, left_expression->get_error_text());
+    if (!is_left_expression_successfully_parsed || !is_right_expression_successfully_parsed) {
         return BeehaveTickStatus::FAILURE;
     }
 
-    Variant left = left_expression->execute(Array(), context->get_blackboard());
+    Variant left = left_expression->execute(Array(), context->get_blackboard(), false);
+
     if (left_expression->has_execute_failed()) {
+        if (!execute_failure_printed && !Engine::get_singleton()->is_editor_hint()) {
+            // Until the expression is changed, it will (likely) keep failing. Don't flood the output with errors.
+            UtilityFunctions::push_error("[BlackboardCompare] Couldn't execute left operand with source: ", left_operand, " Error text: ", left_expression->get_error_text());
+            execute_failure_printed = true;
+        }
         return BeehaveTickStatus::FAILURE;
     }
 
-    Ref<Expression> right_expression;
-    right_expression.instantiate();
+    Variant right = right_expression->execute(Array(), context->get_blackboard(), false);
 
-    error = right_expression->parse(right_operand);
-    if (error != Error::OK) {
-        UtilityFunctions::push_error("[Leaf] Couldn't parse expression with source: `%s` Error text: `%s`", right_operand, right_expression->get_error_text());
-        return BeehaveTickStatus::FAILURE;
-    }
-
-    Variant right = right_expression->execute(Array(), context->get_blackboard());
     if (right_expression->has_execute_failed()) {
+        if (!execute_failure_printed && !Engine::get_singleton()->is_editor_hint()) {
+            // Until the expression is changed, it will (likely) keep failing. Don't flood the output with errors.
+            UtilityFunctions::push_error("[BlackboardCompare] Couldn't execute right operand with source: ", right_operand, " Error text: ", right_expression->get_error_text());
+            execute_failure_printed = true;
+        }
         return BeehaveTickStatus::FAILURE;
     }
 
@@ -143,4 +170,15 @@ BeehaveTickStatus BeehaveBlackboardCompare::tick(Ref<BeehaveContext> context) {
 
     bool result = returned.booleanize();
     return valid && result ? SUCCESS : FAILURE;
+}
+
+PackedStringArray BeehaveBlackboardCompare::_get_configuration_warnings() const {
+    PackedStringArray warnings = BeehaveAction::_get_configuration_warnings();
+    if (!is_left_expression_successfully_parsed) {
+        warnings.push_back(vformat("Couldn't parse left operand with source: %s Error text: %s", left_operand, left_expression->get_error_text()));
+    }
+    if (!is_right_expression_successfully_parsed) {
+        warnings.push_back(vformat("Couldn't parse right operand with source: %s Error text: %s", right_operand, right_expression->get_error_text()));
+    }
+    return warnings;
 }
