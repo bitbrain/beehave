@@ -40,6 +40,9 @@ class BeehaveComposite : public BeehaveTreeNode {
 protected:
 	BeehaveTreeNode *running_child;
 
+protected:
+	static void _bind_methods();
+
 public:
 	BeehaveComposite();
 	~BeehaveComposite();
