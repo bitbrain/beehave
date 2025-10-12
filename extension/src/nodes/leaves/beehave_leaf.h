@@ -43,6 +43,11 @@ class BeehaveLeaf : public BeehaveTreeNode {
 	public:
 		BeehaveLeaf();
 		~BeehaveLeaf();
+
+		PackedStringArray _get_configuration_warnings() const override;
+
+	private:
+		static bool _is_beehave_node(Node* node);
 };
 }
 
