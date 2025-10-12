@@ -50,15 +50,15 @@ void initialize_beehave_types(ModuleInitializationLevel p_level) {
 
 	// leafs
 	ClassDB::register_abstract_class<BeehaveLeaf>();
-	ClassDB::register_abstract_class<BeehaveAction>();
-	ClassDB::register_abstract_class<BeehaveCondition>();
-	ClassDB::register_abstract_class<BeehaveDecorator>();
+	ClassDB::register_class<BeehaveAction>();
+	ClassDB::register_class<BeehaveCondition>();
 	ClassDB::register_class<BeehaveBlackboardCompare>();
 	ClassDB::register_class<BeehaveBlackboardErase>();
 	ClassDB::register_class<BeehaveBlackboardHas>();
 	ClassDB::register_class<BeehaveBlackboardSet>();
 
 	// decorators
+	ClassDB::register_class<BeehaveDecorator>();
 	ClassDB::register_class<BeehaveSucceeder>();
 	ClassDB::register_class<BeehaveFailer>();
 	ClassDB::register_class<BeehaveInverter>();
