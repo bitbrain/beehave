@@ -30,13 +30,13 @@
 #ifndef BEEHAVE_BLACKBOARD_COMPARE
 #define BEEHAVE_BLACKBOARD_COMPARE
 
-#include "beehave_action.h"
+#include "beehave_condition.h"
 #include <classes/expression.hpp>
 
 namespace godot {
 
-class BeehaveBlackboardCompare : public BeehaveAction {
-	GDCLASS(BeehaveBlackboardCompare, BeehaveAction);
+class BeehaveBlackboardCompare : public BeehaveCondition {
+	GDCLASS(BeehaveBlackboardCompare, BeehaveCondition);
 
 public:
     enum ComparisonOperator {

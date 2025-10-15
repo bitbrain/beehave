@@ -173,7 +173,7 @@ BeehaveTickStatus BeehaveBlackboardCompare::tick(Ref<BeehaveContext> context) {
 }
 
 PackedStringArray BeehaveBlackboardCompare::_get_configuration_warnings() const {
-    PackedStringArray warnings = BeehaveAction::_get_configuration_warnings();
+    PackedStringArray warnings = BeehaveCondition::_get_configuration_warnings();
     if (!is_left_expression_successfully_parsed) {
         warnings.push_back(vformat("Couldn't parse left operand with source: %s Error text: %s", left_operand, left_expression->get_error_text()));
     }
