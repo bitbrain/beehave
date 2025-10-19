@@ -38,6 +38,23 @@ BeehaveLeaf::BeehaveLeaf() {
 
 }
 
-BeehaveLeaf ::~BeehaveLeaf() {
+BeehaveLeaf::~BeehaveLeaf() {
 
+}
+
+PackedStringArray BeehaveLeaf::_get_configuration_warnings() const {
+    PackedStringArray warnings = BeehaveTreeNode::_get_configuration_warnings();
+
+    Callable is_beehave_node = callable_mp_static(&BeehaveLeaf::_is_beehave_node);
+    bool found_beehave_node = get_children().any(is_beehave_node);
+
+    if (found_beehave_node) {
+        warnings.push_back("Leaf nodes shouldn't have any child nodes. They won't be ticked.");
+    }
+    return warnings;
+}
+
+bool BeehaveLeaf::_is_beehave_node(Node* node) {
+    BeehaveTreeNode* beehave_node = cast_to<BeehaveTreeNode>(node);
+    return beehave_node != nullptr ? true : false;
 }

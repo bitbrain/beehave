@@ -39,6 +39,10 @@ BeehaveComposite::~BeehaveComposite() {
 
 }
 
+void BeehaveComposite::_bind_methods() {
+
+}
+
 void BeehaveComposite::after_run(Ref<BeehaveContext> context) {
     running_child = nullptr;
 }

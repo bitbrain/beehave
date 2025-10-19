@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_leaf.h                                                        */
+/*  beehave_blackboard_set.h                                              */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,28 +27,42 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_LEAF
-#define BEEHAVE_LEAF
+#ifndef BEEHAVE_BLACKBOARD_SET
+#define BEEHAVE_BLACKBOARD_SET
 
-#include "nodes/beehave_tree_node.h"
+#include "beehave_action.h"
+#include <classes/expression.hpp>
 
 namespace godot {
 
-class BeehaveLeaf : public BeehaveTreeNode {
-	GDCLASS(BeehaveLeaf, BeehaveTreeNode);
+class BeehaveBlackboardSet : public BeehaveAction {
+	GDCLASS(BeehaveBlackboardSet, BeehaveAction);
+
+    String key;
+    String value;
+
+    private:
+        Ref<Expression> value_expression;
+        bool is_expression_successfully_parsed = false;
+        bool execute_failure_printed = false;
 
 	protected:
 		static void _bind_methods();
 
 	public:
-		BeehaveLeaf();
-		~BeehaveLeaf();
+		BeehaveBlackboardSet();
+		~BeehaveBlackboardSet();
 
-		PackedStringArray _get_configuration_warnings() const override;
+        void set_key(String key);
+        String get_key() const;
 
-	private:
-		static bool _is_beehave_node(Node* node);
+        void set_value(String value);
+        String get_value() const;
+
+        BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+        PackedStringArray _get_configuration_warnings() const override;
 };
 }
 
-#endif //BEEHAVE_LEAF
+#endif //BEEHAVE_BLACKBOARD_SET

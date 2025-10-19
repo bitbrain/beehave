@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_leaf.h                                                        */
+/*  beehave_blackboard_erase.h                                            */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,28 +27,30 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_LEAF
-#define BEEHAVE_LEAF
+#ifndef BEEHAVE_BLACKBOARD_ERASE
+#define BEEHAVE_BLACKBOARD_ERASE
 
-#include "nodes/beehave_tree_node.h"
+#include "beehave_action.h"
 
 namespace godot {
 
-class BeehaveLeaf : public BeehaveTreeNode {
-	GDCLASS(BeehaveLeaf, BeehaveTreeNode);
+class BeehaveBlackboardErase : public BeehaveAction {
+	GDCLASS(BeehaveBlackboardErase, BeehaveAction);
+
+    String key;
 
 	protected:
 		static void _bind_methods();
 
 	public:
-		BeehaveLeaf();
-		~BeehaveLeaf();
+		BeehaveBlackboardErase();
+		~BeehaveBlackboardErase();
 
-		PackedStringArray _get_configuration_warnings() const override;
+        void set_key(String key);
+        String get_key() const;
 
-	private:
-		static bool _is_beehave_node(Node* node);
+        BeehaveTickStatus tick(Ref<BeehaveContext> context);
 };
 }
 
-#endif //BEEHAVE_LEAF
+#endif //BEEHAVE_BLACKBOARD_ERASE

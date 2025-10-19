@@ -26,3 +26,24 @@
 /* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
+
+#ifndef BEEHAVE_CONDITION
+#define BEEHAVE_CONDITION
+
+#include "beehave_leaf.h"
+
+namespace godot {
+
+class BeehaveCondition : public BeehaveLeaf {
+	GDCLASS(BeehaveCondition, BeehaveLeaf);
+
+	protected:
+		static void _bind_methods();
+
+	public:
+		BeehaveCondition();
+		~BeehaveCondition();
+};
+}
+
+#endif //BEEHAVE_CONDITION

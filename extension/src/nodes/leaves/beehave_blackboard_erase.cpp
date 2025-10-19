@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  beehave_leaf.h                                                        */
+/*  beehave_blackboard_erase.cpp                                          */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                               BEEHAVE                                  */
@@ -27,28 +27,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef BEEHAVE_LEAF
-#define BEEHAVE_LEAF
+#include "beehave_blackboard_erase.h"
+#include "nodes/beehave_blackboard.h"
 
-#include "nodes/beehave_tree_node.h"
+using namespace godot;
 
-namespace godot {
+void BeehaveBlackboardErase::_bind_methods() {
+    // methods
+    ClassDB::bind_method(D_METHOD("set_key", "key"), &BeehaveBlackboardErase::set_key);
+    ClassDB::bind_method(D_METHOD("get_key"), &BeehaveBlackboardErase::get_key);
 
-class BeehaveLeaf : public BeehaveTreeNode {
-	GDCLASS(BeehaveLeaf, BeehaveTreeNode);
-
-	protected:
-		static void _bind_methods();
-
-	public:
-		BeehaveLeaf();
-		~BeehaveLeaf();
-
-		PackedStringArray _get_configuration_warnings() const override;
-
-	private:
-		static bool _is_beehave_node(Node* node);
-};
+    // exports
+    ADD_PROPERTY(PropertyInfo(Variant::STRING, "key", PropertyHint::PROPERTY_HINT_PLACEHOLDER_TEXT, "Insert a key name..."), "set_key", "get_key");
 }
 
-#endif //BEEHAVE_LEAF
+BeehaveBlackboardErase::BeehaveBlackboardErase() {
+
+}
+
+BeehaveBlackboardErase::~BeehaveBlackboardErase() {
+
+}
+
+void BeehaveBlackboardErase::set_key(String key) {
+    this->key = key;
+}
+
+String BeehaveBlackboardErase::get_key() const {
+    return this->key;
+}
+
+BeehaveTickStatus BeehaveBlackboardErase::tick(Ref<BeehaveContext> context) {
+    bool success = context->get_blackboard()->erase_value(key);
+    return success ? SUCCESS : FAILURE;
+}
