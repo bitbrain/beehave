@@ -6,6 +6,7 @@ class_name BeehaveTree extends Node
 enum { SUCCESS, FAILURE, RUNNING }
 
 enum ProcessThread { IDLE, PHYSICS, MANUAL }
+enum TickMode { BOTH, PROCESS, PHYSICS, MANUAL }
 
 signal tree_enabled
 signal tree_disabled
@@ -24,6 +25,10 @@ signal tree_disabled
 
 	get:
 		return enabled
+
+## How automatic ticking of the tree should be handled. The default is to
+## tick on both _process and _physics_process.
+@export var tick_mode: TickMode = TickMode.BOTH
 
 ## How often the tree should tick, in frames. The default value of 1 means
 ## tick() runs every frame.
@@ -164,11 +169,13 @@ func _on_scene_tree_node_added_removed(node: Node, is_added: bool) -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	tick()
+	if tick_mode == TickMode.BOTH or tick_mode == TickMode.PHYSICS:
+		tick()
 
 
 func _process(_delta: float) -> void:
-	tick()
+	if tick_mode == TickMode.BOTH or tick_mode == TickMode.PROCESS:
+		tick()
 
 
 func tick() -> int:
@@ -202,13 +209,13 @@ func tick() -> int:
 	if status != RUNNING:
 		blackboard.set_value("running_action", null, str(actor.get_instance_id()))
 		child.after_run(actor, blackboard)
-		
+
 	if _can_send_message and not Engine.is_editor_hint():
 		BeehaveDebuggerMessages.process_end(get_instance_id(), blackboard.get_debug_data())
 
 	# Check the cost for this frame and save it for metric report
 	_process_time_metric_value = Time.get_ticks_usec() - start_time
-	
+
 	return status
 
 
