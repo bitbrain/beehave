@@ -19,8 +19,7 @@ func _init():
 			"name": "beehave/debugger/start_detached",
 			"type": TYPE_BOOL,
 			"hint": PROPERTY_HINT_NONE,
-			"hint_string": "If enabled, the debugger will start in a separate window",
-			"usage": PROPERTY_USAGE_DEFAULT
+			"hint_string": "If enabled, the debugger will start in a separate window"
 		})
 		ProjectSettings.save()
 	
