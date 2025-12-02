@@ -95,6 +95,30 @@ func test_after_run_not_called_during_delay() -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
 	assert_bool(action.after_run_called).is_false()
 
+func test_before_run_only_called_once_per_run() -> void:
+	delayer.wait_time = get_physics_process_delta_time() * 2.0
+	action.final_result = BeehaveNode.SUCCESS
+	
+	assert_that(action.before_run_call_count).is_equal(0)
+	
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(action.before_run_call_count).is_equal(0)
+	
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(action.before_run_call_count).is_equal(0)
+	
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_that(action.before_run_call_count).is_equal(1)
+	
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(action.before_run_call_count).is_equal(1)
+
+	assert_that(tree.tick()).is_equal(BeehaveNode.RUNNING)
+	assert_that(action.before_run_call_count).is_equal(1)
+
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_that(action.before_run_call_count).is_equal(2)
+
 func test_delay_reset_on_interrupt() -> void:
 	delayer.wait_time = 1.0
 	action.final_result = BeehaveNode.SUCCESS
