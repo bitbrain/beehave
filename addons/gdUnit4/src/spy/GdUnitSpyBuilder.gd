@@ -38,16 +38,14 @@ static func build(to_spy: Variant, debug_write := false) -> Variant:
 	var spy := spy_on_script(to_spy, excluded_functions, debug_write)
 	if spy == null:
 		return null
-	var spy_instance :Object = spy.new()
+	var spy_instance: Object = spy.new()
+	@warning_ignore("unsafe_method_access")
+	# we do not call the original implementation for _ready and all input function, this is actualy done by the engine
+	spy_instance.__init(["_input", "_gui_input", "_input_event", "_unhandled_input"])
 	@warning_ignore("unsafe_cast")
 	copy_properties(to_spy as Object, spy_instance)
 	@warning_ignore("return_value_discarded")
 	GdUnitObjectInteractions.reset(spy_instance)
-	@warning_ignore("unsafe_method_access")
-	spy_instance.__set_singleton(to_spy)
-	# we do not call the original implementation for _ready and all input function, this is actualy done by the engine
-	@warning_ignore("unsafe_method_access")
-	spy_instance.__exclude_method_call([ "_input", "_gui_input", "_input_event", "_unhandled_input"])
 	return register_auto_free(spy_instance)
 
 
@@ -60,7 +58,7 @@ static func get_class_info(clazz :Variant) -> Dictionary:
 	}
 
 
-static func spy_on_script(instance :Variant, function_excludes :PackedStringArray, debug_write :bool) -> GDScript:
+static func spy_on_script(instance: Variant, function_excludes: PackedStringArray, debug_write: bool) -> GDScript:
 	if GdArrayTools.is_array_type(instance):
 		if GdUnitSettings.is_verbose_assert_errors():
 			push_error("Can't build spy checked type '%s'! Spy checked Container Built-In Type not supported!" % type_string(typeof(instance)))
@@ -72,10 +70,20 @@ static func spy_on_script(instance :Variant, function_excludes :PackedStringArra
 		if GdUnitSettings.is_verbose_assert_errors():
 			push_error("Can't build spy for class type '%s'! Using an instance instead e.g. 'spy(<instance>)'" % [clazz_name])
 		return null
+
+	@warning_ignore("unsafe_method_access")
+	var spy_template := SPY_TEMPLATE.source_code.format({
+		"instance_id" : abs(instance.get_instance_id()),
+		"gdunit_source_class": clazz_name if clazz_path.is_empty() else clazz_path[0]
+	})
 	@warning_ignore("unsafe_cast")
-	var lines := load_template(SPY_TEMPLATE.source_code, class_info, instance as Object)
+	var lines := load_template(spy_template, class_info)
 	@warning_ignore("unsafe_cast")
 	lines += double_functions(instance as Object, clazz_name, clazz_path, GdUnitSpyFunctionDoubler.new(), function_excludes)
+	# We disable warning/errors for inferred_declaration
+	if Engine.get_version_info().hex >= 0x40400:
+		lines.insert(0, '@warning_ignore_start("inferred_declaration")')
+		lines.append('@warning_ignore_restore("inferred_declaration")')
 
 	var spy := GDScript.new()
 	spy.source_code = "\n".join(lines)
@@ -106,8 +114,23 @@ static func spy_on_scene(scene :Node, debug_write :bool) -> Object:
 	scene_script.free()
 	if spy == null:
 		return null
-	# replace original script whit spy
+
+	# we need to restore the original script properties to apply after script exchange
+	var original_properties := {}
+	for p in scene.get_property_list():
+		var property_name: String = p["name"]
+		var usage: int = p["usage"]
+		if (usage & PROPERTY_USAGE_SCRIPT_VARIABLE) == PROPERTY_USAGE_SCRIPT_VARIABLE:
+			original_properties[property_name] = scene.get(property_name)
+
+	# exchage with spy
 	scene.set_script(spy)
+	# apply original script properties to the spy
+	for property_name: String in original_properties.keys():
+		scene.set(property_name, original_properties[property_name])
+
+	@warning_ignore("unsafe_method_access")
+	scene.__init()
 	return register_auto_free(scene)
 
 

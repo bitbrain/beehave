@@ -1,49 +1,51 @@
 ## An Assertion Tool to verify Object values
-class_name GdUnitObjectAssert
+@abstract class_name GdUnitObjectAssert
 extends GdUnitAssert
 
 
-## Verifies that the current value is equal to expected one.
-@warning_ignore("unused_parameter")
-func is_equal(expected :Variant) -> GdUnitObjectAssert:
-	return self
-
-
-## Verifies that the current value is not equal to expected one.
-@warning_ignore("unused_parameter")
-func is_not_equal(expected :Variant) -> GdUnitObjectAssert:
-	return self
-
-
 ## Verifies that the current value is null.
-func is_null() -> GdUnitObjectAssert:
-	return self
+@abstract func is_null() -> GdUnitObjectAssert
 
 
 ## Verifies that the current value is not null.
-func is_not_null() -> GdUnitObjectAssert:
-	return self
+@abstract func is_not_null() -> GdUnitObjectAssert
 
 
-## Verifies that the current value is the same as the given one.
-@warning_ignore("unused_parameter", "shadowed_global_identifier")
-func is_same(expected :Variant) -> GdUnitObjectAssert:
-	return self
+## Verifies that the current value is equal to the given one.
+@abstract func is_equal(expected: Variant) -> GdUnitObjectAssert
 
 
-## Verifies that the current value is not the same as the given one.
-@warning_ignore("unused_parameter")
-func is_not_same(expected :Variant) -> GdUnitObjectAssert:
-	return self
+## Verifies that the current value is not equal to expected one.
+@abstract func is_not_equal(expected: Variant) -> GdUnitObjectAssert
 
 
-## Verifies that the current value is an instance of the given type.
-@warning_ignore("unused_parameter")
-func is_instanceof(expected :Object) -> GdUnitObjectAssert:
-	return self
+## Overrides the default failure message by given custom message.
+@abstract func override_failure_message(message: String) -> GdUnitObjectAssert
 
 
-## Verifies that the current value is not an instance of the given type.
-@warning_ignore("unused_parameter")
-func is_not_instanceof(expected :Variant) -> GdUnitObjectAssert:
-	return self
+## Appends a custom message to the failure message.
+@abstract func append_failure_message(message: String) -> GdUnitObjectAssert
+
+
+## Verifies that the current object is the same as the given one.
+@abstract func is_same(expected: Variant) -> GdUnitObjectAssert
+
+
+## Verifies that the current object is not the same as the given one.
+@abstract func is_not_same(expected: Variant) -> GdUnitObjectAssert
+
+
+## Verifies that the current object is an instance of the given type.
+@abstract func is_instanceof(type: Variant) -> GdUnitObjectAssert
+
+
+## Verifies that the current object is not an instance of the given type.
+@abstract func is_not_instanceof(type: Variant) -> GdUnitObjectAssert
+
+
+## Checks whether the current object inherits from the specified type.
+@abstract func is_inheriting(type: Variant) -> GdUnitObjectAssert
+
+
+## Checks whether the current object does NOT inherit from the specified type.
+@abstract func is_not_inheriting(type: Variant) -> GdUnitObjectAssert

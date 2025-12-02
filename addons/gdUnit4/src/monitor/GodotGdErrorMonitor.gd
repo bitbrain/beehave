@@ -52,8 +52,25 @@ func erase_log_entry(entry: ErrorLogEntry) -> void:
 	_entries.erase(entry)
 
 
+func collect_full_logs() -> PackedStringArray:
+	await (Engine.get_main_loop() as SceneTree).process_frame
+	await (Engine.get_main_loop() as SceneTree).physics_frame
+
+	var file := FileAccess.open(_godot_log_file, FileAccess.READ)
+	file.seek(_eof)
+	var records := PackedStringArray()
+	while not file.eof_reached():
+		@warning_ignore("return_value_discarded")
+		records.append(file.get_line())
+
+	return records
+
+
 func _collect_log_entries(force_collect_reports: bool) -> Array[ErrorLogEntry]:
 	var file := FileAccess.open(_godot_log_file, FileAccess.READ)
+	if not file:
+		# Log file might not be available.
+		return []
 	file.seek(_eof)
 	var records := PackedStringArray()
 	while not file.eof_reached():

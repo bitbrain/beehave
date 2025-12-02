@@ -1,6 +1,6 @@
 [gd_scene load_steps=27 format=3 uid="uid://bqfpidewtpeg0"]
 
-[ext_resource type="Script" uid="uid://dauvi8e3d56d3" path="res://addons/gdUnit4/src/ui/parts/InspectorTreeMainPanel.gd" id="1"]
+[ext_resource type="Script" path="res://addons/gdUnit4/src/ui/parts/InspectorTreeMainPanel.gd" id="1"]
 
 [sub_resource type="Image" id="Image_466oo"]
 data = {

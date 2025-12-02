@@ -6,8 +6,6 @@ const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 
 
 # introduced with Godot 4.3.beta1
-const TYPE_PACKED_VECTOR4_ARRAY = 38 #TYPE_PACKED_VECTOR4_ARRAY
-
 const TYPE_VOID 	= 1000
 const TYPE_VARARG 	= 1001
 const TYPE_VARIANT	= 1002
@@ -18,10 +16,6 @@ const TYPE_NODE 	= 2001
 const TYPE_CONTROL	= 2002
 const TYPE_CANVAS	= 2003
 const TYPE_ENUM		= 2004
-
-
-# used as default value for varargs
-const TYPE_VARARG_PLACEHOLDER_VALUE = "__null__"
 
 
 const TYPE_AS_STRING_MAPPINGS := {
@@ -72,11 +66,18 @@ const TYPE_AS_STRING_MAPPINGS := {
 }
 
 
+class EditorNotifications:
+	# NOTE: Hardcoding to avoid runtime errors in exported projects when editor
+	#       classes are not available. These values are unlikely to change.
+	# See: EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED
+	const NOTIFICATION_EDITOR_SETTINGS_CHANGED := 10000
+
+
 const NOTIFICATION_AS_STRING_MAPPINGS := {
 	TYPE_OBJECT: {
 		Object.NOTIFICATION_POSTINITIALIZE : "POSTINITIALIZE",
 		Object.NOTIFICATION_PREDELETE: "PREDELETE",
-		EditorSettings.NOTIFICATION_EDITOR_SETTINGS_CHANGED: "EDITOR_SETTINGS_CHANGED",
+		EditorNotifications.NOTIFICATION_EDITOR_SETTINGS_CHANGED: "EDITOR_SETTINGS_CHANGED",
 	},
 	TYPE_NODE: {
 		Node.NOTIFICATION_ENTER_TREE : "ENTER_TREE",
@@ -145,7 +146,6 @@ enum COMPARE_MODE {
 
 
 # prototype of better object to dictionary
-@warning_ignore("unsafe_cast")
 static func obj2dict(obj: Object, hashed_objects := Dictionary()) -> Dictionary:
 	if obj == null:
 		return {}
@@ -185,6 +185,7 @@ static func obj2dict(obj: Object, hashed_objects := Dictionary()) -> Dictionary:
 					dict[property_name] = str(property_value)
 					continue
 				hashed_objects[obj] = true
+				@warning_ignore("unsafe_cast")
 				dict[property_name] = obj2dict(property_value as Object, hashed_objects)
 			else:
 				dict[property_name] = property_value
@@ -210,7 +211,6 @@ static func equals_sorted(obj_a: Array[Variant], obj_b: Array[Variant], case_sen
 	return equals(a, b, case_sensitive, compare_mode)
 
 
-@warning_ignore("unsafe_method_access", "unsafe_cast")
 static func _equals(obj_a :Variant, obj_b :Variant, case_sensitive :bool, compare_mode :COMPARE_MODE, deep_stack :Array, stack_depth :int ) -> bool:
 	var type_a := typeof(obj_a)
 	var type_b := typeof(obj_b)
@@ -221,8 +221,10 @@ static func _equals(obj_a :Variant, obj_b :Variant, case_sensitive :bool, compar
 
 	# use argument matcher if requested
 	if is_instance_valid(obj_a) and obj_a is GdUnitArgumentMatcher:
+		@warning_ignore("unsafe_cast")
 		return (obj_a as GdUnitArgumentMatcher).is_match(obj_b)
 	if is_instance_valid(obj_b) and obj_b is GdUnitArgumentMatcher:
+		@warning_ignore("unsafe_cast")
 		return (obj_b as GdUnitArgumentMatcher).is_match(obj_a)
 
 	stack_depth += 1
@@ -248,26 +250,35 @@ static func _equals(obj_a :Variant, obj_b :Variant, case_sensitive :bool, compar
 				# fail fast
 				if not is_instance_valid(obj_a) or not is_instance_valid(obj_b):
 					return false
+				@warning_ignore("unsafe_method_access")
 				if obj_a.get_class() != obj_b.get_class():
 					return false
+				@warning_ignore("unsafe_cast")
 				var a := obj2dict(obj_a as Object)
+				@warning_ignore("unsafe_cast")
 				var b := obj2dict(obj_b as Object)
 				return _equals(a, b, case_sensitive, compare_mode, deep_stack, stack_depth)
 			return obj_a == obj_b
 
 		TYPE_ARRAY:
+			@warning_ignore("unsafe_method_access")
 			if obj_a.size() != obj_b.size():
 				return false
+			@warning_ignore("unsafe_method_access")
 			for index :int in obj_a.size():
 				if not _equals(obj_a[index], obj_b[index], case_sensitive, compare_mode, deep_stack, stack_depth):
 					return false
 			return true
 
 		TYPE_DICTIONARY:
+			@warning_ignore("unsafe_method_access")
 			if obj_a.size() != obj_b.size():
 				return false
+			@warning_ignore("unsafe_method_access")
 			for key :Variant in obj_a.keys():
+				@warning_ignore("unsafe_method_access")
 				var value_a :Variant = obj_a[key] if obj_a.has(key) else null
+				@warning_ignore("unsafe_method_access")
 				var value_b :Variant = obj_b[key] if obj_b.has(key) else null
 				if not _equals(value_a, value_b, case_sensitive, compare_mode, deep_stack, stack_depth):
 					return false
@@ -275,6 +286,7 @@ static func _equals(obj_a :Variant, obj_b :Variant, case_sensitive :bool, compar
 
 		TYPE_STRING:
 			if case_sensitive:
+				@warning_ignore("unsafe_method_access")
 				return obj_a.to_lower() == obj_b.to_lower()
 			else:
 				return obj_a == obj_b
@@ -408,10 +420,6 @@ static func is_script(value :Variant) -> bool:
 	return is_object(value) and value is Script
 
 
-static func is_test_suite(script :Script) -> bool:
-	return is_gd_testsuite(script) or GdUnit4CSharpApiLoader.is_test_suite(script.resource_path)
-
-
 static func is_native_class(value :Variant) -> bool:
 	return is_object(value) and is_engine_type(value)
 
@@ -423,28 +431,6 @@ static func is_scene(value :Variant) -> bool:
 static func is_scene_resource_path(value :Variant) -> bool:
 	@warning_ignore("unsafe_cast")
 	return value is String and (value as String).ends_with(".tscn")
-
-
-static func is_gd_script(script :Script) -> bool:
-	return script is GDScript
-
-
-static func is_cs_script(script :Script) -> bool:
-	# we need to check by stringify name because checked non mono Godot the class CSharpScript is not available
-	return str(script).find("CSharpScript") != -1
-
-
-static func is_gd_testsuite(script :Script) -> bool:
-	if is_gd_script(script):
-		var stack := [script]
-		while not stack.is_empty():
-			var current: Script = stack.pop_front()
-			var base: Script = current.get_base_script()
-			if base != null:
-				if base.resource_path.find("GdUnitTestSuite") != -1:
-					return true
-				stack.push_back(base)
-	return false
 
 
 static func is_singleton(value: Variant) -> bool:
@@ -510,6 +496,13 @@ static func create_instance(clazz :Variant) -> GdUnitResult:
 				else:
 					return GdUnitResult.error("Can't create instance for '%s'." % clazz_name)
 	return GdUnitResult.error("Can't create instance for class '%s'." % str(clazz))
+
+
+## We do dispose 'GDScriptFunctionState' in a kacky style because the class is not visible anymore
+static func dispose_function_state(func_state: Variant) -> void:
+	if func_state != null and str(func_state).contains("GDScriptFunctionState"):
+		@warning_ignore("unsafe_method_access")
+		func_state.completed.emit()
 
 
 @warning_ignore("return_value_discarded")

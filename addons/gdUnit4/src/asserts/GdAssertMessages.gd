@@ -8,6 +8,19 @@ const SUB_COLOR :=  Color(1, 0, 0, .3)
 const ADD_COLOR :=  Color(0, 1, 0, .3)
 
 
+# Dictionary of control characters and their readable representations
+const CONTROL_CHARS = {
+	"\n": "<LF>",   # Line Feed
+	"\r": "<CR>",   # Carriage Return
+	"\t": "<TAB>",  # Tab
+	"\b": "<BS>",   # Backspace
+	"\f": "<FF>",   # Form Feed
+	"\v": "<VT>",   # Vertical Tab
+	"\a": "<BEL>",  # Bell
+	"": "<ESC>"   # Escape
+}
+
+
 static func format_dict(value :Variant) -> String:
 	if not value is Dictionary:
 		return str(value)
@@ -45,17 +58,17 @@ static func input_event_as_text(event :InputEvent) -> String:
 	return text
 
 
-static func _colored_string_div(characters :String) -> String:
-	return colored_array_div(characters.to_utf8_buffer())
+static func _colored_string_div(characters: String) -> String:
+	return colored_array_div(characters.to_utf32_buffer().to_int32_array())
 
 
-static func colored_array_div(characters :PackedByteArray) -> String:
+static func colored_array_div(characters: PackedInt32Array) -> String:
 	if characters.is_empty():
 		return "<empty>"
-	var result := PackedByteArray()
+	var result := PackedInt32Array()
 	var index := 0
-	var missing_chars := PackedByteArray()
-	var additional_chars := PackedByteArray()
+	var missing_chars := PackedInt32Array()
+	var additional_chars := PackedInt32Array()
 
 	while index < characters.size():
 		var character := characters[index]
@@ -71,17 +84,17 @@ static func colored_array_div(characters :PackedByteArray) -> String:
 			_:
 				if not missing_chars.is_empty():
 					result.append_array(format_chars(missing_chars, SUB_COLOR))
-					missing_chars = PackedByteArray()
+					missing_chars = PackedInt32Array()
 				if not additional_chars.is_empty():
 					result.append_array(format_chars(additional_chars, ADD_COLOR))
-					additional_chars = PackedByteArray()
+					additional_chars = PackedInt32Array()
 				@warning_ignore("return_value_discarded")
 				result.append(character)
 		index += 1
 
 	result.append_array(format_chars(missing_chars, SUB_COLOR))
 	result.append_array(format_chars(additional_chars, ADD_COLOR))
-	return result.get_string_from_utf8()
+	return result.to_byte_array().get_string_from_utf32()
 
 
 static func _typed_value(value :Variant) -> String:
@@ -624,13 +637,35 @@ static func error_contains_exactly(current: Array, expected: Array) -> String:
 	return "%s\n %s\n but was\n %s" % [_error("Expecting exactly equal:"), _colored_value(expected), _colored_value(current)]
 
 
-static func format_chars(characters :PackedByteArray, type :Color) -> PackedByteArray:
+static func format_chars(characters: PackedInt32Array, type: Color) -> PackedInt32Array:
 	if characters.size() == 0:# or characters[0] == 10:
 		return characters
-	var result := PackedByteArray()
-	var message := "[bgcolor=#%s][color=with]%s[/color][/bgcolor]" % [
-					type.to_html(), characters.get_string_from_utf8().replace("\n", "<LF>")]
-	result.append_array(message.to_utf8_buffer())
+
+	# Replace each control character with its readable form
+	var formatted_text := characters.to_byte_array().get_string_from_utf32()
+	for control_char: String in CONTROL_CHARS:
+		var replace_text: String = CONTROL_CHARS[control_char]
+		formatted_text = formatted_text.replace(control_char, replace_text)
+
+	# Handle special ASCII control characters (0x00-0x1F, 0x7F)
+	var ascii_text := ""
+	for i in formatted_text.length():
+		var character := formatted_text[i]
+		var code := character.unicode_at(0)
+		if code < 0x20 and not CONTROL_CHARS.has(character):  # Control characters not handled above
+			ascii_text += "<0x%02X>" % code
+		elif code == 0x7F:  # DEL character
+			ascii_text += "<DEL>"
+		else:
+			ascii_text += character
+
+	var message := "[bgcolor=#%s][color=white]%s[/color][/bgcolor]" % [
+		type.to_html(),
+		ascii_text
+	]
+
+	var result := PackedInt32Array()
+	result.append_array(message.to_utf32_buffer().to_int32_array())
 	return result
 
 

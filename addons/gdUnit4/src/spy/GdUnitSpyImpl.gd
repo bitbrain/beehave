@@ -1,44 +1,46 @@
+class_name DoubledSpyClassSourceClassName
 
-const __INSTANCE_ID = "${instance_id}"
-const __SOURCE_CLASS = "${source_class}"
-
-var __instance_delegator :Object
-var __excluded_methods :PackedStringArray = []
+const __INSTANCE_ID := "gdunit_doubler_instance_id_{instance_id}"
 
 
-static func __instance() -> Variant:
-	return Engine.get_meta(__INSTANCE_ID)
+class GdUnitSpyDoublerState:
+	const __SOURCE_CLASS := "{gdunit_source_class}"
+
+	var excluded_methods := PackedStringArray()
+
+	func _init(excluded_methods__ := PackedStringArray()) -> void:
+		excluded_methods = excluded_methods__
 
 
-func _notification(what :int) -> void:
-	if what == NOTIFICATION_PREDELETE:
-		if Engine.has_meta(__INSTANCE_ID):
-			Engine.remove_meta(__INSTANCE_ID)
+var __spy_state := GdUnitSpyDoublerState.new()
+@warning_ignore("unused_private_class_variable")
+var __verifier_instance := GdUnitObjectInteractionsVerifier.new()
 
 
-func __instance_id() -> String:
-	return __INSTANCE_ID
+func __init(__excluded_methods := PackedStringArray()) -> void:
+	__init_doubler()
+	__spy_state.excluded_methods = __excluded_methods
 
 
-func __set_singleton(delegator :Object) -> void:
-	# store self need to mock static functions
+static func __doubler_state() -> GdUnitSpyDoublerState:
+	if Engine.has_meta(__INSTANCE_ID):
+		return Engine.get_meta(__INSTANCE_ID).__spy_state
+	return null
+
+
+func __init_doubler() -> void:
 	Engine.set_meta(__INSTANCE_ID, self)
-	__instance_delegator = delegator
 
 
-func __release_double() -> void:
-	# we need to release the self reference manually to prevent orphan nodes
-	Engine.remove_meta(__INSTANCE_ID)
-	__instance_delegator = null
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE and Engine.has_meta(__INSTANCE_ID):
+		Engine.remove_meta(__INSTANCE_ID)
 
 
-func __do_call_real_func(func_name :String) -> bool:
-	return not __excluded_methods.has(func_name)
+static func __get_verifier() -> GdUnitObjectInteractionsVerifier:
+	return Engine.get_meta(__INSTANCE_ID).__verifier_instance
 
 
-func __exclude_method_call(exluded_methods :PackedStringArray) -> void:
-	__excluded_methods.append_array(exluded_methods)
-
-
-func __call_func(func_name :String, arguments :Array) -> Variant:
-	return __instance_delegator.callv(func_name, arguments)
+static func __do_call_real_func(__func_name: String) -> bool:
+	@warning_ignore("unsafe_method_access")
+	return not __doubler_state().excluded_methods.has(__func_name)

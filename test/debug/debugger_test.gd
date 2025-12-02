@@ -17,6 +17,6 @@ func test_debugger_renders_correctly():
 	var scene = create_scene()
 	var runner = scene_runner(scene)
 	await runner.simulate_frames(20)
-	runner.set_mouse_pos(Vector2(20, 20))
+	runner.set_mouse_position(Vector2(20, 20))
 	runner.simulate_mouse_button_press(1)
 	await runner.simulate_frames(10)

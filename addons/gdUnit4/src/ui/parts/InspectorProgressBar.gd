@@ -1,47 +1,49 @@
 @tool
 extends ProgressBar
 
+
 @onready var status: Label = $Label
 @onready var style: StyleBoxFlat = get("theme_override_styles/fill")
 
+var _state: GdUnitInspectorTreeConstants.STATE
 
 func _ready() -> void:
-	@warning_ignore("return_value_discarded")
-	GdUnitSignals.instance().gdunit_event.connect(_on_gdunit_event)
 	style.bg_color = Color.DARK_GREEN
 	value = 0
 	max_value = 0
 	update_text()
 
 
-func progress_init(p_max_value: int) -> void:
-	value = 0
-	max_value = p_max_value
-	style.bg_color = Color.DARK_GREEN
-	update_text()
-
-
-func progress_update(p_value: int, is_failed: bool) -> void:
-	value += p_value
-	update_text()
-	if is_failed:
-		style.bg_color = Color.DARK_RED
-
-
 func update_text() -> void:
 	status.text = "%d:%d" % [value, max_value]
 
 
-func _on_gdunit_event(event: GdUnitEvent) -> void:
-	match event.type():
-		GdUnitEvent.INIT:
-			progress_init(event.total_count())
+func _on_test_counter_changed(index: int, total: int, state: GdUnitInspectorTreeConstants.STATE) -> void:
+	value = index
+	max_value = total
+	update_text()
 
-		GdUnitEvent.DISCOVER_END:
-			progress_init(event.total_count())
+	# inital state
+	if index == 0:
+		style.bg_color = Color.DARK_GREEN
 
-		GdUnitEvent.TESTCASE_STATISTICS:
-			progress_update(1, event.is_failed() or event.is_error())
+	# do only update the state is higher prio than current state
+	if state <= _state:
+		return
+	_state = state
 
-		GdUnitEvent.TESTSUITE_AFTER:
-			progress_update(0, event.is_failed() or event.is_error())
+	if is_flaky(state):
+		style.bg_color = Color.WEB_GREEN
+	if is_failed(state):
+		style.bg_color = Color.DARK_RED
+
+
+func is_failed(state: GdUnitInspectorTreeConstants.STATE) -> bool:
+	return state in [
+		GdUnitInspectorTreeConstants.STATE.FAILED,
+		GdUnitInspectorTreeConstants.STATE.ERROR,
+		GdUnitInspectorTreeConstants.STATE.ABORDED]
+
+
+func is_flaky(state: GdUnitInspectorTreeConstants.STATE) -> bool:
+	return state == GdUnitInspectorTreeConstants.STATE.FLAKY
