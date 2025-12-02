@@ -93,7 +93,7 @@ func test_after_run_called_on_success() -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
 	assert_bool(action.after_run_called).is_true()
 	
-	# Reset after_run_called flag since before_run will be called on next tick
+	# Reset after_run_called flag so we can detect future calls
 	action.after_run_called = false
 	
 	# Second tick should be in cooldown and not call after_run
@@ -108,7 +108,7 @@ func test_after_run_called_on_failure() -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	assert_bool(action.after_run_called).is_true()
 	
-	# Reset after_run_called flag since before_run will be called on next tick
+	# Reset after_run_called flag so we can detect future calls
 	action.after_run_called = false
 	
 	# Second tick should be in cooldown and not call after_run
@@ -123,13 +123,32 @@ func test_after_run_not_called_during_cooldown() -> void:
 	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
 	assert_bool(action.after_run_called).is_true()
 	
-	# Reset after_run_called flag since before_run will be called on next tick
+	# Reset after_run_called flag so we can detect future calls
 	action.after_run_called = false
 	
 	# Wait a bit but not enough to complete cooldown
 	await runner.simulate_frames(1, 500)
 	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
 	assert_bool(action.after_run_called).is_false()  # Should not call after_run during cooldown
+
+func test_before_run_only_called_once_per_cooldown() -> void:
+	cooldown.wait_time = 1.0
+	action.final_result = BeehaveNode.SUCCESS
+	
+	assert_that(action.before_run_call_count).is_equal(0)
+	
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_that(action.before_run_call_count).is_equal(1)
+	
+	assert_that(tree.tick()).is_equal(BeehaveNode.FAILURE)
+	assert_that(action.before_run_call_count).is_equal(1)
+	
+	var cache_key := "cooldown_%s" % cooldown.get_instance_id()
+	var actor_id := str(tree.actor.get_instance_id())
+	# Manually expire the cooldown to avoid depending on wall-clock time in tests
+	tree.blackboard.set_value(cache_key, Time.get_ticks_msec() - 1.0, actor_id)
+	assert_that(tree.tick()).is_equal(BeehaveNode.SUCCESS)
+	assert_that(action.before_run_call_count).is_equal(2)
 
 func test_cooldown_reset_on_interrupt() -> void:
 	cooldown.wait_time = 1.0
