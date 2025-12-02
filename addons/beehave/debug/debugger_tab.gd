@@ -182,7 +182,6 @@ func _on_item_selected(idx: int) -> void:
 	if idx < 0 or idx >= item_list.get_item_count():
 		return
 
-	# Immediately hide & clear the blackboard when switching trees
 	blackboard_vbox.hide()
 	for child in blackboard_vbox.get_children():
 		child.free()
@@ -199,6 +198,8 @@ func _on_item_selected(idx: int) -> void:
 
 
 func _on_graph_node_selected(node: GraphNode) -> void:
+	for child in blackboard_vbox.get_children():
+		child.free()
 	blackboard_vbox.show()
 	blackboard_vbox.add_child(Blackboard.new(Utils.get_frames(), node))
 
