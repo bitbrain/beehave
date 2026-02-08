@@ -8,19 +8,23 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="Beehave"
 run/main_scene="res://examples/beehave_test_scene.tscn"
-config/features=PackedStringArray("4.5")
-boot_splash/fullsize=false
+config/features=PackedStringArray("4.6")
+boot_splash/stretch_mode=0
 boot_splash/image="res://splash.png"
 config/icon="res://icon.png"
 
 [autoload]
 
-BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
-BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
+BeehaveGlobalMetrics="*uid://c3ktl6ontsdt7"
+BeehaveGlobalDebugger="*uid://bl3ma400hpvsh"
 
 [beehave]
 
