@@ -4,6 +4,7 @@
 **/*.import
 export.cfg
 export_presets.cfg
+*.uid
 
 # Mono-specific ignores
 .mono/
@@ -17,5 +18,9 @@ reports/
 *.exp
 *.lib
 *.obj
+*.os
 
 .vs
+
+compile_commands.json
+
