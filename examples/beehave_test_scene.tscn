@@ -1,10 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://dxkotdttpvmb0"]
+[gd_scene load_steps=10 format=3 uid="uid://dxkotdttpvmb0"]
 
 [ext_resource type="Script" path="res://examples/beehave_test_scene.gd" id="1_18xg1"]
 [ext_resource type="Texture2D" uid="uid://uq5muso23nn5" path="res://splash.png" id="2_2q57p"]
 [ext_resource type="Script" path="res://examples/ColorChangingSprite.gd" id="3_shmq8"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/beehave_tree.gd" id="4_yb1gg"]
-[ext_resource type="Script" path="res://addons/beehave/nodes/composites/selector_reactive.gd" id="5_l2xef"]
 [ext_resource type="Script" path="res://addons/beehave/nodes/composites/sequence.gd" id="6_jtsdg"]
 [ext_resource type="PackedScene" uid="uid://dl8hr0kerrxsv" path="res://examples/conditions/HasPositivePosition.tscn" id="7_iqb0a"]
 [ext_resource type="PackedScene" uid="uid://c3msbcyat8v0n" path="res://examples/actions/SetModulateColor.tscn" id="8_0v48s"]
@@ -28,15 +26,13 @@ scale = Vector2(0.1, 0.1)
 texture = SubResource("CompressedTexture2D_atdvc")
 script = ExtResource("3_shmq8")
 
-[node name="BeehaveTree" type="Node" parent="ColorChangingSprite" node_paths=PackedStringArray("blackboard", "actor")]
+[node name="BeehaveTree" type="BeehaveTree" parent="ColorChangingSprite" node_paths=PackedStringArray("blackboard", "actor")]
 unique_name_in_owner = true
-script = ExtResource("4_yb1gg")
 blackboard = NodePath("../../Blackboard")
 custom_monitor = true
 actor = NodePath("..")
 
-[node name="SelectorComposite" type="Node" parent="ColorChangingSprite/BeehaveTree"]
-script = ExtResource("5_l2xef")
+[node name="SelectorComposite" type="BeehaveSelectorReactive" parent="ColorChangingSprite/BeehaveTree"]
 
 [node name="SequenceComposite" type="Node" parent="ColorChangingSprite/BeehaveTree/SelectorComposite"]
 script = ExtResource("6_jtsdg")
@@ -69,14 +65,12 @@ position = Vector2(182, 180)
 scale = Vector2(0.1, 0.1)
 texture = SubResource("CompressedTexture2D_atdvc")
 
-[node name="AnotherTree" type="Node" parent="AnotherSprite" node_paths=PackedStringArray("blackboard", "actor")]
-script = ExtResource("4_yb1gg")
+[node name="AnotherTree" type="BeehaveTree" parent="AnotherSprite" node_paths=PackedStringArray("blackboard", "actor")]
 blackboard = NodePath("../../Blackboard")
 custom_monitor = null
 actor = NodePath("..")
 
-[node name="SelectorComposite" type="Node" parent="AnotherSprite/AnotherTree"]
-script = ExtResource("5_l2xef")
+[node name="SelectorComposite" type="BeehaveSelectorReactive" parent="AnotherSprite/AnotherTree"]
 
 [node name="SequenceComposite" type="Node" parent="AnotherSprite/AnotherTree/SelectorComposite"]
 script = ExtResource("6_jtsdg")
