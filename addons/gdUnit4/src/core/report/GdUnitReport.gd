@@ -18,7 +18,7 @@ var _line_number :int
 var _message :String
 
 
-func create(p_type, p_line_number :int, p_message :String) -> GdUnitReport:
+func create(p_type :int, p_line_number :int, p_message :String) -> GdUnitReport:
 	_type = p_type
 	_line_number = p_line_number
 	_message = p_message
@@ -53,7 +53,7 @@ func is_error() -> bool:
 	return _type == TERMINATED or _type == INTERUPTED or _type == ABORT
 
 
-func _to_string():
+func _to_string() -> String:
 	if _line_number == -1:
 		return "[color=green]line [/color][color=aqua]<n/a>:[/color] %s" % [_message]
 	return "[color=green]line [/color][color=aqua]%d:[/color] %s" % [_line_number, _message]
@@ -67,7 +67,7 @@ func serialize() -> Dictionary:
 	}
 
 
-func deserialize(serialized:Dictionary) -> GdUnitReport:
+func deserialize(serialized :Dictionary) -> GdUnitReport:
 	_type        = serialized["type"]
 	_line_number = serialized["line_number"]
 	_message     = serialized["message"]

@@ -4,7 +4,7 @@
 ## [member weights]. Changes its status every [member reset_duration_msec]
 ## milliseconds.
 @tool
-class_name RandomAction extends ActionLeaf
+class_name RandomAction extends BeehaveAction
 
 
 ## How often this action changes its return status, in milliseconds.
@@ -31,7 +31,7 @@ func _get_random_action():
 	return weights.size() - 1
 
 
-func tick(actor: Node, blackboard: Blackboard) -> int:
+func tick(context: BeehaveContext) -> int:
 	var step = Time.get_ticks_msec() / reset_duration_msec
 	if step != last_step:
 		action = _get_random_action()

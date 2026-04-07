@@ -2,7 +2,7 @@ extends Node2D
 
 
 @onready var selector: SelectorRandomComposite = %SelectorRandom
-@onready var blackboard: Blackboard = $Blackboard
+@onready var blackboard: BeehaveBlackboard = $Blackboard
 @onready var label: Label = $Label
 
 # key: Node name | value: counter key
@@ -49,4 +49,3 @@ func set_weights(common: int, uncommon: int, rare: int, extraordinary: int):
 	selector.set("Weights/Uncommon", uncommon)
 	selector.set("Weights/Rare", rare)
 	selector.set("Weights/Extraordinary", extraordinary)
-

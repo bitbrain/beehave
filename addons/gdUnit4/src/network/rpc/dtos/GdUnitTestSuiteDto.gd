@@ -15,13 +15,13 @@ func serialize(test_suite :Node) -> Dictionary:
 
 func deserialize(data :Dictionary) -> GdUnitResourceDto:
 	super.deserialize(data)
-	var test_cases_ :Array = data.get("test_cases", Array())
+	var test_cases_ :Array = data.get("test_cases", [])
 	for test_case in test_cases_:
 		add_test_case(GdUnitTestCaseDto.new().deserialize(test_case))
 	return self
 
 
-func add_test_case(test_case :GdUnitTestCaseDto):
+func add_test_case(test_case :GdUnitTestCaseDto) -> void:
 	_test_cases_by_name[test_case.name()] = test_case
 
 

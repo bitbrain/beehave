@@ -17,11 +17,11 @@ const GDUNIT_RUNNER = "GdUnitRunner"
 
 var _config := GdUnitRunnerConfig.new()
 var _test_suites_to_process :Array
-var _state = INIT
-var _cs_executor
+var _state :int = INIT
+var _cs_executor :RefCounted
 
 
-func _init():
+func _init() -> void:
 	# minimize scene window checked debug mode
 	if OS.get_cmdline_args().size() == 1:
 		DisplayServer.window_set_title("GdUnit4 Runner (Debug Mode)")
@@ -30,10 +30,10 @@ func _init():
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
 	# store current runner instance to engine meta data to can be access in as a singleton
 	Engine.set_meta(GDUNIT_RUNNER, self)
-	_cs_executor = GdUnit4MonoApiLoader.create_executor(self)
+	_cs_executor = GdUnit4CSharpApiLoader.create_executor(self)
 
 
-func _ready():
+func _ready() -> void:
 	var config_result := _config.load_config()
 	if config_result.is_error():
 		push_error(config_result.error_message())
@@ -48,23 +48,23 @@ func _ready():
 	_state = INIT
 
 
-func _on_connection_failed(message :String):
+func _on_connection_failed(message :String) -> void:
 	prints("_on_connection_failed", message, _test_suites_to_process)
 	_state = STOP
 
 
-func _notification(what):
+func _notification(what :int) -> void:
 	#prints("GdUnitRunner", self, GdObjects.notification_as_string(what))
 	if what == NOTIFICATION_PREDELETE:
 		Engine.remove_meta(GDUNIT_RUNNER)
 
 
-func _process(_delta):
+func _process(_delta :float) -> void:
 	match _state:
 		INIT:
 			# wait until client is connected to the GdUnitServer
 			if _client.is_client_connected():
-				var time = LocalTime.now()
+				var time := LocalTime.now()
 				prints("Scan for test suites.")
 				_test_suites_to_process = load_test_suits()
 				prints("Scanning of %d test suites took" % _test_suites_to_process.size(), time.elapsed_since())
@@ -113,7 +113,7 @@ func load_test_suits() -> Array:
 func gdUnitInit() -> void:
 	#enable_manuall_polling()
 	send_message("Scaned %d test suites" % _test_suites_to_process.size())
-	var total_count = _collect_test_case_count(_test_suites_to_process)
+	var total_count := _collect_test_case_count(_test_suites_to_process)
 	_on_gdunit_event(GdUnitInit.new(_test_suites_to_process.size(), total_count))
 	for test_suite in _test_suites_to_process:
 		send_test_suite(test_suite)
@@ -145,20 +145,20 @@ func _do_filter_test_case(test_suite :Node, test_case :Node, included_tests :Pac
 func _collect_test_case_count(testSuites :Array) -> int:
 	var total :int = 0
 	for test_suite in testSuites:
-		total += (test_suite as Node).get_child_count()
+		total += test_suite.get_child_count()
 	return total
 
 
 # RPC send functions
-func send_message(message :String):
+func send_message(message :String) -> void:
 	_client.rpc_send(RPCMessage.of(message))
 
 
-func send_test_suite(test_suite):
+func send_test_suite(test_suite :Node) -> void:
 	_client.rpc_send(RPCGdUnitTestSuite.of(test_suite))
 
 
-func _on_gdunit_event(event :GdUnitEvent):
+func _on_gdunit_event(event :GdUnitEvent) -> void:
 	_client.rpc_send(RPCGdUnitEvent.of(event))
 
 

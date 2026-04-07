@@ -24,7 +24,7 @@ func execute_and_await(assertion :Callable, do_await := true) -> GdUnitFailureAs
 		_is_failed = true
 		_failure_message = "Invalid Callable! It must be a callable of 'GdUnitAssert'"
 		return
-	_failure_message = current_assert._failure_message()
+	_failure_message = current_assert.failure_message()
 	return self
 
 
@@ -38,12 +38,12 @@ func _on_test_failed(value :bool) -> void:
 
 
 @warning_ignore("unused_parameter")
-func is_equal(expected :GdUnitAssert) -> GdUnitFailureAssert:
+func is_equal(_expected :GdUnitAssert) -> GdUnitFailureAssert:
 	return _report_error("Not implemented")
 
 
 @warning_ignore("unused_parameter")
-func is_not_equal(expected :GdUnitAssert) -> GdUnitFailureAssert:
+func is_not_equal(_expected :GdUnitAssert) -> GdUnitFailureAssert:
 	return _report_error("Not implemented")
 
 
@@ -79,7 +79,7 @@ func has_message(expected :String) -> GdUnitFailureAssert:
 	var current_error := GdUnitTools.normalize_text(GdUnitTools.richtext_normalize(_failure_message))
 	if current_error != expected_error:
 		var diffs := GdDiffTool.string_diff(current_error, expected_error)
-		var current := GdAssertMessages._colored_array_div(diffs[1])
+		var current := GdAssertMessages.colored_array_div(diffs[1])
 		_report_error(GdAssertMessages.error_not_same_error(current, expected_error))
 	return self
 
@@ -89,13 +89,13 @@ func starts_with_message(expected :String) -> GdUnitFailureAssert:
 	var current_error := GdUnitTools.normalize_text(GdUnitTools.richtext_normalize(_failure_message))
 	if current_error.find(expected_error) != 0:
 		var diffs := GdDiffTool.string_diff(current_error, expected_error)
-		var current := GdAssertMessages._colored_array_div(diffs[1])
+		var current := GdAssertMessages.colored_array_div(diffs[1])
 		_report_error(GdAssertMessages.error_not_same_error(current, expected_error))
 	return self
 
 
 func _report_error(error_message :String, failure_line_number: int = -1) -> GdUnitAssert:
-	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssert._get_line_number()
+	var line_number := failure_line_number if failure_line_number != -1 else GdUnitAssertions.get_line_number()
 	GdAssertReports.report_error(error_message, line_number)
 	return self
 

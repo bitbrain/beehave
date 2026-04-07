@@ -63,17 +63,18 @@ func _on_signal_emmited( arg0=NO_ARG, arg1=NO_ARG, arg2=NO_ARG, arg3=NO_ARG, arg
 	# extract the emitter and signal_name from the last two arguments (see line 61 where is added)
 	var signal_name :String = signal_args.pop_back()
 	var emitter :Object = signal_args.pop_back()
-	# prints("_on_signal_emmited:", emitter, signal_name, signal_args)
+	#prints("_on_signal_emmited:", emitter, signal_name, signal_args)
 	if is_signal_collecting(emitter, signal_name):
 		_collected_signals[emitter][signal_name].append(signal_args)
 
 
-func reset_received_signals(emitter :Object):
-	# _debug_signal_list("before claer");
+func reset_received_signals(emitter :Object, signal_name: String, signal_args :Array):
+	#_debug_signal_list("before claer");
 	if _collected_signals.has(emitter):
-		for signal_name in _collected_signals[emitter]:
-			_collected_signals[emitter][signal_name].clear()
-	# _debug_signal_list("after claer");
+		var signals_by_emitter = _collected_signals[emitter]
+		if signals_by_emitter.has(signal_name):
+			_collected_signals[emitter][signal_name].erase(signal_args)
+	#_debug_signal_list("after claer");
 
 
 func is_signal_collecting(emitter :Object, signal_name :String) -> bool:
@@ -85,7 +86,7 @@ func match(emitter :Object, signal_name :String, args :Array) -> bool:
 	if _collected_signals.is_empty() or not _collected_signals.has(emitter):
 		return false
 	for received_args in _collected_signals[emitter][signal_name]:
-		# prints("testing", signal_name, received_args, "vs", args)
+		#prints("testing", signal_name, received_args, "vs", args)
 		if GdObjects.equals(received_args, args):
 			return true
 	return false

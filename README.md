@@ -47,6 +47,7 @@ To better understand what branch to choose from for which Godot version, please 
 |---|---|--|
 |`3.x`|`3.x`|`1.x`|
 |`4.x`|`4.x`|`2.x`|
+|`4.x`|`4.x`|`3.x`|
 
 Refer to [this guide](https://bitbra.in/2023/09/03/godot-addon-compatibility.html) for more details behind this structure.
 
@@ -57,12 +58,6 @@ Behavior trees are a modular way to build AI logic for your game. For simple AI,
 ![example](docs/assets/example.png)
 
 [Learn how to beehave on the official wiki!](https://bitbra.in/beehave/#/manual/)
-
-## Tutorial (Godot 3.5+)
-
-[bitbrain](https://youtube.com/@bitbraindev) recorded this tutorial to show in more depth how to use this addon:
-
-[![tutorial-thumbnail](https://img.youtube.com/vi/n0gVEA1dyPQ/0.jpg)](https://www.youtube.com/watch?v=n0gVEA1dyPQ)
 
 # 🥰 Credits
 

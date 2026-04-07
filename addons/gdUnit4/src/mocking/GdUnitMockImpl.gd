@@ -7,7 +7,7 @@ const __SOURCE_CLASS = "${source_class}"
 
 var __working_mode := GdUnitMock.RETURN_DEFAULTS
 var __excluded_methods :PackedStringArray = []
-var __do_return_value = null
+var __do_return_value :Variant = null
 var __prepare_return_value := false
 
 #{ <func_name> = {
@@ -17,11 +17,11 @@ var __prepare_return_value := false
 var __mocked_return_values := Dictionary()
 
 
-static func __instance():
+static func __instance() -> Object:
 	return Engine.get_meta(__INSTANCE_ID)
 
 
-func _notification(what):
+func _notification(what :int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		if Engine.has_meta(__INSTANCE_ID):
 			Engine.remove_meta(__INSTANCE_ID)
@@ -31,12 +31,12 @@ func __instance_id() -> String:
 	return __INSTANCE_ID
 
 
-func __set_singleton():
+func __set_singleton() -> void:
 	# store self need to mock static functions
 	Engine.set_meta(__INSTANCE_ID, self)
 
 
-func __release_double():
+func __release_double() -> void:
 	# we need to release the self reference manually to prevent orphan nodes
 	Engine.remove_meta(__INSTANCE_ID)
 
@@ -46,7 +46,8 @@ func __is_prepare_return_value() -> bool:
 
 
 func __sort_by_argument_matcher(left_args :Array, _right_args :Array) -> bool:
-	for larg in left_args:
+	for index in left_args.size():
+		var larg :Variant = left_args[index]
 		if larg is GdUnitArgumentMatcher:
 			return false
 	return true
@@ -60,12 +61,13 @@ func __sort_dictionary(unsorted_args :Dictionary) -> Dictionary:
 	var sorted_args := unsorted_args.keys()
 	sorted_args.sort_custom(__sort_by_argument_matcher)
 	var sorted_result := {}
-	for key in sorted_args:
+	for index in sorted_args.size():
+		var key :Variant = sorted_args[index]
 		sorted_result[key] = unsorted_args[key]
 	return sorted_result
 
 
-func __save_function_return_value(args :Array):
+func __save_function_return_value(args :Array) -> void:
 	var func_name :String = args[0]
 	var func_args :Array = args.slice(1)
 	var mocked_return_value_by_args :Dictionary = __mocked_return_values.get(func_name, {})
@@ -77,13 +79,14 @@ func __save_function_return_value(args :Array):
 
 func __is_mocked_args_match(func_args :Array, mocked_args :Array) -> bool:
 	var is_matching := false
-	for args in mocked_args:
+	for index in mocked_args.size():
+		var args :Variant = mocked_args[index]
 		if func_args.size() != args.size():
 			continue
 		is_matching = true
 		for arg_index in func_args.size():
-			var func_arg = func_args[arg_index]
-			var mock_arg = args[arg_index]
+			var func_arg :Variant = func_args[arg_index]
+			var mock_arg :Variant = args[arg_index]
 			if mock_arg is GdUnitArgumentMatcher:
 				is_matching = is_matching and mock_arg.is_match(func_arg)
 			else:
@@ -101,7 +104,8 @@ func __get_mocked_return_value_or_default(args :Array, default_return_value :Var
 		return default_return_value
 	var func_args :Array = args.slice(1)
 	var mocked_args :Array = __mocked_return_values.get(func_name).keys()
-	for margs in mocked_args:
+	for index in mocked_args.size():
+		var margs :Variant = mocked_args[index]
 		if __is_mocked_args_match(func_args, [margs]):
 			return __mocked_return_values[func_name][margs]
 	return default_return_value
@@ -111,7 +115,7 @@ func __set_script(script :GDScript) -> void:
 	super.set_script(script)
 
 
-func __set_mode(working_mode :String):
+func __set_mode(working_mode :String) -> Object:
 	__working_mode = working_mode
 	return self
 
@@ -130,7 +134,7 @@ func __exclude_method_call(exluded_methods :PackedStringArray) -> void:
 	__excluded_methods.append_array(exluded_methods)
 
 
-func __do_return(return_value):
+func __do_return(return_value :Variant) -> Object:
 	__do_return_value = return_value
 	__prepare_return_value = true
 	return self

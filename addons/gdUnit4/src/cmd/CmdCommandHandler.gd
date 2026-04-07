@@ -81,12 +81,20 @@ func execute(commands :Array) -> GdUnitResult:
 		var cmd_name := cmd.name()
 		if _command_cbs.has(cmd_name):
 			var cb_s :Callable = _command_cbs.get(cmd_name)[CB_SINGLE_ARG]
-			var cb_m :Callable = _command_cbs.get(cmd_name)[CB_MULTI_ARGS]
-			if cmd.arguments().is_empty():
+			var arguments := cmd.arguments()
+			if cb_s and arguments.size() == 0:
 				cb_s.call()
+			elif cb_s:
+				cb_s.call(arguments[0])
 			else:
-				if cmd.arguments().size() == 1:
-					cb_s.call(cmd.arguments()[CB_SINGLE_ARG])
-				else:
-					cb_m.callv(cmd.arguments())
+				var cb_m :Callable = _command_cbs.get(cmd_name)[CB_MULTI_ARGS]
+				# we need to find the method and determin the arguments to call the right function
+				for m in cb_m.get_object().get_method_list():
+					if m["name"] == cb_m.get_method():
+						if m["args"].size() > 1:
+							cb_m.callv(arguments)
+							break
+						else:
+							cb_m.call(arguments)
+							break
 	return GdUnitResult.success(true)

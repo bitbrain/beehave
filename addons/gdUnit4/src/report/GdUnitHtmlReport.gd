@@ -8,7 +8,7 @@ var _iteration :int
 
 
 func _init(path_ :String):
-	_iteration = GdUnitTools.find_last_path_index(path_, REPORT_DIR_PREFIX) + 1
+	_iteration = GdUnitFileAccess.find_last_path_index(path_, REPORT_DIR_PREFIX) + 1
 	_report_path = "%s/%s%d" % [path_, REPORT_DIR_PREFIX, _iteration]
 	DirAccess.make_dir_recursive_absolute(_report_path)
 
@@ -59,12 +59,12 @@ func write() -> String:
 	# write report
 	var index_file := "%s/index.html" % _report_path
 	FileAccess.open(index_file, FileAccess.WRITE).store_string(to_write)
-	GdUnitTools.copy_directory("res://addons/gdUnit4/src/report/template/css/", _report_path + "/css")
+	GdUnitFileAccess.copy_directory("res://addons/gdUnit4/src/report/template/css/", _report_path + "/css")
 	return index_file
 
 
 func delete_history(max_reports :int) -> int:
-	return GdUnitTools.delete_path_index_lower_equals_than(_report_path.get_base_dir(), REPORT_DIR_PREFIX, _iteration-max_reports)
+	return GdUnitFileAccess.delete_path_index_lower_equals_than(_report_path.get_base_dir(), REPORT_DIR_PREFIX, _iteration-max_reports)
 
 
 func apply_path_reports(report_dir :String, template :String, reports_ :Array) -> String:

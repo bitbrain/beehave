@@ -16,7 +16,7 @@ func _init(emitter :Object):
 	var context := GdUnitThreadManager.get_current_context()
 	context.set_assert(self)
 	_signal_collector = context.get_signal_collector()
-	_line_number = GdUnitAssert._get_line_number()
+	_line_number = GdUnitAssertions.get_line_number()
 	_emitter =  emitter
 	GdAssertReports.reset_last_error_line_number()
 
@@ -27,7 +27,7 @@ func report_success() -> GdUnitAssert:
 
 
 func report_warning(message :String) -> GdUnitAssert:
-	GdAssertReports.report_warning(message, GdUnitAssert._get_line_number())
+	GdAssertReports.report_warning(message, GdUnitAssertions.get_line_number())
 	return self
 
 
@@ -37,7 +37,7 @@ func report_error(error_message :String) -> GdUnitAssert:
 	return self
 
 
-func _failure_message() -> String:
+func failure_message() -> String:
 	return _current_error_message
 
 
@@ -68,13 +68,13 @@ func is_signal_exists(signal_name :String) -> GdUnitSignalAssert:
 
 # Verifies that given signal is emitted until waiting time
 func is_emitted(name :String, args := []) -> GdUnitSignalAssert:
-	_line_number = GdUnitAssert._get_line_number()
+	_line_number = GdUnitAssertions.get_line_number()
 	return await _wail_until_signal(name, args, false)
 
 
 # Verifies that given signal is NOT emitted until waiting time
 func is_not_emitted(name :String, args := []) -> GdUnitSignalAssert:
-	_line_number = GdUnitAssert._get_line_number()
+	_line_number = GdUnitAssertions.get_line_number()
 	return await _wail_until_signal(name, args, true)
 
 
@@ -101,10 +101,10 @@ func _wail_until_signal(signal_name :String, expected_args :Array, expect_not_em
 			is_signal_emitted = _signal_collector.match(_emitter, signal_name, expected_args)
 			if is_signal_emitted and expect_not_emitted:
 				report_error(GdAssertMessages.error_signal_emitted(signal_name, expected_args, LocalTime.elapsed(int(_timeout-timer.time_left*1000))))
-		
+
 	if _interrupted and not expect_not_emitted:
 		report_error(GdAssertMessages.error_wait_signal(signal_name, expected_args, LocalTime.elapsed(_timeout)))
 	timer.free()
 	if is_instance_valid(_emitter):
-		_signal_collector.reset_received_signals(_emitter)
+		_signal_collector.reset_received_signals(_emitter, signal_name, expected_args)
 	return self

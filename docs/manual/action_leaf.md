@@ -25,3 +25,12 @@ In another example, you have a character that can fish. You can use an `ActionLe
 3. If the character is interrupted or fails to catch a fish, return `FAILURE`
 
 Combine `ActionLeaf` nodes with other Behavior Tree nodes to create complex actions and behaviors for your game characters.
+
+## Blackboard Action Nodes
+Beehave provides some nodes for common Blackboard actions out of the box.
+
+### Blackboard Erase
+The `BeehaveBlackboardErase` node erases a specified key from the blackboard.
+
+### Blackboard Set
+The `BeehaveBlackboardSet` node sets a specified key to a specified value. The value is an expression and can thus be of any type, like a number, a `String`, a `bool`, etc.

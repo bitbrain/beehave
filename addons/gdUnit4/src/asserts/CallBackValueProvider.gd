@@ -1,5 +1,5 @@
 # a value provider unsing a callback to get `next` value from a certain function
-class_name CallBackValueProvider 
+class_name CallBackValueProvider
 extends ValueProvider
 
 var _cb :Callable

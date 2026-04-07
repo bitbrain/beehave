@@ -1,0 +1,68 @@
+/**************************************************************************/
+/*  beehave_blackboard_set.h                                              */
+/**************************************************************************/
+/*                         This file is part of:                          */
+/*                               BEEHAVE                                  */
+/*                      https://bitbra.in/beehave                         */
+/**************************************************************************/
+/* Copyright (c) 2024-present Beehave Contributors.                       */
+/*                                                                        */
+/* Permission is hereby granted, free of charge, to any person obtaining  */
+/* a copy of this software and associated documentation files (the        */
+/* "Software"), to deal in the Software without restriction, including    */
+/* without limitation the rights to use, copy, modify, merge, publish,    */
+/* distribute, sublicense, and/or sell copies of the Software, and to     */
+/* permit persons to whom the Software is furnished to do so, subject to  */
+/* the following conditions:                                              */
+/*                                                                        */
+/* The above copyright notice and this permission notice shall be         */
+/* included in all copies or substantial portions of the Software.        */
+/*                                                                        */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,        */
+/* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF     */
+/* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. */
+/* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY   */
+/* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,   */
+/* TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      */
+/* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
+/**************************************************************************/
+
+#ifndef BEEHAVE_BLACKBOARD_SET
+#define BEEHAVE_BLACKBOARD_SET
+
+#include "beehave_action.h"
+#include <classes/expression.hpp>
+
+namespace godot {
+
+class BeehaveBlackboardSet : public BeehaveAction {
+	GDCLASS(BeehaveBlackboardSet, BeehaveAction);
+
+    String key;
+    String value;
+
+    private:
+        Ref<Expression> value_expression;
+        bool is_expression_successfully_parsed = false;
+        bool execute_failure_printed = false;
+
+	protected:
+		static void _bind_methods();
+
+	public:
+		BeehaveBlackboardSet();
+		~BeehaveBlackboardSet();
+
+        void set_key(String key);
+        String get_key() const;
+
+        void set_value(String value);
+        String get_value() const;
+
+        BeehaveTickStatus tick(Ref<BeehaveContext> context);
+
+        PackedStringArray _get_configuration_warnings() const override;
+};
+}
+
+#endif //BEEHAVE_BLACKBOARD_SET

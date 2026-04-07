@@ -16,7 +16,7 @@ static func init_fonts(item: CanvasItem) -> float:
 		var plugin :EditorPlugin = Engine.get_meta("GdUnitEditorPlugin")
 		var settings := plugin.get_editor_interface().get_editor_settings()
 		var scale_factor :=  plugin.get_editor_interface().get_editor_scale()
-		var font_size = settings.get_setting("interface/editor/main_font_size")
+		var font_size :float = settings.get_setting("interface/editor/main_font_size")
 		font_size *= scale_factor
 		var font_mono := load_and_resize_font(FONT_MONO, font_size)
 		item.set("theme_override_fonts/normal_font", font_mono)
@@ -39,6 +39,6 @@ static func load_and_resize_font(font_resource: String, size: float) -> Font:
 	if font == null:
 		push_error("Can't load font '%s'" % font_resource)
 		return null
-	var resized_font = font.duplicate()
+	var resized_font := font.duplicate()
 	resized_font.fixed_size = int(size)
 	return resized_font

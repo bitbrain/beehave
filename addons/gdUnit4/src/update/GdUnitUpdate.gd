@@ -211,7 +211,7 @@ func extract_zip(zip_package :String, dest_path :String) -> Variant:
 
 
 func download_release() -> void:
-	var zip_file := GdUnitTools.temp_dir() + "/update.zip"
+	var zip_file := GdUnitFileAccess.temp_dir() + "/update.zip"
 	var response :GdUnitUpdateClient.HttpResponse
 	if _debug_mode:
 		response = GdUnitUpdateClient.HttpResponse.new(200, PackedByteArray())

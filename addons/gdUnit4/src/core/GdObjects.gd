@@ -178,7 +178,7 @@ static func obj2dict(obj :Object, hashed_objects := Dictionary()) -> Dictionary:
 	return {"%s" % clazz_name : dict}
 
 
-static func equals(obj_a, obj_b, case_sensitive :bool = false, compare_mode :COMPARE_MODE = COMPARE_MODE.PARAMETER_DEEP_TEST) -> bool:
+static func equals(obj_a :Variant, obj_b :Variant, case_sensitive :bool = false, compare_mode :COMPARE_MODE = COMPARE_MODE.PARAMETER_DEEP_TEST) -> bool:
 	return _equals(obj_a, obj_b, case_sensitive, compare_mode, [], 0)
 
 
@@ -190,13 +190,19 @@ static func equals_sorted(obj_a :Array, obj_b :Array, case_sensitive :bool = fal
 	return equals(a, b, case_sensitive, compare_mode)
 
 
-static func _equals(obj_a, obj_b, case_sensitive :bool, compare_mode :COMPARE_MODE, deep_stack, stack_depth :int ) -> bool:
+static func _equals(obj_a :Variant, obj_b :Variant, case_sensitive :bool, compare_mode :COMPARE_MODE, deep_stack :Array, stack_depth :int ) -> bool:
 	var type_a := typeof(obj_a)
 	var type_b := typeof(obj_b)
 	if stack_depth > 32:
 		prints("stack_depth", stack_depth, deep_stack)
 		push_error("GdUnit equals has max stack deep reached!")
 		return false
+	
+	# use argument matcher if requested
+	if is_instance_valid(obj_a) and obj_a is GdUnitArgumentMatcher:
+		return (obj_a as GdUnitArgumentMatcher).is_match(obj_b)
+	if is_instance_valid(obj_b) and obj_b is GdUnitArgumentMatcher:
+		return (obj_b as GdUnitArgumentMatcher).is_match(obj_a)
 	
 	stack_depth += 1
 	# fast fail is different types
@@ -305,7 +311,7 @@ static func type_as_string(type :int) -> String:
 	return TYPE_AS_STRING_MAPPINGS.get(type, "Variant")
 
 
-static func typeof_as_string(value) -> String:
+static func typeof_as_string(value :Variant) -> String:
 	return TYPE_AS_STRING_MAPPINGS.get(typeof(value), "Unknown type")
 
 
@@ -314,15 +320,15 @@ static func all_types() -> PackedInt32Array:
 
 
 static func string_as_typeof(type_name :String) -> int:
-	var type = TYPE_AS_STRING_MAPPINGS.find_key(type_name)
+	var type :Variant = TYPE_AS_STRING_MAPPINGS.find_key(type_name)
 	return type if type != null else TYPE_VARIANT
 
 
-static func is_primitive_type(value) -> bool:
+static func is_primitive_type(value :Variant) -> bool:
 	return typeof(value) in [TYPE_BOOL, TYPE_STRING, TYPE_STRING_NAME, TYPE_INT, TYPE_FLOAT]
 
 
-static func _is_type_equivalent(type_a, type_b) -> bool:
+static func _is_type_equivalent(type_a :int, type_b :int) -> bool:
 	# don't test for TYPE_STRING_NAME equivalenz
 	if type_a == TYPE_STRING_NAME or type_b == TYPE_STRING_NAME:
 		return true
@@ -353,8 +359,7 @@ static func is_type(value :Variant) -> bool:
 	return false
 
 
-@warning_ignore("shadowed_global_identifier")
-static func _is_same(left, right) -> bool:
+static func _is_same(left :Variant, right :Variant) -> bool:
 	var left_type := -1 if left == null else typeof(left)
 	var right_type := -1 if right == null else typeof(right)
 
@@ -366,27 +371,27 @@ static func _is_same(left, right) -> bool:
 	return equals(left, right)
 
 
-static func is_object(value) -> bool:
+static func is_object(value :Variant) -> bool:
 	return typeof(value) == TYPE_OBJECT
 
 
-static func is_script(value) -> bool:
+static func is_script(value :Variant) -> bool:
 	return is_object(value) and value is Script
 
 
 static func is_test_suite(script :Script) -> bool:
-	return is_gd_testsuite(script) or GdUnit4MonoApiLoader.is_test_suite(script.resource_path)
+	return is_gd_testsuite(script) or GdUnit4CSharpApiLoader.is_test_suite(script.resource_path)
 
 
-static func is_native_class(value) -> bool:
+static func is_native_class(value :Variant) -> bool:
 	return is_object(value) and is_engine_type(value)
 
 
-static func is_scene(value) -> bool:
+static func is_scene(value :Variant) -> bool:
 	return is_object(value) and value is PackedScene
 
 
-static func is_scene_resource_path(value) -> bool:
+static func is_scene_resource_path(value :Variant) -> bool:
 	return value is String and value.ends_with(".tscn")
 
 
@@ -432,7 +437,7 @@ static func is_instance(value :Variant) -> bool:
 
 
 # only object form type Node and attached filename
-static func is_instance_scene(instance) -> bool:
+static func is_instance_scene(instance :Variant) -> bool:
 	if instance is Node:
 		var node := instance as Node
 		return node.get_scene_file_path() != null and not node.get_scene_file_path().is_empty()
@@ -445,7 +450,7 @@ static func can_be_instantiate(obj :Variant) -> bool:
 	return obj.has_method("new")
 
 
-static func create_instance(clazz) -> GdUnitResult:
+static func create_instance(clazz :Variant) -> GdUnitResult:
 	match typeof(clazz):
 		TYPE_OBJECT:
 			# test is given clazz already an instance
@@ -463,7 +468,7 @@ static func create_instance(clazz) -> GdUnitResult:
 				var clazz_path :String = extract_class_path(clazz)[0]
 				if not FileAccess.file_exists(clazz_path):
 					return GdUnitResult.error("Class '%s' not found." % clazz)
-				var script = load(clazz_path)
+				var script := load(clazz_path)
 				if script != null:
 					return GdUnitResult.success(script.new())
 				else:
@@ -471,7 +476,7 @@ static func create_instance(clazz) -> GdUnitResult:
 	return GdUnitResult.error("Can't create instance for class '%s'." % clazz)
 
 
-static func extract_class_path(clazz) -> PackedStringArray:
+static func extract_class_path(clazz :Variant) -> PackedStringArray:
 	var clazz_path := PackedStringArray()
 	if clazz is String:
 		clazz_path.append(clazz)
@@ -513,7 +518,7 @@ static func extract_class_name_from_class_path(clazz_path :PackedStringArray) ->
 	return  clazz_name
 
 
-static func extract_class_name(clazz) -> GdUnitResult:
+static func extract_class_name(clazz :Variant) -> GdUnitResult:
 	if clazz == null:
 		return GdUnitResult.error("Can't extract class name form a null value.")
 	
@@ -529,7 +534,7 @@ static func extract_class_name(clazz) -> GdUnitResult:
 		if ClassDB.class_exists(clazz):
 			return GdUnitResult.success(clazz)
 		var source_sript :Script = load(clazz)
-		var clazz_name = load("res://addons/gdUnit4/src/core/parse/GdScriptParser.gd").new().get_class_name(source_sript)
+		var clazz_name :String = load("res://addons/gdUnit4/src/core/parse/GdScriptParser.gd").new().get_class_name(source_sript)
 		return GdUnitResult.success(to_pascal_case(clazz_name))
 	
 	if is_primitive_type(clazz):
@@ -537,12 +542,12 @@ static func extract_class_name(clazz) -> GdUnitResult:
 	
 	if is_script(clazz):
 		if clazz.resource_path.is_empty():
-			var class_path = extract_class_name_from_class_path(extract_class_path(clazz))
+			var class_path := extract_class_name_from_class_path(extract_class_path(clazz))
 			return GdUnitResult.success(class_path);
 		return extract_class_name(clazz.resource_path)
 	
 	# need to create an instance for a class typ the extract the class name
-	var instance = clazz.new()
+	var instance :Variant = clazz.new()
 	if instance == null:
 		return GdUnitResult.error("Can't create a instance for class '%s'" % clazz)
 	var result := extract_class_name(instance)
@@ -589,7 +594,7 @@ static func extract_class_functions(clazz_name :String, script_path :PackedStrin
 # scans all registert script classes for given <clazz_name>
 # if the class is public in the global space than return true otherwise false
 # public class means the script class is defined by 'class_name <name>'
-static func is_public_script_class(clazz_name) -> bool:
+static func is_public_script_class(clazz_name :String) -> bool:
 	var script_classes:Array[Dictionary] = ProjectSettings.get_global_class_list()
 	for class_info in script_classes:
 		if class_info.has("class"):

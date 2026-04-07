@@ -4,11 +4,14 @@ extends EditorPlugin
 const GdUnitTools := preload("res://addons/gdUnit4/src/core/GdUnitTools.gd")
 
 var _gd_inspector :Node
-var _server_node
+var _server_node :Node
 var _gd_console :Node
 
 
-func _enter_tree():
+func _enter_tree() -> void:
+	if Engine.get_version_info().hex < 0x40100:
+		prints("GdUnit4 plugin requires a minimum of Godot 4.1.x Version!")
+		return
 	Engine.set_meta("GdUnitEditorPlugin", self)
 	GdUnitSettings.setup()
 	# install the GdUnit inspector
@@ -21,13 +24,13 @@ func _enter_tree():
 	add_child(_server_node)
 	prints("Loading GdUnit4 Plugin success")
 	if GdUnitSettings.is_update_notification_enabled():
-		var update_tool = load("res://addons/gdUnit4/src/update/GdUnitUpdateNotify.tscn").instantiate()
+		var update_tool :Node = load("res://addons/gdUnit4/src/update/GdUnitUpdateNotify.tscn").instantiate()
 		Engine.get_main_loop().root.call_deferred("add_child", update_tool)
-	if GdUnit4MonoApiLoader.is_mono_supported():
-		prints("GdUnit4Mono Version %s loaded." % GdUnit4MonoApiLoader.version())
+	if GdUnit4CSharpApiLoader.is_mono_supported():
+		prints("GdUnit4Mono Version %s loaded." % GdUnit4CSharpApiLoader.version())
 
 
-func _exit_tree():
+func _exit_tree() -> void:
 	if is_instance_valid(_gd_inspector):
 		remove_control_from_docks(_gd_inspector)
 		_gd_inspector.free()

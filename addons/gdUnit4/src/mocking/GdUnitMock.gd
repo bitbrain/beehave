@@ -9,10 +9,10 @@ const RETURN_DEFAULTS = "RETURN_DEFAULTS"
 ## builds full deep mocked object
 const RETURN_DEEP_STUB = "RETURN_DEEP_STUB"
 
-var _value
+var _value :Variant
 
 
-func _init(value):
+func _init(value :Variant) -> void:
 	_value = value
 
 
@@ -28,7 +28,7 @@ func on(obj :Object) -> Object:
 
 
 ## [color=yellow]`checked` is obsolete, use `on` instead [/color]
-func  checked(obj :Object) -> Object:
+func checked(obj :Object) -> Object:
 	push_warning("Using a deprecated function 'checked' use `on` instead")
 	return on(obj)
 

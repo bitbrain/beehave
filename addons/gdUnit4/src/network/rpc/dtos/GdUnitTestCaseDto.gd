@@ -5,7 +5,7 @@ var _line_number :int = -1
 var _test_case_names :PackedStringArray = []
 
 
-func serialize(test_case :Object) -> Dictionary:
+func serialize(test_case :Node) -> Dictionary:
 	var serialized := super.serialize(test_case)
 	if test_case.has_method("line_number"):
 		serialized["line_number"] = test_case.line_number()
