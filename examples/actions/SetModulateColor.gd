@@ -1,4 +1,5 @@
 extends BeehaveAction
+class_name SetModulateColor
 
 @export var modulate_color:Color = Color.WHITE
 @export var interpolation_time:float = 3.0

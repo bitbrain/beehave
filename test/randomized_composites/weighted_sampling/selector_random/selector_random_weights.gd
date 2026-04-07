@@ -49,4 +49,3 @@ func set_weights(common: int, uncommon: int, rare: int, extraordinary: int):
 	selector.set("Weights/Uncommon", uncommon)
 	selector.set("Weights/Rare", rare)
 	selector.set("Weights/Extraordinary", extraordinary)
-
