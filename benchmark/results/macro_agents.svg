@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="740" height="200" font-family="system-ui, sans-serif" font-size="13">
+<text x="8" y="24" fill="#8b8b8b" font-size="15" font-weight="bold">Agent scaling (patrol/chase/attack) — median, lower is better</text>
+<text x="240" y="59" fill="#8b8b8b" text-anchor="end">1 agent</text>
+<rect x="250" y="47" width="2" height="16" rx="3" fill="#f7b900"/>
+<text x="260" y="59" fill="#8b8b8b">0.015 ms/frame</text>
+<text x="240" y="89" fill="#8b8b8b" text-anchor="end">10 agents</text>
+<rect x="250" y="77" width="5" height="16" rx="3" fill="#f7b900"/>
+<text x="263" y="89" fill="#8b8b8b">0.065 ms/frame</text>
+<text x="240" y="119" fill="#8b8b8b" text-anchor="end">100 agents</text>
+<rect x="250" y="107" width="41" height="16" rx="3" fill="#f7b900"/>
+<text x="299" y="119" fill="#8b8b8b">0.573 ms/frame</text>
+<text x="240" y="149" fill="#8b8b8b" text-anchor="end">500 agents</text>
+<rect x="250" y="137" width="187" height="16" rx="3" fill="#f7b900"/>
+<text x="445" y="149" fill="#8b8b8b">2.62 ms/frame</text>
+<text x="240" y="179" fill="#8b8b8b" text-anchor="end">1000 agents</text>
+<rect x="250" y="167" width="360" height="16" rx="3" fill="#f7b900"/>
+<text x="618" y="179" fill="#8b8b8b">5.05 ms/frame</text>
+</svg>

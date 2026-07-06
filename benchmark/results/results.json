@@ -1,0 +1,513 @@
+{
+	"meta": {
+		"beehave": "2.9.3-dev",
+		"build": "debug",
+		"cpu": "AMD Ryzen 7 9800X3D 8-Core Processor",
+		"date": "2026-07-06",
+		"godot": "4.7-stable (official)",
+		"os": "Linux 44.20260629.0 (Kinoite)",
+		"threads": 16
+	},
+	"suites": [
+		{
+			"cases": [
+				{
+					"name": "gdscript_equivalent",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.076269715351374,
+						"max": 0.24,
+						"mean": 0.1793,
+						"median": 0.175,
+						"min": 0.17,
+						"p95": 0.21275,
+						"p99": 0.2302,
+						"samples": 50,
+						"std_dev": 0.0136751599625014
+					},
+					"unit": "µs/call",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "beehave_tree",
+					"relative_to": "gdscript_equivalent",
+					"stats": {
+						"cov": 0.00719224323474664,
+						"max": 7.59,
+						"mean": 7.4072,
+						"median": 7.385,
+						"min": 7.345,
+						"p95": 7.5005,
+						"p99": 7.5606,
+						"samples": 50,
+						"std_dev": 0.0532743840884153
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				}
+			],
+			"name": "baseline_overhead",
+			"title": "Framework overhead vs raw GDScript"
+		},
+		{
+			"cases": [
+				{
+					"name": "write_heavy",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0202188693189521,
+						"max": 8.97,
+						"mean": 8.0503,
+						"median": 8.0025,
+						"min": 7.95,
+						"p95": 8.2115,
+						"p99": 8.73725,
+						"samples": 50,
+						"std_dev": 0.16276796367836
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "read_heavy",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0115206806537973,
+						"max": 11.91,
+						"mean": 11.262,
+						"median": 11.2425,
+						"min": 11.115,
+						"p95": 11.46775,
+						"p99": 11.7385,
+						"samples": 50,
+						"std_dev": 0.129745905523065
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "mixed",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0108345931647417,
+						"max": 10.34,
+						"mean": 10.0267,
+						"median": 10.0025,
+						"min": 9.895,
+						"p95": 10.2605,
+						"p99": 10.30815,
+						"samples": 50,
+						"std_dev": 0.108635215284916
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				}
+			],
+			"name": "blackboard_access",
+			"title": "Blackboard access patterns"
+		},
+		{
+			"cases": [
+				{
+					"name": "1 agent",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.750850365968313,
+						"max": 122.0,
+						"mean": 17.1625,
+						"median": 15.0,
+						"min": 6.0,
+						"p95": 28.0,
+						"p99": 71.61,
+						"samples": 240,
+						"std_dev": 12.8864694059312
+					},
+					"unit": "ms/frame",
+					"unit_divisor": 1000.0
+				},
+				{
+					"name": "10 agents",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.568880669742011,
+						"max": 290.0,
+						"mean": 78.9458333333333,
+						"median": 65.0,
+						"min": 48.0,
+						"p95": 192.999999999999,
+						"p99": 263.83,
+						"samples": 240,
+						"std_dev": 44.9107585400079
+					},
+					"unit": "ms/frame",
+					"unit_divisor": 1000.0
+				},
+				{
+					"name": "100 agents",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.661568096535547,
+						"max": 3806.0,
+						"mean": 674.495833333333,
+						"median": 573.0,
+						"min": 478.0,
+						"p95": 1164.55,
+						"p99": 3277.76999999999,
+						"samples": 240,
+						"std_dev": 446.224924579491
+					},
+					"unit": "ms/frame",
+					"unit_divisor": 1000.0
+				},
+				{
+					"name": "500 agents",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.463024735253989,
+						"max": 11629.0,
+						"mean": 3148.70416666667,
+						"median": 2623.5,
+						"min": 2450.0,
+						"p95": 5846.2,
+						"p99": 9984.37,
+						"samples": 240,
+						"std_dev": 1457.92791316397
+					},
+					"unit": "ms/frame",
+					"unit_divisor": 1000.0
+				},
+				{
+					"name": "1000 agents",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.469375231779604,
+						"max": 22927.0,
+						"mean": 6219.64583333333,
+						"median": 5054.0,
+						"min": 4936.0,
+						"p95": 12224.85,
+						"p99": 19382.15,
+						"samples": 240,
+						"std_dev": 2919.34770460788
+					},
+					"unit": "ms/frame",
+					"unit_divisor": 1000.0
+				}
+			],
+			"name": "macro_agents",
+			"title": "Agent scaling (patrol/chase/attack)"
+		},
+		{
+			"cases": [
+				{
+					"name": "tree_with_single_action",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0148515303151843,
+						"max": 1.5,
+						"mean": 1.4232,
+						"median": 1.42,
+						"min": 1.395,
+						"p95": 1.45275,
+						"p99": 1.49755,
+						"samples": 50,
+						"std_dev": 0.0211366979445703
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "sequence",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.00509553051074219,
+						"max": 6.325,
+						"mean": 6.2199,
+						"median": 6.215,
+						"min": 6.155,
+						"p95": 6.27275,
+						"p99": 6.3005,
+						"samples": 50,
+						"std_dev": 0.0316936902237654
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "sequence_star",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.00478715931670317,
+						"max": 6.34,
+						"mean": 6.2676,
+						"median": 6.2625,
+						"min": 6.22,
+						"p95": 6.32275,
+						"p99": 6.33755,
+						"samples": 50,
+						"std_dev": 0.0300039997333688
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "sequence_reactive",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.00512391556609773,
+						"max": 6.1,
+						"mean": 6.009,
+						"median": 5.995,
+						"min": 5.96,
+						"p95": 6.06275,
+						"p99": 6.0853,
+						"samples": 50,
+						"std_dev": 0.0307896086366812
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "sequence_random",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.00705547730943286,
+						"max": 7.18,
+						"mean": 7.0028,
+						"median": 6.995,
+						"min": 6.935,
+						"p95": 7.08325,
+						"p99": 7.1359,
+						"samples": 50,
+						"std_dev": 0.0494080965024964
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "selector",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.00731433352612384,
+						"max": 8.845,
+						"mean": 8.6259,
+						"median": 8.615,
+						"min": 8.53,
+						"p95": 8.74175,
+						"p99": 8.8401,
+						"samples": 50,
+						"std_dev": 0.0630927095629916
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "selector_reactive",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.00468940758300095,
+						"max": 8.55,
+						"mean": 8.3057,
+						"median": 8.3,
+						"min": 8.27,
+						"p95": 8.34275,
+						"p99": 8.44955,
+						"samples": 50,
+						"std_dev": 0.038948812562131
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "selector_random",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0104485726566881,
+						"max": 9.88,
+						"mean": 9.22340000000001,
+						"median": 9.21,
+						"min": 9.17,
+						"p95": 9.245,
+						"p99": 9.59825,
+						"samples": 50,
+						"std_dev": 0.096371365041697
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "simple_parallel",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0040175624589468,
+						"max": 2.745,
+						"mean": 2.7148,
+						"median": 2.715,
+						"min": 2.695,
+						"p95": 2.73275,
+						"p99": 2.7401,
+						"samples": 50,
+						"std_dev": 0.0109068785635488
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "inverter",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0346036261812725,
+						"max": 3.25,
+						"mean": 2.6573,
+						"median": 2.64,
+						"min": 2.615,
+						"p95": 2.68275,
+						"p99": 3.0638,
+						"samples": 50,
+						"std_dev": 0.0919522158514954
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "succeeder",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0349284562533487,
+						"max": 3.015,
+						"mean": 2.5635,
+						"median": 2.54,
+						"min": 2.515,
+						"p95": 2.741,
+						"p99": 2.9366,
+						"samples": 50,
+						"std_dev": 0.0895390976054595
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "failer",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.00577180625732999,
+						"max": 2.595,
+						"mean": 2.5551,
+						"median": 2.555,
+						"min": 2.525,
+						"p95": 2.57775,
+						"p99": 2.59255,
+						"samples": 50,
+						"std_dev": 0.0147475421681038
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "repeater",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.00468085438226038,
+						"max": 2.485,
+						"mean": 2.4609,
+						"median": 2.46,
+						"min": 2.435,
+						"p95": 2.48,
+						"p99": 2.48255,
+						"samples": 50,
+						"std_dev": 0.0115191145493046
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "until_fail",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0276806188989344,
+						"max": 3.045,
+						"mean": 2.5549,
+						"median": 2.545,
+						"min": 2.525,
+						"p95": 2.56,
+						"p99": 2.81225,
+						"samples": 50,
+						"std_dev": 0.0707212132248875
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "limiter",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0112389831243203,
+						"max": 4.215,
+						"mean": 4.0286,
+						"median": 4.015,
+						"min": 3.985,
+						"p95": 4.1295,
+						"p99": 4.2052,
+						"samples": 50,
+						"std_dev": 0.0452773674146367
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "cooldown",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0045716680839839,
+						"max": 3.41,
+						"mean": 3.3472,
+						"median": 3.345,
+						"min": 3.32,
+						"p95": 3.36775,
+						"p99": 3.4002,
+						"samples": 50,
+						"std_dev": 0.0153022874107109
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "delayer",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.0208905000613651,
+						"max": 3.73,
+						"mean": 3.2586,
+						"median": 3.25,
+						"min": 3.23,
+						"p95": 3.2705,
+						"p99": 3.5095,
+						"samples": 50,
+						"std_dev": 0.0680737834999642
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				},
+				{
+					"name": "time_limiter",
+					"relative_to": "",
+					"stats": {
+						"cov": 0.00389040406859463,
+						"max": 3.72,
+						"mean": 3.6443,
+						"median": 3.645,
+						"min": 3.62,
+						"p95": 3.65775,
+						"p99": 3.6906,
+						"samples": 50,
+						"std_dev": 0.0141777995471794
+					},
+					"unit": "µs/tick",
+					"unit_divisor": 1.0
+				}
+			],
+			"name": "micro_nodes",
+			"title": "Per-node tick cost"
+		}
+	]
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="740" height="110" font-family="system-ui, sans-serif" font-size="13">
+<text x="8" y="24" fill="#8b8b8b" font-size="15" font-weight="bold">Framework overhead vs raw GDScript — median, lower is better</text>
+<text x="240" y="59" fill="#8b8b8b" text-anchor="end">gdscript_equivalent</text>
+<rect x="250" y="47" width="9" height="16" rx="3" fill="#f7b900"/>
+<text x="267" y="59" fill="#8b8b8b">0.175 µs/call</text>
+<text x="240" y="89" fill="#8b8b8b" text-anchor="end">beehave_tree</text>
+<rect x="250" y="77" width="360" height="16" rx="3" fill="#f7b900"/>
+<text x="618" y="89" fill="#8b8b8b">7.38 µs/tick</text>
+</svg>

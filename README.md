@@ -34,6 +34,20 @@ In order to avoid bugs creeping into the codebase, every feature is covered by u
 
 <img src="docs/assets/gdunit-testrun.gif" width="450px"/>
 
+# 📊 Benchmarks
+
+Beehave ships with a [benchmark suite](benchmark/README.md) that measures the addon as a black box through its public API. The headline metric: a full 13-node patrol/chase/attack behavior tree per agent, all agents ticked every frame.
+
+![agent-scaling](benchmark/results/macro_agents.svg)
+
+![per-node-cost](benchmark/results/micro_nodes.svg)
+
+Measured on `2026-07-06` | Beehave `2.9.3-dev` | Godot `4.7-stable` (editor build) | Linux | AMD Ryzen 7 9800X3D. Full tables including p95/p99 percentiles are in [benchmark/results/results.md](benchmark/results/results.md) and the methodology is documented in [benchmark/README.md](benchmark/README.md). Regenerate locally with:
+
+```bash
+godot --headless --path . res://benchmark/benchmark.tscn
+```
+
 # 📦 Installation
 
 1. [Download Latest Release](https://github.com/bitbrain/beehave/releases/latest)

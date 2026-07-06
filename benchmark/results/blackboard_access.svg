@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="740" height="140" font-family="system-ui, sans-serif" font-size="13">
+<text x="8" y="24" fill="#8b8b8b" font-size="15" font-weight="bold">Blackboard access patterns — median, lower is better</text>
+<text x="240" y="59" fill="#8b8b8b" text-anchor="end">write_heavy</text>
+<rect x="250" y="47" width="256" height="16" rx="3" fill="#f7b900"/>
+<text x="514" y="59" fill="#8b8b8b">8.00 µs/tick</text>
+<text x="240" y="89" fill="#8b8b8b" text-anchor="end">read_heavy</text>
+<rect x="250" y="77" width="360" height="16" rx="3" fill="#f7b900"/>
+<text x="618" y="89" fill="#8b8b8b">11.2 µs/tick</text>
+<text x="240" y="119" fill="#8b8b8b" text-anchor="end">mixed</text>
+<rect x="250" y="107" width="320" height="16" rx="3" fill="#f7b900"/>
+<text x="578" y="119" fill="#8b8b8b">10.0 µs/tick</text>
+</svg>
