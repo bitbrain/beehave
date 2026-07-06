@@ -18,6 +18,7 @@ const RETURN_SUCCESS = 0
 const RETURN_ERROR = 100
 const RETURN_ERROR_HEADLESS_NOT_SUPPORTED = 103
 const RETURN_ERROR_GODOT_VERSION_NOT_SUPPORTED = 104
+const RETURN_ERROR_SCRIPT_ERRORS_DETECTED = 105
 const RETURN_WARNING = 101
 
 ## Specifies the Node name under which the runner is registered

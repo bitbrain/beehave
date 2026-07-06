@@ -30,7 +30,8 @@ func dispose() -> void:
 
 
 func terminate() -> void:
-	_execution_context.terminate()
+	if _execution_context:
+		_execution_context.terminate()
 
 
 func clear_assert() -> void:

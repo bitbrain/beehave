@@ -33,7 +33,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	return warnings
 
 
-func tick(actor, blackboard: Blackboard):
+func tick(actor: Node, blackboard: Blackboard) -> int:
 	for c in get_children():
 		var node_index: int = c.get_index()
 		if node_index == 0 and not main_task_finished:

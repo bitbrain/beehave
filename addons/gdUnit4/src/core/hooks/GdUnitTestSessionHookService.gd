@@ -158,9 +158,10 @@ func load_hook_settings() -> void:
 		var enabled := hooks_resource_paths[hock_path]
 
 		# Do not reinstall already installed hooks
-		var existing_hook: GdUnitTestSessionHook = enigne_hooks.filter(func(element: GdUnitTestSessionHook) -> bool:
+		var existing_hooks := enigne_hooks.filter(func(element: GdUnitTestSessionHook) -> bool:
 			return element.get_script().resource_path == hock_path
-		).front()
+		)
+		var existing_hook: GdUnitTestSessionHook = null if existing_hooks.is_empty() else existing_hooks.front()
 		# Applay enabled settings
 		if existing_hook != null:
 			_enable_hook(existing_hook, enabled)

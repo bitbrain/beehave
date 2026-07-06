@@ -51,8 +51,11 @@ if echo "$GODOT_VERSION" | grep -i "mono" > /dev/null; then
     echo "done $?"
 fi
 
-# Run the tests with the filtered arguments
-"$godot_binary" --path . -s -d res://addons/gdUnit4/bin/GdUnitCmdTool.gd $filtered_args
+# Run the tests with the filtered arguments.
+# --remote-debug tcp://127.0.0.1:0 prevents Godot from activating its local interactive
+# CLI debugger, which would cause an endless 'debug>' loop on script parse errors.
+# Port 0 is used intentionally as it is never bound, so the connection is always refused.
+"$godot_binary" --path . -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd $filtered_args
 exit_code=$?
 echo "Run tests ends with $exit_code"
 

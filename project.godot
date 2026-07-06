@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Beehave"
 run/main_scene="res://examples/beehave_test_scene.tscn"
-config/features=PackedStringArray("4.6")
+config/features=PackedStringArray("4.7")
 boot_splash/stretch_mode=0
 boot_splash/image="res://splash.png"
 config/icon="res://icon.png"

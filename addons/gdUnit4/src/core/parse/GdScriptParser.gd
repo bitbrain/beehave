@@ -37,6 +37,7 @@ var TOKEN_BRACKET_SQUARE_OPEN := Token.new("[")
 var TOKEN_BRACKET_SQUARE_CLOSE := Token.new("]")
 var TOKEN_BRACKET_CURLY_OPEN := Token.new("{")
 var TOKEN_BRACKET_CURLY_CLOSE := Token.new("}")
+var TOKEN_BACKSLASH := Token.new("\\")
 
 
 var OPERATOR_ADD := Operator.new("+")
@@ -49,6 +50,7 @@ var TOKENS :Array[Token] = [
 	TOKEN_SPACE,
 	TOKEN_TABULATOR,
 	TOKEN_NEW_LINE,
+	TOKEN_BACKSLASH,
 	TOKEN_COMMENT,
 	TOKEN_BRACKET_ROUND_OPEN,
 	TOKEN_BRACKET_ROUND_CLOSE,

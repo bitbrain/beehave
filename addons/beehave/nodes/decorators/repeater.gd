@@ -10,7 +10,7 @@ class_name RepeaterDecorator extends Decorator
 var current_count: int = 0
 
 
-func before_run(actor: Node, blackboard: Blackboard):
+func before_run(actor: Node, blackboard: Blackboard) -> void:
 	current_count = 0
 
 
