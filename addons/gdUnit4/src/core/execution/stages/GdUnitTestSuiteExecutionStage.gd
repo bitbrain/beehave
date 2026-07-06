@@ -21,6 +21,7 @@ func _execute(context :GdUnitExecutionContext) -> void:
 	else:
 		@warning_ignore("return_value_discarded")
 		GdUnitMemoryObserver.guard_instance(context.test_suite.__awaiter)
+		context.save_project_settings()
 		await _stage_before.execute(context)
 		for test_case_index in context.test_suite.get_child_count():
 			# iterate only over test cases
@@ -39,6 +40,7 @@ func _execute(context :GdUnitExecutionContext) -> void:
 				# and replace it by a clone without function state
 				context.test_suite = await clone_test_suite(context.test_suite)
 		await _stage_after.execute(context)
+		context.restore_project_settings()
 		GdUnitMemoryObserver.unguard_instance(context.test_suite.__awaiter)
 
 	await (Engine.get_main_loop() as SceneTree).process_frame

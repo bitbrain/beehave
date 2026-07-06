@@ -29,6 +29,6 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_wait_time += delta
-	if _wait_time > 5.0:
+	if _wait_time > 2.0:
 		_wait_time = 0
 		_command_handler._do_process()

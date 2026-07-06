@@ -35,15 +35,13 @@ func stop() -> void:
 
 	if _is_debug and EditorInterface.is_playing_scene():
 		EditorInterface.stop_playing_scene()
-		# We need finaly to send the test session close event because the current run is hard aborted.
-		GdUnitSignals.instance().gdunit_event.emit(GdUnitSessionClose.new())
 	elif OS.is_process_running(_current_runner_process_id):
 		var result := OS.kill(_current_runner_process_id)
 		if result != OK:
 			push_error("ERROR checked stopping GdUnit Test Runner. error code: %s" % result)
 		_current_runner_process_id = -1
-		# We need finaly to send the test session close event because the current run is hard aborted.
-		GdUnitSignals.instance().gdunit_event.emit(GdUnitSessionClose.new())
+	# We need finaly to send the test session close event because the current run is hard aborted.
+	GdUnitSignals.instance().gdunit_event.emit(GdUnitSessionClose.new())
 
 
 ## Forces the running scene to unpause when the debugger hits a breakpoint.[br]

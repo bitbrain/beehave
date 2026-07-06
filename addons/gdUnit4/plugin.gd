@@ -9,21 +9,9 @@ var _editor_code_context_menu: EditorContextMenuPlugin
 
 
 func _enter_tree() -> void:
-	var inferred_declaration: int = ProjectSettings.get_setting("debug/gdscript/warnings/inferred_declaration")
-
-	var is_gdunit_excluded_warnings: bool = false
-	if Engine.get_version_info().hex >= 0x40600:
-		var dirctrory_rules: Dictionary = ProjectSettings.get_setting("debug/gdscript/warnings/directory_rules")
-		if dirctrory_rules.has("res://addons/gdUnit4") and dirctrory_rules["res://addons/gdUnit4"] == 0:
-			is_gdunit_excluded_warnings = true
-	else:
-		is_gdunit_excluded_warnings = ProjectSettings.get_setting("debug/gdscript/warnings/exclude_addons")
-	if !is_gdunit_excluded_warnings and inferred_declaration != 0:
-		printerr("GdUnit4: 'inferred_declaration' is set to Warning/Error!")
-		if Engine.get_version_info().hex >= 0x40600:
-			printerr("GdUnit4 is not 'inferred_declaration' save, you have to excluded the addon (debug/gdscript/warnings/directory_rules)")
-		else:
-			printerr("GdUnit4 is not 'inferred_declaration' save, you have to excluded addons (debug/gdscript/warnings/exclude_addons)")
+	var inferred_declaration := GdUnitSettings.validate_is_inferred_declaration_enabled()
+	if inferred_declaration.is_error():
+		printerr(inferred_declaration.error_message())
 		printerr("Loading GdUnit4 Plugin failed.")
 		return
 

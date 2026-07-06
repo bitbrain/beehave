@@ -40,6 +40,23 @@ const CATEGORY_LOGGING := "debug/file_logging/"
 const STDOUT_ENABLE_TO_FILE = CATEGORY_LOGGING + "enable_file_logging"
 const STDOUT_WITE_TO_FILE = CATEGORY_LOGGING + "log_path"
 
+# Godot GDScript warning settings
+const CATEGORY_GDSCRIPT_WARNINGS := "debug/gdscript/warnings/"
+const GDSCRIPT_WARNINGS_INFERRED_DECLARATION := CATEGORY_GDSCRIPT_WARNINGS + "inferred_declaration"
+const GDSCRIPT_WARNINGS_EXCLUDE_ADDONS := CATEGORY_GDSCRIPT_WARNINGS + "exclude_addons"
+const GDSCRIPT_WARNINGS_DIRECTORY_RULES := CATEGORY_GDSCRIPT_WARNINGS + "directory_rules"
+
+enum GdScriptWarningMode {
+	IGNORE = 0,
+	WARN = 1,
+	ERROR = 2,
+}
+
+enum GdScriptWarningDirectoryMode {
+	EXCLUDE = 0,
+	INCLUDE = 1,
+}
+
 
 # GdUnit Templates
 const TEMPLATES = MAIN_CATEGORY + "/templates"
@@ -89,7 +106,7 @@ const DEFAULT_SERVER_TIMEOUT :int = 30
 # test case runtime timeout in seconds
 const DEFAULT_TEST_TIMEOUT :int = 60*5
 # the folder to create new test-suites
-const DEFAULT_TEST_LOOKUP_FOLDER := "test"
+const DEFAULT_TEST_LOOKUP_FOLDER :String = "test"
 
 # help texts
 const HELP_TEST_LOOKUP_FOLDER := "Subfolder where test suites are located (or empty to use source folder directly)"
@@ -100,8 +117,7 @@ enum NAMING_CONVENTIONS {
 	PASCAL_CASE,
 }
 
-
-const _VALUE_SET_SEPARATOR = "\f" # ASCII Form-feed character (AKA page break)
+static var _property_help :Dictionary[String, String] = {}
 
 
 static func setup() -> void:
@@ -163,23 +179,36 @@ static func create_shortcut_properties_if_need() -> void:
 	create_property_if_need(SHORTCUT_FILESYSTEM_RUN_TEST_DEBUG, GdUnitShortcut.default_keys(GdUnitShortcut.ShortCut.RUN_TESTSUITE_DEBUG), "Run all test suites in the selected folder or file (Debug)")
 
 
-static func create_property_if_need(name :String, default :Variant, help :="", value_set := PackedStringArray()) -> void:
-	if not ProjectSettings.has_setting(name):
+static func create_property_if_need(
+		property_name: String,
+		default_value: Variant,
+		help_text := "",
+		value_set := PackedStringArray()) -> void:
+
+	if not ProjectSettings.has_setting(property_name):
 		#prints("GdUnit4: Set inital settings '%s' to '%s'." % [name, str(default)])
-		ProjectSettings.set_setting(name, default)
+		ProjectSettings.set_setting(property_name, default_value)
 
-	ProjectSettings.set_initial_value(name, default)
-	help = help if value_set.is_empty() else "%s%s%s" % [help, _VALUE_SET_SEPARATOR, value_set]
-	set_help(name, default, help)
+	ProjectSettings.set_initial_value(property_name, default_value)
+	set_property_info(property_name, default_value, value_set)
+	set_property_help(property_name, help_text)
 
 
-static func set_help(property_name :String, value :Variant, help :String) -> void:
-	ProjectSettings.add_property_info({
+static func set_property_info(property_name: String, value: Variant, value_set: PackedStringArray) -> void:
+	var info := {
 		"name": property_name,
 		"type": typeof(value),
-		"hint": PROPERTY_HINT_TYPE_STRING,
-		"hint_string": help
-	})
+		"hint": PROPERTY_HINT_NONE,
+		"hint_string": "",
+	}
+	if not value_set.is_empty():
+		info["hint"] = PROPERTY_HINT_ENUM
+		info["hint_string"] = ",".join(value_set)
+	ProjectSettings.add_property_info(info)
+
+
+static func set_property_help(property_name: String, help_text: String) -> void:
+	_property_help[property_name] = help_text
 
 
 static func get_setting(name :String, default :Variant) -> Variant:
@@ -324,6 +353,32 @@ static func is_log_enabled() -> bool:
 	return ProjectSettings.get_setting(STDOUT_ENABLE_TO_FILE)
 
 
+static func validate_is_inferred_declaration_enabled() -> GdUnitResult:
+	if ProjectSettings.get_setting(GDSCRIPT_WARNINGS_INFERRED_DECLARATION) == GdScriptWarningMode.IGNORE:
+		return GdUnitResult.success()
+
+	if Engine.get_version_info().hex >= 0x40600:
+		var directory_rules: Dictionary = ProjectSettings.get_setting(GDSCRIPT_WARNINGS_DIRECTORY_RULES)
+		# Find the most specific matching rule (longest path wins)
+		var best_match := ""
+		for path: String in directory_rules.keys():
+			if "res://addons/gdUnit4".begins_with(path) and path.length() > best_match.length():
+				best_match = path
+		var is_excluded :bool = not best_match.is_empty() and directory_rules[best_match] == GdScriptWarningDirectoryMode.EXCLUDE
+		if not is_excluded:
+			return GdUnitResult.error("""
+				GdUnit4: 'inferred_declaration' is set to Warning/Error!
+				GdUnit4 is not 'inferred_declaration' safe, you have to exclude the addon (debug/gdscript/warnings/directory_rules)
+				""".dedent().strip_edges())
+	else:
+		if not ProjectSettings.get_setting(GDSCRIPT_WARNINGS_EXCLUDE_ADDONS):
+			return GdUnitResult.error("""
+				GdUnit4: 'inferred_declaration' is set to Warning/Error!
+				GdUnit4 is not 'inferred_declaration' safe, you have to exclude addons (debug/gdscript/warnings/exclude_addons)
+				""".dedent().strip_edges())
+	return GdUnitResult.success()
+
+
 static func list_settings(category: String) -> Array[GdUnitProperty]:
 	var settings: Array[GdUnitProperty] = []
 	for property in ProjectSettings.get_property_list():
@@ -331,25 +386,6 @@ static func list_settings(category: String) -> Array[GdUnitProperty]:
 		if property_name.begins_with(category):
 			settings.append(build_property(property_name, property))
 	return settings
-
-
-static func extract_value_set_from_help(value :String) -> PackedStringArray:
-	var split_value := value.split(_VALUE_SET_SEPARATOR)
-	if not split_value.size() > 1:
-		return PackedStringArray()
-
-	var regex := RegEx.new()
-	@warning_ignore("return_value_discarded")
-	regex.compile("\\[(.+)\\]")
-	var matches := regex.search_all(split_value[1])
-	if matches.is_empty():
-		return PackedStringArray()
-	var values: String = matches[0].get_string(1)
-	return values.replacen(" ", "").replacen("\"", "").split(",", false)
-
-
-static func extract_help_text(value :String) -> String:
-	return value.split(_VALUE_SET_SEPARATOR)[0]
 
 
 static func update_property(property :GdUnitProperty) -> Variant:
@@ -415,9 +451,10 @@ static func build_property(property_name: String, property: Dictionary) -> GdUni
 	var value: Variant = ProjectSettings.get_setting(property_name)
 	var value_type: int = property["type"]
 	var default: Variant = ProjectSettings.property_get_revert(property_name)
-	var help: String = property["hint_string"]
-	var value_set := extract_value_set_from_help(help)
-	return GdUnitProperty.new(property_name, value_type, value, default, extract_help_text(help), value_set)
+	var hint_string: String = property["hint_string"]
+	var value_set := PackedStringArray() if hint_string.is_empty() else hint_string.split(",")
+	var help_text :String = _property_help.get(property_name, "")
+	return GdUnitProperty.new(property_name, value_type, value, default, help_text, value_set)
 
 
 static func migrate_property(old_property :String, new_property :String, default_value :Variant, help :String, converter := Callable()) -> void:
@@ -428,16 +465,7 @@ static func migrate_property(old_property :String, new_property :String, default
 	var value :Variant = converter.call(property.value()) if converter.is_valid() else property.value()
 	ProjectSettings.set_setting(new_property, value)
 	ProjectSettings.set_initial_value(new_property, default_value)
-	set_help(new_property, value, help)
+	set_property_help(new_property, help)
+	set_property_info(new_property, value, [])
 	ProjectSettings.clear(old_property)
 	prints("Successfully migrated property '%s' -> '%s' value: %s" % [old_property, new_property, value])
-
-
-static func dump_to_tmp() -> void:
-	@warning_ignore("return_value_discarded")
-	ProjectSettings.save_custom("user://project_settings.godot")
-
-
-static func restore_dump_from_tmp() -> void:
-	@warning_ignore("return_value_discarded")
-	DirAccess.copy_absolute("user://project_settings.godot", "res://project.godot")

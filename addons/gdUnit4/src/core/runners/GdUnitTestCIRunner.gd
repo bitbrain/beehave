@@ -118,7 +118,7 @@ func _notification(what: int) -> void:
 
 
 func init_runner() -> void:
-	init_gd_unit()
+	await init_gd_unit()
 
 
 ## Returns the exit code based on test results.[br]
@@ -383,11 +383,22 @@ func init_gd_unit() -> void:
 			quit(RETURN_ERROR_HEADLESS_NOT_SUPPORTED)
 			return
 
+	var script_error_collector := GdUnitScriptErrorCollector.new()
 	_test_cases = discover_tests()
+
+	# Check for script errors captured during discovery
+	if script_error_collector.has_errors():
+		console_error("Script errors were detected during test discovery!")
+		for error in script_error_collector.errors():
+			console_info("  %s" % error)
+		console_error("Abnormal exit with %d" % RETURN_ERROR_SCRIPT_ERRORS_DETECTED)
+		await quit(RETURN_ERROR_SCRIPT_ERRORS_DETECTED)
+		return
+
 	if _test_cases.is_empty():
 		console_info("No test cases found, abort test run!", Color.YELLOW)
 		console_info("Exit code: %d" % RETURN_SUCCESS, Color.DARK_SALMON)
-		quit(RETURN_SUCCESS)
+		await quit(RETURN_SUCCESS)
 		return
 	_state = RUN
 

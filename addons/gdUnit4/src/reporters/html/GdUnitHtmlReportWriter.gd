@@ -21,7 +21,7 @@ func write(report_path: String, report: GdUnitReportSummary) -> String:
 
 
 func _apply_path_reports(report_dir: String, template: String, report_summaries: Array) -> String:
-	#Dictionary[String, Array[GdUnitReportSummary]]
+	# Dictionary[String, Array[GdUnitReportSummary]]
 	var path_report_mapping := GdUnitByPathReport.sort_reports_by_path(report_summaries)
 	var table_records := PackedStringArray()
 	var paths: Array[String] = []
@@ -45,11 +45,11 @@ func _apply_testsuite_reports(report_dir: String, template: String, test_suite_r
 	return template.replace(GdUnitHtmlPatterns.TABLE_BY_TESTSUITES, "\n".join(table_records))
 
 
-func _write(report_dir :String, report: GdUnitTestSuiteReport) -> String:
+func _write(report_dir: String, report: GdUnitTestSuiteReport) -> String:
 	var template := GdUnitHtmlPatterns.load_template("res://addons/gdUnit4/src/reporters/html/template/suite_report.html")
-	template = GdUnitHtmlPatterns.build(template, report, "")
+	template = GdUnitHtmlPatterns.build(template, report, "", GdUnitHtmlPatterns.get_path_as_link(report))
 
-	var report_output_path := create_output_path(report_dir, report.path(), report.name())
+	var report_output_path := GdUnitHtmlPatterns.create_suite_output_path(report_dir, report.path(), report.name())
 	var test_report_table := PackedStringArray()
 	if not report._failure_reports.is_empty():
 		@warning_ignore("return_value_discarded")
@@ -59,14 +59,5 @@ func _write(report_dir :String, report: GdUnitTestSuiteReport) -> String:
 		test_report_table.append(GdUnitHtmlPatterns.create_test_failure_report(report_output_path, test_report))
 
 	template = template.replace(GdUnitHtmlPatterns.TABLE_BY_TESTCASES, "\n".join(test_report_table))
-
-	var dir := report_output_path.get_base_dir()
-	if not DirAccess.dir_exists_absolute(dir):
-		@warning_ignore("return_value_discarded")
-		DirAccess.make_dir_recursive_absolute(dir)
-	FileAccess.open(report_output_path, FileAccess.WRITE).store_string(template)
+	GdUnitHtmlPatterns.write_html_file(report_output_path, template)
 	return report_output_path
-
-
-static func create_output_path(report_dir :String, path: String, name: String) -> String:
-	return "%s/test_suites/%s.%s.html" % [report_dir, path.replace("/", "."), name]

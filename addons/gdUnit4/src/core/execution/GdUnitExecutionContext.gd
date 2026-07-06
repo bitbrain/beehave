@@ -24,6 +24,9 @@ var _flaky_test_check := GdUnitSettings.is_test_flaky_check_enabled()
 var _flaky_test_retries := GdUnitSettings.get_flaky_max_retries()
 
 
+var _settings_snapshot: GdUnitProjectSettingsSnapshot = null
+
+
 var error_monitor: GodotGdErrorMonitor = null:
 	get:
 		if _parent_context != null:
@@ -120,6 +123,18 @@ func get_test_case_name() -> StringName:
 	if _test_case_name.is_empty():
 		return test_case._test_case.display_name
 	return _test_case_name
+
+
+func save_project_settings() -> void:
+	if _settings_snapshot == null:
+		_settings_snapshot = GdUnitProjectSettingsSnapshot.new()
+	_settings_snapshot.save()
+
+
+func restore_project_settings() -> void:
+	if _settings_snapshot == null:
+		return
+	_settings_snapshot.restore()
 
 
 func error_monitor_start() -> void:
