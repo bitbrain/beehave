@@ -33,10 +33,8 @@ signal tree_disabled
 @export_node_path var actor_node_path: NodePath:
 	set(anp):
 		actor_node_path = anp
-		if actor_node_path != null and str(actor_node_path) != "..":
-			actor = get_node(actor_node_path.get_as_property_path())
-		else:
-			actor = get_parent()
+		if is_inside_tree():
+			_resolve_actor()
 		if Engine.is_editor_hint():
 			update_configuration_warnings()
 
@@ -114,10 +112,7 @@ func _ready() -> void:
 		process_thread = ProcessThread.PHYSICS
 
 	if not actor:
-		if actor_node_path:
-			actor = get_node(actor_node_path)
-		else:
-			actor = get_parent()
+		_resolve_actor()
 
 	if not blackboard:
 		# invoke setter to auto-initialise the blackboard.
@@ -142,6 +137,13 @@ func _ready() -> void:
 		# Ensure the local debugger knows about the tree *before* telling the editor.
 		_get_global_debugger().register_tree(self)
 		BeehaveDebuggerMessages.register_tree(_get_debugger_data(self))
+
+
+func _resolve_actor() -> void:
+	if actor_node_path.is_empty():
+		actor = get_parent()
+	else:
+		actor = get_node_or_null(actor_node_path)
 
 
 func _on_scene_tree_node_added_removed(node: Node, is_added: bool) -> void:
