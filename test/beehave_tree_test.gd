@@ -106,6 +106,27 @@ func test_blackboard_not_initialized() -> void:
 	assert_that(result).is_equal(BeehaveNode.SUCCESS)
 
 
+func test_duplicated_tree_resolves_own_actor() -> void:
+	var scene = create_scene()
+	scene_runner(scene)
+	var duplicate = auto_free(scene.test_node.duplicate())
+	scene.add_child(duplicate)
+	var duplicated_tree: BeehaveTree = duplicate.get_node("BeehaveTree")
+	assert_that(duplicated_tree.actor).is_equal(duplicate)
+	assert_that(scene.beehave_tree.actor).is_equal(scene.test_node)
+	duplicated_tree._physics_process(1.0)
+	assert_that(duplicated_tree.status).is_equal(BeehaveNode.SUCCESS)
+
+
+func test_actor_node_path_resolved_when_added_to_tree() -> void:
+	var scene = create_scene()
+	scene_runner(scene)
+	var tree = create_tree()
+	tree.actor_node_path = NodePath("../AnotherNode")
+	scene.add_child(tree)
+	assert_that(tree.actor).is_equal(scene.get_node("AnotherNode"))
+
+
 func test_actor_override() -> void:
 	var scene = create_scene()
 	scene_runner(scene)
