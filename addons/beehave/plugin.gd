@@ -7,24 +7,34 @@ var frames: RefCounted
 var _custom_types: Array[StringName] = []
 
 
-func _init():
-	name = "BeehavePlugin"
+func _enable_plugin() -> void:
 	add_autoload_singleton("BeehaveGlobalMetrics", "metrics/beehave_global_metrics.gd")
 	add_autoload_singleton("BeehaveGlobalDebugger", "debug/global_debugger.gd")
-	
+
 	# Add project settings
 	if not ProjectSettings.has_setting("beehave/debugger/start_detached"):
 		ProjectSettings.set_setting("beehave/debugger/start_detached", false)
 		ProjectSettings.set_initial_value("beehave/debugger/start_detached", false)
-		ProjectSettings.add_property_info({
-			"name": "beehave/debugger/start_detached",
-			"type": TYPE_BOOL,
-			"hint": PROPERTY_HINT_NONE,
-			"hint_string": "If enabled, the debugger will start in a separate window"
-		})
+		ProjectSettings.add_property_info(
+			{
+				"name": "beehave/debugger/start_detached",
+				"type": TYPE_BOOL,
+				"hint": PROPERTY_HINT_NONE,
+				"hint_string": "If enabled, the debugger will start in a separate window"
+			}
+		)
 		ProjectSettings.save()
-	
+
 	print("Beehave initialized!")
+
+
+func _disable_plugin() -> void:
+	remove_autoload_singleton("BeehaveGlobalMetrics")
+	remove_autoload_singleton("BeehaveGlobalDebugger")
+
+
+func _init():
+	name = "BeehavePlugin"
 
 
 func _enter_tree() -> void:
