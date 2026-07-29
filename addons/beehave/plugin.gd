@@ -26,7 +26,6 @@ func _enable_plugin() -> void:
 		ProjectSettings.save()
 
 	print("Beehave initialized!")
-	pass
 
 
 func _disable_plugin() -> void:
