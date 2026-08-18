@@ -1,13 +1,32 @@
 extends Node
 
+const TOTAL_TREES_MONITOR := &"beehave/total_trees"
+const TOTAL_ENABLED_TREES_MONITOR := &"beehave/total_enabled_trees"
+
 var _tree_count: int = 0
 var _active_tree_count: int = 0
 var _registered_trees: Array = []
 
 
 func _enter_tree() -> void:
-	Performance.add_custom_monitor("beehave/total_trees", _get_total_trees)
-	Performance.add_custom_monitor("beehave/total_enabled_trees", _get_total_enabled_trees)
+	_register_monitor(TOTAL_TREES_MONITOR, _get_total_trees)
+	_register_monitor(TOTAL_ENABLED_TREES_MONITOR, _get_total_enabled_trees)
+
+
+func _exit_tree() -> void:
+	_unregister_monitor(TOTAL_TREES_MONITOR)
+	_unregister_monitor(TOTAL_ENABLED_TREES_MONITOR)
+
+
+func _register_monitor(id: StringName, callable: Callable) -> void:
+	if Performance.has_custom_monitor(id):
+		Performance.remove_custom_monitor(id)
+	Performance.add_custom_monitor(id, callable)
+
+
+func _unregister_monitor(id: StringName) -> void:
+	if Performance.has_custom_monitor(id):
+		Performance.remove_custom_monitor(id)
 
 
 func register_tree(tree) -> void:
