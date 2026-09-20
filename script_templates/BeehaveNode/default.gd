@@ -1,5 +1,6 @@
 # meta-name: Default
 # meta-default: true
+@tool
 extends _BASE_
 
 
