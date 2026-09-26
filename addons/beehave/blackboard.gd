@@ -38,6 +38,13 @@ func get_value(
 		return _data[blackboard_name].get(key, default_value)
 	return default_value
 
+func get_or_add_value(
+	key: Variant, default_value: Variant = null, blackboard_name: String = DEFAULT
+) -> Variant:
+	if has_value(key, blackboard_name):
+		return _data[blackboard_name].get(key, default_value)
+	set_value(key,default_value,blackboard_name)
+	return default_value
 
 func has_value(key: Variant, blackboard_name: String = DEFAULT) -> bool:
 	return (
